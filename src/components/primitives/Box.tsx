@@ -87,7 +87,7 @@ export function Box({
     focus: colors.border.focus,
   };
 
-  const computedStyle: ViewStyle = {
+  const computedStyle = {
     ...(bg && { backgroundColor: bgMap[bg] }),
 
     // Padding
@@ -130,7 +130,7 @@ export function Box({
   };
 
   return (
-    <View style={computedStyle} {...props}>
+    <View style={computedStyle as ViewStyle} {...props}>
       {children}
     </View>
   );

@@ -35,8 +35,8 @@ export function Container({
   style,
   ...props
 }: ContainerProps) {
-  const computedStyle: ViewStyle = {
-    width: '100%',
+  const computedStyle = {
+    width: '100%' as const,
     maxWidth: maxWidthMap[maxWidth],
     paddingHorizontal: paddingX ? Spacing[paddingX] : Spacing[padding],
     paddingVertical: paddingY ? Spacing[paddingY] : Spacing[padding],
@@ -49,7 +49,7 @@ export function Container({
   };
 
   return (
-    <View style={computedStyle} {...props}>
+    <View style={computedStyle as ViewStyle} {...props}>
       {children}
     </View>
   );

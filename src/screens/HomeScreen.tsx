@@ -109,11 +109,14 @@ export default function HomeScreen() {
           source={{ uri: item.thumbnail_url || 'https://via.placeholder.com/200' }}
           className="w-full h-full"
           resizeMode="cover"
+          accessible={true}
+          accessibilityLabel={`Miniatura do conteúdo: ${item.title}`}
+          accessibilityIgnoresInvertColors
         />
-        <View className="absolute top-2 left-2 bg-white/90 dark:bg-black/70 px-2 py-0.5 rounded-md flex-row items-center gap-1">
+        <View className="absolute top-2 left-2 bg-white/90 dark:bg-black/70 px-2 py-0.5 rounded-md flex-row items-center gap-1" accessible={false}>
           {getIconForType(item.type)}
         </View>
-        <View className="absolute bottom-2 right-2 bg-pink-500/90 px-1.5 py-0.5 rounded-md flex-row items-center gap-0.5">
+        <View className="absolute bottom-2 right-2 bg-pink-500/90 px-1.5 py-0.5 rounded-md flex-row items-center gap-0.5" accessible={false}>
           <Text className="text-white text-[9px] font-bold">Nath </Text>
           <Heart size={8} color="#FFFFFF" fill="#FFFFFF" />
         </View>
@@ -260,10 +263,12 @@ export default function HomeScreen() {
                   source={{ uri: avatarUrl }}
                   className="w-full h-full"
                   resizeMode="cover"
+                  accessible={false}
+                  accessibilityIgnoresInvertColors
                 />
               ) : (
-                <View className="w-full h-full items-center justify-center">
-                  <Text style={{ color: colors.text.primary }}>👤</Text>
+                <View className="w-full h-full items-center justify-center" accessible={false}>
+                  <Text style={{ color: colors.text.primary }} accessible={false}>👤</Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -309,6 +314,8 @@ export default function HomeScreen() {
                 className="w-full h-full"
                 resizeMode="cover"
                 imageStyle={{ opacity: 0.85 }}
+                accessible={false}
+                accessibilityIgnoresInvertColors
               >
                 <LinearGradient
                   colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.6)']}
@@ -345,6 +352,9 @@ export default function HomeScreen() {
             <LinearGradient
               colors={isDark ? ['#3B82F6', '#1D4ED8'] : ['#6DA9E4', '#3C6AD6']}
               className="rounded-[22px] p-6 mb-4 shadow-xl"
+              accessible={true}
+              accessibilityRole="none"
+              accessibilityLabel="Card de exercício de respiração"
             >
               <View className="relative z-10">
                 <View className="flex-row items-start justify-between">
@@ -508,6 +518,10 @@ export default function HomeScreen() {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ paddingRight: 16 }}
+                accessible={true}
+                accessibilityRole="list"
+                accessibilityLabel={`Lista de conteúdos recomendados. ${recommendedContent.length} itens`}
+                accessibilityHint="Deslize horizontalmente para navegar pelos conteúdos"
               />
             </View>
           )}

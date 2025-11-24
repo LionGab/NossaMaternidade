@@ -12,6 +12,8 @@ export interface ButtonProps {
   fullWidth?: boolean;
   hapticFeedback?: boolean;
   className?: string;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -24,6 +26,8 @@ export const Button: React.FC<ButtonProps> = ({
   fullWidth = false,
   hapticFeedback = true,
   className = '',
+  accessibilityLabel,
+  accessibilityHint,
 }) => {
   const handlePress = () => {
     if (disabled || loading) return;
@@ -74,6 +78,10 @@ export const Button: React.FC<ButtonProps> = ({
     <TouchableOpacity
       onPress={handlePress}
       disabled={isDisabled}
+      accessibilityLabel={accessibilityLabel || title}
+      accessibilityHint={accessibilityHint}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: isDisabled }}
       className={`
         ${variantStyles[variant]}
         ${sizeStyles[size]}

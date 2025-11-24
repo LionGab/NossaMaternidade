@@ -152,6 +152,7 @@ export const LightTheme = {
     secondary: '#525252',     // Cinza médio
     tertiary: '#737373',      // Cinza claro
     disabled: '#A3A3A3',      // Desabilitado
+    placeholder: '#9CA3AF',   // Placeholder text
     inverse: '#FFFFFF',       // Texto em fundos escuros
     link: '#0D5FFF',          // Links
     success: '#059669',
@@ -182,6 +183,17 @@ export const LightTheme = {
     light: ColorTokens.secondary[100], // #FFE0EC
     dark: ColorTokens.secondary[700],  // #C10048
   },
+
+  // Status colors for components
+  status: {
+    success: ColorTokens.success[500],
+    warning: ColorTokens.warning[600],
+    error: ColorTokens.error[600],
+    info: ColorTokens.info[600],
+  },
+
+  // Raw color tokens for advanced usage
+  raw: ColorTokens,
 } as const;
 
 /**
@@ -208,6 +220,7 @@ export const DarkTheme = {
     secondary: '#D1D5DB',     // Cinza claro
     tertiary: '#9CA3AF',      // Cinza médio
     disabled: '#6B7280',      // Desabilitado
+    placeholder: '#6B7280',   // Placeholder text
     inverse: '#171717',       // Texto em fundos claros
     link: '#60A5FA',          // Link azul claro
     success: '#34D399',
@@ -238,6 +251,17 @@ export const DarkTheme = {
     light: ColorTokens.secondary[300], // #FF94BA
     dark: ColorTokens.secondary[600],  // #E60A5B
   },
+
+  // Status colors for components
+  status: {
+    success: ColorTokens.success[400],
+    warning: ColorTokens.warning[400],
+    error: ColorTokens.error[400],
+    info: ColorTokens.info[400],
+  },
+
+  // Raw color tokens for advanced usage
+  raw: ColorTokens,
 } as const;
 
 // ======================
@@ -247,6 +271,11 @@ export const DarkTheme = {
 export const Typography = {
   // Font families - System fonts otimizados
   fonts: {
+    body: Platform.select({  // alias for regular
+      ios: 'System',
+      android: 'Roboto',
+      default: 'System',
+    }),
     regular: Platform.select({
       ios: 'System',
       android: 'Roboto',
@@ -275,6 +304,7 @@ export const Typography = {
     '2xs': 11,
     'xs': 12,
     'sm': 14,
+    'base': 16,  // alias for md
     'md': 16,
     'lg': 18,
     'xl': 20,

@@ -169,6 +169,44 @@ class GeminiService {
     }
   }
 
+  async analyzeDiaryEntry(entry: string): Promise<{ text: string; error?: string }> {
+    if (!this.apiKey || !this.model) {
+      return { text: '', error: 'Serviço de IA não inicializado.' };
+    }
+
+    try {
+      const userCtx = await this.getUserContext();
+      const systemInstruction = `
+        ${SYSTEM_INSTRUCTION_BASE}
+        CONTEXTO DA USUÁRIA: [ ${userCtx} ]
+
+        Tarefa: Analisar uma entrada de diário maternal.
+        - Identifique emoções principais
+        - Reconheça conquistas, por menores que sejam
+        - Ofereça validação emocional
+        - Seja breve e acolhedora (máximo 2 parágrafos curtos)
+        - NÃO dê conselhos não solicitados
+      `;
+
+      const prompt = `Acabei de escrever no meu diário:\n\n"${entry}"\n\nO que você acha?`;
+
+      const result = await this.model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        systemInstruction: { role: 'system', parts: [{ text: systemInstruction }] },
+        generationConfig: {
+          temperature: 0.8,
+          maxOutputTokens: 512,
+        },
+      });
+
+      const response = await result.response;
+      return { text: response.text() };
+    } catch (error) {
+      console.error('Error analyzing diary entry:', error);
+      return { text: '', error: 'Erro ao analisar entrada do diário.' };
+    }
+  }
+
   isConfigured(): boolean {
     return !!this.apiKey && !!this.model;
   }

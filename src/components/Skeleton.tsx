@@ -62,7 +62,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     };
   });
 
-  const getVariantStyle = (): ViewStyle => {
+  const getVariantStyle = () => {
     switch (variant) {
       case 'text':
         return {
@@ -97,7 +97,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
           overflow: 'hidden',
           backgroundColor: baseColor,
         },
-        getVariantStyle(),
+        getVariantStyle() as ViewStyle,
         containerStyle,
       ]}
     >

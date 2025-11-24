@@ -16,11 +16,55 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 export type ActiveTheme = 'light' | 'dark';
 
 export interface ThemeColors {
-  background: typeof LightTheme.background;
-  text: typeof LightTheme.text;
-  border: typeof LightTheme.border;
-  primary: typeof LightTheme.primary;
-  secondary: typeof LightTheme.secondary;
+  background: {
+    canvas: string;
+    card: string;
+    elevated: string;
+    input: string;
+    overlay: string;
+    gradient: {
+      primary: readonly string[];
+      soft: readonly string[];
+      [key: string]: readonly string[];
+    };
+  };
+  text: {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+    disabled: string;
+    placeholder: string;
+    inverse: string;
+    link: string;
+    success: string;
+    warning: string;
+    error: string;
+    info: string;
+  };
+  border: {
+    light: string;
+    medium: string;
+    dark: string;
+    focus: string;
+    error: string;
+    success: string;
+  };
+  primary: {
+    main: string;
+    light: string;
+    dark: string;
+  };
+  secondary: {
+    main: string;
+    light: string;
+    dark: string;
+  };
+  status: {
+    success: string;
+    warning: string;
+    error: string;
+    info: string;
+  };
   // Cores raw sempre disponíveis
   raw: typeof ColorTokens;
 }

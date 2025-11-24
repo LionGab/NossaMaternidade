@@ -25,3 +25,11 @@ export { Chip, type ChipProps, type ChipVariant, type ChipSize } from './Chip';
 export { Alert, type AlertProps, type AlertVariant } from './Alert';
 export { ToastProvider, useToast, type ToastOptions, type ToastVariant } from './Toast';
 export { Skeleton, SkeletonText, SkeletonCard, type SkeletonProps, type SkeletonVariant } from './Skeleton';
+
+// Primitive Components
+export { H1, H2, H3 } from './primitives/Heading';
+export { Text, Body, Caption } from './primitives/Text';
+export { Box } from './primitives/Box';
+export { Stack } from './primitives/Stack';
+export { Row } from './primitives/Row';
+export { Container } from './primitives/Container';

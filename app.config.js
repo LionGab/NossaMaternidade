@@ -45,6 +45,8 @@ module.exports = {
           'Precisamos de permissão para salvar fotos na sua galeria.',
         NSLocationWhenInUseUsageDescription:
           'Precisamos da sua localização para conectar você com mães próximas.',
+        NSUserTrackingUsageDescription:
+          'Precisamos de sua permissão para personalizar sua experiência e melhorar o conteúdo oferecido.',
         CFBundleDisplayName: 'Nossa Maternidade',
         ITSAppUsesNonExemptEncryption: false,
         UIBackgroundModes: ['fetch', 'remote-notification'],
@@ -132,6 +134,7 @@ module.exports = {
       'expo-secure-store',
       'expo-font',
       'expo-localization',
+      'expo-tracking-transparency',
     ],
   },
 };

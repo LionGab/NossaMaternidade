@@ -5,6 +5,10 @@ export type RootStackParamList = {
   Auth: undefined;
   Onboarding: undefined;
   Main: NavigatorScreenParams<MainTabParamList>;
+  Ritual: undefined;
+  Diary: undefined;
+  PrivacyPolicy: undefined;
+  TermsOfService: undefined;
 };
 
 export type MainTabParamList = {
