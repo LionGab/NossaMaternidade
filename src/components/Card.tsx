@@ -1,38 +1,98 @@
-import React from 'react';
-import { View, ViewProps, Pressable } from 'react-native';
+/**
+ * Card Component - Theme-aware card with variants
+ * Componente de card profissional com suporte a temas e variantes
+ */
 
-export interface CardProps extends ViewProps {
+import React from 'react';
+import { View, ViewProps, Pressable, ViewStyle } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { useThemeColors } from '@/theme';
+import { Spacing, Radius, Shadows } from '@/theme/tokens';
+
+export type CardVariant = 'default' | 'outlined' | 'elevated' | 'ghost';
+
+export interface CardProps extends Omit<ViewProps, 'style'> {
+  children: React.ReactNode;
+  variant?: CardVariant;
   header?: React.ReactNode;
   footer?: React.ReactNode;
   pressable?: boolean;
   onPress?: () => void;
-  className?: string;
-  children: React.ReactNode;
+  padding?: keyof typeof Spacing;
+  style?: ViewStyle;
 }
 
 export const Card: React.FC<CardProps> = ({
+  children,
+  variant = 'default',
   header,
   footer,
   pressable = false,
   onPress,
-  className = '',
-  children,
+  padding = '4',
+  style,
   ...props
 }) => {
+  const colors = useThemeColors();
+
+  const handlePress = () => {
+    if (onPress) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onPress();
+    }
+  };
+
+  const variantStyles: Record<CardVariant, ViewStyle> = {
+    default: {
+      backgroundColor: colors.background.card,
+      ...Shadows.sm,
+    },
+    outlined: {
+      backgroundColor: colors.background.card,
+      borderWidth: 1,
+      borderColor: colors.border.medium,
+    },
+    elevated: {
+      backgroundColor: colors.background.elevated,
+      ...Shadows.md,
+    },
+    ghost: {
+      backgroundColor: 'transparent',
+    },
+  };
+
+  const containerStyle: ViewStyle = {
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
+    ...variantStyles[variant],
+    ...style,
+  };
+
   const cardContent = (
     <>
       {header && (
-        <View className="px-4 pt-4 pb-2">
+        <View style={{
+          paddingHorizontal: Spacing[padding],
+          paddingTop: Spacing[padding],
+          paddingBottom: Spacing['2'],
+        }}>
           {header}
         </View>
       )}
-      
-      <View className={`px-4 ${!header && !footer ? 'py-4' : header && footer ? 'py-2' : 'py-4'}`}>
+
+      <View style={{
+        paddingHorizontal: Spacing[padding],
+        paddingVertical: !header && !footer ? Spacing[padding] : header && footer ? Spacing['2'] : Spacing[padding],
+      }}>
         {children}
       </View>
-      
+
       {footer && (
-        <View className="px-4 pt-2 pb-4">
+        <View style={{
+          paddingHorizontal: Spacing[padding],
+          paddingTop: Spacing['2'],
+          paddingBottom: Spacing[padding],
+        }}>
           {footer}
         </View>
       )}
@@ -42,14 +102,11 @@ export const Card: React.FC<CardProps> = ({
   if (pressable && onPress) {
     return (
       <Pressable
-        onPress={onPress}
-        className={`
-          bg-white
-          rounded-2xl
-          shadow-sm
-          active:opacity-80
-          ${className}
-        `}
+        onPress={handlePress}
+        style={({ pressed }) => [
+          containerStyle,
+          pressed && { opacity: 0.8 },
+        ]}
         {...props}
       >
         {cardContent}
@@ -58,15 +115,7 @@ export const Card: React.FC<CardProps> = ({
   }
 
   return (
-    <View
-      className={`
-        bg-white
-        rounded-2xl
-        shadow-sm
-        ${className}
-      `}
-      {...props}
-    >
+    <View style={containerStyle} {...props}>
       {cardContent}
     </View>
   );

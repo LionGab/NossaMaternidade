@@ -1,53 +1,85 @@
+/**
+ * Input Component - Theme-aware text input with animations
+ * Componente de input profissional com suporte a temas e animações
+ */
+
 import React, { useState } from 'react';
-import { TextInput, View, Text, TextInputProps } from 'react-native';
+import { TextInput, View, Text, TextInputProps, ViewStyle, TextStyle, Animated } from 'react-native';
+import { useThemeColors } from '@/theme';
+import { Spacing, Radius, Typography } from '@/theme/tokens';
 
 export interface InputProps extends TextInputProps {
   label?: string;
   error?: string;
+  helperText?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  containerClassName?: string;
+  containerStyle?: ViewStyle;
+  inputStyle?: TextStyle;
+  disabled?: boolean;
 }
 
 export const Input: React.FC<InputProps> = ({
   label,
   error,
+  helperText,
   leftIcon,
   rightIcon,
-  containerClassName = '',
-  className = '',
+  containerStyle,
+  inputStyle,
+  disabled = false,
   ...props
 }) => {
+  const colors = useThemeColors();
   const [isFocused, setIsFocused] = useState(false);
 
+  const getBorderColor = () => {
+    if (disabled) return colors.border.light;
+    if (error) return colors.status.error;
+    if (isFocused) return colors.border.focus;
+    return colors.border.medium;
+  };
+
+  const getBackgroundColor = () => {
+    if (disabled) return colors.background.canvas;
+    return colors.background.input;
+  };
+
   return (
-    <View className={`mb-4 ${containerClassName}`}>
+    <View style={[{ marginBottom: Spacing['4'] }, containerStyle]}>
       {label && (
-        <Text className="text-text text-sm font-medium mb-2">
+        <Text style={{
+          color: colors.text.secondary,
+          fontSize: Typography.sizes.sm,
+          fontWeight: Typography.weights.medium,
+          marginBottom: Spacing['2'],
+        }}>
           {label}
         </Text>
       )}
-      
+
       <View
-        className={`
-          flex-row
-          items-center
-          bg-background
-          rounded-xl
-          px-4
-          py-3
-          border-2
-          ${error ? 'border-red-500' : isFocused ? 'border-primary' : 'border-border'}
-        `}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: getBackgroundColor(),
+          borderRadius: Radius.lg,
+          paddingHorizontal: Spacing['4'],
+          paddingVertical: Spacing['3'],
+          borderWidth: 2,
+          borderColor: getBorderColor(),
+          opacity: disabled ? 0.6 : 1,
+        }}
       >
         {leftIcon && (
-          <View className="mr-3">
+          <View style={{ marginRight: Spacing['3'] }}>
             {leftIcon}
           </View>
         )}
-        
+
         <TextInput
           {...props}
+          editable={!disabled}
           onFocus={(e) => {
             setIsFocused(true);
             props.onFocus?.(e);
@@ -56,25 +88,32 @@ export const Input: React.FC<InputProps> = ({
             setIsFocused(false);
             props.onBlur?.(e);
           }}
-          placeholderTextColor="#999"
-          className={`
-            flex-1
-            text-text
-            text-base
-            ${className}
-          `}
+          placeholderTextColor={colors.text.placeholder}
+          style={[
+            {
+              flex: 1,
+              color: colors.text.primary,
+              fontSize: Typography.sizes.base,
+              fontFamily: Typography.fonts.body,
+            },
+            inputStyle,
+          ]}
         />
-        
+
         {rightIcon && (
-          <View className="ml-3">
+          <View style={{ marginLeft: Spacing['3'] }}>
             {rightIcon}
           </View>
         )}
       </View>
-      
-      {error && (
-        <Text className="text-red-500 text-sm mt-1">
-          {error}
+
+      {(error || helperText) && (
+        <Text style={{
+          color: error ? colors.status.error : colors.text.tertiary,
+          fontSize: Typography.sizes.sm,
+          marginTop: Spacing['1'],
+        }}>
+          {error || helperText}
         </Text>
       )}
     </View>
