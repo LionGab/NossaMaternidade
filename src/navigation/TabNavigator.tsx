@@ -7,6 +7,7 @@ import RefugioNathScreen from '../screens/RefugioNathScreen';
 import MundoNathScreen from '../screens/MundoNathScreen';
 import HabitsScreen from '../screens/HabitsScreen';
 import FeedScreen from '../screens/FeedScreen';
+import CommunityScreen from '../screens/CommunityScreen';
 import { useTheme } from '../theme/ThemeContext';
 import {
   Home,
@@ -18,15 +19,6 @@ import {
 } from 'lucide-react-native';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
-
-const CommunityScreen = () => {
-  const { colors } = useTheme();
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background.canvas }}>
-      <Text style={{ color: colors.text.primary, fontWeight: 'bold', fontSize: 18 }}>Comunidade em breve</Text>
-    </View>
-  );
-};
 
 export const TabNavigator = () => {
   const { colors } = useTheme();
