@@ -1,76 +1,33 @@
-# Scripts de Deploy - Cloud Run
+# Scripts Úteis
 
-Scripts auxiliares para deploy no Google Cloud Run.
+Scripts auxiliares para desenvolvimento e testes.
 
 ## Scripts Disponíveis
 
-### check-gcloud.ps1
-Verifica se o Google Cloud SDK está instalado e configurado.
+### test-supabase-connection.ts
 
-```powershell
-.\scripts\check-gcloud.ps1
-# Ou via npm:
-npm run check:gcloud
+Testa a conexão com o Supabase e valida as variáveis de ambiente.
+
+```bash
+# Executar via ts-node
+npx ts-node scripts/test-supabase-connection.ts
+
+# Ou adicione ao package.json:
+npm run test:supabase
 ```
 
-### install-gcloud.ps1
-Instala o Google Cloud SDK automaticamente (requer Admin).
+Este script verifica:
+- ✅ Variáveis de ambiente configuradas
+- ✅ Conexão com Supabase
+- ✅ Autenticação funcionando
+- ✅ Storage buckets acessíveis
 
-```powershell
-# Execute PowerShell como Administrador
-.\scripts\install-gcloud.ps1
-# Ou via npm:
-npm run install:gcloud
-```
+## 📝 Nota
 
-### setup-cloud-run.ps1
-Setup automático do ambiente Cloud Run.
+Scripts de deploy cloud foram removidos pois este é um projeto mobile-first que usa EAS Build para builds e submissão às lojas.
 
-```powershell
-.\scripts\setup-cloud-run.ps1 -ProjectId SEU_PROJECT_ID
-# Ou via npm:
-npm run setup:cloud-run -- -ProjectId SEU_PROJECT_ID
-```
-
-### deploy-without-gcloud.ps1
-Mostra alternativas de deploy sem precisar do gcloud CLI.
-
-```powershell
-.\scripts\deploy-without-gcloud.ps1
-# Ou via npm:
-npm run deploy:alternatives
-```
-
-## Alternativas sem gcloud CLI
-
-Se você não quiser instalar o gcloud CLI, use:
-
-1. **Cloud Code no VS Code** (Recomendado)
-   - Instale a extensão Cloud Code
-   - Use a interface visual para deploy
-
-2. **Google Cloud Console**
-   - Acesse: https://console.cloud.google.com/run
-   - Crie um novo serviço
-   - Faça upload do Dockerfile
-
-3. **GitHub Actions** (CI/CD)
-   - Configure workflow para deploy automático
-   - Veja exemplo em `.github/workflows/deploy.yml` (se existir)
-
-## Troubleshooting
-
-### "gcloud não é reconhecido"
-- Instale o Google Cloud SDK (veja `check-gcloud.ps1`)
-- Ou use Cloud Code no VS Code
-
-### Erro de autenticação
-```powershell
-gcloud auth login
-```
-
-### Erro de projeto
-```powershell
-gcloud config set project SEU_PROJECT_ID
-```
-
+Para builds e deploy, use os comandos do EAS:
+- `npm run build:ios` - Build para iOS
+- `npm run build:android` - Build para Android
+- `npm run submit:ios` - Submeter para App Store
+- `npm run submit:android` - Submeter para Google Play

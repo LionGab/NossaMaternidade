@@ -60,8 +60,8 @@ npm install
    EXPO_PUBLIC_SUPABASE_FUNCTIONS_URL=sua_url_aqui/functions/v1
    ```
    
-   📖 Veja [ENV_SETUP.md](./ENV_SETUP.md) para configuração completa.
-   📖 Veja [ENV_VARIABLES.md](./ENV_VARIABLES.md) para mais detalhes sobre as variáveis de ambiente.
+   📖 Veja [docs/setup-env.md](./docs/setup-env.md) para configuração completa.
+   📖 Veja [docs/env-variables.md](./docs/env-variables.md) para mais detalhes sobre as variáveis de ambiente.
    
    **⚠️ IMPORTANTE:** O arquivo `.env` está no `.gitignore` e não será commitado.
 
@@ -263,9 +263,13 @@ O app inclui um sistema robusto de tratamento de erros:
 
 ## 📚 Documentação Adicional
 
-- [ENV_VARIABLES.md](./ENV_VARIABLES.md) - Guia de variáveis de ambiente
-- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) - Guia de deploy detalhado
-- [README_CHAT.md](./README_CHAT.md) - Documentação do chat com IA
+- [docs/setup-env.md](./docs/setup-env.md) - Configuração de variáveis de ambiente
+- [docs/env-variables.md](./docs/env-variables.md) - Referência de variáveis de ambiente
+- [docs/setup-expo-go.md](./docs/setup-expo-go.md) - Setup para Expo Go
+- [docs/setup-supabase.md](./docs/setup-supabase.md) - Setup completo do Supabase
+- [docs/deployment.md](./docs/deployment.md) - Guia de deploy para App Store e Google Play
+- [docs/chat-ia.md](./docs/chat-ia.md) - Documentação do chat com IA
+- [docs/data-safety-google-play.md](./docs/data-safety-google-play.md) - Data Safety para Google Play
 
 ## 🤝 Contribuindo
 
