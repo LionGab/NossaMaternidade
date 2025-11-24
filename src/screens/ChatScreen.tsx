@@ -17,8 +17,10 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { ArrowLeft, Sparkles, Trash2, Send, Loader2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../theme/ThemeContext';
+import { Tokens } from '../theme';
 import { chatService, ChatMessage, ChatConversation } from '../services/chatService';
 import { profileService } from '../services/profileService';
+import { MessageBubble } from '../components/MessageBubble';
 
 const INITIAL_CHAT_GREETING = "Oi, mãe. Tô aqui com você. Como você está se sentindo agora?";
 const AVATAR_URL = "https://i.imgur.com/RRIaE7t.jpg";
@@ -178,39 +180,13 @@ export default function ChatScreen() {
 
   const quickChips = ["Estou sobrecarregada", "Medo de não ser boa mãe", "Briguei com meu parceiro"];
 
-  const renderItem = ({ item }: { item: ChatMessage }) => {
-    const isUser = item.role === 'user';
-    return (
-      <View
-        style={{ flexDirection: 'row', width: '100%', marginBottom: 16, justifyContent: isUser ? 'flex-end' : 'flex-start' }}
-        accessible={true}
-        accessibilityRole="text"
-        accessibilityLabel={isUser ? `Você disse: ${item.content}` : `MãesValente respondeu: ${item.content}`}
-      >
-        <View
-          style={{
-            maxWidth: '85%',
-            padding: 12,
-            borderRadius: 16,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.05,
-            shadowRadius: 2,
-            elevation: 1,
-            backgroundColor: isUser ? colors.primary.main : colors.background.card,
-            borderBottomRightRadius: isUser ? 4 : 16,
-            borderBottomLeftRadius: isUser ? 16 : 4,
-            borderWidth: isUser ? 0 : 1,
-            borderColor: isDark ? colors.border.light : 'transparent',
-          }}
-        >
-          <Text style={{ fontSize: 14, lineHeight: 20, color: isUser ? colors.text.inverse : colors.text.primary }}>
-            {item.content}
-          </Text>
-        </View>
-      </View>
-    );
-  };
+  const renderItem = ({ item }: { item: ChatMessage }) => (
+    <MessageBubble
+      content={item.content}
+      isUser={item.role === 'user'}
+      timestamp={item.created_at}
+    />
+  );
 
   if (loadingMessages) {
     return (
@@ -275,11 +251,11 @@ export default function ChatScreen() {
           accessibilityRole="header"
           accessibilityLabel="Chat com MãesValente, assistente de inteligência artificial"
         >
-          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary.main, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 2 }}>
+          <Text style={{ fontSize: Tokens.typography.sizes['3xs'], fontWeight: Tokens.typography.weights.bold, color: colors.primary.main, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 2 }}>
             Nossa Maternidade
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Text style={{ fontWeight: 'bold', fontSize: 18, color: colors.text.primary }}>
+            <Text style={{ fontWeight: Tokens.typography.weights.bold, fontSize: Tokens.typography.sizes.lg, color: colors.text.primary }}>
               MãesValente
             </Text>
             <Sparkles size={12} color={colors.primary.main} />
@@ -320,17 +296,17 @@ export default function ChatScreen() {
                 <Image source={{ uri: AVATAR_URL }} style={{ width: '100%', height: '100%' }} contentFit="cover" transition={200} />
               </View>
 
-              <Text style={{ fontSize: 28, fontWeight: 'bold', color: colors.text.primary, marginBottom: 4, textAlign: 'center' }}>
+              <Text style={{ fontSize: Tokens.typography.sizes['3xl'], fontWeight: Tokens.typography.weights.bold, color: colors.text.primary, marginBottom: 4, textAlign: 'center' }}>
                 MãesValente
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 24 }}>
                 <Sparkles size={14} color={colors.primary.main} />
-                <Text style={{ color: colors.primary.main, fontWeight: '500', fontSize: 14, letterSpacing: 1, textTransform: 'uppercase' }}>
+                <Text style={{ color: colors.primary.main, fontWeight: Tokens.typography.weights.medium, fontSize: Tokens.typography.sizes.sm, letterSpacing: 1, textTransform: 'uppercase' }}>
                   Suas conversas
                 </Text>
               </View>
 
-              <Text style={{ color: colors.text.secondary, fontSize: 14, lineHeight: 20, textAlign: 'center', maxWidth: 260 }}>
+              <Text style={{ color: colors.text.secondary, fontSize: Tokens.typography.sizes.sm, lineHeight: Tokens.typography.lineHeights.sm, textAlign: 'center', maxWidth: 260 }}>
                 {INITIAL_CHAT_GREETING}
               </Text>
             </View>
@@ -378,7 +354,7 @@ export default function ChatScreen() {
                     accessibilityLabel={`Sugestão rápida: ${item}`}
                     accessibilityHint="Toque para enviar esta mensagem"
                   >
-                    <Text style={{ color: colors.primary.main, fontSize: 12, fontWeight: '500' }}>
+                    <Text style={{ color: colors.primary.main, fontSize: Tokens.typography.sizes.xs, fontWeight: Tokens.typography.weights.medium }}>
                       {item}
                     </Text>
                   </TouchableOpacity>
@@ -402,7 +378,7 @@ export default function ChatScreen() {
                 borderRadius: 16,
                 paddingHorizontal: 16,
                 paddingVertical: 12,
-                fontSize: 14,
+                fontSize: Tokens.typography.sizes.sm,
                 maxHeight: 96,
                 textAlignVertical: 'top',
                 borderWidth: 1,

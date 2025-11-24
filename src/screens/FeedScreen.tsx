@@ -6,46 +6,9 @@ import { Heart, MessageCircle, Share2, BookmarkPlus, Play, FileText, Mic, Video 
 import { useTheme } from '../theme/ThemeContext';
 import { useHaptics } from '../hooks/useHaptics';
 import { MOCK_POSTS } from '../constants/data';
+import { FilterChip } from '../components/FilterChip';
 
 type FilterType = 'all' | 'video' | 'text' | 'audio' | 'reels';
-
-interface FilterChipProps {
-  option: { value: FilterType; label: string };
-  isSelected: boolean;
-  colors: any;
-  onPress: () => void;
-}
-
-const FilterChip: React.FC<FilterChipProps> = ({ option, isSelected, colors, onPress }) => {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[
-        styles.filterChip,
-        {
-          backgroundColor: isSelected ? colors.primary.main : colors.background.card,
-          borderColor: isSelected ? colors.primary.main : colors.border.light,
-        },
-      ]}
-      accessibilityRole="button"
-      accessibilityLabel={`Filtrar por ${option.label}`}
-      accessibilityHint={isSelected ? 'Filtro ativo' : 'Toque para ativar este filtro'}
-      accessibilityState={{ selected: isSelected }}
-    >
-      <Text
-        style={[
-          styles.filterChipText,
-          {
-            color: isSelected ? colors.text.inverse : colors.text.secondary,
-            fontWeight: isSelected ? '700' : '600',
-          },
-        ]}
-      >
-        {option.label}
-      </Text>
-    </TouchableOpacity>
-  );
-};
 
 interface PostCardProps {
   item: typeof MOCK_POSTS[0];
@@ -229,10 +192,11 @@ export default function FeedScreen() {
           {filterOptions.map((option) => (
             <FilterChip
               key={option.value}
-              option={option}
-              isSelected={filter === option.value}
-              colors={colors}
+              label={option.label}
+              selected={filter === option.value}
               onPress={() => handleFilterChange(option.value)}
+              variant="primary"
+              size="md"
             />
           ))}
         </ScrollView>
@@ -285,16 +249,6 @@ const styles = StyleSheet.create({
   },
   filterContainer: {
     paddingRight: 16,
-  },
-  filterChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 8,
-    borderWidth: 1,
-  },
-  filterChipText: {
-    fontSize: 14,
   },
   listContent: {
     paddingBottom: 100,
