@@ -2,7 +2,6 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Dimensions,
@@ -11,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { Colors } from '../constants/Colors';
+import { useThemedStyles, ThemeColors } from '../theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { Habit, HabitCategory } from '../types/habits';
 import { useHaptics } from '../hooks/useHaptics';
@@ -204,6 +203,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
 };
 
 export default function HabitsScreen() {
+  const styles = useThemedStyles(createStyles);
   const [habits, setHabits] = useAsyncStorage<Habit[]>(HABIT_STORAGE_KEY, DEFAULT_HABITS);
   const [selectedCategory, setSelectedCategory] = useState<HabitCategory | 'all'>('all');
   const [completedToday, setCompletedToday] = useAsyncStorage<Record<string, boolean>>(
@@ -379,7 +379,203 @@ export default function HabitsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) => ({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background.canvas,
+  },
+  header: {
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    alignItems: 'center' as const,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700' as const,
+    color: colors.text.primary,
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: colors.text.secondary,
+  },
+  addButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.background.card,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    borderWidth: 1,
+    borderColor: colors.border.light,
+  },
+  statsCard: {
+    backgroundColor: colors.background.card,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: colors.border.light,
+  },
+  statsTitle: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: colors.text.secondary,
+    marginBottom: 16,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+  },
+  statsGrid: {
+    flexDirection: 'row' as const,
+    justifyContent: 'space-around' as const,
+    marginBottom: 20,
+  },
+  statBox: {
+    alignItems: 'center' as const,
+  },
+  statValue: {
+    fontSize: 32,
+    fontWeight: '700' as const,
+    color: colors.text.primary,
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: colors.text.secondary,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+  },
+  progressBarContainer: {
+    height: 8,
+    backgroundColor: colors.background.elevated,
+    borderRadius: 4,
+    overflow: 'hidden' as const,
+  },
+  progressBar: {
+    height: '100%' as any,
+    borderRadius: 4,
+    backgroundColor: colors.primary.main,
+  },
+  categoriesContainer: {
+    marginBottom: 20,
+  },
+  categoriesContent: {
+    paddingHorizontal: 20,
+    gap: 8,
+  },
+  categoryChip: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: colors.background.card,
+    borderWidth: 1,
+    borderColor: colors.border.light,
+    gap: 6,
+  },
+  categoryText: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+    color: colors.text.secondary,
+  },
+  habitsList: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    gap: 12,
+  },
+  habitCard: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    backgroundColor: colors.background.card,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 2,
+    gap: 16,
+    position: 'relative' as const,
+    overflow: 'hidden' as const,
+  },
+  habitCardCompleted: {
+    borderWidth: 2,
+  },
+  habitCardOverlay: {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  habitIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  },
+  habitContent: {
+    flex: 1,
+  },
+  habitTitle: {
+    fontSize: 16,
+    fontWeight: '700' as const,
+    color: colors.text.primary,
+    marginBottom: 4,
+  },
+  habitDescription: {
+    fontSize: 13,
+    color: colors.text.secondary,
+    marginBottom: 8,
+  },
+  habitStats: {
+    flexDirection: 'row' as const,
+    gap: 16,
+  },
+  statItem: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 4,
+  },
+  statText: {
+    fontSize: 12,
+    fontWeight: '600' as const,
+    color: colors.text.secondary,
+  },
+  checkboxContainer: {
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  },
+  checkbox: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    paddingHorizontal: 40,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '700' as const,
+    color: colors.text.primary,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 15,
+    color: colors.text.secondary,
+    textAlign: 'center' as const,
+  },
+});
+
+const __unused_legacy_styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background.dark,
