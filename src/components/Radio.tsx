@@ -121,10 +121,22 @@ export const Radio: React.FC<RadioProps> = ({
     return colors.border.medium;
   };
 
+  // Gerar label de acessibilidade
+  const accessibilityLabel = label || `Opção ${value}`;
+  const accessibilityHint = disabled
+    ? 'Desabilitado'
+    : checked
+    ? 'Selecionado. Toque para desmarcar'
+    : 'Toque para selecionar';
+
   return (
     <Pressable
       onPress={handlePress}
       disabled={disabled}
+      accessibilityRole="radio"
+      accessibilityState={{ checked, disabled }}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       style={[
         {
           flexDirection: 'row',

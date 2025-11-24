@@ -1,5 +1,7 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
+import { Image } from 'expo-image';
+import { FlashList } from '@shopify/flash-list';
 import { useTheme } from '../theme/ThemeContext';
 import { Users, Heart, MessageSquare, Crown, TrendingUp, Clock } from 'lucide-react-native';
 
@@ -37,183 +39,270 @@ export default function CommunityScreen() {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background.canvas }}>
-      <ScrollView>
-        {/* Header */}
-        <View style={{ padding: 16, backgroundColor: colors.background.card, borderBottomWidth: 1, borderBottomColor: colors.border.light }}>
-          <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}>
-            MãesValentes
-          </Text>
-          <Text style={{ fontSize: 14, color: colors.text.secondary, marginTop: 4 }}>
-            Sua rede de apoio maternal
-          </Text>
-        </View>
-
-        {/* Stats Cards */}
-        <View style={{ flexDirection: 'row', padding: 16, gap: 12 }}>
-          <View style={{ flex: 1, backgroundColor: colors.background.card, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border.light }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <Users size={20} color={colors.primary.main} />
-              <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}>1.2k</Text>
-            </View>
-            <Text style={{ fontSize: 12, color: colors.text.secondary }}>Mães ativas</Text>
-          </View>
-
-          <View style={{ flex: 1, backgroundColor: colors.background.card, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border.light }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <MessageSquare size={20} color={colors.primary.main} />
-              <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}>3.5k</Text>
-            </View>
-            <Text style={{ fontSize: 12, color: colors.text.secondary }}>Conversas</Text>
-          </View>
-        </View>
-
-        {/* Angel of the Day */}
-        <View style={{
-          margin: 16,
-          marginTop: 0,
-          padding: 16,
-          backgroundColor: colors.background.card,
-          borderRadius: 16,
-          borderWidth: 1,
-          borderColor: colors.border.light,
-        }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <Crown size={20} color="#F59E0B" />
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}>
-              Anjo do Dia
-            </Text>
-          </View>
-
-          <View style={{ flexDirection: 'row', gap: 12 }}>
-            <Image
-              source={{ uri: 'https://i.pravatar.cc/150?img=5' }}
-              style={{ width: 60, height: 60, borderRadius: 30 }}
-            />
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.primary }}>
-                Paula Santos
-              </Text>
-              <Text style={{ fontSize: 12, color: colors.text.secondary, marginTop: 2 }}>
-                Mãe de 2 • São Paulo
-              </Text>
-              <Text style={{ fontSize: 12, color: colors.text.tertiary, marginTop: 4, lineHeight: 16 }}>
-                "Ajudou 12 mães esta semana com apoio emocional e dicas práticas"
-              </Text>
-              <TouchableOpacity
-                style={{
-                  marginTop: 8,
-                  paddingVertical: 6,
-                  paddingHorizontal: 12,
-                  backgroundColor: colors.primary.main,
-                  borderRadius: 8,
-                  alignSelf: 'flex-start',
-                }}
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.background.canvas }}
+      accessible={true}
+      accessibilityLabel="Tela da Comunidade MãesValentes"
+    >
+      <FlatList
+        data={mockDiscussions}
+        keyExtractor={(item) => item.id}
+        accessible={false}
+        ListHeaderComponent={() => (
+          <>
+            {/* Header */}
+            <View
+              style={{ padding: 16, backgroundColor: colors.background.card, borderBottomWidth: 1, borderBottomColor: colors.border.light }}
+              accessible={true}
+              accessibilityRole="header"
+            >
+              <Text
+                style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}
+                accessibilityRole="header"
+                accessibilityLabel="MãesValentes"
               >
-                <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '600' }}>
-                  Conectar
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-
-        {/* Trending Topics */}
-        <View style={{ paddingHorizontal: 16, marginBottom: 12 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <TrendingUp size={18} color={colors.text.primary} />
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}>
-              Tópicos em Alta
-            </Text>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginLeft: -16, paddingLeft: 16 }}>
-            {['Amamentação', 'Volta ao trabalho', 'Sono do bebê', 'Autocuidado', 'Alimentação'].map((topic, i) => (
-              <TouchableOpacity
-                key={i}
-                style={{
-                  paddingHorizontal: 16,
-                  paddingVertical: 8,
-                  borderRadius: 20,
-                  backgroundColor: isDark ? colors.background.elevated : '#E8F0FE',
-                  borderWidth: 1,
-                  borderColor: colors.border.light,
-                  marginRight: 8,
-                }}
+                MãesValentes
+              </Text>
+              <Text
+                style={{ fontSize: 14, color: colors.text.secondary, marginTop: 4 }}
+                accessibilityLabel="Sua rede de apoio maternal"
               >
-                <Text style={{ color: colors.primary.main, fontSize: 13, fontWeight: '500' }}>
-                  #{topic}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+                Sua rede de apoio maternal
+              </Text>
+            </View>
 
-        {/* Community Discussions */}
-        <View style={{ padding: 16, paddingTop: 8 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <Clock size={18} color={colors.text.primary} />
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}>
-              Conversas Recentes
-            </Text>
-          </View>
+            {/* Stats Cards */}
+            <View style={{ flexDirection: 'row', padding: 16, gap: 12 }}>
+              <View
+                style={{ flex: 1, backgroundColor: colors.background.card, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border.light }}
+                accessible={true}
+                accessibilityLabel="Estatística: 1.200 mães ativas na comunidade"
+                accessibilityRole="text"
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <Users size={20} color={colors.primary.main} />
+                  <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}>1.2k</Text>
+                </View>
+                <Text style={{ fontSize: 12, color: colors.text.secondary }}>Mães ativas</Text>
+              </View>
 
-          {mockDiscussions.map((discussion) => (
-            <TouchableOpacity
-              key={discussion.id}
+              <View
+                style={{ flex: 1, backgroundColor: colors.background.card, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border.light }}
+                accessible={true}
+                accessibilityLabel="Estatística: 3.500 conversas na comunidade"
+                accessibilityRole="text"
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <MessageSquare size={20} color={colors.primary.main} />
+                  <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}>3.5k</Text>
+                </View>
+                <Text style={{ fontSize: 12, color: colors.text.secondary }}>Conversas</Text>
+              </View>
+            </View>
+
+            {/* Angel of the Day */}
+            <View
               style={{
-                padding: 12,
+                margin: 16,
+                marginTop: 0,
+                padding: 16,
                 backgroundColor: colors.background.card,
-                borderRadius: 12,
-                marginBottom: 12,
+                borderRadius: 16,
                 borderWidth: 1,
                 borderColor: colors.border.light,
               }}
+              accessible={true}
+              accessibilityLabel="Anjo do Dia: Paula Santos, mãe de 2, São Paulo. Ajudou 12 mães esta semana com apoio emocional e dicas práticas"
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <Image
-                  source={{ uri: discussion.authorAvatar }}
-                  style={{ width: 32, height: 32, borderRadius: 16 }}
-                />
-                <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text.primary }}>
-                  {discussion.author}
-                </Text>
-                <Text style={{ fontSize: 12, color: colors.text.tertiary }}>
-                  {discussion.timeAgo}
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <Crown size={20} color="#F59E0B" />
+                <Text
+                  style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
+                  accessibilityRole="header"
+                >
+                  Anjo do Dia
                 </Text>
               </View>
-              <Text style={{ fontSize: 14, color: colors.text.primary, lineHeight: 20, marginBottom: 12 }}>
-                {discussion.text}
-              </Text>
-              <View style={{ flexDirection: 'row', gap: 16 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  <Heart size={16} color={colors.text.tertiary} />
-                  <Text style={{ fontSize: 12, color: colors.text.tertiary }}>{discussion.likes}</Text>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  <MessageSquare size={16} color={colors.text.tertiary} />
-                  <Text style={{ fontSize: 12, color: colors.text.tertiary }}>{discussion.replies} respostas</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
 
-        {/* CTA */}
-        <View style={{ padding: 16, paddingTop: 0, paddingBottom: 32 }}>
+              <View style={{ flexDirection: 'row', gap: 12 }}>
+                <Image
+                  source={{ uri: 'https://i.pravatar.cc/150?img=5' }}
+                  style={{ width: 60, height: 60, borderRadius: 30 }}
+                  contentFit="cover"
+                  transition={200}
+                  accessible={true}
+                  accessibilityLabel="Foto de Paula Santos"
+                />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.primary }}>
+                    Paula Santos
+                  </Text>
+                  <Text style={{ fontSize: 12, color: colors.text.secondary, marginTop: 2 }}>
+                    Mãe de 2 • São Paulo
+                  </Text>
+                  <Text style={{ fontSize: 12, color: colors.text.tertiary, marginTop: 4, lineHeight: 16 }}>
+                    "Ajudou 12 mães esta semana com apoio emocional e dicas práticas"
+                  </Text>
+                  <TouchableOpacity
+                    style={{
+                      marginTop: 8,
+                      paddingVertical: 6,
+                      paddingHorizontal: 12,
+                      backgroundColor: colors.primary.main,
+                      borderRadius: 8,
+                      alignSelf: 'flex-start',
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Conectar com Paula Santos"
+                    accessibilityHint="Envia solicitação de conexão para Paula Santos"
+                  >
+                    <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '600' }}>
+                      Conectar
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+
+            {/* Trending Topics */}
+            <View style={{ paddingHorizontal: 16, marginBottom: 12 }}>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}
+                accessible={true}
+                accessibilityRole="header"
+              >
+                <TrendingUp size={18} color={colors.text.primary} />
+                <Text
+                  style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
+                  accessibilityLabel="Tópicos em Alta"
+                >
+                  Tópicos em Alta
+                </Text>
+              </View>
+              <View style={{ height: 40, marginLeft: -16 }}>
+                <FlashList
+                  data={['Amamentação', 'Volta ao trabalho', 'Sono do bebê', 'Autocuidado', 'Alimentação']}
+                  renderItem={({ item: topic }) => (
+                    <TouchableOpacity
+                      style={{
+                        paddingHorizontal: 16,
+                        paddingVertical: 8,
+                        borderRadius: 20,
+                        backgroundColor: isDark ? colors.background.elevated : '#E8F0FE',
+                        borderWidth: 1,
+                        borderColor: colors.border.light,
+                        marginRight: 8,
+                        alignSelf: 'flex-start',
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Tópico: ${topic}`}
+                      accessibilityHint={`Toque para ver discussões sobre ${topic}`}
+                    >
+                      <Text style={{ color: colors.primary.main, fontSize: 13, fontWeight: '500' }}>
+                        #{topic}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ paddingLeft: 16 }}
+                  keyExtractor={(item, index) => `${item}-${index}`}
+                />
+              </View>
+            </View>
+
+            {/* Community Discussions Header */}
+            <View
+              style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 }}
+              accessible={true}
+              accessibilityRole="header"
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Clock size={18} color={colors.text.primary} />
+                <Text
+                  style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
+                  accessibilityLabel="Conversas Recentes"
+                >
+                  Conversas Recentes
+                </Text>
+              </View>
+            </View>
+          </>
+        )}
+        renderItem={({ item: discussion }) => (
           <TouchableOpacity
             style={{
-              backgroundColor: colors.primary.main,
-              paddingVertical: 16,
+              marginHorizontal: 16,
+              padding: 12,
+              backgroundColor: colors.background.card,
               borderRadius: 12,
-              alignItems: 'center',
+              marginBottom: 12,
+              borderWidth: 1,
+              borderColor: colors.border.light,
             }}
+            accessibilityRole="button"
+            accessibilityLabel={`Discussão de ${discussion.author}, ${discussion.timeAgo}. ${discussion.text}. ${discussion.likes} curtidas, ${discussion.replies} respostas`}
+            accessibilityHint="Toque para ver a discussão completa e participar"
           >
-            <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' }}>
-              + Iniciar Nova Conversa
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <Image
+                source={{ uri: discussion.authorAvatar }}
+                style={{ width: 32, height: 32, borderRadius: 16 }}
+                contentFit="cover"
+                transition={200}
+                accessible={true}
+                accessibilityLabel={`Foto de ${discussion.author}`}
+              />
+              <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text.primary }}>
+                {discussion.author}
+              </Text>
+              <Text style={{ fontSize: 12, color: colors.text.tertiary }}>
+                {discussion.timeAgo}
+              </Text>
+            </View>
+            <Text style={{ fontSize: 14, color: colors.text.primary, lineHeight: 20, marginBottom: 12 }}>
+              {discussion.text}
             </Text>
+            <View style={{ flexDirection: 'row', gap: 16 }}>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+                accessible={true}
+                accessibilityLabel={`${discussion.likes} curtidas`}
+              >
+                <Heart size={16} color={colors.text.tertiary} />
+                <Text style={{ fontSize: 12, color: colors.text.tertiary }}>{discussion.likes}</Text>
+              </View>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+                accessible={true}
+                accessibilityLabel={`${discussion.replies} respostas`}
+              >
+                <MessageSquare size={16} color={colors.text.tertiary} />
+                <Text style={{ fontSize: 12, color: colors.text.tertiary }}>{discussion.replies} respostas</Text>
+              </View>
+            </View>
           </TouchableOpacity>
-        </View>
-      </ScrollView>
+        )}
+        ListFooterComponent={() => (
+          <View style={{ padding: 16, paddingTop: 0, paddingBottom: 32 }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: colors.primary.main,
+                paddingVertical: 16,
+                borderRadius: 12,
+                alignItems: 'center',
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Iniciar Nova Conversa"
+              accessibilityHint="Toque para criar uma nova discussão na comunidade"
+            >
+              <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' }}>
+                + Iniciar Nova Conversa
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      />
     </SafeAreaView>
   );
 }

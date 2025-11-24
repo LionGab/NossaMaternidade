@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Image,
   TouchableOpacity,
   Dimensions,
   Animated,
@@ -12,6 +11,7 @@ import {
   Platform,
   Modal,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Colors } from '../constants/Colors';
@@ -143,7 +143,7 @@ export default function ContentDetailScreen({
 
       {/* Hero Image */}
       <View style={styles.heroContainer}>
-        <Image source={{ uri: content.imageUrl }} style={styles.heroImage} />
+        <Image source={{ uri: content.imageUrl }} style={styles.heroImage} contentFit="cover" transition={200} />
         <View style={styles.heroOverlay} />
 
         {/* Back Button */}
@@ -317,12 +317,13 @@ export default function ContentDetailScreen({
             </View>
           ) : (
             <View style={styles.actionButtonContainer}>
-              <Button
-                title={getActionButtonText(content.type)}
-                onPress={handlePlay}
-                fullWidth
-                className="mb-4"
-              />
+              <View style={{ marginBottom: 16, width: '100%' }}>
+                <Button
+                  title={getActionButtonText(content.type)}
+                  onPress={handlePlay}
+                  fullWidth
+                />
+              </View>
             </View>
           )}
 

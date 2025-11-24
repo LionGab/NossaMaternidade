@@ -53,7 +53,6 @@ export default function LoginScreen({
         <Avatar
           size={128}
           source={nathAvatar}
-          className="mb-6"
         />
 
         {/* Welcome Text */}
@@ -79,7 +78,7 @@ export default function LoginScreen({
           placeholderTextColor={Colors.text.tertiary}
           keyboardType="email-address"
           autoCapitalize="none"
-          containerClassName="w-full mb-4"
+          containerStyle={{ width: '100%', marginBottom: 16 }}
         />
 
         <View className="w-full mb-2">
@@ -99,7 +98,7 @@ export default function LoginScreen({
                 />
               </TouchableOpacity>
             }
-            containerClassName="mb-0"
+            containerStyle={{ marginBottom: 0 }}
           />
           <TouchableOpacity
             onPress={onForgotPassword}

@@ -95,10 +95,22 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     return colors.border.medium;
   };
 
+  // Gerar label de acessibilidade
+  const accessibilityLabel = label || (checked ? 'Marcado' : 'Desmarcado');
+  const accessibilityHint = disabled
+    ? 'Desabilitado'
+    : checked
+    ? 'Toque para desmarcar'
+    : 'Toque para marcar';
+
   return (
     <Pressable
       onPress={handlePress}
       disabled={disabled}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked, disabled }}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       style={[
         {
           flexDirection: 'row',
