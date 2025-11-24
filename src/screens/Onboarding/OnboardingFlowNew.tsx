@@ -592,7 +592,7 @@ export default function OnboardingFlow() {
             </TouchableOpacity>
 
             {!canProceed && (
-              <Text className="text-[10px] mt-2" style={{ color: colors.status.warning }}>
+              <Text className="text-[10px] mt-2" style={{ color: colors.raw.warning[500] }}>
                 ⚠️ É necessário aceitar os termos para continuar
               </Text>
             )}
@@ -641,13 +641,14 @@ export default function OnboardingFlow() {
             <Shield size={18} color="#FFFFFF" />
           </TouchableOpacity>
 
-        {/* Footer */}
-        <View className="flex-row items-center gap-1 mt-4">
-          <Shield size={10} color={colors.text.tertiary} />
-          <Text className="text-[10px]" style={{ color: colors.text.tertiary }}>
-            Seus dados estão seguros comigo.
-          </Text>
-        </View>
+          {/* Footer */}
+          <View className="flex-row items-center gap-1 mt-4">
+            <Shield size={10} color={colors.text.tertiary} />
+            <Text className="text-[10px]" style={{ color: colors.text.tertiary }}>
+              Seus dados estão seguros comigo.
+            </Text>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
