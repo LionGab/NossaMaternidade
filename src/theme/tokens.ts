@@ -411,6 +411,7 @@ export const Radius = {
   lg: 12,
   xl: 16,
   '2xl': 20,
+  '2.5xl': 22,
   '3xl': 24,
   full: 9999,
 } as const;

@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { TextInput, View, Text, TextInputProps, ViewStyle, TextStyle, Animated } from 'react-native';
 import { useThemeColors } from '@/theme';
-import { Spacing, Radius, Typography } from '@/theme/tokens';
+import { Spacing, Radius, Typography, ColorTokens } from '@/theme/tokens';
 
 export interface InputProps extends TextInputProps {
   label?: string;
@@ -42,8 +42,8 @@ export const Input: React.FC<InputProps> = ({
 
   const getBackgroundColor = () => {
     // Input sempre tem fundo branco, mesmo no dark mode (conforme design do site)
-    if (disabled) return '#F5F5F5';
-    return '#FFFFFF';
+    if (disabled) return ColorTokens.neutral[100]; // #F5F5F5
+    return colors.background.input; // #FFFFFF
   };
 
   return (
@@ -93,7 +93,7 @@ export const Input: React.FC<InputProps> = ({
           style={[
             {
               flex: 1,
-              color: '#000000', // Texto sempre preto no input (fundo branco)
+              color: colors.text.inverse, // Texto sempre preto no input (fundo branco)
               fontSize: Typography.sizes.base,
               fontFamily: Typography.fonts.body,
             },

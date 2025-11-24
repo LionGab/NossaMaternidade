@@ -101,7 +101,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
         onPress={() => {
           navigation.navigate('Settings' as any);
         }}
-        className="w-10 h-10 rounded-full items-center justify-center border"
+        className="w-11 h-11 rounded-full items-center justify-center border"
         style={{
           backgroundColor: colors.background.canvas,
           borderColor: colors.border.light,
@@ -114,7 +114,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
       </TouchableOpacity>
       <TouchableOpacity
         onPress={onToggleTheme}
-        className="w-10 h-10 rounded-full items-center justify-center border"
+        className="w-11 h-11 rounded-full items-center justify-center border"
         style={{
           backgroundColor: colors.background.canvas,
           borderColor: colors.border.light,

@@ -59,7 +59,7 @@ export const Button: React.FC<ButtonProps> = ({
 
     switch (variant) {
       case 'primary':
-        baseStyle.backgroundColor = isDark ? '#3B82F6' : '#4285F4';
+        baseStyle.backgroundColor = colors.primary.main;
         break;
       case 'secondary':
         baseStyle.backgroundColor = colors.secondary.main;
@@ -80,9 +80,8 @@ export const Button: React.FC<ButtonProps> = ({
   const getTextColor = () => {
     switch (variant) {
       case 'primary':
-        return '#FFFFFF';
       case 'secondary':
-        return '#FFFFFF';
+        return colors.text.inverse;
       case 'outline':
       case 'ghost':
         return colors.primary.main;

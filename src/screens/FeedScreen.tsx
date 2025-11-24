@@ -215,7 +215,7 @@ export default function FeedScreen() {
           accessibilityRole="header"
           accessibilityLabel="Feed de conteúdos Mundo Nath"
         >
-          Feed - UPDATED
+          Mundo Nath
         </Text>
 
         {/* Filter chips */}
