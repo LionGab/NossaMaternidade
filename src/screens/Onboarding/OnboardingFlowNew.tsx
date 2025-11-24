@@ -322,7 +322,7 @@ export default function OnboardingFlow() {
               }}
               activeOpacity={0.9}
             >
-              <Text style={{ color: formData.currentFeeling === feeling ? '#FFFFFF' : colors.text.primary }}>
+              <Text style={{ color: formData.currentFeeling === feeling ? colors.raw.neutral[0] : colors.text.primary }}>
                 {feeling}
               </Text>
             </TouchableOpacity>
@@ -357,7 +357,7 @@ export default function OnboardingFlow() {
                 }}
                 activeOpacity={0.9}
               >
-                <Text style={{ color: formData.biggestChallenge === challenge ? '#FFFFFF' : colors.text.primary }}>
+                <Text style={{ color: formData.biggestChallenge === challenge ? colors.raw.neutral[0] : colors.text.primary }}>
                   {challenge}
                 </Text>
               </TouchableOpacity>
@@ -392,15 +392,15 @@ export default function OnboardingFlow() {
               className="p-6 rounded-2xl mb-4 flex-row items-center gap-4"
               style={{
                 borderWidth: 2,
-                borderColor: formData.supportLevel === opt.val ? '#A78BFA' : colors.border.light,
-                backgroundColor: formData.supportLevel === opt.val ? '#F3E8FF' : colors.background.card
+                borderColor: formData.supportLevel === opt.val ? colors.raw.accent.purple : colors.border.light,
+                backgroundColor: formData.supportLevel === opt.val ? colors.raw.info[50] : colors.background.card
               }}
               activeOpacity={0.9}
             >
               <View className="p-3 rounded-full" style={{ backgroundColor: colors.background.canvas }}>
                 {opt.icon}
               </View>
-              <Text className="font-bold text-lg flex-1" style={{ color: formData.supportLevel === opt.val ? '#7C3AED' : colors.text.primary }}>
+              <Text className="font-bold text-lg flex-1" style={{ color: formData.supportLevel === opt.val ? colors.raw.accent.purple : colors.text.primary }}>
                 {opt.text}
               </Text>
             </TouchableOpacity>
@@ -449,10 +449,10 @@ export default function OnboardingFlow() {
                 className="w-12 h-12 rounded-full items-center justify-center"
                 style={{ backgroundColor: formData.primaryNeed === n.val ? 'rgba(255,255,255,0.2)' : colors.primary.light }}
               >
-                {React.cloneElement(n.icon, { color: formData.primaryNeed === n.val ? '#FFFFFF' : colors.primary.main })}
+                {React.cloneElement(n.icon, { color: formData.primaryNeed === n.val ? colors.raw.neutral[0] : colors.primary.main })}
               </View>
               <View className="flex-1">
-                <Text className="font-bold" style={{ color: formData.primaryNeed === n.val ? '#FFFFFF' : colors.text.primary }}>
+                <Text className="font-bold" style={{ color: formData.primaryNeed === n.val ? colors.raw.neutral[0] : colors.text.primary }}>
                   {n.title}
                 </Text>
                 <Text className="text-xs" style={{ color: formData.primaryNeed === n.val ? 'rgba(255,255,255,0.7)' : colors.text.secondary }}>
@@ -505,8 +505,8 @@ export default function OnboardingFlow() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ alignItems: 'center', paddingTop: 40 }}
         >
-          <View className="w-24 h-24 rounded-full items-center justify-center mb-6" style={{ backgroundColor: '#D1FAE5' }}>
-            <Check size={48} color="#10B981" strokeWidth={3} />
+          <View className="w-24 h-24 rounded-full items-center justify-center mb-6" style={{ backgroundColor: colors.raw.success[100] }}>
+            <Check size={48} color={colors.raw.success[500]} strokeWidth={3} />
           </View>
 
           <Text className="text-2xl font-bold mb-4" style={{ color: colors.text.primary }}>
@@ -607,8 +607,8 @@ export default function OnboardingFlow() {
               borderColor: colors.border.light
             }}
           >
-            <View className="p-2 rounded-full" style={{ backgroundColor: '#FED7AA' }}>
-              <Bell size={20} color="#F97316" />
+            <View className="p-2 rounded-full" style={{ backgroundColor: colors.raw.warning[200] }}>
+              <Bell size={20} color={colors.raw.warning[600]} />
             </View>
             <View className="flex-1">
               <Text className="text-xs font-bold" style={{ color: colors.text.primary }}>

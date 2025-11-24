@@ -56,11 +56,11 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
             style={{
               padding: 8,
               borderRadius: 20,
-              backgroundColor: isDark ? '#FFFFFF' : '#000000'
+              backgroundColor: colors.text.primary
             }}
             activeOpacity={0.9}
           >
-            <ChevronLeft size={20} color={isDark ? '#000000' : '#FFFFFF'} />
+            <ChevronLeft size={20} color={colors.background.canvas} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -255,7 +255,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
             }}
             activeOpacity={0.9}
           >
-            <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#4285F4' }} />
+            <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: colors.raw.primary[400] }} />
             <Text style={{ fontWeight: '600', color: colors.text.primary }}>
               Continuar com Google
             </Text>

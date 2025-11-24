@@ -283,6 +283,11 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onToggle, isCompletedToday
         ]}
         onPress={handlePress}
         activeOpacity={0.9}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={`${habit.title}, ${habit.description}`}
+        accessibilityState={{ selected: isCompletedToday }}
+        accessibilityHint={`Toque para ${isCompletedToday ? 'desmarcar' : 'marcar'} como completo. Sequência atual: ${habit.streak} dias`}
       >
         {/* Background color overlay quando completo */}
         {isCompletedToday && (
@@ -371,7 +376,11 @@ const StatsCard: React.FC<StatsCardProps> = ({
 }) => {
   const styles = useThemedStyles(createStyles);
   return (
-    <View style={styles.statsCard}>
+    <View
+      style={styles.statsCard}
+      accessible={true}
+      accessibilityLabel={`Estatísticas de hoje: ${completedToday} de ${totalHabits} hábitos completos, sequência atual ${currentStreak} dias, taxa de conclusão ${Math.round(completionRate)}%`}
+    >
       <Text style={styles.statsTitle}>Hoje</Text>
       <View style={styles.statsGrid}>
         <View style={styles.statBox}>
@@ -488,19 +497,43 @@ export default function HabitsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView
+      style={styles.container}
+      edges={['top']}
+      accessible={true}
+      accessibilityLabel="Tela de Hábitos"
+    >
       <StatusBar style="light" />
 
       {/* Header */}
-      <View style={styles.header}>
+      <View
+        style={styles.header}
+        accessible={true}
+        accessibilityRole="header"
+      >
         <View>
-          <Text style={styles.headerTitle}>Meus Hábitos</Text>
-          <Text style={styles.headerSubtitle}>
+          <Text
+            style={styles.headerTitle}
+            accessibilityRole="header"
+            accessibilityLabel="Meus Hábitos"
+          >
+            Meus Hábitos
+          </Text>
+          <Text
+            style={styles.headerSubtitle}
+            accessibilityLabel={`${filteredHabits.length} hábito${filteredHabits.length !== 1 ? 's' : ''} ativo${filteredHabits.length !== 1 ? 's' : ''}`}
+          >
             {filteredHabits.length} hábito{filteredHabits.length !== 1 ? 's' : ''} ativo
             {filteredHabits.length !== 1 ? 's' : ''}
           </Text>
         </View>
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity
+          style={styles.addButton}
+          accessible={true}
+          accessibilityRole="button"
+          accessibilityLabel="Adicionar novo hábito"
+          accessibilityHint="Toque para criar um novo hábito"
+        >
           <Ionicons name="add" size={24} color={colors.primary.main} />
         </TouchableOpacity>
       </View>
@@ -537,6 +570,11 @@ export default function HabitsScreen() {
                 haptics.light();
                 setSelectedCategory(category.id as HabitCategory | 'all');
               }}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={`Categoria ${category.name}`}
+              accessibilityState={{ selected: isSelected }}
+              accessibilityHint={`Toque para ${isSelected ? 'deselecionar' : 'filtrar'} hábitos da categoria ${category.name}`}
             >
               <Ionicons
                 name={category.icon as any}
@@ -564,13 +602,19 @@ export default function HabitsScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.habitsList}
           showsVerticalScrollIndicator={false}
+          accessible={false}
         />
       ) : (
-        <View style={styles.emptyState}>
+        <View
+          style={styles.emptyState}
+          accessible={true}
+          accessibilityLabel={`Nenhum hábito encontrado. ${selectedCategory === 'all' ? 'Adicione seu primeiro hábito!' : 'Nenhum hábito nesta categoria'}`}
+        >
           <Ionicons
             name="leaf-outline"
             size={64}
             color={colors.text.tertiary}
+            accessible={false}
           />
           <Text style={styles.emptyTitle}>Nenhum hábito encontrado</Text>
           <Text style={styles.emptyText}>
