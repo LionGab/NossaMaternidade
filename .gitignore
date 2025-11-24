@@ -60,6 +60,10 @@ __tests__/coverage/
 *.swo
 *~
 
+# Cursor IDE
+.cursor/debug.log
+.cursor/*.log
+
 # Backup files
 *.bak
 *.backup

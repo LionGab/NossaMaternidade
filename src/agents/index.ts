@@ -29,3 +29,26 @@ export {
   type HabitPattern,
   type WellbeingAnalysis,
 } from './habits/HabitsAnalysisAgent';
+
+// 🆕 Emotion Analysis Agent
+export {
+  EmotionAnalysisAgent,
+  type EmotionSnapshot,
+  type EmotionPattern,
+  type EmotionAnalysisResult,
+} from './emotion/EmotionAnalysisAgent';
+
+// 🆕 NATHIA Personality Agent (VOZ AUTÊNTICA)
+export {
+  NathiaPersonalityAgent,
+  type NathiaMessage,
+  type NathiaResponse,
+} from './nathia/NathiaPersonalityAgent';
+
+// 🆕 Sleep Analysis Agent
+export {
+  SleepAnalysisAgent,
+  type SleepEntry,
+  type SleepPattern,
+  type SleepAnalysisResult,
+} from './sleep/SleepAnalysisAgent';

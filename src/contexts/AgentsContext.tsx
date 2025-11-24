@@ -10,14 +10,22 @@ import {
   MaternalChatAgent,
   ContentRecommendationAgent,
   HabitsAnalysisAgent,
+  EmotionAnalysisAgent,
+  NathiaPersonalityAgent,
+  SleepAnalysisAgent,
 } from '../agents';
 
 interface AgentsContextValue {
   initialized: boolean;
   orchestrator: typeof orchestrator;
+  // Agentes principais
   chatAgent: MaternalChatAgent | null;
   contentAgent: ContentRecommendationAgent | null;
   habitsAgent: HabitsAnalysisAgent | null;
+  // 🆕 Novos agentes especializados
+  emotionAgent: EmotionAnalysisAgent | null;
+  nathiaAgent: NathiaPersonalityAgent | null;
+  sleepAgent: SleepAnalysisAgent | null;
   error: string | null;
 }
 
@@ -29,9 +37,14 @@ interface AgentsProviderProps {
 
 export function AgentsProvider({ children }: AgentsProviderProps) {
   const [initialized, setInitialized] = useState(false);
+  // Agentes principais
   const [chatAgent, setChatAgent] = useState<MaternalChatAgent | null>(null);
   const [contentAgent, setContentAgent] = useState<ContentRecommendationAgent | null>(null);
   const [habitsAgent, setHabitsAnalysisAgent] = useState<HabitsAnalysisAgent | null>(null);
+  // 🆕 Novos agentes especializados
+  const [emotionAgent, setEmotionAgent] = useState<EmotionAnalysisAgent | null>(null);
+  const [nathiaAgent, setNathiaAgent] = useState<NathiaPersonalityAgent | null>(null);
+  const [sleepAgent, setSleepAgent] = useState<SleepAnalysisAgent | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -83,9 +96,14 @@ export function AgentsProvider({ children }: AgentsProviderProps) {
   const value: AgentsContextValue = {
     initialized,
     orchestrator,
+    // Agentes principais
     chatAgent,
     contentAgent,
     habitsAgent,
+    // 🆕 Novos agentes especializados
+    emotionAgent,
+    nathiaAgent,
+    sleepAgent,
     error,
   };
 
