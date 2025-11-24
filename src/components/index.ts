@@ -1,6 +1,6 @@
 export { Button, type ButtonProps } from './Button';
 export { Input, type InputProps } from './Input';
-export { Card, type CardProps } from './Card';
+export { Card, type CardProps, type CardVariant } from './Card';
 export { Modal, type ModalProps } from './Modal';
 export { Loading, type LoadingProps } from './Loading';
 export { ProgressIndicator, type ProgressIndicatorProps } from './ProgressIndicator';
@@ -12,3 +12,6 @@ export { CommentsSection } from './CommentsSection';
 export { ContentCard } from './ContentCard';
 export { AudioPlayer } from './AudioPlayer';
 export { ErrorBoundary } from './ErrorBoundary';
+export { Checkbox, type CheckboxProps } from './Checkbox';
+export { Radio, type RadioProps } from './Radio';
+export { Switch, type SwitchProps } from './Switch';

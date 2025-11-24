@@ -5,7 +5,7 @@ import { FlashList } from '@shopify/flash-list';
 import { Heart, MessageCircle, Share2, BookmarkPlus, Play, FileText, Mic, Video } from 'lucide-react-native';
 import { MOCK_POSTS } from '../constants/data';
 
-type FilterType = 'all' | 'vídeo' | 'texto' | 'áudio';
+type FilterType = 'all' | 'vídeo' | 'texto' | 'áudio' | 'reels';
 
 export default function FeedScreen() {
   const { colors, isDark } = useTheme();
@@ -20,6 +20,7 @@ export default function FeedScreen() {
     { value: 'vídeo', label: 'Vídeo' },
     { value: 'texto', label: 'Texto' },
     { value: 'áudio', label: 'Áudio' },
+    { value: 'reels', label: 'Reels' },
   ];
 
   return (
