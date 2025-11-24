@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabaseSecureStorage, migrateSupabaseSessionToSecureStore } from '../utils/supabaseSecureStorage';
 
 // Get Supabase URL and anon key from Expo config or environment
 const supabaseUrl =
@@ -22,14 +22,29 @@ if (!isSupabaseConfigured) {
   );
 }
 
-// Create Supabase client with AsyncStorage for session persistence
+// Migrar sessões existentes do AsyncStorage para SecureStore (executa uma vez)
+// Isso é seguro executar múltiplas vezes, pois verifica antes de migrar
+let migrationInitiated = false;
+export const initSecureStorageMigration = async () => {
+  if (!migrationInitiated && isSupabaseConfigured) {
+    migrationInitiated = true;
+    try {
+      await migrateSupabaseSessionToSecureStore();
+    } catch (error) {
+      console.error('[Supabase] Erro na migração para SecureStore:', error);
+      // Não lançar erro - migração não deve bloquear o app
+    }
+  }
+};
+
+// Create Supabase client with SecureStore for session persistence (seguro)
 // Usa valores vazios se não configurado para evitar erros
 export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co',
   supabaseAnonKey || 'placeholder-key',
   {
     auth: {
-      storage: AsyncStorage,
+      storage: supabaseSecureStorage, // ✅ Usando SecureStore em vez de AsyncStorage
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,

@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User, AuthError } from '@supabase/supabase-js';
 import { supabase, isSupabaseReady } from '../services/supabase';
+import { sessionManager } from '../services/sessionManager';
+import { ensureValidSession } from '../middleware/sessionValidator';
 import { Loading } from '../components';
 
 interface AuthContextType {
@@ -11,6 +13,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
+  refreshSession: () => Promise<{ session: Session | null; error: AuthError | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,38 +26,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isSupabaseReady()) {
-      // Se Supabase não está configurado, apenas define loading como false
-      setLoading(false);
-      return;
-    }
-
-    // Get initial session
-    supabase.auth
-      .getSession()
-      .then(({ data: { session }, error }) => {
-        if (error) {
-          console.warn('Erro ao obter sessão:', error.message);
-        }
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.warn('Erro ao carregar sessão (não crítico):', error);
-        setLoading(false);
-      });
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+    // Inicializar session manager
+    sessionManager.initialize().catch((error) => {
+      console.error('[AuthContext] Erro ao inicializar session manager:', error);
     });
 
-    return () => subscription.unsubscribe();
+    // Escutar mudanças do session manager
+    const unsubscribe = sessionManager.addListener((state) => {
+      setSession(state.auth.session);
+      setUser(state.auth.user);
+      setLoading(state.auth.isLoading);
+    });
+
+    // Obter estado inicial
+    const initialState = sessionManager.getState();
+    setSession(initialState.auth.session);
+    setUser(initialState.auth.user);
+    setLoading(initialState.auth.isLoading);
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
@@ -68,10 +60,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+
+      // Validar e garantir sessão válida após login
+      if (!error && data.session) {
+        const validation = await ensureValidSession(data.session);
+        if (validation.isValid && validation.session) {
+          // Session manager já atualiza automaticamente via onAuthStateChange
+        }
+      }
+
       return { error };
     } catch (error) {
       return {
@@ -115,9 +116,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     try {
-      await supabase.auth.signOut();
+      await sessionManager.clearAllSessions();
     } catch (error) {
-      console.warn('Erro ao fazer logout:', error);
+      console.warn('[AuthContext] Erro ao fazer logout:', error);
+    }
+  };
+
+  /**
+   * Força a renovação da sessão atual
+   */
+  const refreshSession = async () => {
+    if (!isSupabaseReady()) {
+      return {
+        session: null,
+        error: {
+          message: 'Supabase não configurado',
+          status: 500,
+        } as AuthError,
+      };
+    }
+
+    try {
+      const isValid = await sessionManager.refreshAuth();
+      const currentSession = sessionManager.getAuthSession();
+      const currentUser = sessionManager.getCurrentUser();
+
+      return {
+        session: currentSession,
+        error: isValid ? null : ({
+          message: 'Falha ao renovar sessão',
+          status: 401,
+        } as AuthError),
+      };
+    } catch (error) {
+      const authError: AuthError = {
+        message: error instanceof Error ? error.message : 'Erro ao renovar sessão',
+        status: 500,
+      } as AuthError;
+      return { session: null, error: authError };
     }
   };
 
@@ -160,6 +196,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         signUp,
         signOut,
         resetPassword,
+        refreshSession,
       }}
     >
       {children}

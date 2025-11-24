@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { TabNavigator } from './TabNavigator';
-import { supabase, isSupabaseReady } from '../services/supabase';
-import { User } from '@supabase/supabase-js';
+import { useAuth } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreenComponent from '../screens/SplashScreen';
 import LoginScreenNew from '../screens/LoginScreenNew';
@@ -16,84 +15,50 @@ import TermsOfServiceScreen from '../screens/TermsOfServiceScreen';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const StackNavigator = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  // ✅ Usar AuthContext em vez de duplicar lógica
+  const { user, loading: authLoading } = useAuth();
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+  const [onboardingLoading, setOnboardingLoading] = useState(true);
 
   useEffect(() => {
-    let authSubscription: any = null;
     let isMounted = true;
 
-    const initialize = async () => {
+    const checkOnboarding = async () => {
       try {
-        // 1. Verificar se usuário completou onboarding (crítico para roteamento)
-        // Aguardar a verificação antes de continuar para evitar race condition
-        try {
-          const savedUser = await AsyncStorage.getItem('nath_user');
-          if (isMounted) {
-            setHasCompletedOnboarding(!!savedUser);
-          }
-        } catch (error) {
-          console.warn('Erro ao verificar onboarding:', error);
-          if (isMounted) {
-            setHasCompletedOnboarding(false);
-          }
-        }
-
-        // 2. Se Supabase não estiver configurado, finalizar loading
-        if (!isSupabaseReady()) {
-          if (isMounted) {
-            setLoading(false);
-          }
-          return;
-        }
-
-        // 3. Obter sessão inicial (aguardar antes de continuar)
-        try {
-          const { data: { session }, error } = await supabase.auth.getSession();
-          if (error) {
-            console.warn('Erro ao obter sessão:', error.message);
-          }
-          if (isMounted) {
-            setUser(session?.user ?? null);
-          }
-        } catch (error) {
-          console.warn('Erro ao carregar sessão (não crítico):', error);
-        }
-
-        // 4. Escutar mudanças de autenticação
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          (_event, session) => {
-            if (isMounted) {
-              setUser(session?.user ?? null);
-            }
-          }
-        );
-        authSubscription = subscription;
-      } finally {
-        // Sempre finalizar loading após todas as verificações
+        // Verificar se usuário completou onboarding
+        const savedUser = await AsyncStorage.getItem('nath_user');
         if (isMounted) {
-          setLoading(false);
+          setHasCompletedOnboarding(!!savedUser);
+        }
+      } catch (error) {
+        console.warn('[StackNavigator] Erro ao verificar onboarding:', error);
+        if (isMounted) {
+          setHasCompletedOnboarding(false);
+        }
+      } finally {
+        if (isMounted) {
+          setOnboardingLoading(false);
         }
       }
     };
 
-    initialize();
+    checkOnboarding();
 
-    // Cleanup: cancelar subscription ao desmontar
     return () => {
       isMounted = false;
-      if (authSubscription) {
-        authSubscription.unsubscribe();
-      }
     };
   }, []);
 
-  if (loading) {
+  // Loading enquanto verifica autenticação ou onboarding
+  const loading = authLoading || onboardingLoading;
+
+  // Aguardar tanto o loading de onboarding quanto de auth
+  if (loading || authLoading) {
     return <SplashScreenComponent />;
   }
 
   // Determinar rota inicial baseado no estado
+  // ✅ Usa user do AuthContext (já validado e gerenciado)
   const getInitialRouteName = (): keyof RootStackParamList => {
     if (hasCompletedOnboarding && user) {
       return 'Main';
