@@ -1,3 +1,8 @@
+/**
+ * AudioPlayer Component - UI component for audio playback
+ * Componente de UI para reprodução de áudio (sem player real por enquanto)
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
@@ -5,14 +10,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
-  Dimensions,
+  Platform,
 } from 'react-native';
-import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/Colors';
 import { useHaptics } from '../hooks/useHaptics';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -31,24 +33,28 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   onPause,
   onEnd,
 }) => {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [position, setPosition] = useState(0);
   const [durationMs, setDurationMs] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
   const haptics = useHaptics();
   
   const progressAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
+  // Converter duration string para milliseconds se fornecido
   useEffect(() => {
-    return () => {
-      // Limpar ao desmontar
-      if (sound) {
-        sound.unloadAsync();
+    if (duration) {
+      const parts = duration.split(':');
+      if (parts.length === 2) {
+        const minutes = parseInt(parts[0], 10);
+        const seconds = parseInt(parts[1], 10);
+        setDurationMs((minutes * 60 + seconds) * 1000);
+      } else if (!isNaN(parseInt(duration, 10))) {
+        // Se for apenas um número (segundos)
+        setDurationMs(parseInt(duration, 10) * 1000);
       }
-    };
-  }, [sound]);
+    }
+  }, [duration]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -67,78 +73,39 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           }),
         ])
       ).start();
-    } else {
-      pulseAnim.setValue(1);
-    }
-  }, [isPlaying]);
 
-  const loadAudio = async () => {
-    try {
-      setIsLoading(true);
-      
-      // Configurar modo de áudio
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-      });
-
-      // Carregar áudio
-      const { sound: audioSound } = await Audio.Sound.createAsync(
-        { uri: audioUrl },
-        { shouldPlay: false }
-      );
-
-      // Configurar callbacks
-      audioSound.setOnPlaybackStatusUpdate((status) => {
-        if (status.isLoaded) {
-          setPosition(status.positionMillis || 0);
-          setDurationMs(status.durationMillis || 0);
-          
-          // Atualizar animação de progresso
-          const progress = status.durationMillis
-            ? (status.positionMillis || 0) / status.durationMillis
-            : 0;
-          progressAnim.setValue(progress);
-
-          // Verificar se terminou
-          if (status.didJustFinish) {
+      // Simular progresso (apenas visual)
+      const interval = setInterval(() => {
+        setPosition((prev) => {
+          const newPos = prev + 100;
+          if (newPos >= durationMs) {
             setIsPlaying(false);
             setPosition(0);
             progressAnim.setValue(0);
             onEnd?.();
+            return 0;
           }
-        }
-      });
+          const progress = newPos / durationMs;
+          progressAnim.setValue(progress);
+          return newPos;
+        });
+      }, 100);
 
-      setSound(audioSound);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error loading audio:', error);
-      setIsLoading(false);
+      return () => clearInterval(interval);
+    } else {
+      pulseAnim.setValue(1);
     }
-  };
+  }, [isPlaying, durationMs]);
 
-  const playPause = async () => {
-    if (!sound) {
-      await loadAudio();
-      return;
-    }
-
-    try {
-      haptics.light();
-      
-      if (isPlaying) {
-        await sound.pauseAsync();
-        setIsPlaying(false);
-        onPause?.();
-      } else {
-        await sound.playAsync();
-        setIsPlaying(true);
-        onPlay?.();
-      }
-    } catch (error) {
-      console.error('Error playing/pausing audio:', error);
+  const playPause = () => {
+    haptics.light();
+    
+    if (isPlaying) {
+      setIsPlaying(false);
+      onPause?.();
+    } else {
+      setIsPlaying(true);
+      onPlay?.();
     }
   };
 
@@ -162,7 +129,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         <TouchableOpacity
           style={styles.playButton}
           onPress={playPause}
-          disabled={isLoading}
           activeOpacity={0.7}
         >
           <Animated.View
@@ -173,9 +139,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               },
             ]}
           >
-            {isLoading ? (
-              <Ionicons name="hourglass" size={24} color="#fff" />
-            ) : isPlaying ? (
+            {isPlaying ? (
               <Ionicons name="pause" size={24} color="#fff" />
             ) : (
               <Ionicons name="play" size={24} color="#fff" />
@@ -231,11 +195,15 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary.main,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.primary.main,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
+    ...(Platform.OS === 'web' ? {
+      boxShadow: `0px 4px 8px 0px rgba(13, 95, 255, 0.3)`,
+    } : {
+      shadowColor: Colors.primary.main,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 6,
+    }),
   },
   playButtonInner: {
     width: 56,
@@ -276,4 +244,3 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
 });
-

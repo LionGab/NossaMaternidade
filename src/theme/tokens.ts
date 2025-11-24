@@ -386,16 +386,13 @@ const createShadow = (
   if (Platform.OS === 'web') {
     const { width: x, height: y } = offset;
     const color = `rgba(0, 0, 0, ${opacity})`;
+    // No web, usar apenas boxShadow (sem shadow* props para evitar warnings)
     return {
       boxShadow: `${x}px ${y}px ${radius}px 0px ${color}`,
-      shadowColor: '#000',
-      shadowOffset: offset,
-      shadowOpacity: opacity,
-      shadowRadius: radius,
-      elevation,
     };
   }
 
+  // No React Native nativo, usar shadow* props (correto)
   return {
     shadowColor: '#000',
     shadowOffset: offset,

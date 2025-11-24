@@ -57,9 +57,13 @@ npm install
    EXPO_PUBLIC_GEMINI_API_KEY=sua_chave_aqui
    EXPO_PUBLIC_SUPABASE_URL=sua_url_aqui
    EXPO_PUBLIC_SUPABASE_ANON_KEY=sua_chave_aqui
+   EXPO_PUBLIC_SUPABASE_FUNCTIONS_URL=sua_url_aqui/functions/v1
    ```
    
+   📖 Veja [ENV_SETUP.md](./ENV_SETUP.md) para configuração completa.
    📖 Veja [ENV_VARIABLES.md](./ENV_VARIABLES.md) para mais detalhes sobre as variáveis de ambiente.
+   
+   **⚠️ IMPORTANTE:** O arquivo `.env` está no `.gitignore` e não será commitado.
 
 ## 🏃‍♂️ Executando o Projeto
 
