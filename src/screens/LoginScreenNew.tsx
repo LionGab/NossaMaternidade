@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { Eye, EyeOff, ChevronLeft, Sun, Moon, Apple } from 'lucide-react-native';
-import { Colors } from '../constants/Colors';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../theme/ThemeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface LoginScreenProps {
   onLogin?: () => void;
@@ -21,17 +21,68 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Atenção', 'Por favor, preencha e-mail e senha');
+      return;
+    }
+
     setIsLoading(true);
-    // Simula delay de rede
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      // Simula delay de rede
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      // Verificar se usuário já completou onboarding
+      const savedUser = await AsyncStorage.getItem('nath_user');
+      
       if (onLogin) {
         onLogin();
+      } else if (savedUser) {
+        // Se já completou onboarding, vai direto para Main
+        navigation.navigate('Main');
       } else {
-        // Check if user has completed onboarding
+        // Se não completou, vai para Onboarding
         navigation.navigate('Onboarding');
       }
-    }, 1200);
+    } catch (error) {
+      console.error('Erro no login:', error);
+      Alert.alert('Erro', 'Não foi possível fazer login. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSocialLogin = async (provider: 'apple' | 'google') => {
+    setIsLoading(true);
+    try {
+      // Simula delay de rede
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      // Verificar se usuário já completou onboarding
+      const savedUser = await AsyncStorage.getItem('nath_user');
+      
+      if (savedUser) {
+        navigation.navigate('Main');
+      } else {
+        navigation.navigate('Onboarding');
+      }
+    } catch (error) {
+      console.error(`Erro no login ${provider}:`, error);
+      Alert.alert('Erro', `Não foi possível fazer login com ${provider === 'apple' ? 'Apple' : 'Google'}. Tente novamente.`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = () => {
+    Alert.alert(
+      'Recuperar senha',
+      'Funcionalidade em desenvolvimento. Em breve você poderá recuperar sua senha por e-mail.',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleSignUp = () => {
+    navigation.navigate('Onboarding');
   };
 
   const handleBack = () => {
@@ -91,7 +142,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
               marginBottom: 16,
               backgroundColor: isDark ? colors.background.card : colors.primary.light,
               borderWidth: 4,
-              borderColor: isDark ? colors.border.dark : '#FFFFFF',
+              borderColor: isDark ? colors.border.dark : colors.background.card,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.3,
@@ -177,7 +228,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
         </View>
 
         <View style={{ alignItems: 'flex-end', marginBottom: 24 }}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleForgotPassword}>
             <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primary.main }}>
               Esqueceu a senha?
             </Text>
@@ -199,9 +250,9 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
           activeOpacity={0.9}
         >
           {isLoading ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color={colors.text.inverse} />
           ) : (
-            <Text style={{ color: '#FFFFFF', fontWeight: 'bold', textAlign: 'center' }}>Entrar</Text>
+            <Text style={{ color: colors.text.inverse, fontWeight: 'bold', textAlign: 'center' }}>Entrar</Text>
           )}
         </TouchableOpacity>
 
@@ -217,7 +268,8 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
         {/* Social Login */}
         <View style={{ marginBottom: 24 }}>
           <TouchableOpacity
-            onPress={handleLogin}
+            onPress={() => handleSocialLogin('apple')}
+            disabled={isLoading}
             style={{
               width: '100%',
               paddingVertical: 16,
@@ -229,7 +281,8 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
               marginBottom: 12,
               backgroundColor: colors.background.card,
               borderWidth: 1,
-              borderColor: colors.border.light
+              borderColor: colors.border.light,
+              opacity: isLoading ? 0.7 : 1
             }}
             activeOpacity={0.9}
           >
@@ -240,7 +293,8 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={handleLogin}
+            onPress={() => handleSocialLogin('google')}
+            disabled={isLoading}
             style={{
               width: '100%',
               paddingVertical: 16,
@@ -251,7 +305,8 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
               gap: 8,
               backgroundColor: colors.background.card,
               borderWidth: 1,
-              borderColor: colors.border.light
+              borderColor: colors.border.light,
+              opacity: isLoading ? 0.7 : 1
             }}
             activeOpacity={0.9}
           >
@@ -262,12 +317,14 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
           </TouchableOpacity>
         </View>
 
-        <Text style={{ textAlign: 'center', fontSize: 12, color: colors.text.tertiary }}>
-          Ainda não tem conta?{' '}
-          <Text style={{ fontWeight: 'bold', color: Colors.accent.pink }}>
-            Criar agora
+        <TouchableOpacity onPress={handleSignUp}>
+          <Text style={{ textAlign: 'center', fontSize: 12, color: colors.text.tertiary }}>
+            Ainda não tem conta?{' '}
+            <Text style={{ fontWeight: 'bold', color: colors.secondary.main }}>
+              Criar agora
+            </Text>
           </Text>
-        </Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );

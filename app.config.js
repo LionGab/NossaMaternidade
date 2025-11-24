@@ -129,6 +129,7 @@ module.exports = {
       eas: {
         projectId: process.env.EAS_PROJECT_ID || '',
       },
+      backendUrl: process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:8080',
     },
     plugins: [
       'expo-secure-store',

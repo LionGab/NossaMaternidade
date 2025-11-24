@@ -13,6 +13,8 @@ import {
   MCPResponse,
   createMCPResponse,
 } from '../types';
+import { sessionManager } from '../../services/sessionManager';
+import { logger } from '../../utils/logger';
 
 const ANALYTICS_SESSION_KEY = '@analytics_session_id';
 
@@ -44,32 +46,43 @@ export class AnalyticsMCPServer implements MCPServer {
 
   async initialize(): Promise<void> {
     try {
-      // Tentar restaurar session ID persistido
-      let storedSessionId: string | null = null;
-
-      if (Platform.OS === 'web') {
-        storedSessionId = await AsyncStorage.getItem(ANALYTICS_SESSION_KEY);
-      } else {
-        storedSessionId = await SecureStore.getItemAsync(ANALYTICS_SESSION_KEY);
-      }
+      // Tentar obter session ID do session manager primeiro
+      let storedSessionId = sessionManager.getAnalyticsSessionId();
 
       if (storedSessionId) {
         this.sessionId = storedSessionId;
-        console.log('[AnalyticsMCP] Session ID restaurado:', this.sessionId);
+        logger.info('[AnalyticsMCP] Session ID obtido do session manager', { sessionId: this.sessionId });
       } else {
-        // Gerar novo session ID
-        this.sessionId = `session_${Date.now()}_${Math.random()
-          .toString(36)
-          .substr(2, 9)}`;
-
-        // Persistir session ID
+        // Tentar restaurar do storage legado
         if (Platform.OS === 'web') {
-          await AsyncStorage.setItem(ANALYTICS_SESSION_KEY, this.sessionId);
+          storedSessionId = await AsyncStorage.getItem(ANALYTICS_SESSION_KEY);
         } else {
-          await SecureStore.setItemAsync(ANALYTICS_SESSION_KEY, this.sessionId);
+          storedSessionId = await SecureStore.getItemAsync(ANALYTICS_SESSION_KEY);
         }
 
-        console.log('[AnalyticsMCP] Novo session ID criado:', this.sessionId);
+        if (storedSessionId) {
+          this.sessionId = storedSessionId;
+          // Atualizar session manager
+          sessionManager.setAnalyticsSessionId(storedSessionId);
+          logger.info('[AnalyticsMCP] Session ID restaurado do storage', { sessionId: this.sessionId });
+        } else {
+          // Gerar novo session ID
+          this.sessionId = `analytics_${Date.now()}_${Math.random()
+            .toString(36)
+            .substr(2, 9)}`;
+
+          // Persistir no session manager
+          sessionManager.setAnalyticsSessionId(this.sessionId);
+
+          // Também persistir no storage para backward compatibility
+          if (Platform.OS === 'web') {
+            await AsyncStorage.setItem(ANALYTICS_SESSION_KEY, this.sessionId);
+          } else {
+            await SecureStore.setItemAsync(ANALYTICS_SESSION_KEY, this.sessionId);
+          }
+
+          logger.info('[AnalyticsMCP] Novo session ID criado', { sessionId: this.sessionId });
+        }
       }
 
       // Restaurar eventos pendentes do storage

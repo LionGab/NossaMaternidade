@@ -11,6 +11,7 @@ import RitualScreen from '../screens/RitualScreen';
 import DiaryScreen from '../screens/DiaryScreen';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
 import TermsOfServiceScreen from '../screens/TermsOfServiceScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -110,6 +111,14 @@ export const StackNavigator = () => {
       <Stack.Screen
         name="TermsOfService"
         component={TermsOfServiceScreen}
+        options={{
+          presentation: 'card',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',

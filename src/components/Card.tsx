@@ -5,11 +5,12 @@
 
 import React from 'react';
 import { View, ViewProps, Pressable, ViewStyle } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useThemeColors } from '@/theme';
 import { Spacing, Radius, Shadows } from '@/theme/tokens';
 
-export type CardVariant = 'default' | 'outlined' | 'elevated' | 'ghost';
+export type CardVariant = 'default' | 'outlined' | 'elevated' | 'ghost' | 'gradient';
 
 export interface CardProps extends Omit<ViewProps, 'style'> {
   children: React.ReactNode;
@@ -20,6 +21,8 @@ export interface CardProps extends Omit<ViewProps, 'style'> {
   onPress?: () => void;
   padding?: keyof typeof Spacing;
   style?: ViewStyle;
+  gradientColors?: string[];
+  borderRadius?: number; // Para suportar rounded-[22px]
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -31,6 +34,8 @@ export const Card: React.FC<CardProps> = ({
   onPress,
   padding = '4',
   style,
+  gradientColors,
+  borderRadius,
   ...props
 }) => {
   const colors = useThemeColors();
@@ -59,14 +64,19 @@ export const Card: React.FC<CardProps> = ({
     ghost: {
       backgroundColor: 'transparent',
     },
+    gradient: {
+      // Gradient será aplicado via LinearGradient
+    },
   };
 
   const containerStyle: ViewStyle = {
-    borderRadius: Radius.xl,
+    borderRadius: borderRadius ?? Radius.xl,
     overflow: 'hidden',
-    ...variantStyles[variant],
+    ...(variant !== 'gradient' ? variantStyles[variant] : {}),
     ...style,
   };
+
+  const cardRadius = borderRadius ?? Radius.xl;
 
   const cardContent = (
     <>
@@ -99,26 +109,41 @@ export const Card: React.FC<CardProps> = ({
     </>
   );
 
+  const renderCard = () => {
+    if (variant === 'gradient' && gradientColors && gradientColors.length >= 2) {
+      return (
+        <LinearGradient
+          colors={gradientColors as [string, string, ...string[]]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[containerStyle, { borderRadius: cardRadius }]}
+        >
+          {cardContent}
+        </LinearGradient>
+      );
+    }
+
+    return (
+      <View style={containerStyle} {...props}>
+        {cardContent}
+      </View>
+    );
+  };
+
   if (pressable && onPress) {
     return (
       <Pressable
         onPress={handlePress}
         style={({ pressed }) => [
-          containerStyle,
           pressed && { opacity: 0.8 },
         ]}
-        {...props}
       >
-        {cardContent}
+        {renderCard()}
       </Pressable>
     );
   }
 
-  return (
-    <View style={containerStyle} {...props}>
-      {cardContent}
-    </View>
-  );
+  return renderCard();
 };
 
 export default Card;

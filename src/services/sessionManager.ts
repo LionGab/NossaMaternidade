@@ -1,181 +1,165 @@
 /**
- * Session Manager
- * Gerenciador unificado de todas as sessões (auth, chat, analytics)
+ * Session Manager Unificado
+ * Centraliza gerenciamento de todas as sessões (auth, chat, analytics)
  */
 
 import { Session, User } from '@supabase/supabase-js';
-import { supabase, isSupabaseReady } from './supabase';
-import { validateAuthSession, ensureValidSession, getValidSession } from '../middleware/sessionValidator';
-import { sessionPersistence, ChatSessionData } from './sessionPersistence';
-import { networkMonitor } from '../utils/networkMonitor';
+import { supabase, isSupabaseReady, initSecureStorageMigration } from './supabase';
+import { ensureValidSession, getValidSession } from '../middleware/sessionValidator';
 import { logger } from '../utils/logger';
-import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const ANALYTICS_SESSION_KEY = '@analytics_session_id';
 
 export interface SessionState {
   auth: {
     session: Session | null;
     user: User | null;
-    isValid: boolean;
     isLoading: boolean;
+    lastValidated: number | null;
   };
   chat: {
-    currentSession: ChatSessionData | null;
-    isLoading: boolean;
+    currentSessionId: string | null;
   };
   analytics: {
     sessionId: string | null;
   };
 }
 
-type SessionChangeCallback = (state: SessionState) => void;
+type StateListener = (state: SessionState) => void;
 
 class SessionManager {
   private state: SessionState = {
     auth: {
       session: null,
       user: null,
-      isValid: false,
       isLoading: true,
+      lastValidated: null,
     },
     chat: {
-      currentSession: null,
-      isLoading: false,
+      currentSessionId: null,
     },
     analytics: {
       sessionId: null,
     },
   };
 
-  private listeners: Set<SessionChangeCallback> = new Set();
+  private listeners: Set<StateListener> = new Set();
   private authSubscription: any = null;
+  private initialized = false;
 
   /**
-   * Inicializa o Session Manager
+   * Inicializa o session manager
    */
   async initialize(): Promise<void> {
-    logger.info('Inicializando Session Manager');
-
-    // Inicializar auth session
-    await this.initializeAuth();
-
-    // Inicializar analytics session
-    await this.initializeAnalytics();
-
-    // Inicializar chat session (se houver)
-    await this.initializeChat();
-
-      logger.info('Inicialização completa');
-  }
-
-  /**
-   * Inicializa sessão de autenticação
-   */
-  private async initializeAuth(): Promise<void> {
-    if (!isSupabaseReady()) {
-      this.updateAuthState({
-        session: null,
-        user: null,
-        isValid: false,
-        isLoading: false,
-      });
+    if (this.initialized) {
+      logger.warn('[SessionManager] Já inicializado');
       return;
     }
 
     try {
-      // Obter sessão inicial
-      const validation = await getValidSession();
-      this.updateAuthState({
-        session: validation.session,
-        user: validation.session?.user ?? null,
-        isValid: validation.isValid,
-        isLoading: false,
-      });
+      logger.info('[SessionManager] Inicializando...');
 
-      // Escutar mudanças de autenticação
-      this.authSubscription = supabase.auth.onAuthStateChange(async (_event, session) => {
-        const validation = await ensureValidSession(session);
-        this.updateAuthState({
-          session: validation.session,
-          user: validation.session?.user ?? null,
-          isValid: validation.isValid,
-          isLoading: false,
+      // 1. Migrar sessões para SecureStore
+      await initSecureStorageMigration();
+
+      if (!isSupabaseReady()) {
+        logger.warn('[SessionManager] Supabase não configurado');
+        this.state.auth.isLoading = false;
+        this.notifyListeners();
+        this.initialized = true;
+        return;
+      }
+
+      // 2. Obter e validar sessão inicial
+      const validationResult = await getValidSession();
+
+      this.state.auth.session = validationResult.session;
+      this.state.auth.user = validationResult.session?.user ?? null;
+      this.state.auth.lastValidated = validationResult.isValid ? Date.now() : null;
+      this.state.auth.isLoading = false;
+
+      // Configurar session ID no logger
+      if (validationResult.session) {
+        logger.setSessionId(validationResult.session.user.id);
+      }
+
+      // 3. Escutar mudanças de autenticação
+      this.authSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
+        logger.info(`[SessionManager] Auth state changed: ${event}`, {
+          sessionId: session?.user?.id,
         });
-      });
-    } catch (error) {
-      logger.error('Erro ao inicializar auth', error);
-      this.updateAuthState({
-        session: null,
-        user: null,
-        isValid: false,
-        isLoading: false,
-      });
-    }
-  }
 
-  /**
-   * Inicializa sessão de analytics
-   */
-  private async initializeAnalytics(): Promise<void> {
-    try {
-      let sessionId: string | null = null;
+        if (session) {
+          // Validar sessão quando houver mudança
+          const validated = await ensureValidSession(session);
+          this.state.auth.session = validated.session;
+          this.state.auth.user = validated.session?.user ?? null;
+          this.state.auth.lastValidated = validated.isValid ? Date.now() : null;
 
-      if (Platform.OS === 'web') {
-        sessionId = await AsyncStorage.getItem(ANALYTICS_SESSION_KEY);
-      } else {
-        sessionId = await SecureStore.getItemAsync(ANALYTICS_SESSION_KEY);
-      }
-
-      // Se não existe, criar novo
-      if (!sessionId) {
-        sessionId = `analytics_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-        if (Platform.OS === 'web') {
-          await AsyncStorage.setItem(ANALYTICS_SESSION_KEY, sessionId);
+          if (validated.session) {
+            logger.setSessionId(validated.session.user.id);
+          }
         } else {
-          await SecureStore.setItemAsync(ANALYTICS_SESSION_KEY, sessionId);
+          this.state.auth.session = null;
+          this.state.auth.user = null;
+          this.state.auth.lastValidated = null;
+          logger.setSessionId(null);
+
+          // Limpar sessões relacionadas
+          this.state.chat.currentSessionId = null;
         }
-      }
 
-      this.updateAnalyticsState({ sessionId });
+        this.notifyListeners();
+      });
+
+      this.initialized = true;
+      this.notifyListeners();
+
+      logger.info('[SessionManager] Inicializado com sucesso', {
+        hasSession: !!this.state.auth.session,
+        userId: this.state.auth.user?.id,
+      });
     } catch (error) {
-      logger.error('Erro ao inicializar analytics', error);
+      logger.error('[SessionManager] Erro ao inicializar', error);
+      this.state.auth.isLoading = false;
+      this.notifyListeners();
+      throw error;
     }
   }
 
   /**
-   * Inicializa sessão de chat
-   */
-  private async initializeChat(): Promise<void> {
-    this.updateChatState({ currentSession: null, isLoading: true });
-
-    try {
-      const lastSession = await sessionPersistence.loadLastChatSession();
-      this.updateChatState({
-        currentSession: lastSession,
-        isLoading: false,
-      });
-    } catch (error) {
-      logger.error('Erro ao inicializar chat', error);
-      this.updateChatState({
-        currentSession: null,
-        isLoading: false,
-      });
-    }
-  }
-
-  /**
-   * Obtém estado atual das sessões
+   * Obtém o estado atual
    */
   getState(): SessionState {
     return { ...this.state };
   }
 
   /**
-   * Obtém sessão de autenticação
+   * Adiciona listener para mudanças de estado
+   */
+  addListener(listener: StateListener): () => void {
+    this.listeners.add(listener);
+
+    // Retornar função de unsubscribe
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  /**
+   * Notifica todos os listeners
+   */
+  private notifyListeners(): void {
+    const state = this.getState();
+    this.listeners.forEach((listener) => {
+      try {
+        listener(state);
+      } catch (error) {
+        logger.error('[SessionManager] Erro ao notificar listener', error);
+      }
+    });
+  }
+
+  /**
+   * Obtém sessão de autenticação atual
    */
   getAuthSession(): Session | null {
     return this.state.auth.session;
@@ -189,53 +173,94 @@ class SessionManager {
   }
 
   /**
-   * Verifica se sessão de auth é válida
+   * Verifica se há sessão válida
    */
-  async validateAuth(): Promise<boolean> {
-    const validation = await validateAuthSession(this.state.auth.session);
-    this.updateAuthState({
-      ...this.state.auth,
-      isValid: validation.isValid,
-    });
-    return validation.isValid;
+  async validateAuthSession(): Promise<boolean> {
+    const validation = await ensureValidSession(this.state.auth.session);
+
+    if (validation.isValid && validation.session) {
+      this.state.auth.session = validation.session;
+      this.state.auth.user = validation.session.user;
+      this.state.auth.lastValidated = Date.now();
+      this.notifyListeners();
+      return true;
+    }
+
+    // Sessão inválida
+    if (!validation.isValid) {
+      this.state.auth.session = null;
+      this.state.auth.user = null;
+      this.state.auth.lastValidated = null;
+      this.notifyListeners();
+    }
+
+    return false;
   }
 
   /**
-   * Força refresh da sessão de auth
+   * Força refresh da sessão de autenticação
    */
   async refreshAuth(): Promise<boolean> {
-    const validation = await ensureValidSession(this.state.auth.session);
-    this.updateAuthState({
-      session: validation.session,
-      user: validation.session?.user ?? null,
-      isValid: validation.isValid,
-      isLoading: false,
-    });
-    return validation.isValid;
+    return await this.validateAuthSession();
   }
 
   /**
-   * Obtém sessão de chat atual
+   * Limpa todas as sessões
    */
-  getChatSession(): ChatSessionData | null {
-    return this.state.chat.currentSession;
-  }
+  async clearAllSessions(): Promise<void> {
+    try {
+      if (isSupabaseReady()) {
+        await supabase.auth.signOut();
+      }
 
-  /**
-   * Define sessão de chat atual
-   */
-  setChatSession(session: ChatSessionData | null): void {
-    this.updateChatState({
-      currentSession: session,
-      isLoading: false,
-    });
+      this.state = {
+        auth: {
+          session: null,
+          user: null,
+          isLoading: false,
+          lastValidated: null,
+        },
+        chat: {
+          currentSessionId: null,
+        },
+        analytics: {
+          sessionId: null,
+        },
+      };
 
-    // Salvar automaticamente
-    if (session) {
-      sessionPersistence.saveChatSession(session).catch((error) => {
-        console.error('[SessionManager] Erro ao salvar sessão de chat:', error);
-      });
+      logger.setSessionId(null);
+      this.notifyListeners();
+
+      logger.info('[SessionManager] Todas as sessões limpas');
+    } catch (error) {
+      logger.error('[SessionManager] Erro ao limpar sessões', error);
+      throw error;
     }
+  }
+
+  /**
+   * Define session ID do chat
+   */
+  setChatSessionId(sessionId: string | null): void {
+    this.state.chat.currentSessionId = sessionId;
+    this.notifyListeners();
+    logger.debug('[SessionManager] Chat session ID atualizado', { sessionId: sessionId ?? undefined });
+  }
+
+  /**
+   * Obtém session ID do chat atual
+   */
+  getChatSessionId(): string | null {
+    return this.state.chat.currentSessionId;
+  }
+
+  /**
+   * Define session ID de analytics
+   */
+  setAnalyticsSessionId(sessionId: string | null): void {
+    this.state.analytics.sessionId = sessionId;
+    this.notifyListeners();
+    logger.debug('[SessionManager] Analytics session ID atualizado', { sessionId: sessionId ?? undefined });
   }
 
   /**
@@ -246,86 +271,18 @@ class SessionManager {
   }
 
   /**
-   * Adiciona listener para mudanças de sessão
-   */
-  addListener(callback: SessionChangeCallback): () => void {
-    this.listeners.add(callback);
-    return () => {
-      this.listeners.delete(callback);
-    };
-  }
-
-  /**
-   * Limpa todas as sessões
-   */
-  async clearAllSessions(): Promise<void> {
-    // Limpar auth
-    if (isSupabaseReady()) {
-      await supabase.auth.signOut();
-    }
-
-    // Limpar chat
-    this.updateChatState({
-      currentSession: null,
-      isLoading: false,
-    });
-
-    // Limpar analytics (criar novo ID)
-    await this.initializeAnalytics();
-
-    // Notificar listeners
-    this.notifyListeners();
-  }
-
-  /**
-   * Atualiza estado de auth
-   */
-  private updateAuthState(auth: SessionState['auth']): void {
-    this.state.auth = { ...auth };
-    this.notifyListeners();
-  }
-
-  /**
-   * Atualiza estado de chat
-   */
-  private updateChatState(chat: SessionState['chat']): void {
-    this.state.chat = { ...chat };
-    this.notifyListeners();
-  }
-
-  /**
-   * Atualiza estado de analytics
-   */
-  private updateAnalyticsState(analytics: SessionState['analytics']): void {
-    this.state.analytics = { ...analytics };
-    this.notifyListeners();
-  }
-
-  /**
-   * Notifica todos os listeners
-   */
-  private notifyListeners(): void {
-    this.listeners.forEach((callback) => {
-      try {
-        callback(this.getState());
-      } catch (error) {
-        console.error('[SessionManager] Erro ao notificar listener:', error);
-      }
-    });
-  }
-
-  /**
    * Cleanup
    */
   destroy(): void {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
+      this.authSubscription = null;
     }
     this.listeners.clear();
+    this.initialized = false;
+    logger.info('[SessionManager] Destruído');
   }
 }
 
-// Singleton instance
 export const sessionManager = new SessionManager();
 export default sessionManager;
-

@@ -296,26 +296,13 @@ class ProfileService {
   }
 
   /**
-   * Deletar conta (soft delete - manter dados mas desativar)
+   * Deletar conta (delega para userDataService)
+   * @deprecated Use userDataService.deleteAccount() ou userDataService.requestAccountDeletion()
    */
   async deleteAccount(): Promise<{ success: boolean; error?: any }> {
-    try {
-      // Esta função requer permissão especial no Supabase
-      // Por segurança, deve ser feita via Edge Function
-      console.warn('Deletar conta deve ser implementado via Edge Function');
-
-      // Por enquanto, apenas fazer logout
-      const { error } = await supabase.auth.signOut();
-
-      if (error) {
-        return { success: false, error };
-      }
-
-      return { success: true };
-    } catch (error) {
-      console.error('Erro ao deletar conta:', error);
-      return { success: false, error };
-    }
+    // Importar dinamicamente para evitar circular dependency
+    const { userDataService } = await import('./userDataService');
+    return await userDataService.requestAccountDeletion();
   }
 }
 

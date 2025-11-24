@@ -1,6 +1,11 @@
+/**
+ * ProgressIndicator Component
+ * Indicador de progresso com dots horizontais conforme design do site
+ */
+
 import React from 'react';
-import { View } from 'react-native';
-import { Colors } from '../constants/Colors';
+import { View, ViewStyle } from 'react-native';
+import { useTheme } from '../theme/ThemeContext';
 
 export interface ProgressIndicatorProps {
   currentStep: number;
@@ -13,21 +18,33 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   totalSteps,
   className = '',
 }) => {
+  const { colors, isDark } = useTheme();
+
   return (
-    <View className={`flex-row items-center gap-2 ${className}`}>
+    <View className={`flex-row gap-1 items-center ${className}`}>
       {Array.from({ length: totalSteps }).map((_, index) => {
-        const isActive = index < currentStep;
+        const stepNumber = index + 1;
+        const isActive = stepNumber <= currentStep;
+        const isCurrent = stepNumber === currentStep;
+
+        const dotStyle: ViewStyle = {
+          height: 6,
+          borderRadius: 3,
+          backgroundColor: isActive
+            ? isDark
+              ? '#3B82F6'
+              : '#4285F4'
+            : isDark
+            ? 'rgba(255, 255, 255, 0.3)'
+            : '#E5E5E5',
+          width: isActive ? 16 : 6,
+        };
+
         return (
           <View
             key={index}
-            className={`h-1 flex-1 rounded-full ${
-              isActive ? 'bg-primary' : 'bg-white/30'
-            }`}
-            style={{
-              backgroundColor: isActive
-                ? Colors.progress.active
-                : Colors.progress.inactive,
-            }}
+            style={dotStyle}
+            className="transition-all duration-500"
           />
         );
       })}
@@ -36,4 +53,3 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
 };
 
 export default ProgressIndicator;
-

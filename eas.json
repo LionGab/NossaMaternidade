@@ -60,7 +60,13 @@
         "buildType": "app-bundle",
         "package": "com.nossamaternidade.app",
         "autoIncrement": true,
-        "resourceClass": "l"
+        "resourceClass": "l",
+        "gradleCommand": ":app:bundleRelease",
+        "config": {
+          "proguard": {
+            "enabled": true
+          }
+        }
       }
     }
   },

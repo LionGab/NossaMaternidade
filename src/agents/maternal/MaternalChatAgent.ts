@@ -6,8 +6,9 @@
 import { BaseAgent, AgentConfig, AgentContext } from '../core/BaseAgent';
 import { orchestrator } from '../core/AgentOrchestrator';
 import { MCPResponse } from '../../mcp/types';
-import { sessionPersistence, ChatSessionData } from '../../services/sessionPersistence';
+import { sessionPersistence } from '../../services/sessionPersistence';
 import { sessionManager } from '../../services/sessionManager';
+import { logger } from '../../utils/logger';
 
 export interface ChatMessage {
   id: string;
@@ -124,9 +125,8 @@ export class MaternalChatAgent extends BaseAgent {
     // Preparar contexto para o AI
     const context = attachContext ? this.currentSession.context : undefined;
 
-    // Preparar histórico completo (sem limite, já que está persistido no Supabase)
-    // Usar apenas as últimas 20 mensagens para o contexto do AI (para não estourar tokens)
-    // Mas todas as mensagens estão salvas no banco
+    // Preparar histórico (últimas 20 mensagens para não estourar tokens do AI)
+    // Todas as mensagens estão salvas no banco, mas limitamos o contexto para a IA
     const history = this.currentSession.messages
       .slice(-20)
       .map((msg) => ({
@@ -161,10 +161,7 @@ export class MaternalChatAgent extends BaseAgent {
       // Adicionar à sessão
       this.addMessageToSession(assistantMessage);
 
-      // Persistir sessão no Supabase (em background)
-      this.persistSession().catch((error) => {
-        console.error('[MaternalChatAgent] Erro ao persistir sessão:', error);
-      });
+      // Sessão já é persistida automaticamente no addMessageToSession
 
       // Analisar emoção da mensagem do usuário (em background)
       this.analyzeUserEmotion(message).catch((error) => {
@@ -286,15 +283,12 @@ export class MaternalChatAgent extends BaseAgent {
       this.currentSession.lastActivityAt = Date.now();
 
       // Atualizar no session manager
-      const sessionData: ChatSessionData = {
-        id: this.currentSession.id,
-        userId: this.currentSession.userId,
-        messages: this.currentSession.messages,
-        startedAt: this.currentSession.startedAt,
-        lastActivityAt: this.currentSession.lastActivityAt,
-        context: this.currentSession.context,
-      };
-      sessionManager.setChatSession(sessionData);
+      sessionManager.setChatSessionId(this.currentSession.id);
+
+      // Persistir no Supabase (em background, não bloquear)
+      sessionPersistence.saveChatSession(this.currentSession).catch((error) => {
+        logger.error('[MaternalChatAgent] Erro ao persistir sessão', error);
+      });
     }
   }
 
@@ -331,7 +325,7 @@ export class MaternalChatAgent extends BaseAgent {
       });
 
       // Limpar do session manager
-      sessionManager.setChatSession(null);
+      sessionManager.setChatSessionId(null);
 
       this.currentSession = null;
     }
@@ -346,29 +340,28 @@ export class MaternalChatAgent extends BaseAgent {
     }
 
     try {
-      const userId = this.currentSession.userId;
-      if (!userId) {
+      // Garantir que userId está definido
+      if (!this.currentSession.userId) {
         const currentUser = sessionManager.getCurrentUser();
         if (!currentUser) {
-          console.warn('[MaternalChatAgent] Usuário não autenticado, não é possível persistir sessão');
+          logger.warn('[MaternalChatAgent] Usuário não autenticado, não é possível persistir sessão');
           return;
         }
         this.currentSession.userId = currentUser.id;
       }
 
-      const sessionData: ChatSessionData = {
-        id: this.currentSession.id,
-        userId: this.currentSession.userId,
-        messages: this.currentSession.messages,
-        startedAt: this.currentSession.startedAt,
-        lastActivityAt: this.currentSession.lastActivityAt,
-        context: this.currentSession.context,
-      };
-
-      await sessionPersistence.saveChatSession(sessionData);
-      sessionManager.setChatSession(sessionData);
+      // Usar sessionPersistence service
+      const saved = await sessionPersistence.saveChatSession(this.currentSession);
+      if (saved) {
+        logger.debug('[MaternalChatAgent] Sessão persistida com sucesso', {
+          sessionId: this.currentSession.id,
+          messageCount: this.currentSession.messages.length,
+        });
+        // Atualizar session manager
+        sessionManager.setChatSessionId(this.currentSession.id);
+      }
     } catch (error) {
-      console.error('[MaternalChatAgent] Erro ao persistir sessão:', error);
+      logger.error('[MaternalChatAgent] Erro ao persistir sessão', error);
     }
   }
 
@@ -377,32 +370,30 @@ export class MaternalChatAgent extends BaseAgent {
    */
   async loadSession(conversationId?: string): Promise<ChatSession | null> {
     try {
-      let sessionData: ChatSessionData | null = null;
-
-      if (conversationId) {
-        sessionData = await sessionPersistence.loadChatSession(conversationId);
-      } else {
-        sessionData = await sessionPersistence.loadLastChatSession();
-      }
-
-      if (!sessionData) {
+      if (!conversationId) {
+        logger.debug('[MaternalChatAgent] ConversationId não fornecido');
         return null;
       }
 
-      // Converter para formato de ChatSession
-      const session: ChatSession = {
-        id: sessionData.id,
-        userId: sessionData.userId,
-        messages: sessionData.messages,
-        startedAt: sessionData.startedAt,
-        lastActivityAt: sessionData.lastActivityAt,
-        context: sessionData.context,
-      };
+      const session = await sessionPersistence.loadChatSession(
+        conversationId.replace('session_', '')
+      );
+
+      if (!session) {
+        logger.debug('[MaternalChatAgent] Sessão não encontrada', { conversationId });
+        return null;
+      }
 
       this.currentSession = session;
+      sessionManager.setChatSessionId(session.id);
+      logger.info('[MaternalChatAgent] Sessão carregada', {
+        sessionId: session.id,
+        messageCount: session.messages.length,
+      });
+
       return session;
     } catch (error) {
-      console.error('[MaternalChatAgent] Erro ao carregar sessão:', error);
+      logger.error('[MaternalChatAgent] Erro ao carregar sessão', error);
       return null;
     }
   }

@@ -7,7 +7,7 @@ import { Session, AuthError } from '@supabase/supabase-js';
 import { supabase, isSupabaseReady } from '../services/supabase';
 import { logger } from '../utils/logger';
 
-interface ValidationResult {
+export interface ValidationResult {
   isValid: boolean;
   session: Session | null;
   error?: AuthError | null;

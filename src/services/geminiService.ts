@@ -1,13 +1,8 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from './supabase';
+import cloudRunClient from './cloudRunClient';
 
-const TIMEOUT_MS = 30000;
-const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 1000;
-
-// System Instruction from Web Version
 const SYSTEM_INSTRUCTION_BASE = `
   Você é a MãesValente, a assistente virtual de IA da influenciadora Nathália Valente, dentro do app "Nossa Maternidade".
   
@@ -20,43 +15,7 @@ const SYSTEM_INSTRUCTION_BASE = `
 `;
 
 class GeminiService {
-  private genAI: GoogleGenerativeAI | null = null;
-  private model: any = null;
-  private apiKey: string = '';
-
-  constructor() {
-    this.apiKey =
-      Constants.expoConfig?.extra?.geminiApiKey ||
-      process.env.EXPO_PUBLIC_GEMINI_API_KEY ||
-      '';
-
-    if (this.apiKey) {
-      this.initialize();
-    }
-  }
-
-  private initialize() {
-    try {
-      this.genAI = new GoogleGenerativeAI(this.apiKey);
-      // Using flash model as in local version, but with updated system instruction logic in sendMessage
-      this.model = this.genAI.getGenerativeModel({
-        model: 'gemini-2.0-flash-exp',
-      });
-    } catch (error) {
-      console.error('Failed to initialize Gemini AI:', error);
-    }
-  }
-
-  setApiKey(apiKey: string) {
-    this.apiKey = apiKey;
-    this.initialize();
-  }
-
-  private async delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  // Helper to get user context from AsyncStorage
+  
   private async getUserContext(): Promise<string> {
     try {
       const savedUser = await AsyncStorage.getItem('nath_user');
@@ -77,16 +36,9 @@ class GeminiService {
   }
 
   async sendMessage(message: string, history: { role: 'user' | 'model' | 'assistant', text: string }[] = []): Promise<{ text: string; error?: string }> {
-    if (!this.apiKey || !this.model) {
-      return {
-        text: '',
-        error: 'Serviço de IA não inicializado. Verifique sua API Key.',
-      };
-    }
-
     try {
       const userCtx = await this.getUserContext();
-      
+
       const systemInstruction = `
         ${SYSTEM_INSTRUCTION_BASE}
         CONTEXTO DA USUÁRIA ATUAL: [ ${userCtx} ]
@@ -99,29 +51,40 @@ class GeminiService {
         4. Mantenha as respostas concisas (máximo 3 parágrafos curtos).
       `;
 
-      // Convert history to Gemini format
-      // Note: 'assistant' role in local app maps to 'model' in Gemini
+      // Map history to API format
       const chatHistory = history.map(h => ({
         role: h.role === 'user' ? 'user' : 'model',
         parts: [{ text: h.text }],
       }));
 
-      const chat = this.model.startChat({
-        history: chatHistory,
-        systemInstruction: { role: 'system', parts: [{ text: systemInstruction }] }, // Gemini 1.5+ supports systemInstruction in startChat or getGenerativeModel
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 1024,
+      // Call Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('chat-ai', {
+        body: {
+          message,
+          history: chatHistory,
+          systemInstruction,
         },
       });
 
-      const result = await chat.sendMessage(message);
-      const response = await result.response;
-      const text = response.text();
+      if (error) {
+        console.error('[geminiService] Supabase function error:', error);
+        return {
+          text: '',
+          error: 'Sinto muito, minha conexão falhou um pouquinho. Pode repetir, querida?',
+        };
+      }
 
-      return { text };
+      if (!data || !data.text) {
+        return {
+          text: '',
+          error: 'Resposta inválida do servidor.',
+        };
+      }
+
+      return { text: data.text };
+
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error sending message to backend:', error);
       return {
         text: '',
         error: 'Sinto muito, minha conexão falhou um pouquinho. Pode repetir, querida?',
@@ -130,15 +93,11 @@ class GeminiService {
   }
 
   async sendAudio(audioUri: string): Promise<{ text: string; error?: string }> {
-    if (!this.apiKey || !this.model) {
-      return { text: '', error: 'Serviço de IA não inicializado.' };
-    }
-
     try {
       const base64Audio = await FileSystem.readAsStringAsync(audioUri, {
         encoding: "base64",
       });
-      
+
       const fileExtension = audioUri.split('.').pop()?.toLowerCase() || 'm4a';
       const mimeType = fileExtension === 'mp3' ? 'audio/mp3' : 'audio/m4a';
 
@@ -149,31 +108,30 @@ class GeminiService {
         Tarefa: Transcrever e responder a um áudio da usuária.
       `;
 
-      // For audio, we use generateContent directly as it's a multimodal request
-      // We can pass system instruction here too if the model supports it, or prepend it
-      const result = await this.model.generateContent({
-        contents: [
-          { role: 'user', parts: [
-            { inlineData: { data: base64Audio, mimeType: mimeType } },
-            { text: "Por favor, ouça meu áudio e me responda." }
-          ]}
-        ],
-        systemInstruction: { role: 'system', parts: [{ text: systemInstruction }] },
+      // Use cloudRunClient instead of direct fetch
+      const response = await cloudRunClient.sendAudio({
+        audioBase64: base64Audio,
+        mimeType,
+        systemInstruction,
+        prompt: "Por favor, ouça meu áudio e me responda."
       });
 
-      const response = await result.response;
-      return { text: response.text() };
+      if (!response.success || !response.data) {
+        return {
+          text: '',
+          error: response.error || 'Erro ao processar áudio.'
+        };
+      }
+
+      return { text: response.data.text };
+
     } catch (error) {
-      console.error('Error sending audio:', error);
+      console.error('Error sending audio to backend:', error);
       return { text: '', error: 'Erro ao processar áudio.' };
     }
   }
 
   async analyzeDiaryEntry(entry: string): Promise<{ text: string; error?: string }> {
-    if (!this.apiKey || !this.model) {
-      return { text: '', error: 'Serviço de IA não inicializado.' };
-    }
-
     try {
       const userCtx = await this.getUserContext();
       const systemInstruction = `
@@ -188,19 +146,21 @@ class GeminiService {
         - NÃO dê conselhos não solicitados
       `;
 
-      const prompt = `Acabei de escrever no meu diário:\n\n"${entry}"\n\nO que você acha?`;
-
-      const result = await this.model.generateContent({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        systemInstruction: { role: 'system', parts: [{ text: systemInstruction }] },
-        generationConfig: {
-          temperature: 0.8,
-          maxOutputTokens: 512,
-        },
+      // Use cloudRunClient instead of direct fetch
+      const response = await cloudRunClient.analyzeDiary({
+        entry,
+        systemInstruction
       });
 
-      const response = await result.response;
-      return { text: response.text() };
+      if (!response.success || !response.data) {
+        return {
+          text: '',
+          error: response.error || 'Erro ao analisar entrada do diário.'
+        };
+      }
+
+      return { text: response.data.text };
+
     } catch (error) {
       console.error('Error analyzing diary entry:', error);
       return { text: '', error: 'Erro ao analisar entrada do diário.' };
@@ -208,9 +168,10 @@ class GeminiService {
   }
 
   isConfigured(): boolean {
-    return !!this.apiKey && !!this.model;
+    return true; // Backend is always "configured" from client perspective, connection check could be added
   }
 }
 
 export const geminiService = new GeminiService();
 export default geminiService;
+

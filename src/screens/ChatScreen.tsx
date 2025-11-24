@@ -160,21 +160,21 @@ export default function ChatScreen() {
                   conversation_id: newConv.id,
                   content: INITIAL_CHAT_GREETING,
                   role: 'assistant',
-                });
+                  });
 
-                if (welcomeMsg) {
-                  setMessages([welcomeMsg]);
+                  if (welcomeMsg) {
+                    setMessages([welcomeMsg]);
+                  }
                 }
+              } catch (error) {
+                console.error('Erro ao limpar histórico:', error);
+                Alert.alert('Erro', 'Não foi possível limpar o histórico');
               }
-            } catch (error) {
-              console.error('Erro ao limpar histórico:', error);
-              Alert.alert('Erro', 'Não foi possível limpar o histórico');
-            }
+            },
           },
-        },
-      ]
-    );
-  };
+        ]
+      );
+    };
 
   const quickChips = ["Estou sobrecarregada", "Medo de não ser boa mãe", "Briguei com meu parceiro"];
 
@@ -204,7 +204,7 @@ export default function ChatScreen() {
             borderColor: isDark ? colors.border.light : 'transparent',
           }}
         >
-          <Text style={{ fontSize: 14, lineHeight: 20, color: isUser ? '#FFFFFF' : colors.text.primary }}>
+          <Text style={{ fontSize: 14, lineHeight: 20, color: isUser ? colors.text.inverse : colors.text.primary }}>
             {item.content}
           </Text>
         </View>
@@ -250,12 +250,12 @@ export default function ChatScreen() {
       >
         <TouchableOpacity
           onPress={() => { triggerHaptic(); navigation.goBack(); }}
-          style={{ backgroundColor: isDark ? '#FFFFFF' : '#000000', padding: 8, borderRadius: 20 }}
+          style={{ backgroundColor: colors.text.primary, padding: 8, borderRadius: 20 }}
           accessibilityRole="button"
           accessibilityLabel="Voltar"
           accessibilityHint="Retorna para a tela anterior"
         >
-          <ArrowLeft size={20} color={isDark ? '#000000' : '#FFFFFF'} />
+          <ArrowLeft size={20} color={colors.background.card} />
         </TouchableOpacity>
 
         <View
@@ -263,10 +263,10 @@ export default function ChatScreen() {
           accessible={true}
           accessibilityLabel="Avatar da MãesValente. Online"
         >
-          <View style={{ width: 40, height: 40, backgroundColor: isDark ? colors.background.card : '#E8F0FE', borderRadius: 20, overflow: 'hidden', borderWidth: 1, borderColor: isDark ? colors.border.light : '#FFFFFF' }}>
+          <View style={{ width: 40, height: 40, backgroundColor: isDark ? colors.background.card : colors.primary.light, borderRadius: 20, overflow: 'hidden', borderWidth: 1, borderColor: isDark ? colors.border.light : colors.background.card }}>
             <Image source={{ uri: AVATAR_URL }} style={{ width: '100%', height: '100%' }} contentFit="cover" transition={200} />
           </View>
-          <View style={{ position: 'absolute', bottom: 0, right: 0, width: 12, height: 12, backgroundColor: '#10B981', borderRadius: 6, borderWidth: 2, borderColor: colors.background.card }} />
+          <View style={{ position: 'absolute', bottom: 0, right: 0, width: 12, height: 12, backgroundColor: colors.status.success, borderRadius: 6, borderWidth: 2, borderColor: colors.background.card }} />
         </View>
 
         <View
@@ -313,7 +313,7 @@ export default function ChatScreen() {
               accessibilityLabel={`Bem-vinda ao chat com MãesValente. ${INITIAL_CHAT_GREETING}`}
             >
               <View
-                style={{ width: 144, height: 144, borderRadius: 72, borderWidth: 4, borderColor: colors.background.card, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 8, overflow: 'hidden', marginBottom: 16, backgroundColor: '#E5E7EB' }}
+                style={{ width: 144, height: 144, borderRadius: 72, borderWidth: 4, borderColor: colors.background.card, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 8, overflow: 'hidden', marginBottom: 16, backgroundColor: colors.border.medium }}
                 accessible={true}
                 accessibilityLabel="Avatar da MãesValente"
               >
@@ -373,7 +373,7 @@ export default function ChatScreen() {
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     onPress={() => { setInput(item); handleSend(item); }}
-                    style={{ backgroundColor: isDark ? colors.background.elevated : '#E8F0FE', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, borderWidth: 1, borderColor: isDark ? colors.border.light : `${colors.primary.main}33`, marginRight: 8 }}
+                    style={{ backgroundColor: isDark ? colors.background.elevated : colors.primary.light, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, borderWidth: 1, borderColor: isDark ? colors.border.light : `${colors.primary.main}33`, marginRight: 8 }}
                     accessibilityRole="button"
                     accessibilityLabel={`Sugestão rápida: ${item}`}
                     accessibilityHint="Toque para enviar esta mensagem"
@@ -397,7 +397,7 @@ export default function ChatScreen() {
               maxLength={500}
               style={{
                 flex: 1,
-                backgroundColor: isDark ? colors.background.canvas : '#F3F4F6',
+                backgroundColor: isDark ? colors.background.canvas : colors.background.input,
                 color: colors.text.primary,
                 borderRadius: 16,
                 paddingHorizontal: 16,
@@ -405,6 +405,8 @@ export default function ChatScreen() {
                 fontSize: 14,
                 maxHeight: 96,
                 textAlignVertical: 'top',
+                borderWidth: 1,
+                borderColor: colors.border.light
               }}
               accessibilityLabel="Campo de mensagem"
               accessibilityHint="Digite sua mensagem para MãesValente"
@@ -422,7 +424,7 @@ export default function ChatScreen() {
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
                 elevation: 4,
-                backgroundColor: !input.trim() || loading ? '#D1D5DB' : colors.primary.main,
+                backgroundColor: !input.trim() || loading ? colors.text.disabled : colors.primary.main,
               }}
               accessibilityRole="button"
               accessibilityLabel={loading ? "Enviando mensagem" : "Enviar mensagem"}
@@ -430,9 +432,9 @@ export default function ChatScreen() {
               accessibilityState={{ disabled: !input.trim() || loading }}
             >
               {loading ? (
-                <Loader2 size={20} color="white" />
+                <Loader2 size={20} color={colors.text.inverse} />
               ) : (
-                <Send size={20} color="white" />
+                <Send size={20} color={colors.text.inverse} />
               )}
             </TouchableOpacity>
           </View>

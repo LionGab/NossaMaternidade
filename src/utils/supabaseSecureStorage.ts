@@ -79,37 +79,47 @@ export async function migrateSupabaseSessionToSecureStore(): Promise<void> {
   }
 
   try {
-    // Supabase stores session with this key pattern
-    const keys = [
-      'supabase.auth.token',
-      'sb-localhost-auth-token', // Common Supabase key patterns
+    // Buscar todas as chaves do AsyncStorage
+    const allKeys = await AsyncStorage.getAllKeys();
+
+    // Padrões de chaves que o Supabase usa
+    const supabasePatterns = [
+      /^supabase\.auth\.token/, // supabase.auth.token
+      /^sb-.*-auth-token$/, // sb-{project-ref}-auth-token
+      /^sb-.*-auth\.refresh-token$/, // sb-{project-ref}-auth.refresh-token
+      /^sb-.*-auth\.code_verifier$/, // OAuth code verifier
     ];
 
-    for (const key of keys) {
-      const value = await AsyncStorage.getItem(key);
-      if (value) {
-        console.log(`Migrating ${key} from AsyncStorage to SecureStore`);
-        await SecureStore.setItemAsync(key, value);
-        await AsyncStorage.removeItem(key);
-      }
-    }
+    // Filtrar chaves que correspondem aos padrões do Supabase
+    const supabaseKeys = allKeys.filter((key) =>
+      supabasePatterns.some((pattern) => pattern.test(key))
+    );
 
-    // Also check for any keys starting with 'sb-' (Supabase pattern)
-    const allKeys = await AsyncStorage.getAllKeys();
-    const supabaseKeys = allKeys.filter(k => k.startsWith('sb-'));
+    let migratedCount = 0;
 
+    // Migrar cada chave encontrada
     for (const key of supabaseKeys) {
-      const value = await AsyncStorage.getItem(key);
-      if (value) {
-        console.log(`Migrating ${key} from AsyncStorage to SecureStore`);
-        await SecureStore.setItemAsync(key, value);
-        await AsyncStorage.removeItem(key);
+      try {
+        const value = await AsyncStorage.getItem(key);
+        if (value) {
+          await SecureStore.setItemAsync(key, value);
+          await AsyncStorage.removeItem(key);
+          migratedCount++;
+          console.log(`[Migration] ✅ Migrated: ${key}`);
+        }
+      } catch (keyError) {
+        console.warn(`[Migration] ⚠️ Failed to migrate key ${key}:`, keyError);
+        // Continuar com outras chaves mesmo se uma falhar
       }
     }
 
-    console.log('✅ Supabase session migration to SecureStore completed');
+    if (migratedCount > 0) {
+      console.log(`✅ [Migration] Migrated ${migratedCount} Supabase session keys to SecureStore`);
+    } else {
+      console.log('ℹ️ [Migration] No Supabase session keys found in AsyncStorage (migration already done or no sessions)');
+    }
   } catch (error) {
-    console.error('❌ Error migrating Supabase session:', error);
+    console.error('❌ [Migration] Error migrating Supabase session:', error);
     // Don't throw - migration failure shouldn't break the app
   }
 }

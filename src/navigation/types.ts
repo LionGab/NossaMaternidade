@@ -9,6 +9,7 @@ export type RootStackParamList = {
   Diary: undefined;
   PrivacyPolicy: undefined;
   TermsOfService: undefined;
+  Settings: undefined;
 };
 
 export type MainTabParamList = {
@@ -18,6 +19,7 @@ export type MainTabParamList = {
   Community: undefined;
   Habits: undefined;
   Refugio: undefined;
+  MundoNath: undefined;
   NathSemFiltro: undefined;
   Profile: undefined;
 };

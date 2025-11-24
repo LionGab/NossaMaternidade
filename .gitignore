@@ -37,6 +37,10 @@ yarn-error.*
 # Claude Code MCP config (contains secrets)
 .claude/mcp.json
 
+# Google Play Service Account (contains secrets)
+google-play-service-account.json
+*.json.key
+
 # typescript
 *.tsbuildinfo
 

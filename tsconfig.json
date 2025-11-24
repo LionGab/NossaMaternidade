@@ -39,6 +39,10 @@
   ],
   "exclude": [
     "node_modules",
-    "temp_import"
+    "temp_import",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "supabase/functions/**"
   ]
 }

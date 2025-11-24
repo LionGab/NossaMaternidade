@@ -53,11 +53,13 @@ export interface ThemeColors {
     main: string;
     light: string;
     dark: string;
+    gradient: readonly string[];
   };
   secondary: {
     main: string;
     light: string;
     dark: string;
+    gradient: readonly string[];
   };
   status: {
     success: string;

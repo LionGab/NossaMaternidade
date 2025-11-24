@@ -176,12 +176,14 @@ export const LightTheme = {
     main: ColorTokens.primary[400],    // #4285F4
     light: ColorTokens.primary[100],   // #E0EFFF
     dark: ColorTokens.primary[700],    // #0036B8
+    gradient: ['#367FFF', '#0D5FFF', '#0047E6'],
   },
 
   secondary: {
     main: ColorTokens.secondary[400],  // #FF8FA3
     light: ColorTokens.secondary[100], // #FFE0EC
     dark: ColorTokens.secondary[700],  // #C10048
+    gradient: ['#FF94BA', '#FF2576', '#E60A5B'],
   },
 
   // Status colors for components
@@ -190,6 +192,14 @@ export const LightTheme = {
     warning: ColorTokens.warning[600],
     error: ColorTokens.error[600],
     info: ColorTokens.info[600],
+  },
+  
+  // Gradients
+  gradients: {
+    success: ['#34D399', '#10B981', '#059669'],
+    warning: ['#FBBf24', '#F59E0B', '#D97706'],
+    error: ['#F87171', '#EF4444', '#DC2626'],
+    info: ['#60A5FA', '#3B82F6', '#2563EB'],
   },
 
   // Raw color tokens for advanced usage
@@ -244,12 +254,14 @@ export const DarkTheme = {
     main: '#3B82F6',       // nath-dark-hero (azul para dark mode)
     light: ColorTokens.primary[300],   // #7CACFF
     dark: ColorTokens.primary[600],    // #0047E6
+    gradient: ['#367FFF', '#0D5FFF', '#0047E6'],
   },
 
   secondary: {
     main: ColorTokens.secondary[400],  // #FF8FA3
     light: ColorTokens.secondary[300], // #FF94BA
     dark: ColorTokens.secondary[600],  // #E60A5B
+    gradient: ['#FF94BA', '#FF2576', '#E60A5B'],
   },
 
   // Status colors for components
@@ -258,6 +270,14 @@ export const DarkTheme = {
     warning: ColorTokens.warning[400],
     error: ColorTokens.error[400],
     info: ColorTokens.info[400],
+  },
+
+  // Gradients
+  gradients: {
+    success: ['#34D399', '#10B981', '#059669'],
+    warning: ['#FBBf24', '#F59E0B', '#D97706'],
+    error: ['#F87171', '#EF4444', '#DC2626'],
+    info: ['#60A5FA', '#3B82F6', '#2563EB'],
   },
 
   // Raw color tokens for advanced usage

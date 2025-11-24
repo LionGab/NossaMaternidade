@@ -1,86 +1,116 @@
 /**
  * Network Monitor
- * Monitora conectividade e gerencia queue de operações offline
+ * Monitora conectividade e gerencia operações offline
  */
 
 import NetInfo, { NetInfoState, NetInfoStateType } from '@react-native-community/netinfo';
-import { Platform } from 'react-native';
 import { logger } from './logger';
 
-export type NetworkState = 'online' | 'offline' | 'unknown';
+export type NetworkStatus = 'online' | 'offline' | 'unknown';
+export type ConnectionType = NetInfoStateType | 'unknown';
 
-export interface NetworkInfo {
+export interface NetworkState {
   isConnected: boolean;
+  type: ConnectionType;
   isInternetReachable: boolean | null;
-  type: NetInfoStateType;
-  state: NetworkState;
 }
 
-type NetworkChangeCallback = (info: NetworkInfo) => void;
+type NetworkChangeListener = (state: NetworkState) => void;
+type PendingOperation = () => Promise<void>;
 
 class NetworkMonitor {
-  private listeners: Set<NetworkChangeCallback> = new Set();
-  private currentState: NetworkInfo = {
+  private currentState: NetworkState = {
     isConnected: false,
-    isInternetReachable: null,
     type: 'unknown',
-    state: 'unknown',
+    isInternetReachable: null,
   };
-  private offlineQueue: Array<() => Promise<void>> = [];
-  private isProcessingQueue = false;
 
-  constructor() {
-    this.initialize();
-  }
-
-  /**
-   * Inicializa o monitor de rede
-   */
-  private async initialize(): Promise<void> {
-    // Obter estado inicial
-    const state = await NetInfo.fetch();
-    this.updateState(state);
-
-    // Escutar mudanças
-    NetInfo.addEventListener((state) => {
-      this.updateState(state);
-    });
-  }
+  private listeners: Set<NetworkChangeListener> = new Set();
+  private offlineQueue: PendingOperation[] = [];
+  private isMonitoring = false;
+  private unsubscribe: (() => void) | null = null;
 
   /**
-   * Atualiza o estado da rede
+   * Inicia o monitoramento de rede
    */
-  private updateState(state: NetInfoState): void {
-    const wasOnline = this.currentState.isConnected;
-    const isOnline = state.isConnected ?? false;
+  async startMonitoring(): Promise<void> {
+    if (this.isMonitoring) {
+      logger.warn('[NetworkMonitor] Já está monitorando');
+      return;
+    }
 
-    this.currentState = {
-      isConnected: isOnline,
-      isInternetReachable: state.isInternetReachable ?? null,
-      type: state.type,
-      state: isOnline ? 'online' : 'offline',
-    };
+    try {
+      // Obter estado inicial
+      const initialState = await NetInfo.fetch();
+      this.updateState(initialState);
 
-    // Notificar listeners
-    this.listeners.forEach((callback) => {
-      try {
-        callback(this.currentState);
-      } catch (error) {
-        console.error('[NetworkMonitor] Erro ao executar callback:', error);
-      }
-    });
+      // Escutar mudanças
+      this.unsubscribe = NetInfo.addEventListener((state) => {
+        this.updateState(state);
+      });
 
-    // Se voltou online, processar queue
-    if (!wasOnline && isOnline) {
-      logger.info('Conexão restaurada, processando queue offline');
-      this.processOfflineQueue();
+      this.isMonitoring = true;
+      logger.info('[NetworkMonitor] Monitoramento iniciado', {
+        isConnected: this.currentState.isConnected,
+        type: this.currentState.type,
+      });
+    } catch (error) {
+      logger.error('[NetworkMonitor] Erro ao iniciar monitoramento', error);
+      throw error;
     }
   }
 
   /**
-   * Obtém o estado atual da rede
+   * Para o monitoramento
    */
-  getState(): NetworkInfo {
+  stopMonitoring(): void {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+      this.unsubscribe = null;
+    }
+    this.isMonitoring = false;
+    logger.info('[NetworkMonitor] Monitoramento parado');
+  }
+
+  /**
+   * Atualiza o estado atual
+   */
+  private updateState(state: NetInfoState): void {
+    const newState: NetworkState = {
+      isConnected: state.isConnected ?? false,
+      type: state.type || 'unknown',
+      isInternetReachable: state.isInternetReachable ?? null,
+    };
+
+    const stateChanged =
+      this.currentState.isConnected !== newState.isConnected ||
+      this.currentState.type !== newState.type;
+
+    this.currentState = newState;
+
+    // Notificar listeners
+    this.notifyListeners();
+
+    // Se voltou online, processar fila
+    if (stateChanged && newState.isConnected && this.offlineQueue.length > 0) {
+      logger.info('[NetworkMonitor] Rede voltou online, processando fila', {
+        queueSize: this.offlineQueue.length,
+      });
+      this.processOfflineQueue();
+    }
+
+    if (stateChanged) {
+      logger.info('[NetworkMonitor] Estado de rede mudou', {
+        isConnected: newState.isConnected,
+        type: newState.type,
+      });
+    }
+  }
+
+  /**
+   * Obtém o estado atual
+   */
+  getState(): NetworkState {
     return { ...this.currentState };
   }
 
@@ -88,91 +118,121 @@ class NetworkMonitor {
    * Verifica se está online
    */
   isOnline(): boolean {
-    return this.currentState.isConnected === true;
+    return this.currentState.isConnected && (this.currentState.isInternetReachable ?? true);
+  }
+
+  /**
+   * Obtém o tipo de conexão
+   */
+  getConnectionType(): ConnectionType {
+    return this.currentState.type;
   }
 
   /**
    * Adiciona listener para mudanças de rede
    */
-  addListener(callback: NetworkChangeCallback): () => void {
-    this.listeners.add(callback);
+  addListener(listener: NetworkChangeListener): () => void {
+    this.listeners.add(listener);
 
-    // Retornar função de remoção
+    // Retornar função de unsubscribe
     return () => {
-      this.listeners.delete(callback);
+      this.listeners.delete(listener);
     };
   }
 
   /**
-   * Adiciona operação à queue offline
+   * Notifica todos os listeners
    */
-  addToOfflineQueue(operation: () => Promise<void>): void {
-    this.offlineQueue.push(operation);
-    logger.debug(`Operação adicionada à queue (total: ${this.offlineQueue.length})`);
-
-    // Se estiver online, tentar processar imediatamente
-    if (this.isOnline() && !this.isProcessingQueue) {
-      this.processOfflineQueue();
-    }
+  private notifyListeners(): void {
+    const state = this.getState();
+    this.listeners.forEach((listener) => {
+      try {
+        listener(state);
+      } catch (error) {
+        logger.error('[NetworkMonitor] Erro ao notificar listener', error);
+      }
+    });
   }
 
   /**
-   * Processa a queue de operações offline
+   * Adiciona operação à fila offline
+   */
+  enqueueOperation(operation: PendingOperation): void {
+    this.offlineQueue.push(operation);
+    logger.debug('[NetworkMonitor] Operação adicionada à fila offline', {
+      queueSize: this.offlineQueue.length,
+    });
+  }
+
+  /**
+   * Processa fila de operações offline quando voltar online
    */
   private async processOfflineQueue(): Promise<void> {
-    if (this.isProcessingQueue || !this.isOnline() || this.offlineQueue.length === 0) {
+    if (!this.isOnline()) {
       return;
     }
-
-    this.isProcessingQueue = true;
-    logger.info(`Processando ${this.offlineQueue.length} operações da queue`);
 
     const operations = [...this.offlineQueue];
     this.offlineQueue = [];
 
+    logger.info('[NetworkMonitor] Processando fila de operações', {
+      count: operations.length,
+    });
+
     for (const operation of operations) {
       try {
-        if (this.isOnline()) {
-          await operation();
-        } else {
-          // Se perdeu conexão durante processamento, recolocar na queue
+        await operation();
+      } catch (error) {
+        logger.error('[NetworkMonitor] Erro ao processar operação da fila', error);
+        // Re-adicionar à fila se falhar (com limite para evitar loop infinito)
+        if (this.offlineQueue.length < 100) {
           this.offlineQueue.push(operation);
         }
+      }
+    }
+  }
+
+  /**
+   * Executa operação apenas se online, caso contrário adiciona à fila
+   */
+  async executeWhenOnline<T>(
+    operation: () => Promise<T>,
+    enqueueIfOffline = true
+  ): Promise<T | null> {
+    if (this.isOnline()) {
+      try {
+        return await operation();
       } catch (error) {
-        console.error('[NetworkMonitor] Erro ao processar operação da queue:', error);
-        // Recolocar na queue para tentar novamente depois
-        this.offlineQueue.push(operation);
+        logger.error('[NetworkMonitor] Erro ao executar operação online', error);
+        throw error;
       }
     }
 
-    this.isProcessingQueue = false;
-
-    if (this.offlineQueue.length > 0) {
-      logger.debug(`${this.offlineQueue.length} operações ainda na queue`);
+    if (enqueueIfOffline) {
+      this.enqueueOperation(async () => {
+        await operation();
+      });
     }
+
+    return null;
   }
 
   /**
-   * Limpa a queue offline
+   * Limpa a fila de operações offline
    */
   clearQueue(): void {
+    const count = this.offlineQueue.length;
     this.offlineQueue = [];
-    logger.info('Queue offline limpa');
+    logger.info('[NetworkMonitor] Fila de operações limpa', { clearedCount: count });
   }
 
   /**
-   * Obtém tamanho da queue
+   * Obtém tamanho da fila
    */
   getQueueSize(): number {
     return this.offlineQueue.length;
   }
 }
 
-// Singleton instance
 export const networkMonitor = new NetworkMonitor();
-
-// Export helper functions
-export const isOnline = () => networkMonitor.isOnline();
-export const getNetworkState = () => networkMonitor.getState();
-export const addNetworkListener = (callback: NetworkChangeCallback) => networkMonitor.addListener(callback);
-
+export default networkMonitor;

@@ -1,66 +1,106 @@
 /**
- * Logger Estruturado
- * Sistema de logging com contexto de sessão
+ * Logger estruturado com contexto de sessão
+ * Formato: [Session: {id}] {level} {message}
  */
 
-import { sessionManager } from '../services/sessionManager';
-
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 interface LogContext {
   sessionId?: string;
   userId?: string;
-  analyticsSessionId?: string;
-  chatSessionId?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 class Logger {
-  private getContext(): LogContext {
-    const state = sessionManager.getState();
-    return {
-      sessionId: state.auth.session?.access_token?.substring(0, 8) || 'no-session',
-      userId: state.auth.user?.id || undefined,
-      analyticsSessionId: state.analytics.sessionId || undefined,
-      chatSessionId: state.chat.currentSession?.id || undefined,
-    };
+  private currentSessionId: string | null = null;
+  private enabled: boolean = __DEV__;
+
+  /**
+   * Define o session ID atual para incluir em todos os logs
+   */
+  setSessionId(sessionId: string | null): void {
+    this.currentSessionId = sessionId;
   }
 
+  /**
+   * Formata mensagem de log com contexto
+   */
   private formatMessage(level: LogLevel, message: string, context?: LogContext): string {
-    const baseContext = this.getContext();
-    const fullContext = { ...baseContext, ...context };
-    const contextStr = Object.entries(fullContext)
-      .filter(([_, v]) => v !== undefined)
-      .map(([k, v]) => `${k}=${v}`)
-      .join(' ');
+    const timestamp = new Date().toISOString();
+    const sessionPart = this.currentSessionId ? `[Session: ${this.currentSessionId}]` : '';
+    const contextPart = context ? JSON.stringify(context) : '';
 
-    return `[${level.toUpperCase()}] [Session: ${fullContext.sessionId || 'none'}] ${message} ${contextStr ? `(${contextStr})` : ''}`;
+    return `[${timestamp}] ${sessionPart} [${level.toUpperCase()}] ${message} ${contextPart}`.trim();
   }
 
+  /**
+   * Log de debug (apenas em desenvolvimento)
+   */
   debug(message: string, context?: LogContext): void {
-    if (__DEV__) {
-      console.log(this.formatMessage('debug', message, context));
-    }
+    if (!this.enabled) return;
+    console.debug(this.formatMessage('debug', message, context));
   }
 
+  /**
+   * Log informativo
+   */
   info(message: string, context?: LogContext): void {
-    console.log(this.formatMessage('info', message, context));
+    console.info(this.formatMessage('info', message, context));
   }
 
+  /**
+   * Log de aviso
+   */
   warn(message: string, context?: LogContext): void {
     console.warn(this.formatMessage('warn', message, context));
   }
 
+  /**
+   * Log de erro
+   */
   error(message: string, error?: Error | unknown, context?: LogContext): void {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : undefined;
-    console.error(
-      this.formatMessage('error', `${message}: ${errorMessage}`, context),
-      errorStack ? `\n${errorStack}` : ''
-    );
+    const errorContext: LogContext = {
+      ...context,
+      error: error instanceof Error ? {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+      } : error,
+    };
+
+    console.error(this.formatMessage('error', message, errorContext));
+
+    // Em produção, aqui poderia enviar para serviço de tracking (Sentry, etc)
+    if (!__DEV__ && error instanceof Error) {
+      // TODO: Integrar com serviço de error tracking
+    }
+  }
+
+  /**
+   * Cria logger com contexto pré-definido
+   */
+  withContext(baseContext: LogContext): {
+    debug: (message: string, context?: LogContext) => void;
+    info: (message: string, context?: LogContext) => void;
+    warn: (message: string, context?: LogContext) => void;
+    error: (message: string, error?: Error | unknown, context?: LogContext) => void;
+  } {
+    return {
+      debug: (message: string, context?: LogContext) => {
+        this.debug(message, { ...baseContext, ...context });
+      },
+      info: (message: string, context?: LogContext) => {
+        this.info(message, { ...baseContext, ...context });
+      },
+      warn: (message: string, context?: LogContext) => {
+        this.warn(message, { ...baseContext, ...context });
+      },
+      error: (message: string, error?: Error | unknown, context?: LogContext) => {
+        this.error(message, error, { ...baseContext, ...context });
+      },
+    };
   }
 }
 
 export const logger = new Logger();
 export default logger;
-

@@ -36,7 +36,7 @@ const FilterChip: React.FC<FilterChipProps> = ({ option, isSelected, colors, onP
         style={[
           styles.filterChipText,
           {
-            color: isSelected ? '#FFFFFF' : colors.text.secondary,
+            color: isSelected ? colors.text.inverse : colors.text.secondary,
             fontWeight: isSelected ? '700' : '600',
           },
         ]}
@@ -57,18 +57,18 @@ const PostCard: React.FC<PostCardProps> = ({ item, colors, onPress }) => {
   const getIconForType = useCallback(() => {
     switch (item.type.toLowerCase()) {
       case 'video':
-        return <Video size={16} color="#FFFFFF" />;
+        return <Video size={16} color={colors.text.inverse} />;
       case 'text':
       case 'article':
-        return <FileText size={16} color="#FFFFFF" />;
+        return <FileText size={16} color={colors.text.inverse} />;
       case 'audio':
-        return <Mic size={16} color="#FFFFFF" />;
+        return <Mic size={16} color={colors.text.inverse} />;
       case 'reels':
-        return <Play size={16} color="#FFFFFF" />;
+        return <Play size={16} color={colors.text.inverse} />;
       default:
         return null;
     }
-  }, [item.type]);
+  }, [item.type, colors.text.inverse]);
 
   const getTypeLabel = useCallback((type: string): string => {
     const labels: Record<string, string> = {
@@ -94,21 +94,21 @@ const PostCard: React.FC<PostCardProps> = ({ item, colors, onPress }) => {
       <View style={styles.postImageContainer}>
         <Image
           source={{ uri: item.thumbnailUrl }}
-          style={styles.postImage}
+          style={[styles.postImage, { backgroundColor: colors.border.medium }]}
           contentFit="cover"
           transition={200}
           accessibilityLabel={`Imagem de capa: ${item.title}`}
           accessibilityIgnoresInvertColors
         />
         {/* Type badge */}
-        <View style={styles.typeBadge}>
+        <View style={[styles.typeBadge, { backgroundColor: colors.background.overlay }]}>
           {getIconForType()}
-          <Text style={styles.typeBadgeText}>{getTypeLabel(item.type)}</Text>
+          <Text style={[styles.typeBadgeText, { color: colors.text.inverse }]}>{getTypeLabel(item.type)}</Text>
         </View>
         {/* New badge */}
         {item.isNew && (
-          <View style={styles.newBadge}>
-            <Text style={styles.newBadgeText}>NOVO</Text>
+          <View style={[styles.newBadge, { backgroundColor: colors.secondary.main }]}>
+            <Text style={[styles.newBadgeText, { color: colors.text.inverse }]}>NOVO</Text>
           </View>
         )}
       </View>
@@ -215,7 +215,7 @@ export default function FeedScreen() {
           accessibilityRole="header"
           accessibilityLabel="Feed de conteúdos Mundo Nath"
         >
-          Feed
+          Feed - UPDATED
         </Text>
 
         {/* Filter chips */}
@@ -255,7 +255,6 @@ export default function FeedScreen() {
           data={filteredPosts}
           renderItem={renderPost}
           keyExtractor={(item) => item.id}
-          estimatedItemSize={350}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           accessible={true}
@@ -313,13 +312,11 @@ const styles = StyleSheet.create({
   postImage: {
     width: '100%',
     height: 200,
-    backgroundColor: '#E5E7EB',
   },
   typeBadge: {
     position: 'absolute',
     top: 12,
     left: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
@@ -328,7 +325,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   typeBadgeText: {
-    color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -336,13 +332,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 12,
     right: 12,
-    backgroundColor: '#FF8FA3',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
   },
   newBadgeText: {
-    color: '#FFFFFF',
     fontSize: 10,
     fontWeight: 'bold',
   },

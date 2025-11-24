@@ -1,33 +1,53 @@
-# Scripts Úteis
+# Scripts de Automação
 
-Scripts auxiliares para desenvolvimento e testes.
+Scripts utilitários para desenvolvimento e deploy.
 
-## Scripts Disponíveis
+## 📋 Scripts Disponíveis
 
-### test-supabase-connection.ts
+### `validate-android.js`
 
-Testa a conexão com o Supabase e valida as variáveis de ambiente.
+Valida configuração Android antes do build.
 
+**Uso:**
 ```bash
-# Executar via ts-node
-npx ts-node scripts/test-supabase-connection.ts
-
-# Ou adicione ao package.json:
-npm run test:supabase
+npm run validate:android
 ```
 
-Este script verifica:
-- ✅ Variáveis de ambiente configuradas
-- ✅ Conexão com Supabase
-- ✅ Autenticação funcionando
-- ✅ Storage buckets acessíveis
+**O que valida:**
+- ✅ Variáveis de ambiente obrigatórias
+- ✅ Configuração Android em `app.config.js`
+- ✅ Assets necessários (ícones, splash screens)
+- ✅ Configuração EAS (`eas.json`)
+- ✅ Service account key (se configurado)
 
-## 📝 Nota
+### `prepare-assets.js`
 
-Scripts de deploy cloud foram removidos pois este é um projeto mobile-first que usa EAS Build para builds e submissão às lojas.
+Prepara estrutura de diretórios para assets Android.
 
-Para builds e deploy, use os comandos do EAS:
-- `npm run build:ios` - Build para iOS
-- `npm run build:android` - Build para Android
-- `npm run submit:ios` - Submeter para App Store
-- `npm run submit:android` - Submeter para Google Play
+**Uso:**
+```bash
+npm run prepare:assets
+```
+
+**O que faz:**
+- Cria estrutura de diretórios para screenshots
+- Cria README com requisitos de assets
+- Valida assets existentes
+
+### `apply-schema.ts`
+
+Aplica schema SQL no Supabase.
+
+**Uso:**
+```bash
+npm run apply-schema
+```
+
+### `test-supabase-connection.ts`
+
+Testa conexão com Supabase.
+
+**Uso:**
+```bash
+npm run test-supabase
+```

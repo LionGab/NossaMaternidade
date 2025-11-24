@@ -7,6 +7,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web --port 8082",
+    "build": "npm run build:android",
     "build:web": "expo export:web",
     "build:dev": "eas build --platform all --profile development",
     "build:preview": "eas build --platform all --profile preview",
@@ -23,7 +24,10 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "eslint . --ext .ts,.tsx",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "validate:android": "node scripts/validate-android.js",
+    "prepare:assets": "node scripts/prepare-assets.js",
+    "prebuild:android": "npm run validate:android"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

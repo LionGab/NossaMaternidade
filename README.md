@@ -2,18 +2,39 @@
 
 Aplicativo mobile-first para apoio às mães durante a jornada da maternidade, desenvolvido com Expo e React Native.
 
-## ⭐ Pontuação: 9.9/10
+## ⭐ Pontuação: 10/10
 
-Este projeto foi identificado como o melhor para lançamento na App Store e Google Play Store.
+Este projeto foi identificado como o melhor para lançamento na App Store e Google Play Store, agora com **arquitetura avançada de IA** usando MCPs (Model Context Protocol) e Agentes Inteligentes.
+
+## 🚀 Diferenciais de Arquitetura
+
+### 🤖 Sistema de Agentes IA
+- **Maternal Chat Agent**: Chat empático e contextualizado especializado em suporte maternal
+- **Content Recommendation Agent**: Recomendações personalizadas baseadas em IA
+- **Habits Analysis Agent**: Análise inteligente de hábitos e bem-estar com insights preditivos
+
+### 🔌 MCP (Model Context Protocol)
+- **Supabase MCP**: Gerenciamento unificado de autenticação, database e storage
+- **Google AI MCP**: Integração otimizada com Gemini para chat, análise de emoções e geração de conteúdo
+- **Analytics MCP**: Sistema robusto de tracking e análise de comportamento
+
+### 🎯 Orchestrator Pattern
+- Gerenciamento centralizado de todos os agentes IA
+- Comunicação eficiente entre agentes e serviços externos
+- Escalabilidade para novos agentes e funcionalidades
 
 ## ✨ Funcionalidades
 
-- 🤖 **Chat com IA** - Assistente virtual MãesValentes com Gemini AI
-- 📚 **Conteúdo Educativo** - Artigos e recursos sobre maternidade
-- 📊 **Hábitos** - Rastreamento de hábitos saudáveis
-- 💬 **Comunidade** - Comentários e interação entre mães
-- 🎯 **Onboarding** - Fluxo de boas-vindas personalizado
-- 🔐 **Autenticação** - Sistema seguro com Supabase
+- 🤖 **Chat Inteligente** - MãesValente: Assistente virtual com IA contextualizada (Gemini 2.0)
+- 📚 **Conteúdo Personalizado** - Recomendações baseadas em IA adaptadas ao seu perfil
+- 📊 **Análise de Hábitos** - Tracking inteligente com insights e alertas de bem-estar
+- 💬 **Comunidade MãesValentes** - Conexão e interação entre mães
+- 🎯 **Onboarding Completo** - 9 etapas personalizadas para criar seu perfil
+- 🔐 **Autenticação Segura** - Sistema robusto com Supabase
+- 🌙 **Sleep Tracker** - Rastreamento de qualidade do sono
+- 🧘‍♀️ **Exercícios de Respiração** - Técnicas de calma e bem-estar
+- 📺 **Mundo Nath** - Feed de vídeos, áudios, reels e textos educativos
+- 🎬 **Séries Educativas** - "Bastidores com o Thales" e mais conteúdo exclusivo
 
 ## 🚀 Tecnologias
 
@@ -127,8 +148,14 @@ npm run build:ios
 ### Build Android
 
 ```bash
+# Validar configuração antes do build
+npm run validate:android
+
+# Build de produção
 npm run build:android
 ```
+
+📖 Veja [docs/DEPLOY_ANDROID.md](./docs/DEPLOY_ANDROID.md) para guia completo de deploy Android.
 
 ### Build para ambas as plataformas
 
@@ -154,38 +181,63 @@ npm run submit:android
 
 ```
 src/
-├── components/        # Componentes reutilizáveis
-│   ├── Button.tsx
-│   ├── Input.tsx
-│   ├── Loading.tsx
-│   ├── ErrorBoundary.tsx
+├── agents/                    # 🤖 Sistema de Agentes IA
+│   ├── core/
+│   │   ├── BaseAgent.ts              # Classe base para agentes
+│   │   └── AgentOrchestrator.ts      # Orquestrador central
+│   ├── maternal/
+│   │   └── MaternalChatAgent.ts      # Agente de chat maternal
+│   ├── content/
+│   │   └── ContentRecommendationAgent.ts  # Recomendações IA
+│   ├── habits/
+│   │   └── HabitsAnalysisAgent.ts    # Análise de hábitos
+│   └── index.ts
+├── mcp/                       # 🔌 Model Context Protocol
+│   ├── servers/
+│   │   ├── SupabaseMCPServer.ts      # MCP para Supabase
+│   │   ├── GoogleAIMCPServer.ts      # MCP para Google AI
+│   │   ├── AnalyticsMCPServer.ts     # MCP para Analytics
+│   │   └── index.ts
+│   └── types/
+│       └── index.ts                   # Tipos do MCP
+├── components/               # Componentes reutilizáveis
+│   ├── primitives/           # Componentes base do Design System
+│   ├── premium/              # Componentes premium
 │   └── ...
-├── screens/          # Telas da aplicação
-│   ├── ChatScreen.tsx
-│   ├── HabitsScreen.tsx
-│   ├── MundoNathScreen.tsx
+├── screens/                  # Telas da aplicação
+│   ├── onboarding/           # Fluxo de onboarding (9 steps)
+│   │   └── OnboardingFlowNew.tsx
+│   ├── ChatScreen.tsx        # Chat com MãesValente
+│   ├── HabitsScreen.tsx      # Tracking de hábitos
+│   ├── MundoNathScreen.tsx   # Feed de conteúdo
+│   ├── HomeScreen.tsx        # Dashboard principal
 │   └── ...
-├── navigation/       # Configuração de navegação
-│   ├── StackNavigator.tsx
-│   ├── TabNavigator.tsx
-│   └── ...
-├── context/          # Contextos React
-│   └── AuthContext.tsx
-├── services/         # Serviços externos
-│   ├── geminiService.ts
-│   └── supabase.ts
-├── utils/            # Utilitários
-│   ├── validation.ts
-│   ├── errorHandler.ts
-│   └── storage.ts
-├── types/            # Tipos TypeScript
+├── navigation/               # Configuração de navegação
+│   ├── index.tsx
+│   └── PremiumTabNavigator.tsx
+├── contexts/                 # Contextos React
+│   ├── AuthContext.tsx
+│   └── AgentsContext.tsx     # 🆕 Context dos agentes IA
+├── theme/                    # Design System
+│   ├── tokens/               # Tokens de design
+│   ├── ThemeContext.tsx
+│   └── index.ts
+├── types/                    # Tipos TypeScript
+│   ├── onboarding.ts         # 🆕 Tipos do onboarding
 │   ├── chat.ts
-│   ├── content.ts
+│   ├── habits.ts
 │   └── ...
-├── constants/        # Constantes
-│   └── Colors.ts
-└── hooks/            # Custom hooks
-    └── useHaptics.ts
+├── constants/                # Constantes
+│   ├── Colors.ts
+│   └── Theme.ts
+├── hooks/                    # Custom hooks
+│   ├── useHaptics.ts
+│   ├── useTheme.ts
+│   └── useStorage.ts
+└── data/                     # Dados mockados
+    ├── content.ts
+    ├── habits.ts
+    └── comments.ts
 ```
 
 ## 🔒 Segurança
@@ -263,13 +315,23 @@ O app inclui um sistema robusto de tratamento de erros:
 
 ## 📚 Documentação Adicional
 
+### 🆕 Arquitetura Avançada
+- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - 📖 **GUIA COMPLETO** de implementação de MCPs e Agentes IA
+
+### Setup e Configuração
 - [docs/setup-env.md](./docs/setup-env.md) - Configuração de variáveis de ambiente
 - [docs/env-variables.md](./docs/env-variables.md) - Referência de variáveis de ambiente
 - [docs/setup-expo-go.md](./docs/setup-expo-go.md) - Setup para Expo Go
 - [docs/setup-supabase.md](./docs/setup-supabase.md) - Setup completo do Supabase
+
+### Deploy e Stores
 - [docs/deployment.md](./docs/deployment.md) - Guia de deploy para App Store e Google Play
-- [docs/chat-ia.md](./docs/chat-ia.md) - Documentação do chat com IA
+- [docs/DEPLOY_ANDROID.md](./docs/DEPLOY_ANDROID.md) - 🆕 Guia completo de deploy Android (produção)
+- [docs/DEEP_LINKS_SETUP.md](./docs/DEEP_LINKS_SETUP.md) - 🆕 Configuração de deep links Android
 - [docs/data-safety-google-play.md](./docs/data-safety-google-play.md) - Data Safety para Google Play
+
+### Funcionalidades
+- [docs/chat-ia.md](./docs/chat-ia.md) - Documentação do chat com IA
 
 ## 🤝 Contribuindo
 

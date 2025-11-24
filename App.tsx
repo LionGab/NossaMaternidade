@@ -9,14 +9,17 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Navigation } from './src/navigation';
 import { ErrorBoundary } from './src/components';
 import { ThemeProvider } from './src/theme/ThemeContext';
+import { AgentsProvider } from './src/contexts/AgentsContext';
 
 export default function App() {
   return (
     <SafeAreaProvider>
       <ThemeProvider defaultMode="system">
-        <ErrorBoundary>
-          <Navigation />
-        </ErrorBoundary>
+        <AgentsProvider>
+          <ErrorBoundary>
+            <Navigation />
+          </ErrorBoundary>
+        </AgentsProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

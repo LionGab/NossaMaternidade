@@ -44,7 +44,7 @@ export default function OnboardingFlow() {
   const isXL = width >= 768;
 
   const containerStyle = {
-    width: '100%',
+    flex: 1,
     maxWidth: isXL ? 640 : 560,
     alignSelf: 'center' as const,
     paddingHorizontal: isSmallScreen ? 16 : 24,

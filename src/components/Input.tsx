@@ -41,8 +41,9 @@ export const Input: React.FC<InputProps> = ({
   };
 
   const getBackgroundColor = () => {
-    if (disabled) return colors.background.canvas;
-    return colors.background.input;
+    // Input sempre tem fundo branco, mesmo no dark mode (conforme design do site)
+    if (disabled) return '#F5F5F5';
+    return '#FFFFFF';
   };
 
   return (
@@ -92,7 +93,7 @@ export const Input: React.FC<InputProps> = ({
           style={[
             {
               flex: 1,
-              color: colors.text.primary,
+              color: '#000000', // Texto sempre preto no input (fundo branco)
               fontSize: Typography.sizes.base,
               fontFamily: Typography.fonts.body,
             },

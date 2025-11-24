@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { geminiService } from './geminiService';
 
 export interface ChatConversation {
   id: string;
@@ -229,12 +230,32 @@ class ChatService {
   }
 
   /**
-   * Obter resposta da IA (placeholder - integração real será feita depois)
+   * Obter resposta da IA (integração real com Gemini via Cloud Run)
    */
   private async getAIResponse(history: ChatMessage[], userMessage: string): Promise<string> {
-    // TODO: Integrar com Gemini API real
-    // Por enquanto, retorna resposta placeholder
-    return `Olá! Recebi sua mensagem: "${userMessage}". Estou aqui para te apoiar em sua jornada de maternidade. Como posso te ajudar hoje?`;
+    try {
+      // Convert Supabase chat history format to Gemini format
+      const geminiHistory = history
+        .filter(msg => msg.role !== 'system') // Skip system messages
+        .slice(-20) // Limit to last 20 messages to avoid token limits
+        .map(msg => ({
+          role: (msg.role === 'user' ? 'user' : 'model') as 'user' | 'model' | 'assistant',
+          text: msg.content,
+        }));
+
+      // Call Gemini via Cloud Run backend
+      const response = await geminiService.sendMessage(userMessage, geminiHistory);
+
+      if (response.error) {
+        console.error('[ChatService] AI response error:', response.error);
+        return 'Desculpe, estou com dificuldades técnicas no momento. Pode tentar novamente em instantes?';
+      }
+
+      return response.text || 'Desculpa, não consegui processar sua mensagem. Tente novamente?';
+    } catch (error) {
+      console.error('[ChatService] Erro ao obter resposta da IA:', error);
+      return 'Ops, algo deu errado. Pode tentar novamente, querida?';
+    }
   }
 
   /**

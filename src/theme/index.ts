@@ -56,16 +56,3 @@ export {
 
 // Re-export legacy constants for gradual migration
 export { Colors, LightColors, DarkColors } from '../constants/Colors';
-export {
-  COLORS,
-  TYPOGRAPHY,
-  SPACING,
-  RADIUS,
-  SHADOWS,
-  TOUCH_TARGETS,
-  ANIMATIONS,
-  ICON_SIZES,
-  Z_INDEX,
-  BREAKPOINTS,
-  SAFE_AREA,
-} from '../constants/Theme';

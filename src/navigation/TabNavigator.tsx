@@ -1,27 +1,28 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text, View } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
+import { BlurView } from 'expo-blur';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MainTabParamList } from './types';
 import ChatScreen from '../screens/ChatScreen';
-import RefugioNathScreen from '../screens/RefugioNathScreen';
+import HomeScreen from '../screens/HomeScreen';
 import MundoNathScreen from '../screens/MundoNathScreen';
 import HabitsScreen from '../screens/HabitsScreen';
 import FeedScreen from '../screens/FeedScreen';
-import CommunityScreen from '../screens/CommunityScreen';
 import { useTheme } from '../theme/ThemeContext';
 import {
   Home,
   MessageCircleHeart,
   Newspaper,
-  Users,
   Sparkles,
-  Shield
+  Brain
 } from 'lucide-react-native';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export const TabNavigator = () => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
@@ -30,50 +31,84 @@ export const TabNavigator = () => {
         tabBarActiveTintColor: colors.primary.main,
         tabBarInactiveTintColor: colors.text.tertiary,
         tabBarStyle: {
-          borderTopWidth: 1,
-          borderTopColor: colors.border.light,
-          paddingBottom: 8,
-          paddingTop: 8,
-          height: 60,
-          backgroundColor: colors.background.card,
+          height: 70 + insets.bottom,
+          paddingBottom: insets.bottom + 8,
+          paddingTop: 12,
+          backgroundColor: isDark ? colors.background.card : '#FFFFFF',
+          borderTopWidth: 0,
+          elevation: 20,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.1,
+          shadowRadius: 12,
+          position: 'absolute',
         },
         tabBarLabelStyle: {
-          fontSize: 10,
+          fontSize: 11,
           fontWeight: '600',
-          marginTop: -4,
+          marginTop: 4,
+          letterSpacing: 0.2,
         },
+        tabBarIconStyle: {
+          marginTop: 4,
+        },
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tab.Screen
         name="Home"
-        component={MundoNathScreen}
+        component={HomeScreen}
         options={{
-          tabBarLabel: 'Mundo Nath',
-          tabBarIcon: ({ color, size }) => <Home size={24} color={color} />,
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color, focused, size }) => (
+            <Home 
+              size={focused ? 26 : 24} 
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
         }}
       />
       <Tab.Screen
         name="Chat"
         component={ChatScreen}
         options={{
-          tabBarLabel: 'MãesValente',
-          tabBarIcon: ({ color, size }) => <MessageCircleHeart size={24} color={color} />,
+          tabBarLabel: 'NathIA',
+          tabBarIcon: ({ color, focused, size }) => (
+            <Brain 
+              size={focused ? 26 : 24} 
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
         }}
       />
       <Tab.Screen
         name="Feed"
         component={FeedScreen}
         options={{
-          tabBarLabel: 'Feed',
-          tabBarIcon: ({ color, size }) => <Newspaper size={24} color={color} />,
+          tabBarLabel: 'MãesValente',
+          tabBarIcon: ({ color, focused, size }) => (
+            <MessageCircleHeart 
+              size={focused ? 26 : 24} 
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
         }}
       />
       <Tab.Screen
-        name="Community"
-        component={CommunityScreen}
+        name="MundoNath"
+        component={MundoNathScreen}
         options={{
-          tabBarLabel: 'Comunidade',
-          tabBarIcon: ({ color, size }) => <Users size={24} color={color} />,
+          tabBarLabel: 'MundoNath',
+          tabBarIcon: ({ color, focused, size }) => (
+            <Newspaper 
+              size={focused ? 26 : 24} 
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
         }}
       />
       <Tab.Screen
@@ -81,15 +116,13 @@ export const TabNavigator = () => {
         component={HabitsScreen}
         options={{
           tabBarLabel: 'Hábitos',
-          tabBarIcon: ({ color, size }) => <Sparkles size={24} color={color} />,
-        }}
-      />
-      <Tab.Screen
-        name="Refugio"
-        component={RefugioNathScreen}
-        options={{
-          tabBarLabel: 'Refúgio',
-          tabBarIcon: ({ color, size }) => <Shield size={24} color={color} />,
+          tabBarIcon: ({ color, focused, size }) => (
+            <Sparkles 
+              size={focused ? 26 : 24} 
+              color={color}
+              strokeWidth={focused ? 2.5 : 2}
+            />
+          ),
         }}
       />
     </Tab.Navigator>
