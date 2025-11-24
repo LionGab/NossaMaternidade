@@ -33,7 +33,7 @@ export interface ContentItem {
 export interface Post {
   id: string;
   title: string;
-  type: 'Vídeo' | 'Texto' | 'Reels' | 'Áudio';
+  type: ContentType;
   thumbnailUrl: string;
   isNew: boolean;
 }

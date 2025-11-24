@@ -96,9 +96,9 @@ export default function FeedScreen() {
           renderItem={({ item }) => {
             const getIconForType = () => {
               switch (item.type.toLowerCase()) {
-                case 'vídeo': return <Video size={16} color="#FFFFFF" />;
-                case 'texto': return <FileText size={16} color="#FFFFFF" />;
-                case 'áudio': return <Mic size={16} color="#FFFFFF" />;
+                case 'video': return <Video size={16} color="#FFFFFF" />;
+                case 'text': return <FileText size={16} color="#FFFFFF" />;
+                case 'audio': return <Mic size={16} color="#FFFFFF" />;
                 case 'reels': return <Play size={16} color="#FFFFFF" />;
                 default: return null;
               }
@@ -194,7 +194,6 @@ export default function FeedScreen() {
               </TouchableOpacity>
             );
           }}
-          estimatedItemSize={300}
           accessible={true}
           accessibilityRole="list"
           accessibilityLabel={`Lista de posts. ${filteredPosts.length} ${filteredPosts.length === 1 ? 'post' : 'posts'} ${filter === 'all' ? '' : `filtrado por ${filter}`}`}

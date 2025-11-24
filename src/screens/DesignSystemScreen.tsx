@@ -196,7 +196,7 @@ export default function DesignSystemScreen() {
               />
               <Chip
                 label="Clicável"
-                variant="info"
+                variant="default"
                 onPress={() => toast.show({ message: 'Chip clicado!' })}
               />
             </Row>

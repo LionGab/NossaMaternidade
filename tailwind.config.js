@@ -161,6 +161,11 @@ module.exports = {
         mono: ['Courier'],
       },
 
+      // Animations
+      animation: {
+        'pulse-slow': 'pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+
       fontSize: {
         'xs': '12px',
         'sm': '14px',

@@ -1,6 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, Text, ActivityIndicator, ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { useTheme } from '../theme/ThemeContext';
 
 export interface ButtonProps {
   title: string;
@@ -29,6 +30,8 @@ export const Button: React.FC<ButtonProps> = ({
   accessibilityLabel,
   accessibilityHint,
 }) => {
+  const { colors, isDark } = useTheme();
+
   const handlePress = () => {
     if (disabled || loading) return;
     
@@ -39,37 +42,64 @@ export const Button: React.FC<ButtonProps> = ({
     onPress();
   };
 
-  // Variant styles
-  const variantStyles = {
-    primary: 'bg-primary',
-    secondary: 'bg-secondary',
-    outline: 'bg-transparent border-2 border-primary',
-    ghost: 'bg-transparent',
+  // Get button styles based on variant
+  const getButtonStyle = (): ViewStyle => {
+    const baseStyle: ViewStyle = {
+      borderRadius: 12, // rounded-xl
+      paddingHorizontal: size === 'sm' ? 12 : size === 'lg' ? 24 : 16,
+      paddingVertical: size === 'sm' ? 8 : size === 'lg' ? 16 : 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+      opacity: disabled || loading ? 0.5 : 1,
+    };
+
+    if (fullWidth) {
+      baseStyle.width = '100%';
+    }
+
+    switch (variant) {
+      case 'primary':
+        baseStyle.backgroundColor = isDark ? '#3B82F6' : '#4285F4';
+        break;
+      case 'secondary':
+        baseStyle.backgroundColor = colors.secondary.main;
+        break;
+      case 'outline':
+        baseStyle.backgroundColor = 'transparent';
+        baseStyle.borderWidth = 2;
+        baseStyle.borderColor = colors.primary.main;
+        break;
+      case 'ghost':
+        baseStyle.backgroundColor = 'transparent';
+        break;
+    }
+
+    return baseStyle;
   };
 
-  // Primary button uses the vibrant blue
-  const primaryBgColor = variant === 'primary' ? '#6DA9E4' : undefined;
-
-  // Size styles
-  const sizeStyles = {
-    sm: 'px-3 py-2',
-    md: 'px-4 py-3',
-    lg: 'px-6 py-4',
+  const getTextColor = () => {
+    switch (variant) {
+      case 'primary':
+        return '#FFFFFF';
+      case 'secondary':
+        return '#FFFFFF';
+      case 'outline':
+      case 'ghost':
+        return colors.primary.main;
+      default:
+        return colors.text.primary;
+    }
   };
 
-  // Text variant styles
-  const textVariantStyles = {
-    primary: 'text-white',
-    secondary: 'text-primary',
-    outline: 'text-primary',
-    ghost: 'text-primary',
-  };
-
-  // Text size styles
-  const textSizeStyles = {
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg',
+  const getTextSize = () => {
+    switch (size) {
+      case 'sm':
+        return 14;
+      case 'lg':
+        return 18;
+      default:
+        return 16;
+    }
   };
 
   const isDisabled = disabled || loading;
@@ -82,30 +112,22 @@ export const Button: React.FC<ButtonProps> = ({
       accessibilityHint={accessibilityHint}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled }}
-      className={`
-        ${variantStyles[variant]}
-        ${sizeStyles[size]}
-        ${fullWidth ? 'w-full' : ''}
-        ${isDisabled ? 'opacity-50' : 'opacity-100'}
-        rounded-full
-        items-center
-        justify-center
-        ${className}
-      `}
+      style={[getButtonStyle()]}
       activeOpacity={0.7}
+      className={className}
     >
       {loading ? (
         <ActivityIndicator 
           size="small" 
-          color={variant === 'primary' ? '#fff' : '#FF69B4'} 
+          color={getTextColor()} 
         />
       ) : (
         <Text
-          className={`
-            ${textVariantStyles[variant]}
-            ${textSizeStyles[size]}
-            font-semibold
-          `}
+          style={{
+            color: getTextColor(),
+            fontSize: getTextSize(),
+            fontWeight: '600',
+          }}
         >
           {title}
         </Text>

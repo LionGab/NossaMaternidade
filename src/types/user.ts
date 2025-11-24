@@ -1,11 +1,11 @@
 export interface UserProfile {
   name?: string;
   email?: string;
-  stage?: string;
+  stage?: UserStage;
   timelineInfo?: string;
-  biggestChallenge?: string;
-  supportLevel?: string;
-  currentFeeling?: string;
+  biggestChallenge?: UserChallenge;
+  supportLevel?: UserSupport;
+  currentFeeling?: UserEmotion;
   primaryNeed?: string;
   notificationsEnabled?: boolean;
 }

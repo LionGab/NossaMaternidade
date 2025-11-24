@@ -28,7 +28,7 @@ export default function DiaryScreen() {
 
     try {
       const aiResponse = await geminiService.analyzeDiaryEntry(entry);
-      setResponse(aiResponse);
+      setResponse(aiResponse.text || 'Guardei seu desabafo com carinho, mesmo com minha conexão instável.');
     } catch (error) {
       console.error('Error analyzing diary:', error);
       setResponse('Guardei seu desabafo com carinho, mesmo com minha conexão instável.');

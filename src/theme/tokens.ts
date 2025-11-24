@@ -205,7 +205,7 @@ export const DarkTheme = {
     canvas: '#020617',        // Preto azulado profundo
     card: '#0B1220',          // Superfície card
     elevated: '#1D2843',      // Superfície elevada (pause)
-    input: '#111827',         // Input background (sleep)
+    input: '#FFFFFF',         // Input background (branco mesmo no dark mode)
     overlay: 'rgba(0, 0, 0, 0.7)',
     gradient: {
       primary: ['#0B1220', '#020617'],
@@ -241,7 +241,7 @@ export const DarkTheme = {
 
   // Primary/Secondary mapped
   primary: {
-    main: ColorTokens.primary[400],    // #4285F4 (mais suave no dark)
+    main: '#3B82F6',       // nath-dark-hero (azul para dark mode)
     light: ColorTokens.primary[300],   // #7CACFF
     dark: ColorTokens.primary[600],    // #0047E6
   },

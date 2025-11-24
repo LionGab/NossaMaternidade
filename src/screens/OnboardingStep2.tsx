@@ -66,7 +66,6 @@ export default function OnboardingStep2({ onNext }: OnboardingStep2Props) {
           placeholder="Seu nome ou apelido"
           placeholderTextColor={Colors.text.tertiary}
           className="mb-6"
-          containerClassName="mb-0"
         />
 
         {/* Button */}
