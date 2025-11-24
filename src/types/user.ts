@@ -10,20 +10,19 @@ export interface UserProfile {
   notificationsEnabled?: boolean;
 }
 
-// Onboarding enums - valores em português para UI
+// Onboarding enums - valores usados pelos screens
 export enum UserStage {
+  TRYING = 'Tentante',
   PREGNANT = 'Gestante',
   NEW_MOM = 'Puérpera (Recém-nascido)',
-  MOM_BABY_6_12M = 'Mãe (Bebê 6-12 meses)',
-  MOM_CHILD_1_3Y = 'Mãe (Criança 1-3 anos)',
+  MOM = 'Mãe experiente',
 }
 
 export enum UserEmotion {
-  HAPPY = 'Feliz',
   ANXIOUS = 'Ansiosa',
   TIRED = 'Cansada',
-  OVERWHELMED = 'Sobrecarregada',
-  HOPEFUL = 'Esperançosa',
+  GUILTY = 'Culpada',
+  HAPPY = 'Feliz',
   CONFUSED = 'Confusa',
 }
 
