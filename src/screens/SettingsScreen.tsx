@@ -28,6 +28,7 @@ import {
   Cpu,
 } from 'lucide-react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { Tokens } from '../theme';
 import { useAuth } from '../context/AuthContext';
 import { userDataService } from '../services/userDataService';
 import { logger } from '../utils/logger';
@@ -189,8 +190,8 @@ export default function SettingsScreen() {
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <Text
       style={{
-        fontSize: 13,
-        fontWeight: '600',
+        fontSize: Tokens.typography.sizes.xs, // 12
+        fontWeight: Tokens.typography.weights.semibold, // '600'
         color: colors.text.tertiary,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
@@ -236,8 +237,8 @@ export default function SettingsScreen() {
           height: 40,
           borderRadius: 20,
           backgroundColor: destructive
-            ? colors.text.error + '15'
-            : colors.primary.main + '15',
+            ? `${colors.text.error}15`
+            : `${colors.primary.main}15`,
           alignItems: 'center',
           justifyContent: 'center',
           marginRight: 12,
@@ -258,8 +259,8 @@ export default function SettingsScreen() {
       <View style={{ flex: 1 }}>
         <Text
           style={{
-            fontSize: 16,
-            fontWeight: '600',
+            fontSize: Tokens.typography.sizes.base, // 16
+            fontWeight: Tokens.typography.weights.semibold, // '600'
             color: destructive ? colors.text.error : colors.text.primary,
           }}
         >
@@ -268,7 +269,7 @@ export default function SettingsScreen() {
         {subtitle && (
           <Text
             style={{
-              fontSize: 13,
+              fontSize: Tokens.typography.sizes.xs, // 12
               color: colors.text.secondary,
               marginTop: 2,
             }}
@@ -310,8 +311,8 @@ export default function SettingsScreen() {
         </TouchableOpacity>
         <Text
           style={{
-            fontSize: 20,
-            fontWeight: 'bold',
+            fontSize: Tokens.typography.sizes.xl, // 20
+            fontWeight: Tokens.typography.weights.bold,
             color: colors.text.primary,
           }}
         >

@@ -184,7 +184,7 @@ export default function ChatScreen() {
     <MessageBubble
       content={item.content}
       isUser={item.role === 'user'}
-      timestamp={item.created_at}
+      timestamp={new Date(item.created_at)}
     />
   );
 

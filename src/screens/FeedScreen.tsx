@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { FlashList } from '@shopify/flash-list';
 import { Heart, MessageCircle, Share2, BookmarkPlus, Play, FileText, Mic, Video } from 'lucide-react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { Tokens } from '../theme';
 import { useHaptics } from '../hooks/useHaptics';
 import { MOCK_POSTS } from '../constants/data';
 import { FilterChip } from '../components/FilterChip';
@@ -239,8 +240,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: Tokens.typography.sizes['2xl'], // 24
+    fontWeight: Tokens.typography.weights.bold,
     marginBottom: 12,
   },
   filterScroll: {
@@ -279,8 +280,8 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   typeBadgeText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: Tokens.typography.sizes.xs, // 12
+    fontWeight: Tokens.typography.weights.semibold, // '600'
   },
   newBadge: {
     position: 'absolute',
@@ -291,12 +292,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   newBadgeText: {
-    fontSize: 10,
-    fontWeight: 'bold',
+    fontSize: Tokens.typography.sizes['3xs'], // 10
+    fontWeight: Tokens.typography.weights.bold,
   },
   postTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: Tokens.typography.sizes.lg, // 18
+    fontWeight: Tokens.typography.weights.bold,
     marginBottom: 12,
     lineHeight: 24,
   },
@@ -311,8 +312,8 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   postActionText: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: Tokens.typography.sizes.sm, // 14
+    fontWeight: Tokens.typography.weights.medium, // '500'
   },
   postActionBookmark: {
     marginLeft: 'auto',
@@ -324,7 +325,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   emptyStateText: {
-    fontSize: 16,
+    fontSize: Tokens.typography.sizes.base, // 16
     textAlign: 'center',
   },
 });

@@ -224,7 +224,7 @@ export default function OnboardingFlow() {
                 accessibilityHint="Inicia o processo de onboarding"
               >
                 <Text className="text-white font-bold text-base">Começar com a Nath</Text>
-                <ArrowRight size={20} color="#FFFFFF" />
+                <ArrowRight size={20} color={colors.text.inverse} />
               </TouchableOpacity>
             </View>
           </View>
@@ -330,7 +330,7 @@ export default function OnboardingFlow() {
                   style={{
                     borderWidth: 2,
                     borderColor: formData.stage === stage ? colors.primary.main : colors.border.light,
-                    backgroundColor: formData.stage === stage ? colors.primary.light + '20' : colors.background.card,
+                    backgroundColor: formData.stage === stage ? `${colors.primary.light}20` : colors.background.card,
                     minHeight: isSmallScreen ? 56 : 64
                   }}
                   activeOpacity={0.9}
@@ -354,7 +354,7 @@ export default function OnboardingFlow() {
                     }}
                     accessible={false}
                   >
-                    {formData.stage === stage && <Check size={12} color="#FFFFFF" />}
+                    {formData.stage === stage && <Check size={12} color={colors.text.inverse} />}
                   </View>
                 </TouchableOpacity>
               ))}
@@ -627,10 +627,10 @@ export default function OnboardingFlow() {
   // 8. PRIMARY NEED
   if (step === 8) {
     const needs = [
-      { val: UserNeed.CHAT, icon: <Brain size={20} color="#FFFFFF" />, title: "Desabaf", sub: "Conversar com alguém que entenda" },
-      { val: UserNeed.LEARN, icon: <Baby size={20} color="#FFFFFF" />, title: "Aprender", sub: "Dicas práticas sobre o bebê" },
-      { val: UserNeed.CALM, icon: <Heart size={20} color="#FFFFFF" />, title: "Acalmar", sub: "Respirar e diminuir ansiedade" },
-      { val: UserNeed.CONNECT, icon: <Users size={20} color="#FFFFFF" />, title: "Conectar", sub: "Ver relatos de outras mães" },
+      { val: UserNeed.CHAT, icon: <Brain size={20} color={colors.text.inverse} />, title: "Desabaf", sub: "Conversar com alguém que entenda" },
+      { val: UserNeed.LEARN, icon: <Baby size={20} color={colors.text.inverse} />, title: "Aprender", sub: "Dicas práticas sobre o bebê" },
+      { val: UserNeed.CALM, icon: <Heart size={20} color={colors.text.inverse} />, title: "Acalmar", sub: "Respirar e diminuir ansiedade" },
+      { val: UserNeed.CONNECT, icon: <Users size={20} color={colors.text.inverse} />, title: "Conectar", sub: "Ver relatos de outras mães" },
     ];
 
     return (
@@ -794,7 +794,7 @@ export default function OnboardingFlow() {
                   borderColor: termsAccepted ? colors.primary.main : colors.border.medium
                 }}
               >
-                {termsAccepted && <Check size={14} color="#FFFFFF" strokeWidth={3} />}
+                {termsAccepted && <Check size={14} color={colors.text.inverse} strokeWidth={3} />}
               </View>
               <View className="flex-1">
                 <Text className="text-xs leading-4" style={{ color: colors.text.secondary }}>
@@ -830,7 +830,7 @@ export default function OnboardingFlow() {
                   borderColor: privacyAccepted ? colors.primary.main : colors.border.medium
                 }}
               >
-                {privacyAccepted && <Check size={14} color="#FFFFFF" strokeWidth={3} />}
+                {privacyAccepted && <Check size={14} color={colors.text.inverse} strokeWidth={3} />}
               </View>
               <View className="flex-1">
                 <Text className="text-xs leading-4" style={{ color: colors.text.secondary }}>
@@ -880,7 +880,7 @@ export default function OnboardingFlow() {
                 updateData('notificationsEnabled', value);
               }}
               trackColor={{ false: colors.border.light, true: colors.primary.main }}
-              thumbColor="#FFFFFF"
+              thumbColor={colors.text.inverse}
               accessibilityRole="switch"
               accessibilityLabel="Ativar lembretes de autocuidado"
               accessibilityState={{ checked: formData.notificationsEnabled || false }}
@@ -903,7 +903,7 @@ export default function OnboardingFlow() {
             accessibilityState={{ disabled: !canProceed }}
           >
             <Text className="text-white font-bold text-base">Entrar na minha casa</Text>
-            <Shield size={18} color="#FFFFFF" />
+            <Shield size={18} color={colors.text.inverse} />
           </TouchableOpacity>
 
           {/* Footer */}

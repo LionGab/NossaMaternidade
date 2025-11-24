@@ -5,6 +5,7 @@ import { Image } from 'expo-image';
 import { Eye, EyeOff, ChevronLeft, Sun, Moon, Apple } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../theme/ThemeContext';
+import { Tokens } from '../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface LoginScreenProps {
@@ -156,17 +157,17 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
               contentFit="cover"
             />
           </View>
-          <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 4, color: colors.text.primary }}>
+          <Text style={{ fontSize: Tokens.typography.sizes['2xl'], fontWeight: Tokens.typography.weights.bold, textAlign: 'center', marginBottom: 4, color: colors.text.primary }}>
             Bem-vinda de volta
           </Text>
-          <Text style={{ fontSize: 14, textAlign: 'center', color: colors.text.secondary }}>
+          <Text style={{ fontSize: Tokens.typography.sizes.sm, textAlign: 'center', color: colors.text.secondary }}>
             Entre para acessar seu espaço seguro.
           </Text>
         </View>
 
         {/* Email Input */}
         <View style={{ marginBottom: 16 }}>
-          <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 4, marginLeft: 4, textTransform: 'uppercase', letterSpacing: 1, color: colors.text.secondary }}>
+          <Text style={{ fontSize: Tokens.typography.sizes.xs, fontWeight: Tokens.typography.weights.bold, marginBottom: 4, marginLeft: 4, textTransform: 'uppercase', letterSpacing: 1, color: colors.text.secondary }}>
             E-mail
           </Text>
           <TextInput
@@ -181,7 +182,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
               paddingHorizontal: 16,
               paddingVertical: 16,
               borderRadius: 12,
-              fontSize: 14,
+              fontSize: Tokens.typography.sizes.sm,
               backgroundColor: colors.background.card,
               borderWidth: 1,
               borderColor: colors.border.light,
@@ -192,7 +193,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
 
         {/* Password Input */}
         <View style={{ marginBottom: 8 }}>
-          <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 4, marginLeft: 4, textTransform: 'uppercase', letterSpacing: 1, color: colors.text.secondary }}>
+          <Text style={{ fontSize: Tokens.typography.sizes.xs, fontWeight: Tokens.typography.weights.bold, marginBottom: 4, marginLeft: 4, textTransform: 'uppercase', letterSpacing: 1, color: colors.text.secondary }}>
             Senha
           </Text>
           <View style={{ position: 'relative' }}>
@@ -207,7 +208,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
                 paddingHorizontal: 16,
                 paddingVertical: 16,
                 borderRadius: 12,
-                fontSize: 14,
+                fontSize: Tokens.typography.sizes.sm,
                 backgroundColor: colors.background.card,
                 borderWidth: 1,
                 borderColor: colors.border.light,
@@ -229,7 +230,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
 
         <View style={{ alignItems: 'flex-end', marginBottom: 24 }}>
           <TouchableOpacity onPress={handleForgotPassword}>
-            <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primary.main }}>
+            <Text style={{ fontSize: Tokens.typography.sizes.xs, fontWeight: Tokens.typography.weights.bold, color: colors.primary.main }}>
               Esqueceu a senha?
             </Text>
           </TouchableOpacity>
@@ -259,7 +260,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
         {/* Divider */}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 24 }}>
           <View style={{ height: 1, flex: 1, backgroundColor: colors.border.light }} />
-          <Text style={{ fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 2, color: colors.text.tertiary }}>
+          <Text style={{ fontSize: Tokens.typography.sizes['3xs'], fontWeight: Tokens.typography.weights.bold, textTransform: 'uppercase', letterSpacing: 2, color: colors.text.tertiary }}>
             Ou continue com
           </Text>
           <View style={{ height: 1, flex: 1, backgroundColor: colors.border.light }} />
@@ -318,9 +319,9 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
         </View>
 
         <TouchableOpacity onPress={handleSignUp}>
-          <Text style={{ textAlign: 'center', fontSize: 12, color: colors.text.tertiary }}>
+          <Text style={{ textAlign: 'center', fontSize: Tokens.typography.sizes.xs, color: colors.text.tertiary }}>
             Ainda não tem conta?{' '}
-            <Text style={{ fontWeight: 'bold', color: colors.secondary.main }}>
+            <Text style={{ fontWeight: Tokens.typography.weights.bold, color: colors.secondary.main }}>
               Criar agora
             </Text>
           </Text>
