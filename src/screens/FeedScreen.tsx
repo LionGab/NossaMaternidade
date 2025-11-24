@@ -1,42 +1,217 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, SafeAreaView } from 'react-native';
-import { useTheme } from '../theme/ThemeContext';
+import React, { useState, useCallback, useMemo } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { FlashList } from '@shopify/flash-list';
 import { Heart, MessageCircle, Share2, BookmarkPlus, Play, FileText, Mic, Video } from 'lucide-react-native';
+import { useTheme } from '../theme/ThemeContext';
+import { useHaptics } from '../hooks/useHaptics';
 import { MOCK_POSTS } from '../constants/data';
 
-type FilterType = 'all' | 'vídeo' | 'texto' | 'áudio' | 'reels';
+type FilterType = 'all' | 'video' | 'text' | 'audio' | 'reels';
+
+interface FilterChipProps {
+  option: { value: FilterType; label: string };
+  isSelected: boolean;
+  colors: any;
+  onPress: () => void;
+}
+
+const FilterChip: React.FC<FilterChipProps> = ({ option, isSelected, colors, onPress }) => {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[
+        styles.filterChip,
+        {
+          backgroundColor: isSelected ? colors.primary.main : colors.background.card,
+          borderColor: isSelected ? colors.primary.main : colors.border.light,
+        },
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel={`Filtrar por ${option.label}`}
+      accessibilityHint={isSelected ? 'Filtro ativo' : 'Toque para ativar este filtro'}
+      accessibilityState={{ selected: isSelected }}
+    >
+      <Text
+        style={[
+          styles.filterChipText,
+          {
+            color: isSelected ? '#FFFFFF' : colors.text.secondary,
+            fontWeight: isSelected ? '700' : '600',
+          },
+        ]}
+      >
+        {option.label}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
+interface PostCardProps {
+  item: typeof MOCK_POSTS[0];
+  colors: any;
+  onPress?: () => void;
+}
+
+const PostCard: React.FC<PostCardProps> = ({ item, colors, onPress }) => {
+  const getIconForType = useCallback(() => {
+    switch (item.type.toLowerCase()) {
+      case 'video':
+        return <Video size={16} color="#FFFFFF" />;
+      case 'text':
+      case 'article':
+        return <FileText size={16} color="#FFFFFF" />;
+      case 'audio':
+        return <Mic size={16} color="#FFFFFF" />;
+      case 'reels':
+        return <Play size={16} color="#FFFFFF" />;
+      default:
+        return null;
+    }
+  }, [item.type]);
+
+  const getTypeLabel = useCallback((type: string): string => {
+    const labels: Record<string, string> = {
+      video: 'Vídeo',
+      text: 'Texto',
+      article: 'Artigo',
+      audio: 'Áudio',
+      reels: 'Reels',
+    };
+    return labels[type.toLowerCase()] || type;
+  }, []);
+
+  return (
+    <TouchableOpacity
+      style={[styles.postCard, { borderBottomColor: colors.border.light, backgroundColor: colors.background.canvas }]}
+      activeOpacity={0.7}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${item.title}. Tipo: ${getTypeLabel(item.type)}. ${item.isNew ? 'Novo conteúdo' : ''}`}
+      accessibilityHint="Toque para ver detalhes deste conteúdo"
+    >
+      {/* Post Image */}
+      <View style={styles.postImageContainer}>
+        <Image
+          source={{ uri: item.thumbnailUrl }}
+          style={styles.postImage}
+          contentFit="cover"
+          transition={200}
+          accessibilityLabel={`Imagem de capa: ${item.title}`}
+          accessibilityIgnoresInvertColors
+        />
+        {/* Type badge */}
+        <View style={styles.typeBadge}>
+          {getIconForType()}
+          <Text style={styles.typeBadgeText}>{getTypeLabel(item.type)}</Text>
+        </View>
+        {/* New badge */}
+        {item.isNew && (
+          <View style={styles.newBadge}>
+            <Text style={styles.newBadgeText}>NOVO</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Post Title */}
+      <Text style={[styles.postTitle, { color: colors.text.primary }]} numberOfLines={2}>
+        {item.title}
+      </Text>
+
+      {/* Actions */}
+      <View style={styles.postActions} accessible={true} accessibilityRole="toolbar">
+        <TouchableOpacity
+          style={styles.postAction}
+          accessibilityRole="button"
+          accessibilityLabel="Curtir. 12 curtidas"
+          accessibilityHint="Toque para curtir este post"
+        >
+          <Heart size={20} color={colors.text.tertiary} />
+          <Text style={[styles.postActionText, { color: colors.text.tertiary }]}>12</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.postAction}
+          accessibilityRole="button"
+          accessibilityLabel="Comentar. 5 comentários"
+          accessibilityHint="Toque para ver e adicionar comentários"
+        >
+          <MessageCircle size={20} color={colors.text.tertiary} />
+          <Text style={[styles.postActionText, { color: colors.text.tertiary }]}>5</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel="Compartilhar"
+          accessibilityHint="Toque para compartilhar este conteúdo"
+        >
+          <Share2 size={20} color={colors.text.tertiary} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.postActionBookmark}
+          accessibilityRole="button"
+          accessibilityLabel="Salvar nos favoritos"
+          accessibilityHint="Toque para salvar este conteúdo"
+        >
+          <BookmarkPlus size={20} color={colors.text.tertiary} />
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 export default function FeedScreen() {
   const { colors, isDark } = useTheme();
+  const haptics = useHaptics();
   const [filter, setFilter] = useState<FilterType>('all');
 
-  const filteredPosts = MOCK_POSTS.filter(p =>
-    filter === 'all' || p.type.toLowerCase() === filter.toLowerCase()
+  const filterOptions: { value: FilterType; label: string }[] = useMemo(
+    () => [
+      { value: 'all', label: 'Tudo' },
+      { value: 'video', label: 'Vídeo' },
+      { value: 'text', label: 'Texto' },
+      { value: 'audio', label: 'Áudio' },
+      { value: 'reels', label: 'Reels' },
+    ],
+    []
   );
 
-  const filterOptions: { value: FilterType; label: string }[] = [
-    { value: 'all', label: 'Tudo' },
-    { value: 'vídeo', label: 'Vídeo' },
-    { value: 'texto', label: 'Texto' },
-    { value: 'áudio', label: 'Áudio' },
-    { value: 'reels', label: 'Reels' },
-  ];
+  const filteredPosts = useMemo(() => {
+    if (filter === 'all') return MOCK_POSTS;
+    return MOCK_POSTS.filter((p) => p.type.toLowerCase() === filter.toLowerCase());
+  }, [filter]);
+
+  const handleFilterChange = useCallback(
+    (value: FilterType) => {
+      haptics.light();
+      setFilter(value);
+    },
+    [haptics]
+  );
+
+  const renderPost = useCallback(
+    ({ item }: { item: typeof MOCK_POSTS[0] }) => <PostCard item={item} colors={colors} />,
+    [colors]
+  );
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: colors.background.canvas }}
+      style={[styles.container, { backgroundColor: colors.background.canvas }]}
       accessible={true}
       accessibilityLabel="Tela do Feed Mundo Nath"
     >
       {/* Header */}
       <View
-        style={{ padding: 16, backgroundColor: colors.background.card, borderBottomWidth: 1, borderBottomColor: colors.border.light }}
+        style={[
+          styles.header,
+          {
+            backgroundColor: colors.background.card,
+            borderBottomColor: colors.border.light,
+          },
+        ]}
         accessible={true}
         accessibilityRole="header"
       >
         <Text
-          style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}
+          style={[styles.headerTitle, { color: colors.text.primary }]}
           accessibilityRole="header"
           accessibilityLabel="Feed de conteúdos Mundo Nath"
         >
@@ -47,33 +222,18 @@ export default function FeedScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={{ marginTop: 12, marginLeft: -16, paddingLeft: 16 }}
+          style={styles.filterScroll}
+          contentContainerStyle={styles.filterContainer}
           accessible={false}
         >
           {filterOptions.map((option) => (
-            <TouchableOpacity
+            <FilterChip
               key={option.value}
-              onPress={() => setFilter(option.value)}
-              style={{
-                paddingHorizontal: 16,
-                paddingVertical: 8,
-                borderRadius: 20,
-                backgroundColor: filter === option.value ? colors.primary.main : colors.background.elevated,
-                marginRight: 8,
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={`Filtrar por ${option.label}`}
-              accessibilityHint={filter === option.value ? 'Filtro ativo' : 'Toque para ativar este filtro'}
-              accessibilityState={{ selected: filter === option.value }}
-            >
-              <Text style={{
-                color: filter === option.value ? '#FFFFFF' : colors.text.secondary,
-                fontWeight: '600',
-                fontSize: 14,
-              }}>
-                {option.label}
-              </Text>
-            </TouchableOpacity>
+              option={option}
+              isSelected={filter === option.value}
+              colors={colors}
+              onPress={() => handleFilterChange(option.value)}
+            />
           ))}
         </ScrollView>
       </View>
@@ -81,119 +241,23 @@ export default function FeedScreen() {
       {/* Feed List */}
       {filteredPosts.length === 0 ? (
         <View
-          style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }}
+          style={styles.emptyState}
           accessible={true}
           accessibilityRole="text"
           accessibilityLabel="Nenhum conteúdo encontrado para este filtro"
         >
-          <Text style={{ fontSize: 16, color: colors.text.secondary, textAlign: 'center' }}>
+          <Text style={[styles.emptyStateText, { color: colors.text.secondary }]}>
             Nenhum conteúdo encontrado para este filtro
           </Text>
         </View>
       ) : (
         <FlashList
           data={filteredPosts}
-          renderItem={({ item }) => {
-            const getIconForType = () => {
-              switch (item.type.toLowerCase()) {
-                case 'video': return <Video size={16} color="#FFFFFF" />;
-                case 'text': return <FileText size={16} color="#FFFFFF" />;
-                case 'audio': return <Mic size={16} color="#FFFFFF" />;
-                case 'reels': return <Play size={16} color="#FFFFFF" />;
-                default: return null;
-              }
-            };
-
-            return (
-              <TouchableOpacity
-                style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border.light, backgroundColor: colors.background.canvas }}
-                activeOpacity={0.7}
-                accessibilityRole="button"
-                accessibilityLabel={`${item.title}. Tipo: ${item.type}. ${item.isNew ? 'Novo conteúdo' : ''}`}
-                accessibilityHint="Toque para ver detalhes deste conteúdo"
-              >
-                {/* Post Image */}
-                <View style={{ position: 'relative', borderRadius: 12, overflow: 'hidden', marginBottom: 12 }}>
-                  <Image
-                    source={{ uri: item.thumbnailUrl }}
-                    style={{ width: '100%', height: 200, backgroundColor: '#E5E7EB' }}
-                    resizeMode="cover"
-                    accessible={true}
-                    accessibilityLabel={`Imagem de capa: ${item.title}`}
-                    accessibilityIgnoresInvertColors
-                  />
-                  {/* Type badge */}
-                  <View
-                    style={{ position: 'absolute', top: 12, left: 12, backgroundColor: 'rgba(0, 0, 0, 0.6)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, flexDirection: 'row', alignItems: 'center', gap: 6 }}
-                    accessible={false}
-                  >
-                    {getIconForType()}
-                    <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '600' }}>{item.type}</Text>
-                  </View>
-                  {/* New badge */}
-                  {item.isNew && (
-                    <View
-                      style={{ position: 'absolute', top: 12, right: 12, backgroundColor: '#FF8FA3', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 }}
-                      accessible={false}
-                    >
-                      <Text style={{ color: '#FFFFFF', fontSize: 10, fontWeight: 'bold' }}>NOVO</Text>
-                    </View>
-                  )}
-                </View>
-
-                {/* Post Title */}
-                <Text
-                  style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 12, color: colors.text.primary, lineHeight: 24 }}
-                  accessibilityRole="header"
-                  accessible={false}
-                >
-                  {item.title}
-                </Text>
-
-                {/* Actions */}
-                <View
-                  style={{ flexDirection: 'row', gap: 20 }}
-                  accessible={true}
-                  accessibilityLabel="Ações do post: 12 curtidas, 5 comentários"
-                  accessibilityRole="toolbar"
-                >
-                  <TouchableOpacity
-                    style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
-                    accessibilityRole="button"
-                    accessibilityLabel="Curtir. 12 curtidas"
-                    accessibilityHint="Toque para curtir este post"
-                  >
-                    <Heart size={20} color={colors.text.tertiary} />
-                    <Text style={{ color: colors.text.tertiary, fontSize: 14, fontWeight: '500' }}>12</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
-                    accessibilityRole="button"
-                    accessibilityLabel="Comentar. 5 comentários"
-                    accessibilityHint="Toque para ver e adicionar comentários"
-                  >
-                    <MessageCircle size={20} color={colors.text.tertiary} />
-                    <Text style={{ color: colors.text.tertiary, fontSize: 14, fontWeight: '500' }}>5</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    accessibilityRole="button"
-                    accessibilityLabel="Compartilhar"
-                    accessibilityHint="Toque para compartilhar este conteúdo"
-                  >
-                    <Share2 size={20} color={colors.text.tertiary} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={{ marginLeft: 'auto' }}
-                    accessibilityRole="button"
-                    accessibilityLabel="Salvar nos favoritos"
-                    accessibilityHint="Toque para salvar este conteúdo"
-                  >
-                    <BookmarkPlus size={20} color={colors.text.tertiary} />
-                  </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-            );
-          }}
+          renderItem={renderPost}
+          keyExtractor={(item) => item.id}
+          estimatedItemSize={350}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
           accessible={true}
           accessibilityRole="list"
           accessibilityLabel={`Lista de posts. ${filteredPosts.length} ${filteredPosts.length === 1 ? 'post' : 'posts'} ${filter === 'all' ? '' : `filtrado por ${filter}`}`}
@@ -202,3 +266,117 @@ export default function FeedScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    padding: 16,
+    borderBottomWidth: 1,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  filterScroll: {
+    marginLeft: -16,
+    paddingLeft: 16,
+  },
+  filterContainer: {
+    paddingRight: 16,
+  },
+  filterChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    borderWidth: 1,
+  },
+  filterChipText: {
+    fontSize: 14,
+  },
+  listContent: {
+    paddingBottom: 100,
+  },
+  postCard: {
+    padding: 16,
+    borderBottomWidth: 1,
+  },
+  postImageContainer: {
+    position: 'relative',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
+  postImage: {
+    width: '100%',
+    height: 200,
+    backgroundColor: '#E5E7EB',
+  },
+  typeBadge: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  typeBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  newBadge: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    backgroundColor: '#FF8FA3',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  newBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  postTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    lineHeight: 24,
+  },
+  postActions: {
+    flexDirection: 'row',
+    gap: 20,
+    alignItems: 'center',
+  },
+  postAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  postActionText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  postActionBookmark: {
+    marginLeft: 'auto',
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+});

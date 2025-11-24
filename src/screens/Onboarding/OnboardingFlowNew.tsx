@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput, Switch } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Switch, Platform, KeyboardAvoidingView, Dimensions, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { ArrowRight, Check, Sun, ArrowLeft, Heart, Baby, Users, Brain, Bell, Shield } from 'lucide-react-native';
@@ -8,10 +8,14 @@ import { Colors } from '../../constants/Colors';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../theme/ThemeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useHaptics } from '../../hooks/useHaptics';
 
 export default function OnboardingFlow() {
   const navigation = useNavigation<any>();
   const { isDark, toggleTheme, colors } = useTheme();
+  const haptics = useHaptics();
+  const { width } = useWindowDimensions();
+  const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
 
   // Flow Management
   const [step, setStep] = useState(1);
@@ -23,12 +27,41 @@ export default function OnboardingFlow() {
   // Temporary state for timeline slider
   const [sliderValue, setSliderValue] = useState(20);
 
+  // Terms & Privacy acceptance (Step 9)
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+
+  // Responsividade: atualizar dimensões quando a tela rotacionar
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setScreenDimensions(window);
+    });
+    return () => subscription?.remove();
+  }, []);
+
+  const isSmallScreen = width < 375;
+  const isLargeScreen = width > 414;
+  const isXL = width >= 768;
+
+  const containerStyle = {
+    width: '100%',
+    maxWidth: isXL ? 640 : 560,
+    alignSelf: 'center' as const,
+    paddingHorizontal: isSmallScreen ? 16 : 24,
+  };
+
+  const contentStyle = {
+    paddingBottom: 24,
+  };
+
   const updateData = (key: keyof UserProfile, value: any) => {
+    haptics.light();
     setFormData(prev => ({ ...prev, [key]: value }));
   };
 
   // Logic to skip timeline screen if not pregnant or new mom
   const nextStep = () => {
+    haptics.medium();
     let next = step + 1;
 
     // Skip Timeline (Step 4) if not applicable
@@ -41,6 +74,7 @@ export default function OnboardingFlow() {
   };
 
   const prevStep = () => {
+    haptics.light();
     let prev = step - 1;
     if (step === 5) {
       const needsTimeline = formData.stage === UserStage.PREGNANT || formData.stage === UserStage.NEW_MOM;
@@ -50,11 +84,13 @@ export default function OnboardingFlow() {
   };
 
   const handleFinish = async () => {
+    haptics.success();
     try {
       await AsyncStorage.setItem('nath_user', JSON.stringify(formData));
       navigation.navigate('Main');
     } catch (error) {
       console.error('Erro ao salvar dados do usuário:', error);
+      haptics.error();
     }
   };
 
@@ -63,7 +99,13 @@ export default function OnboardingFlow() {
   const Header = () => (
     <View className="flex-row justify-between items-center mb-6">
       {step > 1 ? (
-        <TouchableOpacity onPress={prevStep} className="p-2 -ml-2">
+        <TouchableOpacity 
+          onPress={prevStep} 
+          className="p-2 -ml-2"
+          accessibilityRole="button"
+          accessibilityLabel="Voltar para etapa anterior"
+          accessibilityHint="Retorna para a pergunta anterior do onboarding"
+        >
           <ArrowLeft size={24} color={colors.text.secondary} />
         </TouchableOpacity>
       ) : <View className="w-6" />}
@@ -84,13 +126,19 @@ export default function OnboardingFlow() {
       )}
 
       <TouchableOpacity
-        onPress={toggleTheme}
+        onPress={() => {
+          haptics.light();
+          toggleTheme();
+        }}
         className="w-10 h-10 rounded-full items-center justify-center"
         style={{
           backgroundColor: colors.background.card,
           borderWidth: 1,
           borderColor: colors.border.light
         }}
+        accessibilityRole="button"
+        accessibilityLabel={isDark ? "Alternar para modo claro" : "Alternar para modo escuro"}
+        accessibilityHint="Muda o tema entre claro e escuro"
       >
         <Sun size={18} color={colors.text.primary} />
       </TouchableOpacity>
@@ -111,40 +159,76 @@ export default function OnboardingFlow() {
   // 1. WELCOME (After Splash)
   if (step === 1) {
     return (
-      <SafeAreaView className="flex-1 p-6" style={{ backgroundColor: colors.background.canvas }}>
-        <Header />
-        <View className="flex-1 justify-center items-center">
-          <View className="w-32 h-32 rounded-full p-1 mb-6 relative" style={{ backgroundColor: colors.background.card, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 }}>
-            <Image
-              source={{ uri: 'https://i.imgur.com/GDYdiuy.jpg' }}
-              className="w-full h-full rounded-full"
-              contentFit="cover"
-            />
-            <View className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-green-400" style={{ borderWidth: 4, borderColor: colors.background.canvas }} />
+      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          className="flex-1"
+        >
+          <View className="flex-1" style={containerStyle}>
+            <Header />
+            <View className="flex-1 justify-center items-center">
+              {/* Title - Nossa Maternidade */}
+              <View className="mb-6 sm:mb-8">
+                <Text 
+                  className="text-3xl sm:text-4xl font-bold text-center mb-2" 
+                  style={{ color: colors.text.primary }}
+                  accessibilityRole="header"
+                  accessibilityLabel="Nossa Maternidade"
+                >
+                  Nossa{'\n'}Maternidade
+                </Text>
+              </View>
+
+              {/* Circular Illustration */}
+              <View 
+                className="rounded-full mb-6 sm:mb-8 overflow-hidden border-4 shadow-xl" 
+                style={{ 
+                  width: isSmallScreen ? 140 : isLargeScreen ? 180 : 160,
+                  height: isSmallScreen ? 140 : isLargeScreen ? 180 : 160,
+                  borderColor: colors.background.card, 
+                  shadowColor: '#000', 
+                  shadowOffset: { width: 0, height: 4 }, 
+                  shadowOpacity: 0.3, 
+                  shadowRadius: 8, 
+                  elevation: 8 
+                }}
+                accessible={true}
+                accessibilityLabel="Ilustração circular de mãe e bebê"
+                accessibilityRole="image"
+              >
+                <Image
+                  source={{ uri: 'https://i.imgur.com/GDYdiuy.jpg' }}
+                  className="w-full h-full"
+                  contentFit="cover"
+                  transition={200}
+                />
+              </View>
+
+              {/* Quote */}
+              <Text 
+                className="text-base sm:text-lg font-medium text-center italic mb-6 sm:mb-8 max-w-[280px]" 
+                style={{ color: colors.text.primary }}
+                accessibilityRole="text"
+                accessibilityLabel="Você é forte. Mesmo nos dias em que não parece."
+              >
+                "Você é forte.{'\n'}Mesmo nos dias em que não parece."
+              </Text>
+
+              <TouchableOpacity
+                onPress={nextStep}
+                className="w-full py-4 rounded-xl shadow-lg active:scale-95 flex-row items-center justify-center gap-2"
+                style={{ backgroundColor: colors.primary.main }}
+                activeOpacity={0.9}
+                accessibilityRole="button"
+                accessibilityLabel="Começar com a Nath"
+                accessibilityHint="Inicia o processo de onboarding"
+              >
+                <Text className="text-white font-bold text-base">Começar com a Nath</Text>
+                <ArrowRight size={20} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
           </View>
-
-          <Text className="text-3xl font-bold text-center mb-3" style={{ color: colors.text.primary }}>
-            Oi, que bom que você chegou.
-          </Text>
-
-          <Text className="text-lg font-medium text-center italic mb-6 max-w-[300px]" style={{ color: colors.primary.main }}>
-            "Aqui, você não precisa fingir que está tudo bem."
-          </Text>
-
-          <Text className="text-base text-center mb-8 max-w-[280px]" style={{ color: colors.text.secondary }}>
-            Eu sou a MãesValente. Quero criar um espaço seguro para você.{'\n'}Vamos conversar rapidinho?
-          </Text>
-
-          <TouchableOpacity
-            onPress={nextStep}
-            className="w-full py-4 rounded-xl shadow-lg active:scale-95 flex-row items-center justify-center gap-2"
-            style={{ backgroundColor: colors.primary.main }}
-            activeOpacity={0.9}
-          >
-            <Text className="text-white font-bold text-base">Começar agora</Text>
-            <ArrowRight size={20} color="#FFFFFF" />
-          </TouchableOpacity>
-        </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }
@@ -152,42 +236,64 @@ export default function OnboardingFlow() {
   // 2. NAME
   if (step === 2) {
     return (
-      <SafeAreaView className="flex-1 p-6" style={{ backgroundColor: colors.background.canvas }}>
-        <Header />
-        <StepTitle
-          title="Como você gosta de ser chamada?"
-          subtitle="Quero que nossa conversa seja íntima, como amigas."
-        />
-
-        <View className="flex-1">
-          <TextInput
-            autoFocus
-            placeholder="Seu nome ou apelido"
-            placeholderTextColor={colors.text.tertiary}
-            value={formData.name || ''}
-            onChangeText={(text) => updateData('name', text)}
-            className="w-full px-4 py-6 rounded-xl text-lg"
-            style={{
-              backgroundColor: colors.background.card,
-              borderWidth: 1,
-              borderColor: colors.border.light,
-              color: colors.text.primary
-            }}
-          />
-        </View>
-
-        <TouchableOpacity
-          onPress={nextStep}
-          disabled={!formData.name}
-          className="w-full py-4 rounded-xl"
-          style={{
-            backgroundColor: formData.name ? colors.text.primary : colors.border.light,
-            opacity: formData.name ? 1 : 0.5
-          }}
-          activeOpacity={0.9}
+      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          className="flex-1"
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
         >
-          <Text className="text-white font-bold text-center">Continuar</Text>
-        </TouchableOpacity>
+          <View className="flex-1" style={containerStyle}>
+            <Header />
+            <StepTitle
+              title="Como você gosta de ser chamada?"
+              subtitle="Quero que nossa conversa seja íntima, como amigas."
+            />
+
+            <View className="flex-1 justify-center">
+              <TextInput
+                autoFocus
+                placeholder="Seu nome ou apelido"
+                placeholderTextColor={colors.text.tertiary}
+                value={formData.name || ''}
+                onChangeText={(text) => updateData('name', text)}
+                className="w-full px-4 py-5 sm:py-6 rounded-xl text-base sm:text-lg"
+                style={{
+                  backgroundColor: colors.background.card,
+                  borderWidth: 1,
+                  borderColor: colors.border.light,
+                  color: colors.text.primary,
+                  minHeight: isSmallScreen ? 52 : 56
+                }}
+                accessibilityLabel="Campo de texto para seu nome ou apelido"
+                accessibilityHint="Digite como você gosta de ser chamada"
+                accessibilityRole="text"
+                returnKeyType="done"
+                onSubmitEditing={() => {
+                  if (formData.name) {
+                    nextStep();
+                  }
+                }}
+              />
+            </View>
+
+            <TouchableOpacity
+              onPress={nextStep}
+              disabled={!formData.name}
+              className="w-full py-4 rounded-xl"
+              style={{
+                backgroundColor: formData.name ? colors.text.primary : colors.border.light,
+                opacity: formData.name ? 1 : 0.5
+              }}
+              activeOpacity={0.9}
+              accessibilityRole="button"
+              accessibilityLabel="Continuar"
+              accessibilityHint={formData.name ? "Avança para a próxima etapa" : "Preencha seu nome para continuar"}
+              accessibilityState={{ disabled: !formData.name }}
+            >
+              <Text className="text-white font-bold text-center">Continuar</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }
@@ -196,44 +302,65 @@ export default function OnboardingFlow() {
   if (step === 3) {
     const stages = Object.values(UserStage);
     return (
-      <SafeAreaView className="flex-1 p-6" style={{ backgroundColor: colors.background.canvas }}>
-        <Header />
-        <StepTitle
-          title={`Prazer, ${formData.name}! Em que fase você está?`}
-          subtitle="Vou adaptar meus conselhos para o seu momento."
-        />
+      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
+        <View className="flex-1" style={containerStyle}>
+          <Header />
+          <StepTitle
+            title={`Prazer, ${formData.name}! Em que fase você está?`}
+            subtitle="Vou adaptar meus conselhos para o seu momento."
+          />
 
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          <View className="space-y-3">
-            {stages.map((stage) => (
-              <TouchableOpacity
-                key={stage}
-                onPress={() => { updateData('stage', stage); nextStep(); }}
-                className="w-full p-5 rounded-xl flex-row items-center justify-between"
-                style={{
-                  borderWidth: 2,
-                  borderColor: formData.stage === stage ? colors.primary.main : colors.border.light,
-                  backgroundColor: formData.stage === stage ? colors.primary.light + '20' : colors.background.card
-                }}
-                activeOpacity={0.9}
-              >
-                <Text className="font-semibold" style={{ color: formData.stage === stage ? colors.primary.main : colors.text.primary }}>
-                  {stage}
-                </Text>
-                <View
-                  className="w-5 h-5 rounded-full items-center justify-center"
+          <ScrollView 
+            className="flex-1" 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ ...contentStyle, paddingBottom: 20 }}
+            accessible={true}
+            accessibilityRole="list"
+            accessibilityLabel="Lista de fases da maternidade"
+          >
+            <View className="space-y-3">
+              {stages.map((stage) => (
+                <TouchableOpacity
+                  key={stage}
+                  onPress={() => {
+                    updateData('stage', stage);
+                    nextStep();
+                  }}
+                  className="w-full p-4 sm:p-5 rounded-xl flex-row items-center justify-between"
                   style={{
                     borderWidth: 2,
                     borderColor: formData.stage === stage ? colors.primary.main : colors.border.light,
-                    backgroundColor: formData.stage === stage ? colors.primary.main : 'transparent'
+                    backgroundColor: formData.stage === stage ? colors.primary.light + '20' : colors.background.card,
+                    minHeight: isSmallScreen ? 56 : 64
                   }}
+                  activeOpacity={0.9}
+                  accessibilityRole="button"
+                  accessibilityLabel={stage}
+                  accessibilityHint="Seleciona esta fase da maternidade"
+                  accessibilityState={{ selected: formData.stage === stage }}
                 >
-                  {formData.stage === stage && <Check size={12} color="#FFFFFF" />}
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
+                  <Text 
+                    className="font-semibold text-base sm:text-lg" 
+                    style={{ color: formData.stage === stage ? colors.primary.main : colors.text.primary }}
+                  >
+                    {stage}
+                  </Text>
+                  <View
+                    className="w-5 h-5 rounded-full items-center justify-center"
+                    style={{
+                      borderWidth: 2,
+                      borderColor: formData.stage === stage ? colors.primary.main : colors.border.light,
+                      backgroundColor: formData.stage === stage ? colors.primary.main : 'transparent'
+                    }}
+                    accessible={false}
+                  >
+                    {formData.stage === stage && <Check size={12} color="#FFFFFF" />}
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }
@@ -244,56 +371,86 @@ export default function OnboardingFlow() {
     const maxVal = isPregnant ? 42 : 24; // 42 weeks or 24 months
 
     return (
-      <SafeAreaView className="flex-1 p-6" style={{ backgroundColor: colors.background.canvas }}>
-        <Header />
-        <StepTitle
-          title="Conta um pouquinho mais..."
-          subtitle={isPregnant ? "Assim te aviso sobre sintomas comuns dessa semana." : "Para acompanhar os saltos de desenvolvimento."}
-        />
+      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
+        <View className="flex-1" style={containerStyle}>
+          <Header />
+          <StepTitle
+            title="Conta um pouquinho mais..."
+            subtitle={isPregnant ? "Assim te aviso sobre sintomas comuns dessa semana." : "Para acompanhar os saltos de desenvolvimento."}
+          />
 
-        <View className="flex-1 justify-center items-center">
-          <Text className="text-6xl font-bold mb-2" style={{ color: colors.primary.main }}>
-            {sliderValue}
-          </Text>
-          <Text className="text-gray-500 font-medium mb-12 uppercase tracking-widest text-sm">
-            {isPregnant ? 'Semanas' : 'Meses'}
-          </Text>
-
-          <View className="w-full">
-            {/* React Native Slider - you'll need @react-native-community/slider */}
-            <Text className="text-center text-sm" style={{ color: colors.text.secondary }}>
-              Use os botões + e - para ajustar
+          <View className="flex-1 justify-center items-center">
+            <Text 
+              className="text-5xl sm:text-6xl font-bold mb-2" 
+              style={{ color: colors.primary.main }}
+              accessibilityRole="text"
+              accessibilityLabel={`${sliderValue} ${isPregnant ? 'semanas' : 'meses'}`}
+            >
+              {sliderValue}
             </Text>
-            <View className="flex-row items-center justify-center gap-4 mt-4">
-              <TouchableOpacity
-                onPress={() => setSliderValue(Math.max(1, sliderValue - 1))}
-                className="w-12 h-12 rounded-full items-center justify-center"
-                style={{ backgroundColor: colors.primary.main }}
+            <Text 
+              className="font-medium mb-8 sm:mb-12 uppercase tracking-widest text-sm" 
+              style={{ color: colors.text.secondary }}
+            >
+              {isPregnant ? 'Semanas' : 'Meses'}
+            </Text>
+
+            <View className="w-full">
+              <Text 
+                className="text-center text-sm mb-4" 
+                style={{ color: colors.text.secondary }}
+                accessibilityRole="text"
               >
-                <Text className="text-white text-2xl font-bold">-</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setSliderValue(Math.min(maxVal, sliderValue + 1))}
-                className="w-12 h-12 rounded-full items-center justify-center"
-                style={{ backgroundColor: colors.primary.main }}
-              >
-                <Text className="text-white text-2xl font-bold">+</Text>
-              </TouchableOpacity>
+                Use os botões + e - para ajustar
+              </Text>
+              <View className="flex-row items-center justify-center gap-4">
+                <TouchableOpacity
+                  onPress={() => {
+                    haptics.light();
+                    setSliderValue(Math.max(1, sliderValue - 1));
+                  }}
+                  className="w-12 h-12 rounded-full items-center justify-center"
+                  style={{ backgroundColor: colors.primary.main }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Diminuir valor"
+                  accessibilityHint={`Diminui em 1 ${isPregnant ? 'semana' : 'mês'}`}
+                  disabled={sliderValue <= 1}
+                >
+                  <Text className="text-white text-2xl font-bold">-</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    haptics.light();
+                    setSliderValue(Math.min(maxVal, sliderValue + 1));
+                  }}
+                  className="w-12 h-12 rounded-full items-center justify-center"
+                  style={{ backgroundColor: colors.primary.main }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Aumentar valor"
+                  accessibilityHint={`Aumenta em 1 ${isPregnant ? 'semana' : 'mês'}`}
+                  disabled={sliderValue >= maxVal}
+                >
+                  <Text className="text-white text-2xl font-bold">+</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
 
-        <TouchableOpacity
-          onPress={() => {
-            updateData('timelineInfo', `${sliderValue} ${isPregnant ? 'semanas' : 'meses'}`);
-            nextStep();
-          }}
-          className="w-full py-4 rounded-xl"
-          style={{ backgroundColor: colors.text.primary }}
-          activeOpacity={0.9}
-        >
-          <Text className="text-white font-bold text-center">Confirmar</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              updateData('timelineInfo', `${sliderValue} ${isPregnant ? 'semanas' : 'meses'}`);
+              nextStep();
+            }}
+            className="w-full py-4 rounded-xl"
+            style={{ backgroundColor: colors.text.primary }}
+            activeOpacity={0.9}
+            accessibilityRole="button"
+            accessibilityLabel="Confirmar"
+            accessibilityHint="Confirma o valor e avança para a próxima etapa"
+          >
+            <Text className="text-white font-bold text-center">Confirmar</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     );
   }
@@ -302,31 +459,51 @@ export default function OnboardingFlow() {
   if (step === 5) {
     const feelings = Object.values(UserEmotion);
     return (
-      <SafeAreaView className="flex-1 p-6" style={{ backgroundColor: colors.background.canvas }}>
-        <Header />
-        <StepTitle
-          title="Como você está se sentindo hoje?"
-          subtitle="Seja sincera. Aqui é um lugar livre de julgamentos."
-        />
+      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
+        <View className="flex-1" style={containerStyle}>
+          <Header />
+          <StepTitle
+            title="Como você está se sentindo hoje?"
+            subtitle="Seja sincera. Aqui é um lugar livre de julgamentos."
+          />
 
-        <View className="flex-1 flex-row flex-wrap gap-3">
-          {feelings.map((feeling) => (
-            <TouchableOpacity
-              key={feeling}
-              onPress={() => { updateData('currentFeeling', feeling); nextStep(); }}
-              className="px-6 py-3 rounded-full"
-              style={{
-                borderWidth: 1,
-                borderColor: formData.currentFeeling === feeling ? Colors.accent.pink : colors.border.light,
-                backgroundColor: formData.currentFeeling === feeling ? Colors.accent.pink : colors.background.card
-              }}
-              activeOpacity={0.9}
-            >
-              <Text style={{ color: formData.currentFeeling === feeling ? colors.raw.neutral[0] : colors.text.primary }}>
-                {feeling}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          <ScrollView 
+            className="flex-1" 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ ...contentStyle, flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingBottom: 20 }}
+            accessible={true}
+            accessibilityRole="list"
+            accessibilityLabel="Lista de sentimentos"
+          >
+            {feelings.map((feeling) => (
+              <TouchableOpacity
+                key={feeling}
+                onPress={() => { 
+                  updateData('currentFeeling', feeling); 
+                  nextStep(); 
+                }}
+                className="px-5 sm:px-6 py-3 rounded-full"
+                style={{
+                  borderWidth: 1,
+                  borderColor: formData.currentFeeling === feeling ? Colors.accent.pink : colors.border.light,
+                  backgroundColor: formData.currentFeeling === feeling ? Colors.accent.pink : colors.background.card,
+                  minHeight: isSmallScreen ? 40 : 44
+                }}
+                activeOpacity={0.9}
+                accessibilityRole="button"
+                accessibilityLabel={feeling}
+                accessibilityHint="Seleciona este sentimento"
+                accessibilityState={{ selected: formData.currentFeeling === feeling }}
+              >
+                <Text 
+                  className="text-sm sm:text-base"
+                  style={{ color: formData.currentFeeling === feeling ? colors.raw.neutral[0] : colors.text.primary }}
+                >
+                  {feeling}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
       </SafeAreaView>
     );
@@ -336,34 +513,54 @@ export default function OnboardingFlow() {
   if (step === 6) {
     const challenges = Object.values(UserChallenge);
     return (
-      <SafeAreaView className="flex-1 p-6" style={{ backgroundColor: colors.background.canvas }}>
-        <Header />
-        <StepTitle
-          title="O que mais pesa no seu coração agora?"
-          subtitle="Vou priorizar conteúdos para te ajudar nisso."
-        />
+      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
+        <View className="flex-1" style={containerStyle}>
+          <Header />
+          <StepTitle
+            title="O que mais pesa no seu coração agora?"
+            subtitle="Vou priorizar conteúdos para te ajudar nisso."
+          />
 
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          <View className="space-y-3">
-            {challenges.map((challenge) => (
-              <TouchableOpacity
-                key={challenge}
-                onPress={() => { updateData('biggestChallenge', challenge); nextStep(); }}
-                className="w-full p-4 rounded-xl"
-                style={{
-                  backgroundColor: formData.biggestChallenge === challenge ? colors.text.primary : colors.background.card,
-                  borderWidth: 1,
-                  borderColor: formData.biggestChallenge === challenge ? colors.text.primary : 'transparent'
-                }}
-                activeOpacity={0.9}
-              >
-                <Text style={{ color: formData.biggestChallenge === challenge ? colors.raw.neutral[0] : colors.text.primary }}>
-                  {challenge}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
+          <ScrollView 
+            className="flex-1" 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ ...contentStyle, paddingBottom: 20 }}
+            accessible={true}
+            accessibilityRole="list"
+            accessibilityLabel="Lista de desafios"
+          >
+            <View className="space-y-3">
+              {challenges.map((challenge) => (
+                <TouchableOpacity
+                  key={challenge}
+                  onPress={() => { 
+                    updateData('biggestChallenge', challenge); 
+                    nextStep(); 
+                  }}
+                  className="w-full p-4 sm:p-5 rounded-xl"
+                  style={{
+                    backgroundColor: formData.biggestChallenge === challenge ? colors.text.primary : colors.background.card,
+                    borderWidth: 1,
+                    borderColor: formData.biggestChallenge === challenge ? colors.text.primary : 'transparent',
+                    minHeight: isSmallScreen ? 52 : 56
+                  }}
+                  activeOpacity={0.9}
+                  accessibilityRole="button"
+                  accessibilityLabel={challenge}
+                  accessibilityHint="Seleciona este desafio"
+                  accessibilityState={{ selected: formData.biggestChallenge === challenge }}
+                >
+                  <Text 
+                    className="text-base sm:text-lg"
+                    style={{ color: formData.biggestChallenge === challenge ? colors.raw.neutral[0] : colors.text.primary }}
+                  >
+                    {challenge}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }
@@ -377,34 +574,51 @@ export default function OnboardingFlow() {
     ];
 
     return (
-      <SafeAreaView className="flex-1 p-6" style={{ backgroundColor: colors.background.canvas }}>
-        <Header />
-        <StepTitle
-          title="Você tem rede de apoio?"
-          subtitle="Para eu saber o quanto posso te exigir ou te acolher."
-        />
+      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
+        <View className="flex-1" style={containerStyle}>
+          <Header />
+          <StepTitle
+            title="Você tem rede de apoio?"
+            subtitle="Para eu saber o quanto posso te exigir ou te acolher."
+          />
 
-        <View className="flex-1">
-          {options.map((opt) => (
-            <TouchableOpacity
-              key={opt.val}
-              onPress={() => { updateData('supportLevel', opt.val); nextStep(); }}
-              className="p-6 rounded-2xl mb-4 flex-row items-center gap-4"
-              style={{
-                borderWidth: 2,
-                borderColor: formData.supportLevel === opt.val ? colors.raw.accent.purple : colors.border.light,
-                backgroundColor: formData.supportLevel === opt.val ? colors.raw.info[50] : colors.background.card
-              }}
-              activeOpacity={0.9}
-            >
-              <View className="p-3 rounded-full" style={{ backgroundColor: colors.background.canvas }}>
-                {opt.icon}
-              </View>
-              <Text className="font-bold text-lg flex-1" style={{ color: formData.supportLevel === opt.val ? colors.raw.accent.purple : colors.text.primary }}>
-                {opt.text}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          <View className="flex-1">
+            {options.map((opt) => (
+              <TouchableOpacity
+                key={opt.val}
+                onPress={() => { 
+                  updateData('supportLevel', opt.val); 
+                  nextStep(); 
+                }}
+                className="p-5 sm:p-6 rounded-2xl mb-4 flex-row items-center gap-4"
+                style={{
+                  borderWidth: 2,
+                  borderColor: formData.supportLevel === opt.val ? colors.raw.accent.purple : colors.border.light,
+                  backgroundColor: formData.supportLevel === opt.val ? colors.raw.info[50] : colors.background.card,
+                  minHeight: isSmallScreen ? 64 : 72
+                }}
+                activeOpacity={0.9}
+                accessibilityRole="button"
+                accessibilityLabel={opt.text}
+                accessibilityHint="Seleciona este nível de apoio"
+                accessibilityState={{ selected: formData.supportLevel === opt.val }}
+              >
+                <View 
+                  className="p-3 rounded-full" 
+                  style={{ backgroundColor: colors.background.canvas }}
+                  accessible={false}
+                >
+                  {opt.icon}
+                </View>
+                <Text 
+                  className="font-bold text-base sm:text-lg flex-1" 
+                  style={{ color: formData.supportLevel === opt.val ? colors.raw.accent.purple : colors.text.primary }}
+                >
+                  {opt.text}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </SafeAreaView>
     );
@@ -420,47 +634,71 @@ export default function OnboardingFlow() {
     ];
 
     return (
-      <SafeAreaView className="flex-1 p-6" style={{ backgroundColor: colors.background.canvas }}>
-        <Header />
-        <StepTitle
-          title="O que você mais precisa AGORA?"
-          subtitle="Vou configurar sua tela inicial baseada nisso."
-        />
+      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
+        <View className="flex-1" style={containerStyle}>
+          <Header />
+          <StepTitle
+            title="O que você mais precisa AGORA?"
+            subtitle="Vou configurar sua tela inicial baseada nisso."
+          />
 
-        <View className="flex-1">
-          {needs.map((n) => (
-            <TouchableOpacity
-              key={n.val}
-              onPress={() => { updateData('primaryNeed', n.val); nextStep(); }}
-              className="p-4 rounded-2xl mb-3 flex-row items-center gap-4"
-              style={{
-                borderWidth: 1,
-                borderColor: formData.primaryNeed === n.val ? colors.primary.main : colors.border.light,
-                backgroundColor: formData.primaryNeed === n.val ? colors.primary.main : colors.background.card,
-                shadowColor: formData.primaryNeed === n.val ? colors.primary.main : 'transparent',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: formData.primaryNeed === n.val ? 8 : 0
-              }}
-              activeOpacity={0.9}
-            >
-              <View
-                className="w-12 h-12 rounded-full items-center justify-center"
-                style={{ backgroundColor: formData.primaryNeed === n.val ? 'rgba(255,255,255,0.2)' : colors.primary.light }}
+          <ScrollView 
+            className="flex-1" 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ ...contentStyle, paddingBottom: 20 }}
+            accessible={true}
+            accessibilityRole="list"
+            accessibilityLabel="Lista de necessidades"
+          >
+            {needs.map((n) => (
+              <TouchableOpacity
+                key={n.val}
+                onPress={() => { 
+                  updateData('primaryNeed', n.val); 
+                  nextStep(); 
+                }}
+                className="p-4 sm:p-5 rounded-2xl mb-3 flex-row items-center gap-4"
+                style={{
+                  borderWidth: 1,
+                  borderColor: formData.primaryNeed === n.val ? colors.primary.main : colors.border.light,
+                  backgroundColor: formData.primaryNeed === n.val ? colors.primary.main : colors.background.card,
+                  shadowColor: formData.primaryNeed === n.val ? colors.primary.main : 'transparent',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: formData.primaryNeed === n.val ? 8 : 0,
+                  minHeight: isSmallScreen ? 64 : 72
+                }}
+                activeOpacity={0.9}
+                accessibilityRole="button"
+                accessibilityLabel={`${n.title}: ${n.sub}`}
+                accessibilityHint="Seleciona esta necessidade"
+                accessibilityState={{ selected: formData.primaryNeed === n.val }}
               >
-                {React.cloneElement(n.icon, { color: formData.primaryNeed === n.val ? colors.raw.neutral[0] : colors.primary.main })}
-              </View>
-              <View className="flex-1">
-                <Text className="font-bold" style={{ color: formData.primaryNeed === n.val ? colors.raw.neutral[0] : colors.text.primary }}>
-                  {n.title}
-                </Text>
-                <Text className="text-xs" style={{ color: formData.primaryNeed === n.val ? 'rgba(255,255,255,0.7)' : colors.text.secondary }}>
-                  {n.sub}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
+                <View
+                  className="w-12 h-12 rounded-full items-center justify-center"
+                  style={{ backgroundColor: formData.primaryNeed === n.val ? 'rgba(255,255,255,0.2)' : colors.primary.light }}
+                  accessible={false}
+                >
+                  {React.cloneElement(n.icon, { color: formData.primaryNeed === n.val ? colors.raw.neutral[0] : colors.primary.main })}
+                </View>
+                <View className="flex-1">
+                  <Text 
+                    className="font-bold text-base sm:text-lg" 
+                    style={{ color: formData.primaryNeed === n.val ? colors.raw.neutral[0] : colors.text.primary }}
+                  >
+                    {n.title}
+                  </Text>
+                  <Text 
+                    className="text-xs sm:text-sm" 
+                    style={{ color: formData.primaryNeed === n.val ? 'rgba(255,255,255,0.7)' : colors.text.secondary }}
+                  >
+                    {n.sub}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
       </SafeAreaView>
     );
@@ -468,8 +706,6 @@ export default function OnboardingFlow() {
 
   // 9. TERMS, PRIVACY & SUCCESS
   if (step === 9) {
-    const [termsAccepted, setTermsAccepted] = useState(false);
-    const [privacyAccepted, setPrivacyAccepted] = useState(false);
     const canProceed = termsAccepted && privacyAccepted;
 
     const handleFinishWithAcceptance = async () => {
@@ -488,22 +724,29 @@ export default function OnboardingFlow() {
     };
 
     return (
-      <SafeAreaView className="flex-1 p-6" style={{ backgroundColor: colors.background.canvas }}>
-        <TouchableOpacity
-          onPress={toggleTheme}
-          className="absolute top-6 right-6 w-10 h-10 rounded-full items-center justify-center z-10"
-          style={{
-            backgroundColor: colors.background.card,
-            borderWidth: 1,
-            borderColor: colors.border.light
-          }}
-        >
-          <Sun size={20} color={colors.text.primary} />
-        </TouchableOpacity>
+      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
+        <View className="flex-1" style={containerStyle}>
+          <TouchableOpacity
+            onPress={() => {
+              haptics.light();
+              toggleTheme();
+            }}
+            className="absolute top-6 right-4 sm:right-6 w-10 h-10 rounded-full items-center justify-center z-10"
+            style={{
+              backgroundColor: colors.background.card,
+              borderWidth: 1,
+              borderColor: colors.border.light
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={isDark ? "Alternar para modo claro" : "Alternar para modo escuro"}
+            accessibilityHint="Muda o tema entre claro e escuro"
+          >
+            <Sun size={20} color={colors.text.primary} />
+          </TouchableOpacity>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ alignItems: 'center', paddingTop: 40 }}
+          contentContainerStyle={{ ...contentStyle, alignItems: 'center', paddingTop: 40 }}
         >
           <View className="w-24 h-24 rounded-full items-center justify-center mb-6" style={{ backgroundColor: colors.raw.success[100] }}>
             <Check size={48} color={colors.raw.success[500]} strokeWidth={3} />
@@ -533,9 +776,15 @@ export default function OnboardingFlow() {
 
             {/* Terms of Service Checkbox */}
             <TouchableOpacity
-              onPress={() => setTermsAccepted(!termsAccepted)}
+              onPress={() => {
+                haptics.light();
+                setTermsAccepted(!termsAccepted);
+              }}
               className="flex-row items-start mb-3"
               activeOpacity={0.7}
+              accessibilityRole="checkbox"
+              accessibilityLabel="Aceitar termos de serviço"
+              accessibilityState={{ checked: termsAccepted }}
             >
               <View
                 className="w-5 h-5 rounded mr-3 items-center justify-center mt-0.5"
@@ -563,9 +812,15 @@ export default function OnboardingFlow() {
 
             {/* Privacy Policy Checkbox */}
             <TouchableOpacity
-              onPress={() => setPrivacyAccepted(!privacyAccepted)}
+              onPress={() => {
+                haptics.light();
+                setPrivacyAccepted(!privacyAccepted);
+              }}
               className="flex-row items-start"
               activeOpacity={0.7}
+              accessibilityRole="checkbox"
+              accessibilityLabel="Aceitar política de privacidade"
+              accessibilityState={{ checked: privacyAccepted }}
             >
               <View
                 className="w-5 h-5 rounded mr-3 items-center justify-center mt-0.5"
@@ -620,9 +875,15 @@ export default function OnboardingFlow() {
             </View>
             <Switch
               value={formData.notificationsEnabled || false}
-              onValueChange={(value) => updateData('notificationsEnabled', value)}
+              onValueChange={(value) => {
+                haptics.light();
+                updateData('notificationsEnabled', value);
+              }}
               trackColor={{ false: colors.border.light, true: colors.primary.main }}
               thumbColor="#FFFFFF"
+              accessibilityRole="switch"
+              accessibilityLabel="Ativar lembretes de autocuidado"
+              accessibilityState={{ checked: formData.notificationsEnabled || false }}
             />
           </View>
 
@@ -636,6 +897,10 @@ export default function OnboardingFlow() {
               opacity: canProceed ? 1 : 0.5
             }}
             activeOpacity={0.9}
+            accessibilityRole="button"
+            accessibilityLabel="Entrar na minha casa"
+            accessibilityHint={canProceed ? "Finaliza o onboarding e entra no app" : "É necessário aceitar os termos para continuar"}
+            accessibilityState={{ disabled: !canProceed }}
           >
             <Text className="text-white font-bold text-base">Entrar na minha casa</Text>
             <Shield size={18} color="#FFFFFF" />
@@ -649,6 +914,7 @@ export default function OnboardingFlow() {
             </Text>
           </View>
         </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }
