@@ -15,3 +15,4 @@ export { ErrorBoundary } from './ErrorBoundary';
 export { Checkbox, type CheckboxProps } from './Checkbox';
 export { Radio, type RadioProps } from './Radio';
 export { Switch, type SwitchProps } from './Switch';
+export { Badge, type BadgeProps } from './Badge';
