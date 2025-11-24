@@ -1,0 +1,90 @@
+import React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ArrowRight, Sun } from 'lucide-react-native';
+import { useTheme } from '../../theme/ThemeContext';
+import { UserProfile } from '../../types/user';
+
+interface OnboardingStepProps {
+  step: number;
+  formData: UserProfile;
+  updateData: (key: keyof UserProfile, value: any) => void;
+  nextStep: () => void;
+  prevStep: () => void;
+}
+
+export default function OnboardingStep1({ nextStep }: OnboardingStepProps) {
+  const { isDark, toggleTheme } = useTheme();
+
+  return (
+    <SafeAreaView className="flex-1" style={{ backgroundColor: '#020617' }}>
+      {/* Top Right Sun Icon */}
+      <View className="absolute top-6 right-6 z-10">
+        <TouchableOpacity
+          onPress={toggleTheme}
+          className="w-10 h-10 rounded-full items-center justify-center"
+          style={{
+            backgroundColor: '#0B1220',
+            borderWidth: 1,
+            borderColor: 'rgba(148, 163, 184, 0.24)',
+          }}
+        >
+          <Sun size={20} color="#FBBF24" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Progress Dots */}
+      <View className="absolute top-6 left-1/2" style={{ transform: [{ translateX: -32 }] }}>
+        <View className="flex-row gap-1">
+          <View className="w-2 h-2 rounded-full bg-blue-400" />
+          <View className="w-2 h-2 rounded-full bg-gray-600" />
+          <View className="w-2 h-2 rounded-full bg-gray-600" />
+          <View className="w-2 h-2 rounded-full bg-gray-600" />
+          <View className="w-2 h-2 rounded-full bg-gray-600" />
+          <View className="w-2 h-2 rounded-full bg-gray-600" />
+          <View className="w-2 h-2 rounded-full bg-gray-600" />
+          <View className="w-2 h-2 rounded-full bg-gray-600" />
+        </View>
+      </View>
+
+      <View className="flex-1 items-center justify-center px-6">
+        {/* Circular Illustration */}
+        <View className="w-40 h-40 rounded-full mb-6 overflow-hidden border-6 border-white shadow-xl" style={{ borderColor: '#0B1220' }}>
+          <Image
+            source={{ uri: 'https://i.imgur.com/GDYdiuy.jpg' }}
+            className="w-full h-full"
+            contentFit="cover"
+            transition={200}
+          />
+        </View>
+
+        {/* Title */}
+        <Text className="text-4xl font-bold text-center mb-1" style={{ color: '#FFFFFF' }}>
+          Oi, que bom que você{'\n'}chegou.
+        </Text>
+
+        {/* Italic Blue Text */}
+        <Text className="text-base text-center mb-6 italic max-w-[280px]" style={{ color: '#60A5FA' }}>
+          "Aqui, você não precisa fingir que está{'\n'}tudo bem."
+        </Text>
+
+        {/* Description */}
+        <Text className="text-sm text-center mb-10 max-w-[280px] leading-relaxed" style={{ color: '#D1D5DB' }}>
+          Eu sou a MãesValente. Quero criar um{'\n'}espaço seguro para você.{'\n'}Vamos conversar rapidinho?
+        </Text>
+
+        {/* Button */}
+        <TouchableOpacity
+          onPress={nextStep}
+          className="w-full py-4 rounded-xl flex-row items-center justify-center gap-2"
+          style={{ backgroundColor: '#3B82F6' }}
+          activeOpacity={0.8}
+        >
+          <Text className="text-white font-bold text-base">Começar agora</Text>
+          <ArrowRight size={20} color="#FFFFFF" />
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}

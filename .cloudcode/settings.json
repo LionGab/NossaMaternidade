@@ -1,0 +1,29 @@
+{
+  "cloudcode": {
+    "project": {
+      "id": "gen-lang-client-0061816054",
+      "name": "Nossa Maternidade"
+    },
+    "deploy": {
+      "target": "cloudrun",
+      "service": "nossa-maternidade-web",
+      "region": "us-central1",
+      "image": "gcr.io/gen-lang-client-0061816054/nossa-maternidade-web:latest"
+    },
+    "build": {
+      "dockerfile": "Dockerfile",
+      "context": ".",
+      "registry": "gcr.io"
+    },
+    "run": {
+      "local": {
+        "port": 8080,
+        "env": {
+          "PORT": "8080",
+          "NODE_ENV": "development"
+        }
+      }
+    }
+  }
+}
+

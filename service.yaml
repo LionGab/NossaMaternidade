@@ -1,0 +1,80 @@
+# Configuração do Cloud Run Service
+# Usado pelo Cloud Code para deploy
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: nossa-maternidade-web
+  labels:
+    cloud.googleapis.com/location: us-central1
+spec:
+  template:
+    metadata:
+      labels:
+        cloud.googleapis.com/location: us-central1
+      annotations:
+        # Configurações de autoscaling
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "10"
+        # Timeout de requisição (Cloud Run máximo é 3600s)
+        run.googleapis.com/timeout: "300s"
+        # CPU e memória
+        run.googleapis.com/cpu-throttling: "true"
+        run.googleapis.com/execution-environment: gen2
+    spec:
+      # Configuração de recursos
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      # serviceAccountName: nossa-maternidade-sa@gen-lang-client-0061816054.iam.gserviceaccount.com
+      containers:
+        - image: gcr.io/gen-lang-client-0061816054/nossa-maternidade-web:latest
+          ports:
+            - name: http1
+              containerPort: 8080
+          env:
+            # Variáveis de ambiente do Expo (públicas)
+            - name: EXPO_PUBLIC_SUPABASE_URL
+              value: "https://mnszbkeuerjcevjvdqme.supabase.co"
+            - name: EXPO_PUBLIC_SUPABASE_ANON_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: supabase-anon-key
+                  key: key
+            - name: EXPO_PUBLIC_GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gemini-api-key
+                  key: key
+            # Variáveis do Cloud Run
+            - name: PORT
+              value: "8080"
+            - name: NODE_ENV
+              value: "production"
+          resources:
+            limits:
+              cpu: "2"
+              memory: "512Mi"
+            requests:
+              cpu: "1"
+              memory: "256Mi"
+          # Health check
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 0
+            timeoutSeconds: 1
+            periodSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 10
+            failureThreshold: 3
+  traffic:
+    - percent: 100
+      latestRevision: true
+

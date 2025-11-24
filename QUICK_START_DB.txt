@@ -1,0 +1,111 @@
+╔════════════════════════════════════════════════════════════════╗
+║                                                                ║
+║   NOSSA MATERNIDADE - QUICK START DATABASE                    ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
+
+📋 PASSO A PASSO RÁPIDO (2 minutos)
+
+1️⃣  Abra o SQL Editor do Supabase:
+   👉 https://supabase.com/dashboard/project/mnszbkeuerjcevjvdqme/sql
+
+2️⃣  Aplique o Schema:
+   ▪ Clique em "New query"
+   ▪ Abra o arquivo: supabase/schema.sql
+   ▪ Copie TODO o conteúdo (Ctrl+A, Ctrl+C)
+   ▪ Cole no SQL Editor (Ctrl+V)
+   ▪ Execute (Ctrl+Enter ou botão "Run")
+   ▪ Aguarde ~5 segundos
+
+3️⃣  Aplique os Dados Iniciais:
+   ▪ Crie uma nova query (botão "+")
+   ▪ Abra o arquivo: supabase/seed.sql
+   ▪ Copie TODO o conteúdo
+   ▪ Cole e Execute
+
+4️⃣  Verifique se funcionou:
+   ▪ Acesse: Table Editor
+   ▪ Deve ver 13 tabelas
+   ▪ Clique em "habits" → deve ter 10 registros
+
+5️⃣  Teste o app:
+   npm start
+
+═══════════════════════════════════════════════════════════════
+
+📊 O QUE SERÁ CRIADO
+
+✅ 13 Tabelas:
+   • profiles (usuárias)
+   • chat_conversations, chat_messages (IA)
+   • content_items (vídeos/áudios/artigos)
+   • habits, user_habits, habit_logs
+   • baby_milestones, user_baby_milestones
+   • community_posts, comments, likes
+   • user_content_interactions
+
+✅ 3 Storage Buckets:
+   • avatars (fotos de perfil)
+   • content (mídia)
+   • community (posts)
+
+✅ 40+ Registros Iniciais:
+   • 10 hábitos prontos
+   • 20+ marcos do bebê (0-24 meses)
+   • 10+ conteúdos de exemplo
+
+═══════════════════════════════════════════════════════════════
+
+⚡ COMANDOS ÚTEIS
+
+# Ver instruções detalhadas
+npm run db:schema
+
+# Aplicar via CLI (se configurado)
+npm run db:apply
+
+# Iniciar o app
+npm start
+
+═══════════════════════════════════════════════════════════════
+
+📚 DOCUMENTAÇÃO COMPLETA
+
+▪ Instruções passo a passo: supabase/APLICAR_SCHEMA.md
+▪ Relatório detalhado: APLICACAO_SCHEMA_RESULTADO.md
+▪ Status atual: SCHEMA_STATUS.md
+▪ Interface visual: apply-schema.html
+
+═══════════════════════════════════════════════════════════════
+
+❓ PROBLEMAS?
+
+Erro de permissão?
+→ Verifique se está logado no projeto correto
+
+Tabelas já existem?
+→ Isso é normal se já aplicou antes (use IF NOT EXISTS)
+
+Timeout?
+→ Use o Dashboard (não tem limite de tempo)
+
+═══════════════════════════════════════════════════════════════
+
+🔗 LINKS
+
+Dashboard: https://supabase.com/dashboard/project/mnszbkeuerjcevjvdqme
+SQL Editor: https://supabase.com/dashboard/project/mnszbkeuerjcevjvdqme/sql
+Tables: https://supabase.com/dashboard/project/mnszbkeuerjcevjvdqme/editor
+
+═══════════════════════════════════════════════════════════════
+
+✨ Após aplicar o schema, você poderá:
+   • Criar usuárias via Auth
+   • Salvar dados do onboarding
+   • Usar chat com IA (Gemini, Claude, GPT-4)
+   • Visualizar conteúdos (vídeos, áudios, artigos)
+   • Rastrear hábitos diários
+   • Acompanhar marcos do bebê
+   • Participar da comunidade
+
+═══════════════════════════════════════════════════════════════

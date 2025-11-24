@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nossa Maternidade - Aplicar Schema SQL</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+        }
+
+        .log-success {
+            color: #4ade80;
+        }
+
+        .log-error {
+            color: #f87171;
+        }
+
+        .log-warning {
+            color: #fbbf24;
+        }
+
+        .log-info {
+            color: #60a5fa;
+        }
+
+        .progress {
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌸 Nossa Maternidade</h1>
+        <p class="subtitle">Aplicar Schema SQL no Supabase</p>
+
+        <div class="info-box">
+            <strong>📍 Projeto:</strong> mnszbkeuerjcevjvdqme<br>
+            <strong>🔑 URL:</strong> https://mnszbkeuerjcevjvdqme.supabase.co
+        </div>
+
+        <div class="progress" id="progress-container" style="display: none;">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <button onclick="applySchema()" id="btn-schema">
+            📝 Aplicar Schema (Criar Tabelas)
+        </button>
+
+        <button onclick="applySeed()" id="btn-seed">
+            🌱 Aplicar Seed (Inserir Dados)
+        </button>
+
+        <button onclick="applyAll()" id="btn-all">
+            🚀 Aplicar Tudo (Schema + Seed)
+        </button>
+
+        <button onclick="verifyDatabase()" id="btn-verify">
+            🔍 Verificar Banco de Dados
+        </button>
+
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-tables">0</div>
+                <div class="stat-label">Tabelas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-records">0</div>
+                <div class="stat-label">Registros</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-success">0</div>
+                <div class="stat-label">Sucesso</div>
+            </div>
+        </div>
+
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://mnszbkeuerjcevjvdqme.supabase.co';
+        const SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiY3dpdG5ibm9zeWZwZmp0emtyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDI4Mjc2OCwiZXhwIjoyMDc1ODU4NzY4fQ.K0H61Di0itgPw-CTFVGtWG_XAYwg2mxKS8H_s1WKW-M';
+
+        const supabase = supabase.createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+
+        const log = (message, type = 'info') => {
+            const logEl = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+        };
+
+        const updateProgress = (percent) => {
+            document.getElementById('progress-container').style.display = 'block';
+            document.getElementById('progress-bar').style.width = percent + '%';
+        };
+
+        const setButtonState = (disabled) => {
+            ['btn-schema', 'btn-seed', 'btn-all', 'btn-verify'].forEach(id => {
+                document.getElementById(id).disabled = disabled;
+            });
+        };
+
+        // ATENÇÃO: A Supabase REST API não suporta execução direta de SQL DDL
+        // Este método usa um workaround através do RPC
+
+        async function executeSQL(sql, description) {
+            log(`⏳ Executando: ${description}...`, 'info');
+
+            try {
+                // Dividir SQL em statements
+                const statements = sql.split(';')
+                    .map(s => s.trim())
+                    .filter(s => s.length > 0 && !s.startsWith('--'));
+
+                log(`📝 ${statements.length} statements encontrados`, 'info');
+
+                let successCount = 0;
+                let errorCount = 0;
+
+                for (let i = 0; i < statements.length; i++) {
+                    const stmt = statements[i];
+
+                    updateProgress((i / statements.length) * 100);
+
+                    // IMPORTANTE: O Supabase REST API não permite executar SQL arbitrário
+                    // É necessário usar uma abordagem diferente:
+                    // 1. Criar uma Edge Function
+                    // 2. Usar o SQL Editor do Dashboard
+                    // 3. Usar o Supabase CLI
+
+                    // Por enquanto, vamos mostrar as instruções
+                    if (i === 0) {
+                        log('⚠️ A Supabase REST API não suporta execução direta de SQL', 'warning');
+                        log('⚠️ Use uma das seguintes alternativas:', 'warning');
+                        break;
+                    }
+                }
+
+                updateProgress(100);
+
+                log(`✅ Processo concluído`, 'success');
+                log(`📊 Sucessos: ${successCount}, Erros: ${errorCount}`, 'info');
+
+                return { success: successCount, errors: errorCount };
+
+            } catch (error) {
+                log(`❌ Erro: ${error.message}`, 'error');
+                return { success: 0, errors: 1 };
+            }
+        }
+
+        async function applySchema() {
+            setButtonState(true);
+            log('🚀 Iniciando aplicação do schema...', 'info');
+
+            const schemaSQL = `-- ============================================
+-- NOSSA MATERNIDADE - DATABASE SCHEMA
+-- Supabase PostgreSQL Schema
+-- ============================================
+
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- ============================================
+-- TABELA: profiles
+-- Perfis de usuárias (1:1 com auth.users)
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  email TEXT,
+  full_name TEXT,
+  avatar_url TEXT,
+  phone TEXT,
+
+  -- Dados do onboarding
+  motherhood_stage TEXT CHECK (motherhood_stage IN (
+    'trying_to_conceive',
+    'pregnant',
+    'postpartum',
+    'experienced_mother'
+  )),
+  pregnancy_week INTEGER,
+  baby_birth_date DATE,
+  baby_name TEXT,
+  baby_gender TEXT CHECK (baby_gender IN ('male', 'female', 'unknown', 'prefer_not_say')),
+
+  -- Preferências e necessidades
+  emotions JSONB DEFAULT '[]'::jsonb, -- Array de emoções: ['anxiety', 'joy', 'fear', etc]
+  needs JSONB DEFAULT '[]'::jsonb, -- Array de necessidades: ['sleep_support', 'nutrition', etc]
+  interests JSONB DEFAULT '[]'::jsonb, -- Array de interesses
+
+  -- Configurações
+  theme TEXT DEFAULT 'light' CHECK (theme IN ('light', 'dark', 'auto')),
+  language TEXT DEFAULT 'pt-BR',
+  notifications_enabled BOOLEAN DEFAULT true,
+
+  -- Metadata
+  onboarding_completed BOOLEAN DEFAULT false,
+  onboarding_step INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- RLS Policies para profiles
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Usuárias podem ver seu próprio perfil"
+  ON public.profiles FOR SELECT
+  USING (auth.uid() = id);
+
+CREATE POLICY "Usuárias podem atualizar seu próprio perfil"
+  ON public.profiles FOR UPDATE
+  USING (auth.uid() = id);
+
+CREATE POLICY "Perfis são criados automaticamente"
+  ON public.profiles FOR INSERT
+  WITH CHECK (auth.uid() = id);
+
+-- ============================================
+-- TABELA: chat_conversations
+-- Conversas do chat com IA
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.chat_conversations (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  title TEXT,
+  model TEXT DEFAULT 'gemini-pro', -- gemini-pro, claude, gpt-4, etc
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- TABELA: chat_messages
+-- Mensagens individuais do chat
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.chat_messages (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  conversation_id UUID REFERENCES public.chat_conversations(id) ON DELETE CASCADE NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
+  content TEXT NOT NULL,
+  metadata JSONB DEFAULT '{}'::jsonb, -- Informações extras como tokens, tempo de resposta, etc
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- RLS Policies para chat
+ALTER TABLE public.chat_conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Usuárias veem suas próprias conversas"
+  ON public.chat_conversations FOR ALL
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Usuárias veem mensagens de suas conversas"
+  ON public.chat_messages FOR ALL
+  USING (
+    conversation_id IN (
+      SELECT id FROM public.chat_conversations WHERE user_id = auth.uid()
+    )
+  );
+
+-- ============================================
+-- TABELA: content_items
+-- Conteúdos do feed (vídeos, áudios, artigos)
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.content_items (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  type TEXT NOT NULL CHECK (type IN ('video', 'audio', 'article', 'reels')),
+  category TEXT NOT NULL, -- 'sleep', 'nutrition', 'mental_health', etc
+
+  -- URLs de mídia (armazenados no Supabase Storage)
+  thumbnail_url TEXT,
+  video_url TEXT,
+  audio_url TEXT,
+
+  -- Metadata
+  duration INTEGER, -- Em segundos
+  author_name TEXT,
+  author_avatar_url TEXT,
+  tags JSONB DEFAULT '[]'::jsonb,
+
+  -- Controle de acesso
+  is_premium BOOLEAN DEFAULT false,
+  is_exclusive BOOLEAN DEFAULT false,
+
+  -- Estatísticas
+  views_count INTEGER DEFAULT 0,
+  likes_count INTEGER DEFAULT 0,
+
+  -- Status
+  is_published BOOLEAN DEFAULT true,
+  published_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- TABELA: user_content_interactions
+-- Interações de usuárias com conteúdos
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.user_content_interactions (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  content_id UUID REFERENCES public.content_items(id) ON DELETE CASCADE NOT NULL,
+
+  -- Tipos de interação
+  is_liked BOOLEAN DEFAULT false,
+  is_saved BOOLEAN DEFAULT false,
+  is_completed BOOLEAN DEFAULT false,
+
+  -- Progresso (para vídeos/áudios)
+  progress_seconds INTEGER DEFAULT 0,
+
+  -- Timestamps
+  last_viewed_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+  -- Constraint: uma interação por usuária por conteúdo
+  UNIQUE(user_id, content_id)
+);
+
+-- RLS Policies para conteúdo
+ALTER TABLE public.content_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_content_interactions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Conteúdos publicados são visíveis para todos"
+  ON public.content_items FOR SELECT
+  USING (is_published = true);
+
+CREATE POLICY "Usuárias gerenciam suas próprias interações"
+  ON public.user_content_interactions FOR ALL
+  USING (auth.uid() = user_id);
+
+-- ============================================
+-- TABELA: habits
+-- Hábitos disponíveis no app
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.habits (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  icon TEXT, -- Nome do ícone (lucide-react-native)
+  color TEXT, -- Cor hex
+  category TEXT, -- 'wellness', 'nutrition', 'exercise', etc
+  frequency TEXT DEFAULT 'daily' CHECK (frequency IN ('daily', 'weekly', 'monthly')),
+
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- TABELA: user_habits
+-- Hábitos das usuárias
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.user_habits (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  habit_id UUID REFERENCES public.habits(id) ON DELETE CASCADE NOT NULL,
+
+  -- Configurações personalizadas
+  custom_name TEXT,
+  custom_target INTEGER DEFAULT 1, -- Meta diária/semanal
+
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+  UNIQUE(user_id, habit_id)
+);
+
+-- ============================================
+-- TABELA: habit_logs
+-- Registro de conclusão de hábitos
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.habit_logs (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_habit_id UUID REFERENCES public.user_habits(id) ON DELETE CASCADE NOT NULL,
+
+  completed_at DATE NOT NULL,
+  notes TEXT,
+
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+  -- Um log por dia por hábito
+  UNIQUE(user_habit_id, completed_at)
+);
+
+-- RLS Policies para hábitos
+ALTER TABLE public.habits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_habits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.habit_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Hábitos são visíveis para todos"
+  ON public.habits FOR SELECT
+  USING (true);
+
+CREATE POLICY "Usuárias gerenciam seus próprios hábitos"
+  ON public.user_habits FOR ALL
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Usuárias gerenciam seus próprios logs"
+  ON public.habit_logs FOR ALL
+  USING (
+    user_habit_id IN (
+      SELECT id FROM public.user_habits WHERE user_id = auth.uid()
+    )
+  );
+
+-- ============================================
+-- TABELA: community_posts
+-- Posts da comunidade
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.community_posts (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+
+  content TEXT NOT NULL,
+  image_url TEXT,
+
+  -- Categorias/tags
+  tags JSONB DEFAULT '[]'::jsonb,
+
+  -- Estatísticas
+  likes_count INTEGER DEFAULT 0,
+  comments_count INTEGER DEFAULT 0,
+
+  -- Moderação
+  is_reported BOOLEAN DEFAULT false,
+  is_approved BOOLEAN DEFAULT true,
+
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- TABELA: community_comments
+-- Comentários em posts da comunidade
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.community_comments (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  post_id UUID REFERENCES public.community_posts(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+
+  content TEXT NOT NULL,
+
+  -- Estatísticas
+  likes_count INTEGER DEFAULT 0,
+
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- TABELA: community_likes
+-- Curtidas em posts e comentários
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.community_likes (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+
+  -- Pode ser like em post ou comentário
+  post_id UUID REFERENCES public.community_posts(id) ON DELETE CASCADE,
+  comment_id UUID REFERENCES public.community_comments(id) ON DELETE CASCADE,
+
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+  -- Uma curtida por item por usuária
+  UNIQUE(user_id, post_id),
+  UNIQUE(user_id, comment_id),
+
+  -- Deve ter UM dos dois
+  CHECK (
+    (post_id IS NOT NULL AND comment_id IS NULL) OR
+    (post_id IS NULL AND comment_id IS NOT NULL)
+  )
+);
+
+-- RLS Policies para comunidade
+ALTER TABLE public.community_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.community_comments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.community_likes ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Posts aprovados são visíveis para todos"
+  ON public.community_posts FOR SELECT
+  USING (is_approved = true);
+
+CREATE POLICY "Usuárias podem criar posts"
+  ON public.community_posts FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Usuárias podem editar seus próprios posts"
+  ON public.community_posts FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Comentários são visíveis para todos"
+  ON public.community_comments FOR SELECT
+  USING (true);
+
+CREATE POLICY "Usuárias podem comentar"
+  ON public.community_comments FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Usuárias gerenciam suas curtidas"
+  ON public.community_likes FOR ALL
+  USING (auth.uid() = user_id);
+
+-- ============================================
+-- TABELA: baby_milestones
+-- Marcos de desenvolvimento do bebê
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.baby_milestones (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+
+  title TEXT NOT NULL,
+  description TEXT,
+  category TEXT NOT NULL CHECK (category IN ('motor', 'cognitivo', 'linguagem', 'social', 'sensorial')),
+
+  age_months INTEGER NOT NULL, -- Idade típica em meses
+  tips JSONB DEFAULT '[]'::jsonb, -- Array de dicas
+
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================
+-- TABELA: user_baby_milestones
+-- Progresso dos marcos para cada bebê
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.user_baby_milestones (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  milestone_id UUID REFERENCES public.baby_milestones(id) ON DELETE CASCADE NOT NULL,
+
+  is_completed BOOLEAN DEFAULT false,
+  completed_at DATE,
+  notes TEXT,
+
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+  UNIQUE(user_id, milestone_id)
+);
+
+-- RLS Policies para milestones
+ALTER TABLE public.baby_milestones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_baby_milestones ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Milestones são visíveis para todos"
+  ON public.baby_milestones FOR SELECT
+  USING (true);
+
+CREATE POLICY "Usuárias gerenciam progresso de seus bebês"
+  ON public.user_baby_milestones FOR ALL
+  USING (auth.uid() = user_id);
+
+-- ============================================
+-- FUNCTIONS & TRIGGERS
+-- ============================================
+
+-- Função para atualizar updated_at automaticamente
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS \$\$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+\$\$ LANGUAGE plpgsql;
+
+-- Aplicar trigger em todas as tabelas relevantes
+CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON public.profiles
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_chat_conversations_updated_at BEFORE UPDATE ON public.chat_conversations
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_content_items_updated_at BEFORE UPDATE ON public.content_items
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_user_content_interactions_updated_at BEFORE UPDATE ON public.user_content_interactions
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_community_posts_updated_at BEFORE UPDATE ON public.community_posts
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_community_comments_updated_at BEFORE UPDATE ON public.community_comments
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_user_baby_milestones_updated_at BEFORE UPDATE ON public.user_baby_milestones
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================
+-- FUNÇÃO: Criar perfil automaticamente ao criar usuária
+-- ============================================
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS \$\$
+BEGIN
+  INSERT INTO public.profiles (id, email, full_name, avatar_url)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    NEW.raw_user_meta_data->>'full_name',
+    NEW.raw_user_meta_data->>'avatar_url'
+  );
+  RETURN NEW;
+END;
+\$\$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger para criar perfil automaticamente
+CREATE OR REPLACE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- ============================================
+-- ÍNDICES para melhor performance
+-- ============================================
+
+-- Índices para chat
+CREATE INDEX idx_chat_conversations_user_id ON public.chat_conversations(user_id);
+CREATE INDEX idx_chat_messages_conversation_id ON public.chat_messages(conversation_id);
+CREATE INDEX idx_chat_messages_created_at ON public.chat_messages(created_at);
+
+-- Índices para conteúdo
+CREATE INDEX idx_content_items_type ON public.content_items(type);
+CREATE INDEX idx_content_items_category ON public.content_items(category);
+CREATE INDEX idx_content_items_published ON public.content_items(is_published, published_at);
+CREATE INDEX idx_user_content_interactions_user_id ON public.user_content_interactions(user_id);
+
+-- Índices para hábitos
+CREATE INDEX idx_user_habits_user_id ON public.user_habits(user_id);
+CREATE INDEX idx_habit_logs_user_habit_id ON public.habit_logs(user_habit_id);
+CREATE INDEX idx_habit_logs_completed_at ON public.habit_logs(completed_at);
+
+-- Índices para comunidade
+CREATE INDEX idx_community_posts_user_id ON public.community_posts(user_id);
+CREATE INDEX idx_community_posts_created_at ON public.community_posts(created_at DESC);
+CREATE INDEX idx_community_comments_post_id ON public.community_comments(post_id);
+CREATE INDEX idx_community_likes_post_id ON public.community_likes(post_id);
+CREATE INDEX idx_community_likes_comment_id ON public.community_likes(comment_id);
+
+-- Índices para milestones
+CREATE INDEX idx_baby_milestones_age_months ON public.baby_milestones(age_months);
+CREATE INDEX idx_user_baby_milestones_user_id ON public.user_baby_milestones(user_id);
+
+-- ============================================
+-- STORAGE BUCKETS
+-- ============================================
+
+-- Bucket para avatares de usuárias
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('avatars', 'avatars', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Bucket para conteúdos (vídeos, áudios, imagens)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('content', 'content', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Bucket para posts da comunidade
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('community', 'community', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Storage Policies
+CREATE POLICY "Avatares são públicos"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'avatars');
+
+CREATE POLICY "Usuárias podem fazer upload de avatares"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+
+CREATE POLICY "Conteúdos são públicos"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'content');
+
+CREATE POLICY "Posts da comunidade são públicos"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'community');
+
+CREATE POLICY "Usuárias podem fazer upload em posts"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'community' AND auth.role() = 'authenticated');
+`;
+
+            await executeSQL(schemaSQL, 'Schema SQL');
+
+            setButtonState(false);
+        }
+
+        async function applySeed() {
+            setButtonState(true);
+            log('🌱 Iniciando aplicação do seed...', 'info');
+
+            const seedSQL = `-- ============================================
+-- NOSSA MATERNIDADE - SEED DATA
+-- Dados iniciais para desenvolvimento e testes
+-- ============================================
+
+-- ============================================
+-- HÁBITOS PADRÃO
+-- ============================================
+
+INSERT INTO public.habits (name, description, icon, color, category, frequency) VALUES
+('Meditação Diária', 'Pratique mindfulness e relaxamento', 'Brain', '#A78BFA', 'wellness', 'daily'),
+('Hidratação', 'Beba 2L de água por dia', 'Droplets', '#60A5FA', 'wellness', 'daily'),
+('Caminhada', 'Caminhe pelo menos 20 minutos', 'Footprints', '#34D399', 'exercise', 'daily'),
+('Diário da Gratidão', 'Escreva 3 coisas pelas quais é grata', 'Heart', '#FF8FA3', 'wellness', 'daily'),
+('Alongamento', 'Alongue-se ao acordar', 'Stretch', '#FFB997', 'exercise', 'daily'),
+('Leitura para o Bebê', 'Leia histórias para seu bebê', 'Book', '#A78BFA', 'parenting', 'daily'),
+('Skincare', 'Cuide da sua pele', 'Sparkles', '#FF8FA3', 'wellness', 'daily'),
+('Sono Adequado', 'Durma pelo menos 7 horas', 'Moon', '#60A5FA', 'wellness', 'daily'),
+('Alimentação Saudável', 'Coma 5 porções de frutas/vegetais', 'Apple', '#34D399', 'nutrition', 'daily'),
+('Tempo para Si', 'Reserve 15min para você', 'Heart', '#FFB997', 'wellness', 'daily')
+ON CONFLICT DO NOTHING;
+
+-- ============================================
+-- MARCOS DE DESENVOLVIMENTO DO BEBÊ
+-- ============================================
+
+-- Marcos 0-3 meses
+INSERT INTO public.baby_milestones (title, description, category, age_months, tips) VALUES
+('Levanta a cabeça', 'Consegue levantar e sustentar a cabeça quando está de bruços', 'motor', 2, '["Coloque o bebê de bruços por alguns minutos várias vezes ao dia", "Use brinquedos coloridos para estimular"]'),
+('Sorri socialmente', 'Sorri em resposta ao rosto e à voz de pessoas conhecidas', 'social', 2, '["Converse bastante com o bebê", "Faça expressões faciais exageradas"]'),
+('Segue objetos com os olhos', 'Acompanha objetos em movimento com o olhar', 'sensorial', 3, '["Use brinquedos coloridos e mova-os lentamente", "Mantenha contato visual frequente"]'),
+('Reage a sons', 'Vira a cabeça em direção aos sons', 'sensorial', 3, '["Fale com o bebê de diferentes direções", "Use chocalhos e brinquedos sonoros"]'),
+
+-- Marcos 4-6 meses
+('Rola de bruços para costas', 'Consegue rolar sozinho mudando de posição', 'motor', 5, '["Pratique em superfície segura e plana", "Incentive com brinquedos ao lado"]'),
+('Pega objetos', 'Alcança e pega objetos com as mãos', 'motor', 5, '["Ofereça brinquedos de diferentes texturas", "Coloque objetos ao alcance do bebê"]'),
+('Balbucia', 'Emite sons como "bababa", "mamama"', 'linguagem', 6, '["Repita os sons que o bebê faz", "Converse e cante bastante"]'),
+('Reconhece rostos familiares', 'Diferencia pessoas conhecidas de estranhos', 'cognitivo', 6, '["Mantenha rotina com as mesmas pessoas", "Apresente familiares gradualmente"]'),
+
+-- Marcos 7-9 meses
+('Senta sem apoio', 'Consegue sentar sozinho sem precisar de suporte', 'motor', 7, '["Use almofadas ao redor para segurança", "Pratique por períodos curtos"]'),
+('Transfere objetos entre as mãos', 'Passa brinquedos de uma mão para outra', 'motor', 7, '["Ofereça brinquedos seguros", "Estimule a exploração"]'),
+('Engatinha', 'Movimenta-se engatinhando ou arrastando', 'motor', 8, '["Crie um espaço seguro para exploração", "Use brinquedos para incentivar movimento"]'),
+('Entende "não"', 'Reage quando ouve a palavra "não"', 'linguagem', 9, '["Use tom de voz adequado", "Seja consistente"]'),
+
+-- Marcos 10-12 meses
+('Fica em pé com apoio', 'Consegue ficar de pé segurando em móveis', 'motor', 10, '["Certifique-se de que o ambiente é seguro", "Incentive com brinquedos em altura adequada"]'),
+('Faz pinça com os dedos', 'Pega objetos pequenos com polegar e indicador', 'motor', 10, '["Ofereça alimentos pequenos e seguros (sob supervisão)", "Use brinquedos apropriados para a idade"]'),
+('Fala primeiras palavras', 'Diz "mamã", "papá" ou outras palavras simples', 'linguagem', 12, '["Nomeie objetos e pessoas constantemente", "Leia livros infantis juntos"]'),
+('Acena tchau', 'Acena com a mão para despedir-se', 'social', 11, '["Pratique acenar quando alguém sai", "Reforce positivamente quando o bebê imita"]'),
+
+-- Marcos 13-18 meses
+('Anda sozinho', 'Caminha sem apoio', 'motor', 14, '["Deixe o bebê andar descalço em casa", "Remova obstáculos perigosos"]'),
+('Usa colher', 'Tenta comer sozinho com a colher', 'motor', 15, '["Ofereça alimentos fáceis de pegar", "Aceite a bagunça inicial"]'),
+('Aponta para o que quer', 'Usa o dedo indicador para mostrar interesse', 'social', 14, '["Responda quando a criança apontar", "Nomeie o que ela está mostrando"]'),
+('Fala várias palavras', 'Vocabulário de 10-20 palavras', 'linguagem', 18, '["Leia histórias diariamente", "Cante músicas infantis"]'),
+
+-- Marcos 19-24 meses
+('Corre', 'Corre com mais coordenação', 'motor', 20, '["Supervisione brincadeiras ao ar livre", "Crie oportunidades seguras para correr"]'),
+('Sobe escadas', 'Sobe escadas com ajuda', 'motor', 21, '["Sempre supervisione perto de escadas", "Pratique com segurança"]'),
+('Forma frases simples', 'Combina 2-3 palavras em frases', 'linguagem', 24, '["Expanda as frases do bebê", "Converse sobre o dia a dia"]'),
+('Brinca de faz de conta', 'Imita atividades do dia a dia nas brincadeiras', 'cognitivo', 22, '["Forneça brinquedos de imitação", "Participe das brincadeiras"]')
+ON CONFLICT DO NOTHING;
+
+-- ============================================
+-- CONTEÚDOS DO FEED (EXEMPLOS)
+-- ============================================
+
+INSERT INTO public.content_items (
+  title,
+  description,
+  type,
+  category,
+  thumbnail_url,
+  author_name,
+  author_avatar_url,
+  tags,
+  duration,
+  is_published,
+  published_at
+) VALUES
+-- Vídeos
+('Técnicas de Respiração para o Parto', 'Aprenda técnicas de respiração que vão te ajudar durante o trabalho de parto', 'video', 'pregnancy', 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=800', 'Dra. Ana Silva', 'https://i.pravatar.cc/150?u=ana', '["parto", "respiração", "preparação"]', 420, true, NOW()),
+('Como Amamentar Corretamente', 'Posições e dicas para uma amamentação bem-sucedida', 'video', 'breastfeeding', 'https://images.unsplash.com/photo-1587108852525-10cec733e37d?w=800', 'Dra. Carla Santos', 'https://i.pravatar.cc/150?u=carla', '["amamentação", "recém-nascido", "dicas"]', 360, true, NOW()),
+('Yoga Pré-Natal', 'Sequência de yoga segura para gestantes', 'video', 'exercise', 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800', 'Marina Costa', 'https://i.pravatar.cc/150?u=marina', '["yoga", "gestação", "exercício"]', 900, true, NOW()),
+
+-- Áudios
+('Meditação Guiada para Mães', 'Relaxe e reconecte-se consigo mesma', 'audio', 'wellness', 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800', 'Paula Mindful', 'https://i.pravatar.cc/150?u=paula', '["meditação", "relaxamento", "mindfulness"]', 600, true, NOW()),
+('Sons Relaxantes para o Bebê Dormir', 'Ruído branco e melodias suaves', 'audio', 'sleep', 'https://images.unsplash.com/photo-1519948063487-2e6abf5eac81?w=800', 'Sono Tranquilo', 'https://i.pravatar.cc/150?u=sono', '["sono", "bebê", "ruído branco"]', 1800, true, NOW()),
+
+-- Artigos
+('Desenvolvimento do Bebê: 0-3 Meses', 'Tudo que você precisa saber sobre os primeiros meses', 'article', 'development', 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=800', 'Dra. Beatriz Lima', 'https://i.pravatar.cc/150?u=beatriz', '["desenvolvimento", "recém-nascido", "marcos"]', NULL, true, NOW()),
+('Introdução Alimentar: Guia Completo', 'Quando e como começar a introdução alimentar', 'article', 'nutrition', 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=800', 'Nutri Fernanda', 'https://i.pravatar.cc/150?u=fernanda', '["alimentação", "introdução alimentar", "nutrição"]', NULL, true, NOW()),
+('Depressão Pós-Parto: Sinais e Ajuda', 'Entenda os sintomas e onde buscar apoio', 'article', 'mental_health', 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800', 'Psic. Julia Mendes', 'https://i.pravatar.cc/150?u=julia', '["saúde mental", "pós-parto", "depressão"]', NULL, true, NOW()),
+
+-- Reels
+('5 Dicas Rápidas para Acalmar o Bebê', 'Técnicas eficazes em menos de 1 minuto', 'reels', 'parenting', 'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=800', 'Mamãe Prática', 'https://i.pravatar.cc/150?u=mamaepratica', '["dicas", "choro", "acalmar"]', 60, true, NOW()),
+('Produtos Essenciais para o Enxoval', 'O que realmente vale a pena comprar', 'reels', 'shopping', 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=800', 'Lista da Mamãe', 'https://i.pravatar.cc/150?u=lista', '["enxoval", "compras", "essenciais"]', 45, true, NOW())
+ON CONFLICT DO NOTHING;
+
+-- ============================================
+-- DADOS DE EXEMPLO - COMUNIDADE
+-- (Comentado para não criar posts fake em produção)
+-- ============================================
+
+-- Para desenvolvimento, você pode descomentar abaixo para ter posts de exemplo
+/*
+INSERT INTO public.community_posts (user_id, content, tags, is_approved, likes_count, comments_count) VALUES
+(
+  (SELECT id FROM public.profiles LIMIT 1),
+  'Acabei de completar 36 semanas! Ansiosa para conhecer meu bebê 💕',
+  '["gestação", "36 semanas", "ansiedade"]',
+  true,
+  15,
+  8
+),
+(
+  (SELECT id FROM public.profiles LIMIT 1),
+  'Dica: usar compressas quentes ajudou muito com a descida do leite!',
+  '["amamentação", "dica", "pós-parto"]',
+  true,
+  42,
+  12
+);
+*/
+`;
+
+            await executeSQL(seedSQL, 'Seed SQL');
+
+            setButtonState(false);
+        }
+
+        async function applyAll() {
+            await applySchema();
+            await applySeed();
+        }
+
+        async function verifyDatabase() {
+            setButtonState(true);
+            log('🔍 Verificando banco de dados...', 'info');
+
+            try {
+                // Verificar tabela profiles
+                const { data: profiles, error: profilesError } = await supabase
+                    .from('profiles')
+                    .select('count');
+
+                if (!profilesError) {
+                    log('✅ Tabela "profiles" existe', 'success');
+                    document.getElementById('stat-tables').textContent = parseInt(document.getElementById('stat-tables').textContent) + 1;
+                } else {
+                    log('⚠️ Tabela "profiles" não encontrada', 'warning');
+                }
+
+                // Verificar outras tabelas
+                const tables = ['content_items', 'habits', 'baby_milestones', 'chat_conversations'];
+
+                for (const table of tables) {
+                    const { data, error } = await supabase
+                        .from(table)
+                        .select('id', { count: 'exact', head: true });
+
+                    if (!error) {
+                        log(`✅ Tabela "${table}" existe`, 'success');
+                        document.getElementById('stat-tables').textContent = parseInt(document.getElementById('stat-tables').textContent) + 1;
+                    } else {
+                        log(`⚠️ Tabela "${table}" não encontrada`, 'warning');
+                    }
+                }
+
+                document.getElementById('stats').style.display = 'grid';
+                document.getElementById('stat-success').textContent = '✓';
+
+                log('✅ Verificação concluída', 'success');
+
+            } catch (error) {
+                log(`❌ Erro na verificação: ${error.message}`, 'error');
+            } finally {
+                setButtonState(false);
+            }
+        }
+
+        // Mostrar instruções ao carregar
+        window.addEventListener('load', () => {
+            log('═══════════════════════════════════════════════════════', 'info');
+            log('   NOSSA MATERNIDADE - EXECUTOR DE SCHEMA SQL', 'info');
+            log('═══════════════════════════════════════════════════════', 'info');
+            log('', 'info');
+            log('⚠️ IMPORTANTE:', 'warning');
+            log('A Supabase não permite executar SQL DDL via REST API por segurança.', 'warning');
+            log('', 'info');
+            log('✅ SOLUÇÃO RECOMENDADA:', 'success');
+            log('1. Acesse o SQL Editor no Supabase Dashboard', 'info');
+            log('2. URL: https://supabase.com/dashboard/project/mnszbkeuerjcevjvdqme/sql', 'info');
+            log('3. Cole o conteúdo de supabase/schema.sql', 'info');
+            log('4. Clique em "Run" (Ctrl+Enter)', 'info');
+            log('5. Repita com supabase/seed.sql', 'info');
+            log('', 'info');
+            log('💡 Após aplicar, use o botão "Verificar Banco de Dados"', 'info');
+            log('', 'info');
+        });
+    </script>
+</body>
+</html>

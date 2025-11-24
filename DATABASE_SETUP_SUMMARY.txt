@@ -1,0 +1,240 @@
+═══════════════════════════════════════════════════════════════
+NOSSA MATERNIDADE - RESUMO DA CONFIGURACAO DO BANCO DE DADOS
+═══════════════════════════════════════════════════════════════
+
+Data: 2025-11-24
+Objetivo: Aplicar schema SQL do Supabase automaticamente via API
+Status: FERRAMENTAS CRIADAS - AGUARDA APLICACAO MANUAL
+
+═══════════════════════════════════════════════════════════════
+TENTATIVAS DE AUTOMACAO
+═══════════════════════════════════════════════════════════════
+
+X Metodo 1: Conexao PostgreSQL Direta (pg)
+   Erro: ETIMEDOUT - Conexao bloqueada por firewall
+   Motivo: Supabase bloqueia conexoes diretas por padrao
+
+X Metodo 2: Supabase REST API
+   Erro: Nao suportado
+   Motivo: REST API nao permite DDL (CREATE TABLE, ALTER, etc)
+
+X Metodo 3: Supabase Management API
+   Erro: Requer token diferente
+   Motivo: Service Role Key nao funciona na Management API
+
+X Metodo 4: Supabase CLI Automatico
+   Erro: Requer autenticacao interativa
+   Motivo: Problema no parsing do arquivo .env
+
+═══════════════════════════════════════════════════════════════
+SOLUCAO IMPLEMENTADA
+═══════════════════════════════════════════════════════════════
+
+OK Criadas 4 ferramentas para facilitar aplicacao manual:
+
+1. Scripts Node.js (3):
+   - apply-schema.mjs (tentativa PostgreSQL)
+   - apply-schema-http.mjs (verificacao HTTP)
+   - apply-schema-final.mjs (gerador de instrucoes)
+
+2. Script PowerShell (1):
+   - apply-via-cli.ps1 (Windows CLI helper)
+
+3. Documentacao (4):
+   - APLICAR_SCHEMA.md (instrucoes passo a passo)
+   - APLICACAO_SCHEMA_RESULTADO.md (relatorio completo)
+   - SCHEMA_STATUS.md (status resumido)
+   - QUICK_START_DB.txt (guia rapido)
+
+4. Interface Web (1):
+   - apply-schema.html (interface visual interativa)
+
+5. Comandos NPM (4):
+   - npm run db:schema (gera instrucoes)
+   - npm run db:apply (aplica via CLI)
+   - npm run db:reset (reseta banco)
+   - npm run db:diff (mostra diferencas)
+
+═══════════════════════════════════════════════════════════════
+ARQUIVOS SQL
+═══════════════════════════════════════════════════════════════
+
+supabase/schema.sql (527 linhas, 18.585 bytes)
+   - 13 tabelas
+   - 3 storage buckets
+   - 7 triggers
+   - 2 functions PostgreSQL
+   - 15+ indices
+   - 20+ RLS policies
+
+supabase/seed.sql (126 linhas, 9.693 bytes)
+   - 10 habitos padrao
+   - 20+ marcos de desenvolvimento
+   - 10+ conteudos de exemplo
+
+═══════════════════════════════════════════════════════════════
+ESTRUTURA DO BANCO DE DADOS
+═══════════════════════════════════════════════════════════════
+
+TABELAS (13):
+
+Core:
+  1. profiles - Perfis de usuarias
+  2. chat_conversations - Conversas do chat IA
+  3. chat_messages - Mensagens do chat
+  4. content_items - Videos, audios, artigos
+  5. user_content_interactions - Curtidas, saves, progresso
+
+Habits:
+  6. habits - Biblioteca de habitos
+  7. user_habits - Habitos das usuarias
+  8. habit_logs - Registro de conclusao
+
+Milestones:
+  9. baby_milestones - Marcos de desenvolvimento
+ 10. user_baby_milestones - Progresso individual
+
+Community:
+ 11. community_posts - Posts da comunidade
+ 12. community_comments - Comentarios
+ 13. community_likes - Curtidas
+
+STORAGE BUCKETS (3):
+  - avatars (publico)
+  - content (publico)
+  - community (publico)
+
+═══════════════════════════════════════════════════════════════
+COMO APLICAR O SCHEMA
+═══════════════════════════════════════════════════════════════
+
+OPCAO 1: Supabase Dashboard (RECOMENDADO - 2 min)
+
+  1. Acesse: https://supabase.com/dashboard/project/mnszbkeuerjcevjvdqme/sql
+  2. Clique "New query"
+  3. Cole conteudo de supabase/schema.sql
+  4. Execute (Ctrl+Enter)
+  5. Repita com supabase/seed.sql
+
+OPCAO 2: Supabase CLI
+
+  $ supabase login
+  $ supabase link --project-ref mnszbkeuerjcevjvdqme
+  $ supabase db execute --file supabase/schema.sql
+  $ supabase db execute --file supabase/seed.sql
+
+  Ou use: npm run db:apply
+
+═══════════════════════════════════════════════════════════════
+VERIFICACAO POS-APLICACAO
+═══════════════════════════════════════════════════════════════
+
+SQL para executar no SQL Editor:
+
+  -- Contar tabelas criadas (esperado: 13)
+  SELECT COUNT(*) FROM information_schema.tables
+  WHERE table_schema = 'public';
+
+  -- Verificar habitos (esperado: 10)
+  SELECT COUNT(*) FROM habits;
+
+  -- Verificar marcos (esperado: 20+)
+  SELECT COUNT(*) FROM baby_milestones;
+
+  -- Verificar conteudos (esperado: 10+)
+  SELECT COUNT(*) FROM content_items;
+
+═══════════════════════════════════════════════════════════════
+DADOS SEED DETALHADOS
+═══════════════════════════════════════════════════════════════
+
+Habitos (10):
+  - Meditacao Diaria
+  - Hidratacao
+  - Caminhada
+  - Diario da Gratidao
+  - Alongamento
+  - Leitura para o Bebe
+  - Skincare
+  - Sono Adequado
+  - Alimentacao Saudavel
+  - Tempo para Si
+
+Marcos de Desenvolvimento (20+):
+  0-3 meses: Levanta cabeca, sorri, segue objetos
+  4-6 meses: Rola, pega objetos, balbucia
+  7-9 meses: Senta, transfere objetos, engatinha
+  10-12 meses: Fica em pe, pinca, primeiras palavras
+  13-18 meses: Anda, usa colher, aponta
+  19-24 meses: Corre, sobe escadas, forma frases
+
+Conteudos (10+):
+  Videos: Respiracao para parto, Amamentacao, Yoga pre-natal
+  Audios: Meditacao, Sons para bebe dormir
+  Artigos: Desenvolvimento 0-3m, Introducao alimentar, Depressao pos-parto
+  Reels: Acalmar bebe, Enxoval essencial
+
+═══════════════════════════════════════════════════════════════
+PROXIMOS PASSOS
+═══════════════════════════════════════════════════════════════
+
+1. OK Aplicar schema (escolha Opcao 1 ou 2)
+2. OK Verificar tabelas no Table Editor
+3. OK Testar autenticacao no app (npm start)
+4. OK Criar usuaria de teste
+5. OK Testar onboarding
+6. OK Testar chat com IA
+7. OK Visualizar feed de conteudos
+8. OK Adicionar habitos
+9. OK Marcar marcos do bebe
+
+═══════════════════════════════════════════════════════════════
+COMANDOS UTEIS
+═══════════════════════════════════════════════════════════════
+
+# Ver instrucoes completas
+npm run db:schema
+
+# Aplicar schema via CLI (requer login)
+npm run db:apply
+
+# Iniciar app
+npm start
+
+═══════════════════════════════════════════════════════════════
+LINKS UTEIS
+═══════════════════════════════════════════════════════════════
+
+Dashboard:
+  https://supabase.com/dashboard/project/mnszbkeuerjcevjvdqme
+
+SQL Editor:
+  https://supabase.com/dashboard/project/mnszbkeuerjcevjvdqme/sql
+
+Table Editor:
+  https://supabase.com/dashboard/project/mnszbkeuerjcevjvdqme/editor
+
+═══════════════════════════════════════════════════════════════
+CONCLUSAO
+═══════════════════════════════════════════════════════════════
+
+OK SUCESSO PARCIAL
+
+A aplicacao automatica do schema SQL nao e possivel via API por
+restricoes de seguranca do Supabase. Porem, foram criadas todas
+as ferramentas e documentacao necessarias para facilitar o
+processo manual.
+
+RECOMENDACAO:
+
+Use o Supabase Dashboard (Opcao 1) - e o metodo mais simples,
+rapido e confiavel. Leva apenas 2 minutos.
+
+DOCUMENTACAO COMPLETA:
+
+Todas as informacoes necessarias estao em:
+  - supabase/APLICAR_SCHEMA.md
+  - APLICACAO_SCHEMA_RESULTADO.md
+  - QUICK_START_DB.txt
+
+═══════════════════════════════════════════════════════════════

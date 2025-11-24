@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "chrome": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@executeautomation/chrome-mcp"
+      ]
+    },
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/mcp-server-supabase"
+      ]
+    }
+  }
+}
