@@ -83,14 +83,14 @@ export const Checkbox: React.FC<CheckboxProps> = ({
 
   const getBoxColor = () => {
     if (disabled) return colors.background.canvas;
-    if (error) return colors.status.error;
+    if (error) return colors.raw.error[500];
     if (checked) return colors.primary.main;
     return colors.background.card;
   };
 
   const getBorderColor = () => {
     if (disabled) return colors.border.light;
-    if (error) return colors.status.error;
+    if (error) return colors.raw.error[500];
     if (checked) return colors.primary.main;
     return colors.border.medium;
   };
@@ -147,7 +147,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
             <Text
               style={{
                 color: colors.text.primary,
-                fontSize: Typography.sizes.base,
+                fontSize: Typography.sizes.md,
                 fontWeight: Typography.weights.medium,
                 marginBottom: description ? Spacing['0.5'] : 0,
               }}
