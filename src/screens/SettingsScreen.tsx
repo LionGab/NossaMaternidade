@@ -25,6 +25,7 @@ import {
   FileText,
   LogOut,
   ChevronRight,
+  Cpu,
 } from 'lucide-react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -347,6 +348,19 @@ export default function SettingsScreen() {
           onPress={() => {
             // @ts-ignore
             navigation.navigate('TermsOfService');
+          }}
+        />
+
+        {/* Sistema / Debug */}
+        <SectionTitle>Sistema</SectionTitle>
+
+        <SettingItem
+          icon={Cpu}
+          title="Status dos Agentes IA"
+          subtitle="Monitorar 6 agentes inteligentes ativos"
+          onPress={() => {
+            // @ts-ignore
+            navigation.navigate('AgentsStatus');
           }}
         />
 

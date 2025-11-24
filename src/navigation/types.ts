@@ -10,6 +10,7 @@ export type RootStackParamList = {
   PrivacyPolicy: undefined;
   TermsOfService: undefined;
   Settings: undefined;
+  AgentsStatus: undefined; // 🆕 Tela de status dos agentes IA
 };
 
 export type MainTabParamList = {

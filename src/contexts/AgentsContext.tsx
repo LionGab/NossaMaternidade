@@ -50,37 +50,58 @@ export function AgentsProvider({ children }: AgentsProviderProps) {
   useEffect(() => {
     async function initializeAgents() {
       try {
-        console.log('[AgentsContext] Initializing system...');
+        console.log('[AgentsContext] 🚀 Initializing EXPANDED agent system...');
+        console.log('[AgentsContext] 📦 Creating 6 specialized agents...');
 
         // 1. Inicializar Orchestrator (inicializa todos os MCPs)
         await orchestrator.initialize();
+        console.log('[AgentsContext] ✅ Orchestrator initialized');
 
-        // 2. Criar agentes
+        // 2. Criar TODOS os agentes (3 principais + 3 novos especializados)
         const maternal = new MaternalChatAgent();
         const content = new ContentRecommendationAgent();
         const habits = new HabitsAnalysisAgent();
+        const emotion = new EmotionAnalysisAgent();
+        const nathia = new NathiaPersonalityAgent();
+        const sleep = new SleepAnalysisAgent();
 
-        // 3. Inicializar agentes
+        console.log('[AgentsContext] 📦 6 agents created, initializing...');
+
+        // 3. Inicializar TODOS os agentes em paralelo
         await Promise.all([
           maternal.initialize(),
           content.initialize(),
           habits.initialize(),
+          emotion.initialize(),
+          nathia.initialize(),
+          sleep.initialize(),
         ]);
 
-        // 4. Registrar no orchestrator
+        console.log('[AgentsContext] ✅ All agents initialized');
+
+        // 4. Registrar TODOS no orchestrator
         orchestrator.registerAgent(maternal);
         orchestrator.registerAgent(content);
         orchestrator.registerAgent(habits);
+        orchestrator.registerAgent(emotion);
+        orchestrator.registerAgent(nathia);
+        orchestrator.registerAgent(sleep);
 
-        // 5. Atualizar estado
+        console.log('[AgentsContext] ✅ All agents registered in orchestrator');
+
+        // 5. Atualizar estado com TODOS os agentes
         setChatAgent(maternal);
         setContentAgent(content);
         setHabitsAnalysisAgent(habits);
+        setEmotionAgent(emotion);
+        setNathiaAgent(nathia);
+        setSleepAgent(sleep);
         setInitialized(true);
 
-        console.log('[AgentsContext] System initialized successfully! 🚀');
+        console.log('[AgentsContext] ✅ 6 AGENTES ATIVOS! Sistema expandido pronto! 🤖');
+        console.log('[AgentsContext] 📊 Agents: MaternalChat, Content, Habits, Emotion, Nathia, Sleep');
       } catch (err: any) {
-        console.error('[AgentsContext] Initialization failed:', err);
+        console.error('[AgentsContext] ❌ Initialization failed:', err);
         setError(err.message || 'Failed to initialize agents');
       }
     }

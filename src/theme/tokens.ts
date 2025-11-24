@@ -5,6 +5,7 @@
  */
 
 import { Dimensions, Platform } from 'react-native';
+import type { ThemeColors } from './ThemeContext';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -201,10 +202,7 @@ export const LightTheme = {
     error: ['#F87171', '#EF4444', '#DC2626'],
     info: ['#60A5FA', '#3B82F6', '#2563EB'],
   },
-
-  // Raw color tokens for advanced usage
-  raw: ColorTokens,
-} as const;
+};
 
 /**
  * Semantic color mappings para Dark Mode (Ocean Dark Theme)
@@ -279,10 +277,7 @@ export const DarkTheme = {
     error: ['#F87171', '#EF4444', '#DC2626'],
     info: ['#60A5FA', '#3B82F6', '#2563EB'],
   },
-
-  // Raw color tokens for advanced usage
-  raw: ColorTokens,
-} as const;
+};
 
 // ======================
 // ✍️ TYPOGRAPHY TOKENS

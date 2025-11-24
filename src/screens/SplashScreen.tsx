@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Button, Logo } from '../components';
 import { useTheme } from '../theme/ThemeContext';
+import { Tokens } from '../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -57,7 +58,7 @@ export default function SplashScreenComponent({ onComplete }: SplashScreenProps)
     <SafeAreaView
       style={[
         styles.container,
-        { backgroundColor: isDark ? '#020617' : '#F8F9FA' }
+        { backgroundColor: colors.background.canvas }
       ]}
     >
       <View style={styles.content}>
@@ -66,7 +67,7 @@ export default function SplashScreenComponent({ onComplete }: SplashScreenProps)
           <Text
             style={[
               styles.title,
-              { color: isDark ? '#F9FAFB' : '#5D4E4B' }
+              { color: colors.text.primary }
             ]}
           >
             Nossa{'\n'}Maternidade
@@ -78,18 +79,18 @@ export default function SplashScreenComponent({ onComplete }: SplashScreenProps)
           <View style={[
             styles.logoWrapper,
             {
-              borderColor: isDark ? '#0B1220' : '#FFFFFF',
+              borderColor: colors.background.card,
             }
           ]}>
             <Logo size={256} rounded />
           </View>
-          
+
           {/* Quote */}
           <View style={styles.quoteContainer}>
             <Text
               style={[
                 styles.quote,
-                { color: isDark ? '#F9FAFB' : '#5D4E4B' }
+                { color: colors.text.primary }
               ]}
             >
               "Você é forte.{'\n'}Mesmo nos dias em que não parece."
@@ -115,7 +116,7 @@ export default function SplashScreenComponent({ onComplete }: SplashScreenProps)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 32,
+    padding: Tokens.spacing['8'], // 32
   },
   content: {
     flex: 1,
@@ -123,13 +124,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   titleContainer: {
-    marginTop: 48,
+    marginTop: Tokens.spacing['12'], // 48
   },
   title: {
-    fontSize: 30,
-    fontWeight: '700',
+    fontSize: Tokens.typography.sizes['4xl'], // 32 (próximo de 30)
+    fontWeight: Tokens.typography.weights.bold, // '700'
     textAlign: 'center',
-    lineHeight: 36,
+    lineHeight: Tokens.typography.lineHeights['3xl'], // 36
   },
   imageContainer: {
     flex: 1,
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
     borderRadius: 128,
     borderWidth: 4,
     overflow: 'hidden',
-    marginBottom: 32,
+    marginBottom: Tokens.spacing['8'], // 32
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -154,15 +155,15 @@ const styles = StyleSheet.create({
     maxWidth: 280,
   },
   quote: {
-    fontSize: 18,
-    fontWeight: '500',
+    fontSize: Tokens.typography.sizes.lg, // 18
+    fontWeight: Tokens.typography.weights.medium, // '500'
     fontStyle: 'italic',
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: Tokens.typography.lineHeights.lg, // 26
   },
   buttonContainer: {
     width: '100%',
-    marginBottom: 32,
+    marginBottom: Tokens.spacing['8'], // 32
   },
 });
 

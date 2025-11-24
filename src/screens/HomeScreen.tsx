@@ -34,7 +34,7 @@ import {
   Settings,
 } from 'lucide-react-native';
 import { FlashList } from '@shopify/flash-list';
-import { useTheme } from '../theme/ThemeContext';
+import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { profileService } from '../services/profileService';
 import { feedService, ContentItem } from '../services/feedService';
 import { habitsService, UserHabit } from '../services/habitsService';
@@ -46,24 +46,6 @@ type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'Home'>,
   NativeStackNavigationProp<RootStackParamList>
 >;
-
-interface ThemeColors {
-  primary: {
-    main: string;
-  };
-  text: {
-    primary: string;
-    secondary: string;
-  };
-  background: {
-    card: string;
-  };
-  border: {
-    light: string;
-  };
-  // fallback para qualquer outra chave não mapeada
-  [key: string]: any;
-}
 
 /* -------------------------------------------------------------------------- */
 /*                                   HEADER                                   */
@@ -91,7 +73,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
     style={[
       styles.headerContainer,
       {
-        backgroundColor: isDark ? 'rgba(11, 18, 32, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+        backgroundColor: `${colors.background.card}${isDark ? 'CC' : 'E6'}`,
         borderBottomColor: colors.border.light,
       },
     ]}
@@ -121,7 +103,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
         }}
         className="w-10 h-10 rounded-full items-center justify-center border"
         style={{
-          backgroundColor: isDark ? '#020617' : '#F3F4F6',
+          backgroundColor: colors.background.canvas,
           borderColor: colors.border.light,
         }}
         accessibilityRole="button"
@@ -134,7 +116,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
         onPress={onToggleTheme}
         className="w-10 h-10 rounded-full items-center justify-center border"
         style={{
-          backgroundColor: isDark ? '#020617' : '#F3F4F6',
+          backgroundColor: colors.background.canvas,
           borderColor: colors.border.light,
         }}
         accessibilityRole="button"
@@ -142,7 +124,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
         accessibilityHint="Alterna entre tema claro e escuro"
       >
         {isDark ? (
-          <Sun size={18} color="#FBBF24" />
+          <Sun size={18} color={colors.status.warning} />
         ) : (
           <Moon size={18} color={colors.text.primary} />
         )}
@@ -150,8 +132,8 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
       <TouchableOpacity
         className="w-12 h-12 rounded-full overflow-hidden border-2"
         style={{
-          backgroundColor: isDark ? colors.border.light : '#E8F0FE',
-          borderColor: isDark ? colors.border.light : '#FFFFFF',
+          backgroundColor: isDark ? colors.border.light : colors.primary.light,
+          borderColor: isDark ? colors.border.light : colors.background.card,
         }}
         accessibilityRole="button"
         accessibilityLabel={
@@ -241,7 +223,7 @@ interface BreathingCardProps {
 
 const BreathingCard: React.FC<BreathingCardProps> = ({ isDark, colors, onPress }) => (
   <LinearGradient
-    colors={isDark ? ['#3B82F6', '#1D4ED8'] : ['#6DA9E4', '#3C6AD6']}
+    colors={[...colors.primary.gradient] as any}
     className="rounded-[22px] p-6 mb-4 shadow-xl"
     accessible
     accessibilityLabel="Card de exercício de respiração"
@@ -607,7 +589,7 @@ const HomeScreen: React.FC = () => {
     return (
       <SafeAreaView
         className="flex-1 items-center justify-center"
-        style={{ backgroundColor: isDark ? '#020617' : '#F8F9FA' }}
+        style={{ backgroundColor: colors.background.canvas }}
         accessible
         accessibilityLabel="Carregando tela inicial"
       >
@@ -627,7 +609,7 @@ const HomeScreen: React.FC = () => {
   return (
     <SafeAreaView
       className="flex-1"
-      style={{ backgroundColor: isDark ? '#020617' : '#F8F9FA' }}
+      style={{ backgroundColor: colors.background.canvas }}
       accessible
       accessibilityLabel="Tela inicial do Nossa Maternidade"
     >

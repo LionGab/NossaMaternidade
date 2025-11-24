@@ -12,6 +12,7 @@ import DiaryScreen from '../screens/DiaryScreen';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
 import TermsOfServiceScreen from '../screens/TermsOfServiceScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import AgentsStatusScreen from '../screens/AgentsStatusScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -119,6 +120,14 @@ export const StackNavigator = () => {
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
+        options={{
+          presentation: 'card',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen
+        name="AgentsStatus"
+        component={AgentsStatusScreen}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',

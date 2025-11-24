@@ -67,6 +67,12 @@ export interface ThemeColors {
     error: string;
     info: string;
   };
+  gradients: {
+    success: readonly string[];
+    warning: readonly string[];
+    error: readonly string[];
+    info: readonly string[];
+  };
   // Cores raw sempre disponíveis
   raw: typeof ColorTokens;
 }
