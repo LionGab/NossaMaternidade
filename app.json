@@ -1,0 +1,119 @@
+{
+  "expo": {
+    "name": "Nossa Maternidade",
+    "slug": "nossa-maternidade",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "nossamaternidade",
+    "owner": "nossamaternidade",
+    "primaryColor": "#0D5FFF",
+    "backgroundColor": "#FFFFFF",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#0D5FFF"
+    },
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 30000
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nossamaternidade.app",
+      "buildNumber": "1",
+      "icon": "./assets/icon.png",
+      "requireFullScreen": false,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Precisamos acessar o microfone para você poder gravar mensagens de áudio para a IA e participar de videochamadas.",
+        "NSCameraUsageDescription": "Precisamos acessar a câmera para você tirar fotos e compartilhar momentos especiais.",
+        "NSPhotoLibraryUsageDescription": "Precisamos acessar suas fotos para você poder compartilhar com a comunidade.",
+        "NSPhotoLibraryAddUsageDescription": "Precisamos de permissão para salvar fotos na sua galeria.",
+        "NSLocationWhenInUseUsageDescription": "Precisamos da sua localização para conectar você com mães próximas.",
+        "CFBundleDisplayName": "Nossa Maternidade",
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIBackgroundModes": ["fetch", "remote-notification"],
+        "UIStatusBarStyle": "UIStatusBarStyleDefault"
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.nossamaternidade.app",
+      "versionCode": 1,
+      "icon": "./assets/icon.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0D5FFF"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.VIBRATE",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
+      ],
+      "splash": {
+        "backgroundColor": "#0D5FFF",
+        "resizeMode": "cover",
+        "image": "./assets/splash.png"
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "nossamaternidade.com.br",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#0D5FFF",
+      "iosDisplayInForeground": true,
+      "androidMode": "default"
+    },
+    "extra": {
+      "geminiApiKey": "",
+      "supabaseUrl": "",
+      "supabaseAnonKey": "",
+      "sentryDsn": "",
+      "oneSignalAppId": "",
+      "eas": {
+        "projectId": ""
+      }
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Precisamos acessar o microfone para você poder gravar mensagens de áudio."
+        }
+      ],
+      "expo-font",
+      "expo-localization"
+    ]
+  }
+}

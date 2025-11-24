@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Nossa Maternidade</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2921/2921226.png" type="image/png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #f8f9fa; /* Adjusted to new nath-warm */
+      transition: background-color 0.3s ease;
+    }
+    .dark body {
+      background-color: #020617; /* Ocean Dark BG */
+    }
+    /* Mobile-first container utility */
+    .mobile-container {
+      max-width: 480px;
+      margin: 0 auto;
+      background-color: #F8F9FA; /* Adjusted to new nath-warm */
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      transition: background-color 0.3s ease;
+    }
+    .dark .mobile-container {
+      background-color: #020617; /* Ocean Dark BG */
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    /* Hide scrollbar for cleaner UI */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            // Updated Palette for better visuals
+            'nath-blue': '#4285F4',     // Richer, more professional blue (Google Blue)
+            'nath-light-blue': '#E8F0FE', // Cleaner, airy light blue (similar to Google light blue)
+            'nath-warm': '#F8F9FA',     // Subtle, barely-there warm white
+            'nath-dark': '#5D4E4B',     // Deep warm grey-brown
+            'nath-pink': '#FF8FA3',     // Soft coral pink
+            
+            // Ocean Dark Theme
+            'nath-dark-bg': '#020617',      // bg.canvas
+            'nath-dark-card': '#0B1220',    // surface.card
+            'nath-dark-sleep': '#111827',   // surface.sleep
+            'nath-dark-pause': '#1D2843',   // surface.pause
+            'nath-dark-hero': '#3B82F6',    // nathiaHero (lighter blue for dark mode)
+            'nath-dark-hero-soft': '#1D4ED8', // shapes
+            'nath-dark-text': '#F9FAFB',    // text.primary
+            'nath-dark-sec': '#D1D5DB',     // text.secondary
+            'nath-dark-muted': '#9CA3AF',   // text.muted
+            'nath-dark-border': 'rgba(148,163,184,0.24)', // border.subtle
+            'nath-dark-tab': '#020617',     // surface.tabBar
+          },
+          fontFamily: {
+            sans: ['Quicksand', 'sans-serif'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          }
+        }
+      }
+    }
+  </script>
+<script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+  <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

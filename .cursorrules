@@ -1,0 +1,136 @@
+# Cursor Rules - Nossa Maternidade Mobile
+
+## Contexto do Projeto
+Este é um aplicativo React Native desenvolvido com Expo SDK 54, TypeScript, NativeWind (Tailwind CSS) e React Navigation.
+
+## Padrões de Código
+
+### TypeScript
+- Sempre use TypeScript com tipos explícitos
+- Use interfaces para props de componentes
+- Prefira `type` para unions e tipos complexos
+- Evite `any`, use `unknown` quando necessário
+
+### React Native / Expo
+- Use componentes funcionais com hooks
+- Prefira `useState`, `useEffect`, `useCallback`, `useMemo` quando apropriado
+- Use `expo-*` packages quando disponíveis
+- Sempre use `SafeAreaView` para telas
+- Use `KeyboardAvoidingView` quando houver inputs
+
+### Estilização
+- Use NativeWind (Tailwind CSS) para estilos
+- Classes Tailwind devem ser aplicadas via `className`
+- Cores customizadas estão em `tailwind.config.js`
+- Use componentes de `src/components` quando disponíveis
+
+### Estrutura de Arquivos
+- Componentes em `src/components/`
+- Telas em `src/screens/`
+- Serviços em `src/services/`
+- Utilitários em `src/utils/`
+- Tipos em `src/types/`
+- Hooks customizados em `src/hooks/`
+
+### Navegação
+- Use React Navigation 7
+- Tipos de navegação em `src/navigation/types.ts`
+- Sempre tipar parâmetros de navegação
+
+### Tratamento de Erros
+- Use `ErrorBoundary` para capturar erros React
+- Sempre trate erros em async/await com try/catch
+- Use `errorHandler.ts` para erros padronizados
+- Mostre mensagens amigáveis ao usuário
+
+### Performance
+- Use `React.memo()` para componentes pesados
+- Use `useMemo` e `useCallback` para otimizações
+- Prefira `FlatList` com `removeClippedSubviews={true}`
+- Lazy load de imagens quando possível
+
+### API e Serviços
+- Gemini AI: use `geminiService` de `src/services/geminiService.ts`
+- Supabase: use `supabase` de `src/services/supabase.ts`
+- Variáveis de ambiente: sempre use prefixo `EXPO_PUBLIC_`
+- Valide dados antes de enviar para APIs
+
+### Armazenamento
+- Use `AsyncStorage` para dados não sensíveis
+- Use `expo-secure-store` para dados sensíveis
+- Helpers em `src/utils/storage.ts` e `src/hooks/useStorage.ts`
+
+### Convenções de Nomenclatura
+- Componentes: PascalCase (ex: `Button.tsx`)
+- Arquivos de utilitários: camelCase (ex: `errorHandler.ts`)
+- Hooks: começar com `use` (ex: `useHaptics.ts`)
+- Constantes: UPPER_SNAKE_CASE
+- Tipos/Interfaces: PascalCase
+
+### Comentários
+- Comentários em português
+- Documente funções complexas
+- Use JSDoc para funções públicas
+- Comentários inline para lógica não óbvia
+
+### Imports
+- Imports de bibliotecas externas primeiro
+- Imports de componentes internos depois
+- Use path aliases quando configurado (`@/`, `@components/`, etc.)
+- Agrupe imports relacionados
+
+### Formatação
+- Use Prettier (configuração padrão)
+- 2 espaços para indentação
+- Aspas simples para strings
+- Ponto e vírgula no final das linhas
+- Trailing comma em objetos/arrays multi-linha
+
+## Regras Específicas do Projeto
+
+### Chat com IA
+- Timeout de 30 segundos
+- Retry com exponential backoff (3 tentativas)
+- Sempre mostrar loading state
+- Tratar erros de API graciosamente
+
+### Autenticação
+- Use `AuthContext` para estado de autenticação
+- Valide inputs antes de submeter
+- Mostre feedback visual durante login
+
+### Onboarding
+- Fluxo em etapas (Step1, Step2)
+- Persistir estado de onboarding completo
+- Não mostrar onboarding novamente após completado
+
+### Acessibilidade
+- Use `accessibilityLabel` quando apropriado
+- Teste com leitores de tela
+- Contraste adequado de cores
+
+## Quando Criar Novos Arquivos
+
+- Componentes reutilizáveis: `src/components/`
+- Telas completas: `src/screens/`
+- Lógica de negócio: `src/services/` ou `src/utils/`
+- Hooks customizados: `src/hooks/`
+- Tipos compartilhados: `src/types/`
+
+## Não Fazer
+
+- Não usar `newArchEnabled` (não compatível com Expo Go)
+- Não commitar arquivos `.env`
+- Não usar `any` sem necessidade
+- Não criar componentes muito grandes (>200 linhas)
+- Não fazer imports absolutos sem path aliases
+- Não esquecer de tratar erros em operações async
+
+## Preferências de Resposta
+
+- Sempre responder em português
+- Ser direto e objetivo
+- Mostrar código completo, não placeholders
+- Incluir comentários úteis no código
+- Explicar decisões importantes
+- Antecipar problemas comuns

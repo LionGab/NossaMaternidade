@@ -1,0 +1,73 @@
+src/components/CommentItem.tsx(193,24): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/components/CommentsSection.tsx(100,47): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/components/CommentsSection.tsx(117,76): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/components/CommentsSection.tsx(129,40): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/components/CommentsSection.tsx(170,40): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/components/ContentCard.tsx(9,23): error TS2724: '"../types/content"' has no exported member named 'ContentType'. Did you mean 'ContentItem'?
+src/components/ContentCard.tsx(63,59): error TS2339: Property 'likes' does not exist on type 'ContentItem'.
+src/components/ContentCard.tsx(104,38): error TS2339: Property 'imageUrl' does not exist on type 'ContentItem'.
+src/components/ContentCard.tsx(108,17): error TS2339: Property 'isExclusive' does not exist on type 'ContentItem'.
+src/components/ContentCard.tsx(140,51): error TS2339: Property 'views' does not exist on type 'ContentItem'.
+src/components/ContentCard.tsx(144,51): error TS2339: Property 'likes' does not exist on type 'ContentItem'.
+src/components/ContentCard.tsx(163,49): error TS2339: Property 'date' does not exist on type 'ContentItem'.
+src/components/ContentCard.tsx(173,17): error TS2339: Property 'tags' does not exist on type 'ContentItem'.
+src/components/ContentCard.tsx(173,30): error TS2339: Property 'tags' does not exist on type 'ContentItem'.
+src/components/ContentCard.tsx(175,21): error TS2339: Property 'tags' does not exist on type 'ContentItem'.
+src/components/ContentCard.tsx(175,43): error TS7006: Parameter 'tag' implicitly has an 'any' type.
+src/components/ContentCard.tsx(175,48): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/components/ContentCard.tsx(330,24): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/components/ContentCard.tsx(352,40): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/components/ContentCard.tsx(376,40): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/data/content.ts(20,5): error TS2820: Type '"Áudio"' is not assignable to type '"article" | "audio" | "video"'. Did you mean '"audio"'?
+src/data/content.ts(36,5): error TS2820: Type '"Áudio"' is not assignable to type '"article" | "audio" | "video"'. Did you mean '"audio"'?
+src/data/content.ts(51,5): error TS2820: Type '"Áudio"' is not assignable to type '"article" | "audio" | "video"'. Did you mean '"audio"'?
+src/data/content.ts(70,5): error TS2820: Type '"Vídeo"' is not assignable to type '"article" | "audio" | "video"'. Did you mean '"video"'?
+src/data/content.ts(86,5): error TS2322: Type '"Bastidor"' is not assignable to type '"article" | "audio" | "video"'.
+src/data/content.ts(102,5): error TS2322: Type '"Reels"' is not assignable to type '"article" | "audio" | "video"'.
+src/data/content.ts(118,5): error TS2322: Type '"Reels"' is not assignable to type '"article" | "audio" | "video"'.
+src/data/content.ts(138,5): error TS2322: Type '"Texto"' is not assignable to type '"article" | "audio" | "video"'.
+src/data/content.ts(163,5): error TS2322: Type '"Texto"' is not assignable to type '"article" | "audio" | "video"'.
+src/data/content.ts(306,12): error TS2339: Property 'tags' does not exist on type 'ContentItem'.
+src/data/content.ts(306,24): error TS7006: Parameter 'tag' implicitly has an 'any' type.
+src/screens/ContentDetailScreen.tsx(20,23): error TS2724: '"../types/content"' has no exported member named 'ContentType'. Did you mean 'ContentItem'?
+src/screens/ContentDetailScreen.tsx(97,56): error TS2339: Property 'likes' does not exist on type 'ContentItem'.
+src/screens/ContentDetailScreen.tsx(127,20): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/screens/ContentDetailScreen.tsx(146,39): error TS2339: Property 'imageUrl' does not exist on type 'ContentItem'.
+src/screens/ContentDetailScreen.tsx(229,22): error TS2339: Property 'isExclusive' does not exist on type 'ContentItem'.
+src/screens/ContentDetailScreen.tsx(235,48): error TS2339: Property 'date' does not exist on type 'ContentItem'.
+src/screens/ContentDetailScreen.tsx(246,22): error TS2339: Property 'views' does not exist on type 'ContentItem'.
+src/screens/ContentDetailScreen.tsx(250,28): error TS2339: Property 'views' does not exist on type 'ContentItem'.
+src/screens/ContentDetailScreen.tsx(294,20): error TS2339: Property 'tags' does not exist on type 'ContentItem'.
+src/screens/ContentDetailScreen.tsx(294,36): error TS2339: Property 'tags' does not exist on type 'ContentItem'.
+src/screens/ContentDetailScreen.tsx(298,26): error TS2339: Property 'tags' does not exist on type 'ContentItem'.
+src/screens/ContentDetailScreen.tsx(298,36): error TS7006: Parameter 'tag' implicitly has an 'any' type.
+src/screens/ContentDetailScreen.tsx(298,41): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/screens/ContentDetailScreen.tsx(308,12): error TS2367: This comparison appears to be unintentional because the types '"article" | "audio" | "video"' and '"Áudio"' have no overlap.
+src/screens/ContentDetailScreen.tsx(308,48): error TS2339: Property 'audioUrl' does not exist on type 'ContentItem'.
+src/screens/ContentDetailScreen.tsx(311,35): error TS2339: Property 'audioUrl' does not exist on type 'ContentItem'.
+src/screens/ContentDetailScreen.tsx(392,40): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/screens/ContentDetailScreen.tsx(467,40): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/screens/ContentDetailScreen.tsx(514,24): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/screens/ContentDetailScreen.tsx(554,24): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/screens/ContentDetailScreen.tsx(566,24): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/screens/ContentDetailScreen.tsx(664,24): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/screens/HabitsScreen.tsx(126,70): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/screens/HabitsScreen.tsx(368,32): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/screens/HabitsScreen.tsx(385,40): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/screens/HabitsScreen.tsx(453,40): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/screens/LoginScreen.tsx(34,51): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/screens/LoginScreen.tsx(79,45): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/screens/LoginScreen.tsx(91,47): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/screens/OnboardingStep1.tsx(25,51): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/screens/OnboardingStep2.tsx(27,51): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/screens/OnboardingStep2.tsx(67,45): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/screens/RefugioNathScreen.tsx(11,51): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/screens/RefugioNathScreen.tsx(38,41): error TS2339: Property 'tertiary' does not exist on type '{ readonly primary: "#F9FAFB"; readonly secondary: "#D1D5DB"; readonly muted: "#9CA3AF"; readonly dark: "#5D4E4B"; }'.
+src/screens/SplashScreen.tsx(24,51): error TS2339: Property 'dark' does not exist on type '{ readonly canvas: "#020617"; readonly card: "#0B1220"; readonly sleep: "#111827"; readonly pause: "#1D2843"; readonly light: "#F8F9FA"; readonly tab: "#020617"; }'.
+src/utils/contentHelpers.ts(6,23): error TS2724: '"../types/content"' has no exported member named 'ContentType'. Did you mean 'ContentItem'?
+src/utils/contentHelpers.ts(79,38): error TS2367: This comparison appears to be unintentional because the types '"article" | "audio" | "video"' and '"Vídeo"' have no overlap.
+src/utils/contentHelpers.ts(80,38): error TS2367: This comparison appears to be unintentional because the types '"article" | "audio" | "video"' and '"Áudio"' have no overlap.
+src/utils/contentHelpers.ts(81,38): error TS2367: This comparison appears to be unintentional because the types '"article" | "audio" | "video"' and '"Texto"' have no overlap.
+src/utils/contentHelpers.ts(82,38): error TS2367: This comparison appears to be unintentional because the types '"article" | "audio" | "video"' and '"Reels"' have no overlap.
+src/utils/contentHelpers.ts(98,12): error TS2339: Property 'tags' does not exist on type 'ContentItem'.
+src/utils/contentHelpers.ts(98,24): error TS7006: Parameter 'tag' implicitly has an 'any' type.

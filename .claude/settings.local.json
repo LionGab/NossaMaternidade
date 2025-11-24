@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(npm install:*)",
+      "Bash(node -e:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(GITHUB_PERSONAL_ACCESS_TOKEN=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 npx:*)",
+      "Bash(export GITHUB_PERSONAL_ACCESS_TOKEN=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)",
+      "Bash(npx -y @modelcontextprotocol/server-github)",
+      "Bash(npx:*)",
+      "Bash(timeout 10s npx:*)",
+      "Bash(cat:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(git add:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill /F /PID 30600)",
+      "Bash(taskkill //F //PID 30600)",
+      "Bash(gh issue list:*)",
+      "Bash(GITHUB_PERSONAL_ACCESS_TOKEN=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 gh issue list --repo LionGab/NossaMaternidadeMelhor)",
+      "Bash(test:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
+}
