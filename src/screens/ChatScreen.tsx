@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   SafeAreaView,
   StatusBar,
-  useColorScheme,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ArrowLeft, Sparkles, Trash2, Send, Loader2 } from 'lucide-react-native';
@@ -19,7 +18,7 @@ import * as Haptics from 'expo-haptics';
 import { Message } from '../types/chat';
 import { geminiService } from '../services/geminiService';
 import { storageService } from '../utils/storage';
-import { Colors } from '../constants/Colors';
+import { useTheme } from '../theme/ThemeContext';
 
 const INITIAL_CHAT_GREETING = "Oi, mãe. Tô aqui com você. Como você está se sentindo agora?";
 const AVATAR_URL = "https://i.imgur.com/RRIaE7t.jpg";
@@ -27,8 +26,7 @@ const AVATAR_URL = "https://i.imgur.com/RRIaE7t.jpg";
 export default function ChatScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { colors, isDark } = useTheme();
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -135,15 +133,25 @@ export default function ChatScreen() {
   const renderItem = ({ item }: { item: Message }) => {
     const isUser = item.role === 'user';
     return (
-      <View className={`flex-row w-full mb-4 ${isUser ? 'justify-end' : 'justify-start'}`}>
+      <View style={{ flexDirection: 'row', width: '100%', marginBottom: 16, justifyContent: isUser ? 'flex-end' : 'flex-start' }}>
         <View
-          className={`max-w-[85%] p-3 rounded-2xl shadow-sm ${
-            isUser
-              ? 'bg-nath-dark-hero rounded-br-none'
-              : 'bg-white dark:bg-nath-dark-card rounded-bl-none border border-transparent dark:border-nath-dark-border'
-          }`}
+          style={{
+            maxWidth: '85%',
+            padding: 12,
+            borderRadius: 16,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.05,
+            shadowRadius: 2,
+            elevation: 1,
+            backgroundColor: isUser ? colors.primary.main : colors.background.card,
+            borderBottomRightRadius: isUser ? 4 : 16,
+            borderBottomLeftRadius: isUser ? 16 : 4,
+            borderWidth: isUser ? 0 : 1,
+            borderColor: isDark ? colors.border.light : 'transparent',
+          }}
         >
-          <Text className={`text-sm leading-relaxed ${isUser ? 'text-white' : 'text-gray-700 dark:text-nath-dark-text'}`}>
+          <Text style={{ fontSize: 14, lineHeight: 20, color: isUser ? '#FFFFFF' : colors.text.primary }}>
             {item.text}
           </Text>
         </View>
@@ -152,42 +160,42 @@ export default function ChatScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F0F4F8] dark:bg-nath-dark-bg">
-      <StatusBar barStyle="dark-content" />
-      
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background.canvas }}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
+
       {/* Header */}
-      <View className="bg-white dark:bg-nath-dark-tab p-4 flex-row items-center gap-3 border-b border-gray-100 dark:border-nath-dark-border shadow-sm z-10">
+      <View style={{ backgroundColor: colors.background.card, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: 1, borderBottomColor: colors.border.light, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}>
         <TouchableOpacity
           onPress={() => { triggerHaptic(); navigation.goBack(); }}
-          className="bg-black dark:bg-white p-2 rounded-full"
+          style={{ backgroundColor: isDark ? '#FFFFFF' : '#000000', padding: 8, borderRadius: 20 }}
         >
-          <ArrowLeft size={20} color={isDark ? 'black' : 'white'} />
+          <ArrowLeft size={20} color={isDark ? '#000000' : '#FFFFFF'} />
         </TouchableOpacity>
 
-        <View className="relative">
-          <View className="w-10 h-10 bg-nath-light-blue dark:bg-nath-dark-card rounded-full overflow-hidden border border-white dark:border-nath-dark-border">
-            <Image source={{ uri: AVATAR_URL }} className="w-full h-full" resizeMode="cover" />
+        <View style={{ position: 'relative' }}>
+          <View style={{ width: 40, height: 40, backgroundColor: isDark ? colors.background.card : '#E8F0FE', borderRadius: 20, overflow: 'hidden', borderWidth: 1, borderColor: isDark ? colors.border.light : '#FFFFFF' }}>
+            <Image source={{ uri: AVATAR_URL }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
           </View>
-          <View className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white dark:border-nath-dark-tab" />
+          <View style={{ position: 'absolute', bottom: 0, right: 0, width: 12, height: 12, backgroundColor: '#10B981', borderRadius: 6, borderWidth: 2, borderColor: colors.background.card }} />
         </View>
 
-        <View className="flex-1">
-          <Text className="text-[10px] font-bold text-nath-blue uppercase tracking-widest mb-0.5">
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary.main, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 2 }}>
             Nossa Maternidade
           </Text>
-          <View className="flex-row items-center gap-1">
-            <Text className="font-bold text-lg text-nath-dark dark:text-nath-dark-text">
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Text style={{ fontWeight: 'bold', fontSize: 18, color: colors.text.primary }}>
               MãesValente
             </Text>
-            <Sparkles size={12} color="#4285F4" />
+            <Sparkles size={12} color={colors.primary.main} />
           </View>
         </View>
 
         <TouchableOpacity
           onPress={handleClearHistory}
-          className="p-2 rounded-full hover:bg-gray-50 dark:hover:bg-nath-dark-card"
+          style={{ padding: 8, borderRadius: 20 }}
         >
-          <Trash2 size={18} color="#9CA3AF" />
+          <Trash2 size={18} color={colors.text.tertiary} />
         </TouchableOpacity>
       </View>
 
@@ -197,25 +205,25 @@ export default function ChatScreen() {
         className="flex-1"
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
-        <View className="flex-1">
+        <View style={{ flex: 1 }}>
           {messages.length <= 1 && !loading ? (
             /* Empty State */
-            <View className="flex-1 items-center justify-center -mt-12 px-6">
-              <View className="w-36 h-36 rounded-full border-4 border-white dark:border-nath-dark-card shadow-xl overflow-hidden mb-4 bg-gray-200">
-                <Image source={{ uri: AVATAR_URL }} className="w-full h-full" resizeMode="cover" />
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: -48, paddingHorizontal: 24 }}>
+              <View style={{ width: 144, height: 144, borderRadius: 72, borderWidth: 4, borderColor: colors.background.card, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 8, overflow: 'hidden', marginBottom: 16, backgroundColor: '#E5E7EB' }}>
+                <Image source={{ uri: AVATAR_URL }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
               </View>
-              
-              <Text className="text-3xl font-bold text-nath-dark dark:text-white mb-1 text-center">
+
+              <Text style={{ fontSize: 28, fontWeight: 'bold', color: colors.text.primary, marginBottom: 4, textAlign: 'center' }}>
                 MãesValente
               </Text>
-              <View className="flex-row items-center gap-2 mb-6">
-                <Sparkles size={14} color="#4285F4" />
-                <Text className="text-nath-blue dark:text-nath-dark-hero font-medium text-sm tracking-wide uppercase">
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+                <Sparkles size={14} color={colors.primary.main} />
+                <Text style={{ color: colors.primary.main, fontWeight: '500', fontSize: 14, letterSpacing: 1, textTransform: 'uppercase' }}>
                   Suas conversas
                 </Text>
               </View>
-              
-              <Text className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed text-center max-w-[260px]">
+
+              <Text style={{ color: colors.text.secondary, fontSize: 14, lineHeight: 20, textAlign: 'center', maxWidth: 260 }}>
                 {INITIAL_CHAT_GREETING}
               </Text>
             </View>
@@ -229,9 +237,9 @@ export default function ChatScreen() {
               showsVerticalScrollIndicator={false}
               ListFooterComponent={
                 loading ? (
-                  <View className="flex-row justify-start mb-4">
-                    <View className="bg-white dark:bg-nath-dark-card p-4 rounded-2xl rounded-bl-none shadow-sm border border-transparent dark:border-nath-dark-border">
-                      <ActivityIndicator size="small" color="#9CA3AF" />
+                  <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 16 }}>
+                    <View style={{ backgroundColor: colors.background.card, padding: 16, borderRadius: 16, borderBottomLeftRadius: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1, borderWidth: 1, borderColor: isDark ? colors.border.light : 'transparent' }}>
+                      <ActivityIndicator size="small" color={colors.text.tertiary} />
                     </View>
                   </View>
                 ) : null
@@ -241,9 +249,9 @@ export default function ChatScreen() {
         </View>
 
         {/* Input Area */}
-        <View className="bg-white dark:bg-nath-dark-tab p-3 border-t border-gray-100 dark:border-nath-dark-border pb-8">
+        <View style={{ backgroundColor: colors.background.card, padding: 12, borderTopWidth: 1, borderTopColor: colors.border.light, paddingBottom: 32 }}>
           {!loading && messages.length < 5 && (
-            <View className="flex-row gap-2 mb-3">
+            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
               <FlatList
                 horizontal
                 data={quickChips}
@@ -252,9 +260,9 @@ export default function ChatScreen() {
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     onPress={() => { setInput(item); handleSend(item); }}
-                    className="bg-nath-light-blue dark:bg-nath-dark-card px-4 py-2.5 rounded-full border border-nath-blue/20 dark:border-nath-dark-border mr-2"
+                    style={{ backgroundColor: isDark ? colors.background.elevated : '#E8F0FE', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, borderWidth: 1, borderColor: isDark ? colors.border.light : `${colors.primary.main}33`, marginRight: 8 }}
                   >
-                    <Text className="text-nath-blue dark:text-nath-blue text-xs font-medium">
+                    <Text style={{ color: colors.primary.main, fontSize: 12, fontWeight: '500' }}>
                       {item}
                     </Text>
                   </TouchableOpacity>
@@ -263,26 +271,44 @@ export default function ChatScreen() {
             </View>
           )}
 
-          <View className="flex-row gap-2 items-end">
+          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'flex-end' }}>
             <TextInput
               value={input}
               onChangeText={setInput}
               placeholder="Conta pra mim..."
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.text.tertiary}
               multiline
               maxLength={500}
-              className="flex-1 bg-gray-100 dark:bg-nath-dark-bg dark:text-white rounded-2xl px-4 py-3 text-sm max-h-24"
-              style={{ textAlignVertical: 'top' }}
+              style={{
+                flex: 1,
+                backgroundColor: isDark ? colors.background.canvas : '#F3F4F6',
+                color: colors.text.primary,
+                borderRadius: 16,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                fontSize: 14,
+                maxHeight: 96,
+                textAlignVertical: 'top',
+              }}
             />
             <TouchableOpacity
               onPress={() => handleSend()}
               disabled={!input.trim() || loading}
-              className={`p-3 rounded-full items-center justify-center shadow-md ${
-                !input.trim() || loading ? 'bg-gray-300' : 'bg-nath-blue dark:bg-nath-dark-hero'
-              }`}
+              style={{
+                padding: 12,
+                borderRadius: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 4,
+                backgroundColor: !input.trim() || loading ? '#D1D5DB' : colors.primary.main,
+              }}
             >
               {loading ? (
-                <Loader2 size={20} color="white" className="animate-spin" />
+                <Loader2 size={20} color="white" />
               ) : (
                 <Send size={20} color="white" />
               )}

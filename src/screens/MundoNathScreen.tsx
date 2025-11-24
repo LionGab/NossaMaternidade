@@ -29,14 +29,14 @@ import {
 import { MOCK_POSTS } from '../constants/data';
 import { UserProfile } from '../types/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Colors } from '../constants/Colors';
+import { useTheme } from '../theme/ThemeContext';
 
 const AVATAR_URL = "https://i.imgur.com/RRIaE7t.jpg";
 
 export default function MundoNathScreen() {
   const navigation = useNavigation<any>();
+  const { colors, isDark, toggleTheme } = useTheme();
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false); // TODO: Integrate with system theme or context
 
   useEffect(() => {
     loadUser();
@@ -56,11 +56,6 @@ export default function MundoNathScreen() {
     }
   };
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    // TODO: Implement actual theme switching logic
-  };
-
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Bom dia';
@@ -69,90 +64,90 @@ export default function MundoNathScreen() {
   };
 
   return (
-    <SafeAreaView className={`flex-1 ${isDarkMode ? 'bg-nath-dark-bg' : 'bg-[#F0F4F8]'}`}>
-      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} />
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background.canvas }}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
       
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Header */}
-        <View className="px-6 pt-6 pb-4 flex-row justify-between items-start">
+        <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <View>
-            <View className="flex-row items-center gap-2 mb-1">
-              <Text className={`text-sm font-medium ${isDarkMode ? 'text-nath-dark-text' : 'text-gray-600'}`}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text.secondary }}>
                 {getGreeting()},
               </Text>
               <Sparkles size={14} color="#FF8FA3" />
             </View>
-            <Text className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-nath-dark'}`}>
+            <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}>
               {user?.name || 'Mãe'}
             </Text>
           </View>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             onPress={toggleTheme}
-            className={`p-2 rounded-full ${isDarkMode ? 'bg-nath-dark-card' : 'bg-white'} shadow-sm`}
+            style={{ padding: 8, borderRadius: 20, backgroundColor: colors.background.card, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
           >
-            {isDarkMode ? <Sun size={20} color="#F59E0B" /> : <Moon size={20} color="#6B7280" />}
+            {isDark ? <Sun size={20} color="#F59E0B" /> : <Moon size={20} color="#6B7280" />}
           </TouchableOpacity>
         </View>
 
         {/* Hoje eu tô com você Section */}
-        <View className="px-6 mb-8">
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-nath-dark'}`}>
+        <View style={{ paddingHorizontal: 24, marginBottom: 32 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.text.primary }}>
               Hoje eu tô com você
             </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Chat')}>
-              <Text className="text-nath-blue text-sm font-medium">Ver tudo</Text>
+              <Text style={{ color: colors.primary.main, fontSize: 14, fontWeight: '500' }}>Ver tudo</Text>
             </TouchableOpacity>
           </View>
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-6 px-6">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginLeft: -24, paddingLeft: 24 }}>
             {/* Card 1: Emotional Mirror (Chat) */}
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => navigation.navigate('Chat')}
-              className={`mr-4 w-72 p-5 rounded-3xl ${isDarkMode ? 'bg-nath-dark-card border-nath-dark-border' : 'bg-white'} shadow-sm border border-transparent`}
+              style={{ marginRight: 16, width: 288, padding: 20, borderRadius: 24, backgroundColor: colors.background.card, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1, borderWidth: 1, borderColor: isDark ? colors.border.light : 'transparent' }}
             >
-              <View className="flex-row justify-between items-start mb-4">
-                <View className={`p-3 rounded-2xl ${isDarkMode ? 'bg-nath-dark-bg' : 'bg-nath-light-blue'}`}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+                <View style={{ padding: 12, borderRadius: 16, backgroundColor: isDark ? colors.background.canvas : '#E8F0FE' }}>
                   <MessageCircleHeart size={24} color="#4285F4" />
                 </View>
-                <View className="bg-green-100 px-2 py-1 rounded-full">
-                  <Text className="text-green-700 text-[10px] font-bold uppercase">Online agora</Text>
+                <View style={{ backgroundColor: '#D1FAE5', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20 }}>
+                  <Text style={{ color: '#047857', fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' }}>Online agora</Text>
                 </View>
               </View>
-              <Text className={`text-lg font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 4, color: colors.text.primary }}>
                 Como você tá se sentindo?
               </Text>
-              <Text className={`text-sm mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              <Text style={{ fontSize: 14, marginBottom: 16, color: colors.text.secondary }}>
                 Desabafa comigo. Eu tô aqui pra te ouvir sem julgamentos.
               </Text>
-              <View className="flex-row items-center gap-2">
-                <Text className="text-nath-blue font-bold text-sm">Conversar agora</Text>
-                <ArrowRight size={16} color="#4285F4" />
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Text style={{ color: colors.primary.main, fontWeight: 'bold', fontSize: 14 }}>Conversar agora</Text>
+                <ArrowRight size={16} color={colors.primary.main} />
               </View>
             </TouchableOpacity>
 
             {/* Card 2: Anxiety Ritual */}
-            <TouchableOpacity 
-              onPress={() => navigation.navigate('Refugio')} // Assuming Refugio is the Ritual/Diary tab
-              className={`mr-4 w-72 p-5 rounded-3xl ${isDarkMode ? 'bg-nath-dark-card border-nath-dark-border' : 'bg-white'} shadow-sm border border-transparent`}
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Refugio')}
+              style={{ marginRight: 16, width: 288, padding: 20, borderRadius: 24, backgroundColor: colors.background.card, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1, borderWidth: 1, borderColor: isDark ? colors.border.light : 'transparent' }}
             >
-              <View className="flex-row justify-between items-start mb-4">
-                <View className={`p-3 rounded-2xl ${isDarkMode ? 'bg-nath-dark-bg' : 'bg-purple-50'}`}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+                <View style={{ padding: 12, borderRadius: 16, backgroundColor: isDark ? colors.background.canvas : '#F3E8FF' }}>
                   <Wind size={24} color="#9333EA" />
                 </View>
-                <View className="bg-purple-100 px-2 py-1 rounded-full">
-                  <Text className="text-purple-700 text-[10px] font-bold uppercase">3 min</Text>
+                <View style={{ backgroundColor: '#F3E8FF', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20 }}>
+                  <Text style={{ color: '#7E22CE', fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' }}>3 min</Text>
                 </View>
               </View>
-              <Text className={`text-lg font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 4, color: colors.text.primary }}>
                 Crise de ansiedade?
               </Text>
-              <Text className={`text-sm mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              <Text style={{ fontSize: 14, marginBottom: 16, color: colors.text.secondary }}>
                 Vamos respirar juntas. Um ritual rápido pra acalmar o coração.
               </Text>
-              <View className="flex-row items-center gap-2">
-                <Text className="text-purple-600 font-bold text-sm">Começar ritual</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Text style={{ color: '#9333EA', fontWeight: 'bold', fontSize: 14 }}>Começar ritual</Text>
                 <PlayCircle size={16} color="#9333EA" />
               </View>
             </TouchableOpacity>
@@ -160,48 +155,48 @@ export default function MundoNathScreen() {
         </View>
 
         {/* Mundo Nath Section */}
-        <View className="px-6 mb-8">
-          <View className="flex-row items-center gap-2 mb-4">
-            <Text className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-nath-dark'}`}>
+        <View style={{ paddingHorizontal: 24, marginBottom: 32 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.text.primary }}>
               Mundo Nath
             </Text>
-            <View className="bg-nath-pink/20 px-2 py-0.5 rounded-md">
-              <Text className="text-nath-pink text-[10px] font-bold uppercase">Exclusivo</Text>
+            <View style={{ backgroundColor: 'rgba(255, 143, 163, 0.2)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
+              <Text style={{ color: '#FF8FA3', fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' }}>Exclusivo</Text>
             </View>
           </View>
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-6 px-6">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginLeft: -24, paddingLeft: 24 }}>
             {MOCK_POSTS.map((post) => (
-              <TouchableOpacity 
+              <TouchableOpacity
                 key={post.id}
-                className={`mr-4 w-60 rounded-3xl overflow-hidden ${isDarkMode ? 'bg-nath-dark-card' : 'bg-white'} shadow-sm`}
+                style={{ marginRight: 16, width: 240, borderRadius: 24, overflow: 'hidden', backgroundColor: colors.background.card, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
               >
-                <View className="h-32 bg-gray-200 relative">
-                  <Image 
-                    source={{ uri: post.thumbnailUrl }} 
-                    className="w-full h-full"
+                <View style={{ height: 128, backgroundColor: '#E5E7EB', position: 'relative' }}>
+                  <Image
+                    source={{ uri: post.thumbnailUrl }}
+                    style={{ width: '100%', height: '100%' }}
                     resizeMode="cover"
                   />
-                  <View className="absolute top-3 left-3 bg-black/50 px-2 py-1 rounded-lg backdrop-blur-sm flex-row items-center gap-1">
+                  <View style={{ position: 'absolute', top: 12, left: 12, backgroundColor: 'rgba(0, 0, 0, 0.5)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                     {post.type === 'Vídeo' && <Video size={12} color="white" />}
                     {post.type === 'Texto' && <FileText size={12} color="white" />}
                     {post.type === 'Áudio' && <Mic size={12} color="white" />}
                     {post.type === 'Reels' && <PlayCircle size={12} color="white" />}
-                    <Text className="text-white text-[10px] font-medium">{post.type}</Text>
+                    <Text style={{ color: 'white', fontSize: 10, fontWeight: '500' }}>{post.type}</Text>
                   </View>
                   {post.isNew && (
-                    <View className="absolute top-3 right-3 bg-nath-pink px-2 py-1 rounded-lg shadow-sm">
-                      <Text className="text-white text-[10px] font-bold">NOVO</Text>
+                    <View style={{ position: 'absolute', top: 12, right: 12, backgroundColor: '#FF8FA3', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, elevation: 1 }}>
+                      <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold' }}>NOVO</Text>
                     </View>
                   )}
                 </View>
-                <View className="p-4">
-                  <Text className={`font-bold text-base leading-tight mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`} numberOfLines={2}>
+                <View style={{ padding: 16 }}>
+                  <Text style={{ fontWeight: 'bold', fontSize: 16, lineHeight: 20, marginBottom: 8, color: colors.text.primary }} numberOfLines={2}>
                     {post.title}
                   </Text>
-                  <View className="flex-row items-center gap-2">
-                    <Text className="text-nath-blue text-xs font-bold">Ver agora</Text>
-                    <ChevronRight size={12} color="#4285F4" />
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Text style={{ color: colors.primary.main, fontSize: 12, fontWeight: 'bold' }}>Ver agora</Text>
+                    <ChevronRight size={12} color={colors.primary.main} />
                   </View>
                 </View>
               </TouchableOpacity>
@@ -210,28 +205,28 @@ export default function MundoNathScreen() {
         </View>
 
         {/* Waitlist Banner */}
-        <View className="px-6 mb-8">
-          <View className="bg-nath-dark dark:bg-nath-dark-card rounded-3xl p-6 relative overflow-hidden">
-            <View className="absolute top-0 right-0 w-32 h-32 bg-nath-pink/20 rounded-full -mr-10 -mt-10" />
-            <View className="absolute bottom-0 left-0 w-24 h-24 bg-nath-blue/20 rounded-full -ml-10 -mb-10" />
-            
-            <View className="flex-row items-center gap-2 mb-2">
+        <View style={{ paddingHorizontal: 24, marginBottom: 32 }}>
+          <View style={{ backgroundColor: isDark ? colors.background.card : '#5D4E4B', borderRadius: 24, padding: 24, position: 'relative', overflow: 'hidden' }}>
+            <View style={{ position: 'absolute', top: 0, right: 0, width: 128, height: 128, backgroundColor: 'rgba(255, 143, 163, 0.2)', borderRadius: 64, marginRight: -40, marginTop: -40 }} />
+            <View style={{ position: 'absolute', bottom: 0, left: 0, width: 96, height: 96, backgroundColor: 'rgba(66, 133, 244, 0.2)', borderRadius: 48, marginLeft: -40, marginBottom: -40 }} />
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <Flame size={20} color="#FF8FA3" />
-              <Text className="text-nath-pink font-bold text-xs uppercase tracking-wider">Em breve</Text>
+              <Text style={{ color: '#FF8FA3', fontWeight: 'bold', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Em breve</Text>
             </View>
-            
-            <Text className="text-white text-xl font-bold mb-2">
+
+            <Text style={{ color: '#FFFFFF', fontSize: 20, fontWeight: 'bold', marginBottom: 8 }}>
               Comunidade MãesValente
             </Text>
-            <Text className="text-gray-300 text-sm mb-6 leading-relaxed">
+            <Text style={{ color: '#D1D5DB', fontSize: 14, marginBottom: 24, lineHeight: 20 }}>
               Um espaço seguro para trocar experiências com outras mães que te entendem de verdade.
             </Text>
 
-            <TouchableOpacity 
-              className="bg-white w-full py-3 rounded-xl items-center flex-row justify-center gap-2"
+            <TouchableOpacity
+              style={{ backgroundColor: '#FFFFFF', width: '100%', paddingVertical: 12, borderRadius: 12, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8 }}
               onPress={() => Linking.openURL('https://forms.gle/waitlist')}
             >
-              <Text className="text-nath-dark font-bold">Entrar na lista de espera</Text>
+              <Text style={{ color: '#5D4E4B', fontWeight: 'bold' }}>Entrar na lista de espera</Text>
               <ArrowRight size={16} color="#5D4E4B" />
             </TouchableOpacity>
           </View>

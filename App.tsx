@@ -8,13 +8,16 @@ import './global.css';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Navigation } from './src/navigation';
 import { ErrorBoundary } from './src/components';
+import { ThemeProvider } from './src/theme/ThemeContext';
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <ErrorBoundary>
-        <Navigation />
-      </ErrorBoundary>
+      <ThemeProvider defaultMode="system">
+        <ErrorBoundary>
+          <Navigation />
+        </ErrorBoundary>
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }

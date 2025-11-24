@@ -6,44 +6,44 @@ import ChatScreen from '../screens/ChatScreen';
 import RefugioNathScreen from '../screens/RefugioNathScreen';
 import MundoNathScreen from '../screens/MundoNathScreen';
 import HabitsScreen from '../screens/HabitsScreen';
-import { Colors } from '../constants/Colors';
-import { 
-  Home, 
-  MessageCircleHeart, 
-  Newspaper, 
-  Users, 
-  Sparkles, 
-  Shield 
+import FeedScreen from '../screens/FeedScreen';
+import { useTheme } from '../theme/ThemeContext';
+import {
+  Home,
+  MessageCircleHeart,
+  Newspaper,
+  Users,
+  Sparkles,
+  Shield
 } from 'lucide-react-native';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-const FeedScreen = () => (
-  <View className="flex-1 items-center justify-center bg-[#F0F4F8] dark:bg-nath-dark-bg">
-    <Text className="text-nath-dark dark:text-white font-bold text-lg">Feed em breve</Text>
-  </View>
-);
-
-const CommunityScreen = () => (
-  <View className="flex-1 items-center justify-center bg-[#F0F4F8] dark:bg-nath-dark-bg">
-    <Text className="text-nath-dark dark:text-white font-bold text-lg">Comunidade em breve</Text>
-  </View>
-);
+const CommunityScreen = () => {
+  const { colors } = useTheme();
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background.canvas }}>
+      <Text style={{ color: colors.text.primary, fontWeight: 'bold', fontSize: 18 }}>Comunidade em breve</Text>
+    </View>
+  );
+};
 
 export const TabNavigator = () => {
+  const { colors } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#4285F4', // nath-blue
-        tabBarInactiveTintColor: '#9CA3AF', // gray-400
+        tabBarActiveTintColor: colors.primary.main,
+        tabBarInactiveTintColor: colors.text.tertiary,
         tabBarStyle: {
           borderTopWidth: 1,
-          borderTopColor: 'rgba(0,0,0,0.05)',
+          borderTopColor: colors.border.light,
           paddingBottom: 8,
           paddingTop: 8,
           height: 60,
-          backgroundColor: '#FFFFFF',
+          backgroundColor: colors.background.card,
         },
         tabBarLabelStyle: {
           fontSize: 10,

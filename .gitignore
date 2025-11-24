@@ -61,6 +61,10 @@ __tests__/coverage/
 *.backup
 *.tar.gz
 backup/
+mcp-backup*/
+*.zip
+secrets-values.txt
+docker-secrets-list.txt
 
 # Duplicates (prevent future issues)
 *-1/
