@@ -1,6 +1,8 @@
 import { supabase } from './supabase';
 import * as FileSystem from 'expo-file-system';
 import { decode } from 'base64-arraybuffer';
+import type { PostgrestError } from '@supabase/supabase-js';
+import type { StorageError } from '@supabase/storage-js';
 
 export interface UserProfile {
   id: string;
@@ -33,8 +35,19 @@ export interface UserProfile {
   updated_at?: string;
 }
 
+export interface ServiceResponse {
+  success: boolean;
+  error?: PostgrestError | StorageError | string;
+}
+
+export interface AvatarUploadResponse {
+  url: string | null;
+  error?: StorageError | string;
+}
+
 export interface UpdateProfileData {
   full_name?: string;
+  avatar_url?: string | null;
   phone?: string;
   motherhood_stage?: string;
   pregnancy_week?: number;
@@ -112,7 +125,7 @@ class ProfileService {
   /**
    * Atualizar perfil
    */
-  async updateProfile(updates: UpdateProfileData): Promise<{ success: boolean; error?: any }> {
+  async updateProfile(updates: UpdateProfileData): Promise<ServiceResponse> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
@@ -140,7 +153,7 @@ class ProfileService {
   /**
    * Fazer upload de avatar
    */
-  async uploadAvatar(uri: string): Promise<{ url: string | null; error?: any }> {
+  async uploadAvatar(uri: string): Promise<AvatarUploadResponse> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
@@ -177,7 +190,7 @@ class ProfileService {
         .getPublicUrl(filePath);
 
       // Atualizar perfil com nova URL
-      await this.updateProfile({ avatar_url: publicUrl } as UpdateProfileData);
+      await this.updateProfile({ avatar_url: publicUrl });
 
       return { url: publicUrl };
     } catch (error) {
@@ -189,7 +202,7 @@ class ProfileService {
   /**
    * Deletar avatar
    */
-  async deleteAvatar(): Promise<{ success: boolean; error?: any }> {
+  async deleteAvatar(): Promise<ServiceResponse> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
@@ -216,7 +229,7 @@ class ProfileService {
       }
 
       // Atualizar perfil removendo URL
-      await this.updateProfile({ avatar_url: null } as UpdateProfileData);
+      await this.updateProfile({ avatar_url: null });
 
       return { success: true };
     } catch (error) {
@@ -228,14 +241,14 @@ class ProfileService {
   /**
    * Atualizar passo do onboarding
    */
-  async updateOnboardingStep(step: number): Promise<{ success: boolean; error?: any }> {
+  async updateOnboardingStep(step: number): Promise<ServiceResponse> {
     return this.updateProfile({ onboarding_step: step });
   }
 
   /**
    * Completar onboarding
    */
-  async completeOnboarding(): Promise<{ success: boolean; error?: any }> {
+  async completeOnboarding(): Promise<ServiceResponse> {
     return this.updateProfile({
       onboarding_completed: true,
       onboarding_step: 9, // Último passo
@@ -284,14 +297,14 @@ class ProfileService {
   /**
    * Atualizar tema
    */
-  async updateTheme(theme: 'light' | 'dark' | 'auto'): Promise<{ success: boolean; error?: any }> {
+  async updateTheme(theme: 'light' | 'dark' | 'auto'): Promise<ServiceResponse> {
     return this.updateProfile({ theme });
   }
 
   /**
    * Atualizar configurações de notificação
    */
-  async updateNotificationSettings(enabled: boolean): Promise<{ success: boolean; error?: any }> {
+  async updateNotificationSettings(enabled: boolean): Promise<ServiceResponse> {
     return this.updateProfile({ notifications_enabled: enabled });
   }
 
@@ -299,7 +312,7 @@ class ProfileService {
    * Deletar conta (delega para userDataService)
    * @deprecated Use userDataService.deleteAccount() ou userDataService.requestAccountDeletion()
    */
-  async deleteAccount(): Promise<{ success: boolean; error?: any }> {
+  async deleteAccount(): Promise<ServiceResponse> {
     // Importar dinamicamente para evitar circular dependency
     const { userDataService } = await import('./userDataService');
     return await userDataService.requestAccountDeletion();

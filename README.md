@@ -1,5 +1,13 @@
 # 📱 Nossa Maternidade Mobile
 
+> ## 🎯 **REPOSITÓRIO OFICIAL**
+> 
+> **Este é o único repositório que gera builds para App Store e Google Play Store.**
+> 
+> **Regra de Ouro:** Se não está neste repositório, não existe para as lojas.
+> 
+> **Workflow:** `feature/*` → PR → `dev` → PR → `main` (produção)
+
 Aplicativo mobile-first para apoio às mães durante a jornada da maternidade, desenvolvido com Expo e React Native.
 
 ## ⭐ Pontuação: 10/10
@@ -45,8 +53,15 @@ Este projeto foi identificado como o melhor para lançamento na App Store e Goog
 - **Navegação**: React Navigation 7
 - **Estilização**: NativeWind (Tailwind CSS)
 - **IA**: Google Gemini API
-- **Backend**: Supabase
+- **Backend**: Supabase (autenticação, database, storage)
 - **Build**: EAS Build
+
+## 📚 Documentação
+
+- **[Plano de Migração](./MIGRATION_PLAN.md)**: Guia completo para migração para React Native com Expo usando Supabase
+- **[Documentação do Tema](./THEME_DOCUMENTATION.md)**: Paleta de cores completa e sistema de design
+- **[Deploy para Lojas](./DEPLOY_STORES.md)**: Checklist e comandos para build e submissão
+- **[Auditoria de Repositórios](./REPOS_AUDIT.md)**: Inventário de repositórios relacionados
 
 ## 📋 Pré-requisitos
 
@@ -325,6 +340,7 @@ O app inclui um sistema robusto de tratamento de erros:
 - [docs/setup-supabase.md](./docs/setup-supabase.md) - Setup completo do Supabase
 
 ### Deploy e Stores
+- **[DEPLOY_STORES.md](./DEPLOY_STORES.md)** - 🆕 **Guia completo de build e submissão para lojas**
 - [docs/deployment.md](./docs/deployment.md) - Guia de deploy para App Store e Google Play
 - [docs/DEPLOY_ANDROID.md](./docs/DEPLOY_ANDROID.md) - 🆕 Guia completo de deploy Android (produção)
 - [docs/DEEP_LINKS_SETUP.md](./docs/DEEP_LINKS_SETUP.md) - 🆕 Configuração de deep links Android
@@ -333,13 +349,111 @@ O app inclui um sistema robusto de tratamento de erros:
 ### Funcionalidades
 - [docs/chat-ia.md](./docs/chat-ia.md) - Documentação do chat com IA
 
+## 🔄 Workflow de Desenvolvimento
+
+### Estrutura de Branches
+
+```
+main         ← Produção (sempre estável, protegida)
+  ↑
+  └── dev     ← Integração (trabalho diário)
+       ↑
+       ├── feature/onboarding-v2
+       ├── feature/chat-voz
+       └── fix/crash-login
+```
+
+### Fluxo Padrão
+
+1. **Criar feature branch:**
+   ```bash
+   git checkout dev
+   git pull origin dev
+   git checkout -b feature/nome-da-funcionalidade
+   ```
+
+2. **Desenvolver e commitar:**
+   ```bash
+   git add .
+   git commit -m "feat: adiciona funcionalidade X"
+   git push -u origin feature/nome-da-funcionalidade
+   ```
+
+3. **Abrir Pull Request:**
+   - Base: `dev` (NUNCA `main`)
+   - Compare: `feature/nome-da-funcionalidade`
+
+4. **Após review e aprovação:**
+   - Merge `feature/*` → `dev`
+   - Quando `dev` estiver estável: PR `dev` → `main`
+
+### Proteções
+
+- ❌ **Push direto em `main` bloqueado** (hook Git + GitHub protection)
+- ✅ Feature branches podem fazer push normalmente
+- ✅ Sempre use PRs para integrar código
+
+### Scripts de Validação
+
+Antes de fazer build, execute:
+
+**Recomendado (via npm):**
+```bash
+# Funciona em qualquer sistema
+npm run check-ready
+```
+
+**Windows (PowerShell) - Alternativa:**
+```powershell
+# Navegue até o diretório do projeto
+cd C:\Users\User\Documents\NossaMaternidade\NossaMaternidadeMelhor
+
+# Execute o script
+pwsh -File scripts/check-ready.ps1
+
+# Ou se já estiver no diretório:
+.\scripts\check-ready.ps1
+```
+
+**Linux/Mac (Bash) - Alternativa:**
+```bash
+bash scripts/check-ready.sh
+# Ou via npm:
+npm run check-ready:bash
+```
+
+Para configurar hooks Git:
+
+**Windows (PowerShell):**
+```powershell
+# Navegue até o diretório do projeto primeiro
+cd C:\Users\User\Documents\NossaMaternidade\NossaMaternidadeMelhor
+.\scripts\setup-git-hooks.sh
+```
+
+**Linux/Mac (Bash):**
+```bash
+bash scripts/setup-git-hooks.sh
+```
+
+## 🧪 Repositório de Laboratório
+
+Para experimentos e protótipos, use o repositório `NossaMaternidade-LN` (lab-monorepo).
+
+**Regras:**
+- ❌ NUNCA fazer deploy direto do lab
+- ✅ Copiar manualmente código validado para este repositório oficial
+- ✅ Usar lab para testar ideias arriscadas, MCPs, novos agentes IA
+
+Veja [REPOS_AUDIT.md](./REPOS_AUDIT.md) para mais detalhes sobre repositórios relacionados.
+
 ## 🤝 Contribuindo
 
-1. Fork o projeto
+1. Siga o workflow acima (feature branch → PR → dev → main)
 2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
-4. Push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
+3. Commit suas mudanças (`git commit -m 'feat: Adiciona MinhaFeature'`)
+4. Push para a branch (`git push -u origin feature/MinhaFeature`)
+5. Abra um Pull Request para `dev`
 
 ## 📄 Licença
 

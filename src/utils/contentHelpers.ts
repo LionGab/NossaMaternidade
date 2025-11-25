@@ -4,7 +4,7 @@
  */
 
 import { ContentItem } from '../types/content';
-import { Colors } from '../constants/Colors';
+import { Colors } from '../theme';
 
 export const getTypeIcon = (type: ContentItem['type']): string => {
   switch (type) {

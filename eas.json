@@ -1,17 +1,17 @@
 {
   "cli": {
     "version": ">= 5.0.0",
+    "appVersionSource": "local",
     "promptToConfigurePushNotifications": false
   },
   "build": {
     "base": {
       "node": "20.11.1",
-      "npm": "10.2.4",
       "ios": {
-        "resourceClass": "m-medium"
+        "resourceClass": "medium"
       },
       "android": {
-        "resourceClass": "m-medium"
+        "resourceClass": "medium"
       }
     },
     "development": {
@@ -22,12 +22,10 @@
         "APP_ENV": "development"
       },
       "ios": {
-        "simulator": true,
-        "bundleIdentifier": "com.nossamaternidade.app.dev"
+        "simulator": true
       },
       "android": {
-        "buildType": "apk",
-        "package": "com.nossamaternidade.app.dev"
+        "buildType": "apk"
       }
     },
     "preview": {
@@ -37,12 +35,10 @@
         "APP_ENV": "preview"
       },
       "ios": {
-        "bundleIdentifier": "com.nossamaternidade.app.preview",
         "enterpriseProvisioning": "adhoc"
       },
       "android": {
-        "buildType": "apk",
-        "package": "com.nossamaternidade.app.preview"
+        "buildType": "apk"
       }
     },
     "production": {
@@ -51,22 +47,15 @@
         "APP_ENV": "production"
       },
       "ios": {
-        "bundleIdentifier": "com.nossamaternidade.app",
         "enterpriseProvisioning": "universal",
         "autoIncrement": true,
-        "resourceClass": "l"
+        "resourceClass": "large"
       },
       "android": {
         "buildType": "app-bundle",
-        "package": "com.nossamaternidade.app",
         "autoIncrement": true,
-        "resourceClass": "l",
-        "gradleCommand": ":app:bundleRelease",
-        "config": {
-          "proguard": {
-            "enabled": true
-          }
-        }
+        "resourceClass": "large",
+        "gradleCommand": ":app:bundleRelease"
       }
     }
   },
@@ -74,30 +63,13 @@
     "production": {
       "ios": {
         "appleId": "app@nossamaternidade.com.br",
-        "ascAppId": "",
-        "appleTeamId": "",
-        "appName": "Nossa Maternidade",
-        "appCategory": "HEALTH_AND_FITNESS",
         "language": "pt-BR",
-        "sku": "NOSSA_MATERNIDADE_2024",
-        "appRating": "4+",
-        "copyright": "© 2024 Nossa Maternidade. Todos os direitos reservados.",
-        "releaseNotes": {
-          "pt-BR": "- Novo design premium mobile-first\n- Melhorias de performance\n- Chat IA aprimorado\n- Novos recursos de comunidade\n- Correções de bugs"
-        }
+        "sku": "NOSSA_MATERNIDADE_2024"
       },
       "android": {
         "serviceAccountKeyPath": "./google-play-service-account.json",
         "track": "production",
-        "releaseStatus": "completed",
-        "appName": "Nossa Maternidade",
-        "appCategory": "HEALTH_AND_FITNESS",
-        "shortDescription": "Sua jornada maternal com IA e comunidade",
-        "fullDescription": "Nossa Maternidade é o aplicativo completo para mães modernas. Com inteligência artificial disponível 24/7, comunidade acolhedora e conteúdo personalizado, oferecemos o suporte que você precisa em cada fase da maternidade.\n\nRecursos principais:\n• Chat com IA especializada em maternidade\n• Comunidade exclusiva de mães\n• Conteúdo personalizado para cada fase\n• Acompanhamento de hábitos saudáveis\n• Suporte emocional e prático\n\nBaixe agora e transforme sua experiência maternal!",
-        "changesNotComingFromUserInput": false,
-        "releaseNotes": {
-          "pt-BR": "- Novo design premium mobile-first\n- Melhorias de performance\n- Chat IA aprimorado\n- Novos recursos de comunidade\n- Correções de bugs"
-        }
+        "releaseStatus": "completed"
       }
     }
   }

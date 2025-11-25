@@ -14,7 +14,7 @@ module.exports = {
     icon: './assets/icon.png',
     userInterfaceStyle: 'light',
     scheme: 'nossamaternidade',
-    owner: 'nossamaternidade',
+    owner: 'liongab',
     primaryColor: '#0D5FFF',
     backgroundColor: '#FFFFFF',
     splash: {
@@ -125,9 +125,9 @@ module.exports = {
         process.env.EXPO_PUBLIC_ENABLE_GAMIFICATION === 'true' || false,
       enableAnalytics:
         process.env.EXPO_PUBLIC_ENABLE_ANALYTICS === 'true' || false,
-      // EAS Project ID (se configurado)
+      // EAS Project ID
       eas: {
-        projectId: process.env.EAS_PROJECT_ID || '',
+        projectId: 'ceee9479-e404-47b8-bc37-4f913c18f270',
       },
       backendUrl: process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:8080',
     },
@@ -136,6 +136,7 @@ module.exports = {
       'expo-font',
       'expo-localization',
       'expo-tracking-transparency',
+      '@sentry/react-native/expo',
     ],
   },
 };

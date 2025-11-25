@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
 import { Play, Pause, Wind, Moon, Heart, Volume2, Timer, Sparkles } from 'lucide-react-native';
 
@@ -66,7 +67,12 @@ export default function RefugioNathScreen() {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background.canvas }}>
+    <SafeAreaView 
+      style={{ flex: 1, backgroundColor: colors.background.canvas }}
+      edges={['top']}
+      accessible={true}
+      accessibilityLabel="Tela Refúgio Nath - Momentos de calma"
+    >
       {/* Header */}
       <View style={{ padding: 16, backgroundColor: colors.background.card, borderBottomWidth: 1, borderBottomColor: colors.border.light }}>
         <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary, marginBottom: 4 }}>
@@ -77,7 +83,7 @@ export default function RefugioNathScreen() {
         </Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 120 }}>
         {/* Quick Stats */}
         <View style={{ flexDirection: 'row', marginBottom: 24, gap: 12 }}>
           <View style={{ flex: 1, backgroundColor: colors.background.card, padding: 16, borderRadius: 12, borderWidth: 1, borderColor: colors.border.light }}>
@@ -105,7 +111,7 @@ export default function RefugioNathScreen() {
           const isPlaying = playing === ritual.id;
 
           return (
-            <TouchableOpacity
+            <TouchableOpacity accessibilityRole="button"
               key={ritual.id}
               onPress={() => setPlaying(isPlaying ? null : ritual.id)}
               style={{
@@ -156,7 +162,7 @@ export default function RefugioNathScreen() {
               </View>
 
               {/* Play/Pause Button */}
-              <TouchableOpacity
+              <TouchableOpacity accessibilityRole="button"
                 onPress={() => setPlaying(isPlaying ? null : ritual.id)}
                 style={{
                   width: 40,
@@ -190,7 +196,7 @@ export default function RefugioNathScreen() {
           <Text style={{ fontSize: 14, color: colors.text.secondary, lineHeight: 20, marginBottom: 12 }}>
             Converse com a MãesValente IA para receber suporte personalizado
           </Text>
-          <TouchableOpacity
+          <TouchableOpacity accessibilityRole="button"
             style={{
               backgroundColor: colors.primary.main,
               paddingVertical: 12,

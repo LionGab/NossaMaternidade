@@ -111,7 +111,7 @@ export const Button: React.FC<ButtonProps> = ({
       accessibilityHint={accessibilityHint}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled }}
-      style={[getButtonStyle()]}
+      style={getButtonStyle()}
       activeOpacity={0.7}
       className={className}
     >

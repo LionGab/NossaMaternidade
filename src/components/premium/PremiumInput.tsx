@@ -339,7 +339,7 @@ export const PremiumInput: React.FC<PremiumInputProps> = ({
         />
 
         {secureTextEntry && (
-          <TouchableOpacity
+          <TouchableOpacity accessibilityRole="button"
             onPress={togglePasswordVisibility}
             style={styles.rightIconButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -353,7 +353,7 @@ export const PremiumInput: React.FC<PremiumInputProps> = ({
         )}
 
         {rightIcon && !secureTextEntry && (
-          <TouchableOpacity
+          <TouchableOpacity accessibilityRole="button"
             onPress={onRightIconPress}
             style={styles.rightIconButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}

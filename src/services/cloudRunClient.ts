@@ -38,7 +38,7 @@ const getBackendUrl = (): string => {
 
 export const CLOUD_RUN_URL = getBackendUrl();
 
-export interface CloudRunResponse<T = any> {
+export interface CloudRunResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -124,9 +124,9 @@ class CloudRunClient {
   /**
    * Generic POST request
    */
-  async post<T = any>(
+  async post<T = unknown>(
     endpoint: string,
-    body: any,
+    body: Record<string, unknown>,
     options?: RequestInit
   ): Promise<CloudRunResponse<T>> {
     try {
@@ -163,11 +163,12 @@ class CloudRunClient {
       const data = await response.json();
       logger.debug(`[CloudRunClient] POST ${endpoint} success`);
       return { success: true, data, statusCode: response.status };
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Network error';
       logger.error(`[CloudRunClient] POST ${endpoint} network error:`, error);
       return {
         success: false,
-        error: error.message || 'Network error',
+        error: errorMessage,
       };
     }
   }
@@ -175,7 +176,7 @@ class CloudRunClient {
   /**
    * Generic GET request
    */
-  async get<T = any>(
+  async get<T = unknown>(
     endpoint: string,
     options?: RequestInit
   ): Promise<CloudRunResponse<T>> {
@@ -209,11 +210,12 @@ class CloudRunClient {
       const data = await response.json();
       logger.debug(`[CloudRunClient] GET ${endpoint} success`);
       return { success: true, data, statusCode: response.status };
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Network error';
       logger.error(`[CloudRunClient] GET ${endpoint} network error:`, error);
       return {
         success: false,
-        error: error.message || 'Network error',
+        error: errorMessage,
       };
     }
   }
@@ -252,7 +254,7 @@ class CloudRunClient {
   /**
    * Get recommendations (example endpoint)
    */
-  async getRecommendations(userId: string): Promise<CloudRunResponse<any>> {
+  async getRecommendations(userId: string): Promise<CloudRunResponse<unknown>> {
     return this.get(`/api/recommendations?userId=${userId}`);
   }
 
@@ -263,8 +265,8 @@ class CloudRunClient {
     emotion: string;
     intensity: number;
     context?: string;
-  }): Promise<CloudRunResponse<any>> {
-    return this.post('/api/emotional-snapshot', data);
+  }): Promise<CloudRunResponse<unknown>> {
+    return this.post('/api/emotional-snapshot', data as Record<string, unknown>);
   }
 }
 

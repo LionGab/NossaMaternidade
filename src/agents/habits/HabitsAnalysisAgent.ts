@@ -68,7 +68,7 @@ export class HabitsAnalysisAgent extends BaseAgent {
       entries: HabitEntry[];
       timeRange?: { start: string; end: string };
     },
-    options?: any
+    options?: Record<string, unknown>
   ): Promise<WellbeingAnalysis> {
     const { userId, entries, timeRange } = input;
 
@@ -132,7 +132,7 @@ export class HabitsAnalysisAgent extends BaseAgent {
       });
 
       return analysis;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[HabitsAnalysisAgent] Error analyzing habits:', error);
       throw error;
     }
@@ -425,13 +425,16 @@ Seja específica e empática.
         prompt,
       });
 
-      if (response.success && response.data?.content) {
-        // Extrair recomendações (linhas que começam com -)
-        const lines = response.data.content.split('\n');
-        return lines
-          .filter((line: string) => line.trim().startsWith('-'))
-          .map((line: string) => line.trim().substring(1).trim())
-          .slice(0, 3);
+      if (response.success && response.data) {
+        const data = response.data as { content?: string };
+        if (data.content) {
+          // Extrair recomendações (linhas que começam com -)
+          const lines = data.content.split('\n');
+          return lines
+            .filter((line: string) => line.trim().startsWith('-'))
+            .map((line: string) => line.trim().substring(1).trim())
+            .slice(0, 3);
+        }
       }
 
       return this.getDefaultRecommendations(overallScore);
@@ -517,8 +520,26 @@ Seja específica e empática.
   protected async callMCP(
     server: string,
     method: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
-    return await orchestrator.callMCP(server, method, params);
+    // Cast method to proper type based on the server
+    if (server === 'googleai') {
+      return await orchestrator.callMCP(
+        server,
+        method as keyof import('../../mcp/types').GoogleAIMCPMethods,
+        params as any
+      );
+    } else if (server === 'analytics') {
+      return await orchestrator.callMCP(
+        server,
+        method as keyof import('../../mcp/types').AnalyticsMCPMethods,
+        params as any
+      );
+    }
+    return await orchestrator.callMCP(
+      server,
+      method as keyof import('../../mcp/types').AllMCPMethods,
+      params as any
+    );
   }
 }

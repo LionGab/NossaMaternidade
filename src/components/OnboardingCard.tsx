@@ -1,6 +1,12 @@
+/**
+ * OnboardingCard Component
+ * Card de seleção para onboarding com suporte a tema
+ */
+
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Colors } from '../constants/Colors';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useThemeColors } from '@/theme';
+import { Tokens } from '@/theme/tokens';
 
 export interface OnboardingCardProps {
   icon?: React.ReactNode;
@@ -19,44 +25,48 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
   onPress,
   className = '',
 }) => {
+  const colors = useThemeColors();
+
   return (
     <TouchableOpacity
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      accessibilityLabel={`${title}${subtitle ? `, ${subtitle}` : ''}${selected ? ', selecionado' : ''}`}
       onPress={onPress}
       activeOpacity={0.7}
-      className={`
-        flex-row items-center
-        p-4 rounded-2xl
-        mb-3
-        border-2
-        ${selected ? 'border-primary' : 'border-white/10'}
-        ${className}
-      `}
-      style={{
-        backgroundColor: selected
-          ? `${Colors.primary.main}20`
-          : Colors.background.card,
-        borderColor: selected
-          ? Colors.primary.main
-          : Colors.border.light,
-      }}
+      style={[
+        styles.container,
+        {
+          backgroundColor: selected
+            ? `${colors.primary.main}20`
+            : colors.background.card,
+          borderColor: selected
+            ? colors.primary.main
+            : colors.border.light,
+        },
+      ]}
     >
       {icon && (
-        <View className="mr-4">
+        <View style={styles.iconContainer}>
           {icon}
         </View>
       )}
-      
-      <View className="flex-1">
+
+      <View style={styles.content}>
         <Text
-          className="text-base font-semibold mb-1"
-          style={{ color: Colors.text.primary }}
+          style={[
+            styles.title,
+            { color: colors.text.primary },
+          ]}
         >
           {title}
         </Text>
         {subtitle && (
           <Text
-            className="text-sm"
-            style={{ color: Colors.text.secondary }}
+            style={[
+              styles.subtitle,
+              { color: colors.text.secondary },
+            ]}
           >
             {subtitle}
           </Text>
@@ -65,12 +75,16 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
 
       {selected && (
         <View
-          className="w-5 h-5 rounded-full items-center justify-center"
-          style={{ backgroundColor: Colors.primary.main }}
+          style={[
+            styles.checkmark,
+            { backgroundColor: colors.primary.main },
+          ]}
         >
           <View
-            className="w-2 h-2 rounded-full"
-            style={{ backgroundColor: Colors.text.primary }}
+            style={[
+              styles.checkmarkInner,
+              { backgroundColor: colors.raw.neutral[0] },
+            ]}
           />
         </View>
       )}
@@ -78,5 +92,42 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
   );
 };
 
-export default OnboardingCard;
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Tokens.spacing['4'],
+    borderRadius: Tokens.radius['2xl'],
+    marginBottom: Tokens.spacing['3'],
+    borderWidth: 2,
+    minHeight: Tokens.touchTargets.min,
+  },
+  iconContainer: {
+    marginRight: Tokens.spacing['4'],
+  },
+  content: {
+    flex: 1,
+  },
+  title: {
+    fontSize: Tokens.typography.sizes.base,
+    fontWeight: Tokens.typography.weights.semibold,
+    marginBottom: Tokens.spacing['1'],
+  },
+  subtitle: {
+    fontSize: Tokens.typography.sizes.sm,
+  },
+  checkmark: {
+    width: 20,
+    height: 20,
+    borderRadius: Tokens.radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkmarkInner: {
+    width: 8,
+    height: 8,
+    borderRadius: Tokens.radius.full,
+  },
+});
 
+export default OnboardingCard;

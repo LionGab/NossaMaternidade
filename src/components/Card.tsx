@@ -132,7 +132,7 @@ export const Card: React.FC<CardProps> = ({
 
   if (pressable && onPress) {
     return (
-      <Pressable
+      <Pressable accessibilityRole="button"
         onPress={handlePress}
         style={({ pressed }) => [
           pressed && { opacity: 0.8 },

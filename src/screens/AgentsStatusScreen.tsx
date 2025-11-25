@@ -131,7 +131,7 @@ export default function AgentsStatusScreen() {
           borderBottomColor: colors.border.light,
         }}
       >
-        <TouchableOpacity
+        <TouchableOpacity accessibilityRole="button"
           onPress={handleBack}
           style={{
             width: 40,
@@ -307,7 +307,7 @@ export default function AgentsStatusScreen() {
                           marginLeft: 8,
                         }}
                       >
-                        <Text style={{ fontSize: 10, fontWeight: '700', color: '#FFFFFF' }}>
+                        <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>
                           {item.badge}
                         </Text>
                       </View>
@@ -354,7 +354,7 @@ export default function AgentsStatusScreen() {
                   >
                     <Text
                       style={{
-                        fontSize: 11,
+                        fontSize: 12,
                         color: colors.text.secondary,
                         fontWeight: '500',
                       }}
@@ -388,7 +388,7 @@ export default function AgentsStatusScreen() {
                   </Text>
                   <Text
                     style={{
-                      fontSize: 11,
+                      fontSize: 12,
                       color: colors.text.secondary,
                       marginTop: 4,
                     }}
@@ -435,7 +435,7 @@ export default function AgentsStatusScreen() {
           </Text>
           <Text
             style={{
-              fontSize: 11,
+              fontSize: 12,
               color: colors.text.tertiary,
               marginTop: 4,
               textAlign: 'center',

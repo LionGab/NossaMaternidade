@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProgressIndicator, Button, Avatar } from '../components';
-import { Colors } from '../constants/Colors';
+import { Colors } from '../theme';
 import { useHaptics } from '../hooks/useHaptics';
 import { Ionicons } from '@expo/vector-icons';
 import { nathAvatar } from '../assets/images';

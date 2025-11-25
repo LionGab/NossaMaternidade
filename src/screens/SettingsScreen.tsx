@@ -29,7 +29,7 @@ import {
 } from 'lucide-react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens } from '../theme';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { userDataService } from '../services/userDataService';
 import { logger } from '../utils/logger';
 import * as FileSystem from 'expo-file-system';
@@ -78,10 +78,10 @@ export default function SettingsScreen() {
                 URL.revokeObjectURL(url);
               } else {
                 // Mobile: salvar arquivo e compartilhar
-                const dir = (FileSystem as any).documentDirectory || (FileSystem as any).cacheDirectory || '';
+                const dir = FileSystem.documentDirectory || FileSystem.cacheDirectory || '';
                 const fileUri = `${dir}${fileName}`;
                 await FileSystem.writeAsStringAsync(fileUri, jsonString, {
-                  encoding: 'utf8' as any,
+                  encoding: FileSystem.EncodingType.UTF8,
                 });
 
                 // Compartilhar arquivo
@@ -94,9 +94,10 @@ export default function SettingsScreen() {
 
               Alert.alert('Sucesso', 'Seus dados foram exportados com sucesso!');
               logger.info('[SettingsScreen] Exportação concluída com sucesso');
-            } catch (error: any) {
+            } catch (error) {
               logger.error('[SettingsScreen] Erro ao exportar dados', error);
-              Alert.alert('Erro', error.message || 'Não foi possível exportar seus dados. Tente novamente.');
+              const errorMessage = error instanceof Error ? error.message : 'Não foi possível exportar seus dados. Tente novamente.';
+              Alert.alert('Erro', errorMessage);
             } finally {
               setExporting(false);
             }
@@ -155,9 +156,10 @@ export default function SettingsScreen() {
                           },
                         ]
                       );
-                    } catch (error: any) {
+                    } catch (error) {
                       logger.error('[SettingsScreen] Erro ao deletar conta', error);
-                      Alert.alert('Erro', error.message || 'Não foi possível deletar sua conta. Tente novamente.');
+                      const errorMessage = error instanceof Error ? error.message : 'Não foi possível deletar sua conta. Tente novamente.';
+                      Alert.alert('Erro', errorMessage);
                     } finally {
                       setDeleting(false);
                     }
@@ -212,14 +214,14 @@ export default function SettingsScreen() {
     destructive = false,
     loading = false,
   }: {
-    icon: any;
+    icon: React.ComponentType<{ size?: number; color?: string }>;
     title: string;
     subtitle?: string;
     onPress: () => void;
     destructive?: boolean;
     loading?: boolean;
   }) => (
-    <TouchableOpacity
+    <TouchableOpacity accessibilityRole="button"
       onPress={onPress}
       disabled={loading}
       style={{
@@ -297,7 +299,7 @@ export default function SettingsScreen() {
           borderBottomColor: colors.border.light,
         }}
       >
-        <TouchableOpacity
+        <TouchableOpacity accessibilityRole="button"
           onPress={() => navigation.goBack()}
           style={{
             width: 40,
@@ -337,8 +339,7 @@ export default function SettingsScreen() {
           title="Política de Privacidade"
           subtitle="Como protegemos seus dados"
           onPress={() => {
-            // @ts-ignore
-            navigation.navigate('PrivacyPolicy');
+            navigation.navigate('PrivacyPolicy' as never);
           }}
         />
 
@@ -347,8 +348,7 @@ export default function SettingsScreen() {
           title="Termos de Uso"
           subtitle="Termos e condições do serviço"
           onPress={() => {
-            // @ts-ignore
-            navigation.navigate('TermsOfService');
+            navigation.navigate('TermsOfService' as never);
           }}
         />
 
@@ -360,8 +360,7 @@ export default function SettingsScreen() {
           title="Status dos Agentes IA"
           subtitle="Monitorar 6 agentes inteligentes ativos"
           onPress={() => {
-            // @ts-ignore
-            navigation.navigate('AgentsStatus');
+            navigation.navigate('AgentsStatus' as never);
           }}
         />
 

@@ -26,6 +26,10 @@ export { Alert, type AlertProps, type AlertVariant } from './Alert';
 export { ToastProvider, useToast, type ToastOptions, type ToastVariant } from './Toast';
 export { Skeleton, SkeletonText, SkeletonCard, type SkeletonProps, type SkeletonVariant } from './Skeleton';
 
+// State Components
+export { EmptyState, type EmptyStateProps } from './EmptyState';
+export { ErrorState, type ErrorStateProps, type ErrorType } from './ErrorState';
+
 // Primitive Components
 export { H1, H2, H3 } from './primitives/Heading';
 export { Text, Body, Caption } from './primitives/Text';

@@ -7,6 +7,26 @@
 import { BaseAgent, AgentContext } from '../core/BaseAgent';
 import { orchestrator } from '../core/AgentOrchestrator';
 import { createMCPRequest } from '../../mcp/servers';
+import { logger } from '../../utils/logger';
+import { MCPResponse } from '../../mcp/types';
+
+export interface EmotionAnalysisInput {
+  snapshots: EmotionSnapshot[];
+  currentSnapshot: EmotionSnapshot;
+}
+
+export interface ProcessOptions {
+  includeHistory?: boolean;
+  maxRecommendations?: number;
+  [key: string]: unknown;
+}
+
+export interface CurrentEmotionState {
+  emotion: string;
+  intensity: number;
+  description: string;
+}
+
 
 export interface EmotionSnapshot {
   timestamp: string;
@@ -56,11 +76,11 @@ export class EmotionAnalysisAgent extends BaseAgent {
   }
 
   async initialize(): Promise<void> {
-    console.log('[EmotionAnalysisAgent] Inicializando...');
+    logger.info('[EmotionAnalysisAgent] Inicializando...');
     this.initialized = true;
   }
 
-  async process(input: any, options?: any): Promise<EmotionAnalysisResult> {
+  async process(input: EmotionAnalysisInput, options?: ProcessOptions): Promise<EmotionAnalysisResult> {
     const snapshots = input.snapshots as EmotionSnapshot[];
     const currentSnapshot = input.currentSnapshot as EmotionSnapshot;
 
@@ -250,7 +270,7 @@ export class EmotionAnalysisAgent extends BaseAgent {
   }
 
   private async generateRecommendations(
-    currentState: any,
+    currentState: CurrentEmotionState,
     patterns: EmotionPattern
   ): Promise<string[]> {
     try {
@@ -268,28 +288,33 @@ export class EmotionAnalysisAgent extends BaseAgent {
         Formato: retorne apenas as 3 recomendações, uma por linha.
       `;
 
-      const request = createMCPRequest('chat.send' as any, {
-        prompt,
-        temperature: 0.7,
-        maxTokens: 200,
+      const request = createMCPRequest('chat.send', {
+        message: prompt,
+        context: {
+          temperature: 0.7,
+          maxTokens: 200,
+        },
       });
 
       const response = await orchestrator.callMCP('googleai', 'chat.send', request.params);
 
-      if (response.success && response.data?.text) {
-        // Parse recommendations
-        const lines = response.data.text
-          .split('\n')
-          .filter((line: string) => line.trim().length > 0)
-          .map((line: string) => line.replace(/^[-•*]\s*/, '').trim())
-          .slice(0, 3);
+      if (response.success && response.data) {
+        const data = response.data as { text?: string };
+        if (data.text) {
+          // Parse recommendations
+          const lines = data.text
+            .split('\n')
+            .filter((line: string) => line.trim().length > 0)
+            .map((line: string) => line.replace(/^[-•*]\s*/, '').trim())
+            .slice(0, 3);
 
-        return lines.length > 0 ? lines : this.getFallbackRecommendations(patterns.riskLevel);
+          return lines.length > 0 ? lines : this.getFallbackRecommendations(patterns.riskLevel);
+        }
       }
 
       return this.getFallbackRecommendations(patterns.riskLevel);
     } catch (error) {
-      console.error('[EmotionAnalysisAgent] Error generating recommendations:', error);
+      logger.error('[EmotionAnalysisAgent] Error generating recommendations', error);
       return this.getFallbackRecommendations(patterns.riskLevel);
     }
   }
@@ -321,7 +346,7 @@ export class EmotionAnalysisAgent extends BaseAgent {
     return recommendations[riskLevel] || recommendations['medium'];
   }
 
-  private createAlerts(patterns: EmotionPattern, currentState: any) {
+  private createAlerts(patterns: EmotionPattern, currentState: CurrentEmotionState) {
     const alerts: Array<{
       type: 'warning' | 'danger' | 'info';
       message: string;
@@ -389,18 +414,40 @@ export class EmotionAnalysisAgent extends BaseAgent {
 
       await orchestrator.callMCP('analytics', 'event.track', request.params);
     } catch (error) {
-      console.error('[EmotionAnalysisAgent] Analytics error:', error);
+      logger.error('[EmotionAnalysisAgent] Analytics error', error);
     }
   }
 
   /**
    * Implementação do callMCP
    */
-  protected async callMCP(server: string, method: string, params: any): Promise<any> {
-    return await orchestrator.callMCP(server, method, params);
+  protected async callMCP(
+    server: string,
+    method: string,
+    params: Record<string, unknown>
+  ): Promise<MCPResponse> {
+    // Cast method to proper type based on the server
+    if (server === 'googleai') {
+      return await orchestrator.callMCP(
+        server,
+        method as keyof import('../../mcp/types').GoogleAIMCPMethods,
+        params as any
+      );
+    } else if (server === 'analytics') {
+      return await orchestrator.callMCP(
+        server,
+        method as keyof import('../../mcp/types').AnalyticsMCPMethods,
+        params as any
+      );
+    }
+    return await orchestrator.callMCP(
+      server,
+      method as keyof import('../../mcp/types').AllMCPMethods,
+      params as any
+    );
   }
 
   async shutdown(): Promise<void> {
-    console.log('[EmotionAnalysisAgent] Shutdown complete');
+    logger.info('[EmotionAnalysisAgent] Shutdown complete');
   }
 }

@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Button, Logo } from '../components';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens } from '../theme';
+import type { RootStackParamList } from '../navigation/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -17,7 +19,7 @@ interface SplashScreenProps {
 
 export default function SplashScreenComponent({ onComplete }: SplashScreenProps) {
   const { colors, isDark } = useTheme();
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
 
   useEffect(() => {

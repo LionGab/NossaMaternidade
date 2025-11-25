@@ -8,7 +8,7 @@ import { UserProfile } from '../../types/user';
 interface OnboardingStepProps {
   step: number;
   formData: UserProfile;
-  updateData: (key: keyof UserProfile, value: any) => void;
+  updateData: <K extends keyof UserProfile>(key: K, value: UserProfile[K]) => void;
   nextStep: () => void;
   prevStep: () => void;
   onFinish: () => void;
@@ -21,7 +21,7 @@ export default function OnboardingStep9({ formData, updateData, onFinish }: Onbo
     <SafeAreaView className="flex-1 items-center justify-center px-6" style={{ backgroundColor: '#020617' }}>
       {/* Top Right Sun Icon */}
       <View className="absolute top-6 right-6 z-10">
-        <TouchableOpacity
+        <TouchableOpacity accessibilityRole="button"
           onPress={toggleTheme}
           className="w-10 h-10 rounded-full items-center justify-center"
           style={{
@@ -80,7 +80,7 @@ export default function OnboardingStep9({ formData, updateData, onFinish }: Onbo
       </View>
 
       {/* Button */}
-      <TouchableOpacity
+      <TouchableOpacity accessibilityRole="button"
         onPress={onFinish}
         className="w-full py-4 rounded-xl flex-row items-center justify-center gap-2"
         style={{ backgroundColor: '#3B82F6' }}

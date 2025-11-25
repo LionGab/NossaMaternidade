@@ -215,7 +215,7 @@ const OnboardingSlideComponent: React.FC<{
         ]}
       >
         <LinearGradient
-          colors={slide.gradient as any}
+          colors={slide.gradient as [string, string, ...string[]]}
           style={styles.iconGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -291,7 +291,7 @@ const PremiumOnboarding: React.FC = () => {
     navigation.navigate('Login' as never);
   }, [navigation]);
 
-  const handleScroll = useCallback((event: any) => {
+  const handleScroll = useCallback((event: { nativeEvent: { contentOffset: { x: number } } }) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / SCREEN_WIDTH);
     setCurrentIndex(index);
@@ -317,7 +317,7 @@ const PremiumOnboarding: React.FC = () => {
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
+        <TouchableOpacity accessibilityRole="button" onPress={handleSkip} style={styles.skipButton}>
           <Text style={styles.skipText}>Pular</Text>
         </TouchableOpacity>
       </View>
@@ -362,7 +362,7 @@ const PremiumOnboarding: React.FC = () => {
       {/* Pagination Dots */}
       <View style={styles.pagination}>
         {slides.map((_, index) => (
-          <TouchableOpacity
+          <TouchableOpacity accessibilityRole="button"
             key={index}
             onPress={() => {
               scrollViewRef.current?.scrollTo({
@@ -400,7 +400,7 @@ const PremiumOnboarding: React.FC = () => {
       {/* Action Buttons */}
       <View style={styles.actions}>
         {currentIndex > 0 && (
-          <TouchableOpacity onPress={handlePrevious} style={styles.navigationButton}>
+          <TouchableOpacity accessibilityRole="button" onPress={handlePrevious} style={styles.navigationButton}>
             <Ionicons name="chevron-back" size={24} color={COLORS.primary[500]} />
           </TouchableOpacity>
         )}
@@ -430,7 +430,7 @@ const PremiumOnboarding: React.FC = () => {
         </View>
 
         {currentIndex < slides.length - 1 ? (
-          <TouchableOpacity onPress={handleNext} style={styles.navigationButton}>
+          <TouchableOpacity accessibilityRole="button" onPress={handleNext} style={styles.navigationButton}>
             <Ionicons name="chevron-forward" size={24} color={COLORS.primary[500]} />
           </TouchableOpacity>
         ) : (

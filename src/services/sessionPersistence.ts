@@ -30,7 +30,7 @@ class SessionPersistenceService {
       }
 
       // Verificar se já existe uma conversa para esta sessão
-      let conversationId = session.id.replace('session_', '');
+      const conversationId = session.id.replace('session_', '');
 
       // Tentar encontrar conversa existente pelo ID
       const { data: existingConv } = await supabase
@@ -42,7 +42,7 @@ class SessionPersistenceService {
 
       // Se não existe, criar nova conversa
       if (!existingConv) {
-        const { data: newConv, error: convError } = await supabase
+        const { data: _newConv, error: convError } = await supabase
           .from('chat_conversations')
           .insert({
             id: conversationId,

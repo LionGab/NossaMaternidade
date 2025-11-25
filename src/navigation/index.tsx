@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { StackNavigator } from './StackNavigator';
-import { AuthProvider } from '../context/AuthContext';
+import { AuthProvider } from '../contexts/AuthContext';
 import { networkMonitor } from '../utils/networkMonitor';
 
 export const Navigation = () => {

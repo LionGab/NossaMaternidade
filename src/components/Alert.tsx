@@ -25,6 +25,8 @@ export interface AlertProps {
   onClose?: () => void;
   icon?: React.ReactNode;
   containerStyle?: ViewStyle;
+  /** Label de acessibilidade customizado */
+  accessibilityLabel?: string;
 }
 
 export const Alert: React.FC<AlertProps> = ({
@@ -34,6 +36,7 @@ export const Alert: React.FC<AlertProps> = ({
   onClose,
   icon,
   containerStyle,
+  accessibilityLabel,
 }) => {
   const colors = useThemeColors();
 
@@ -69,10 +72,13 @@ export const Alert: React.FC<AlertProps> = ({
     }
   };
 
+  // Derivar label de acessibilidade
+  const variantLabel = variant === 'error' ? 'Erro' : variant === 'warning' ? 'Aviso' : variant === 'success' ? 'Sucesso' : 'Informação';
+  const derivedLabel = accessibilityLabel || `${variantLabel}: ${title ? `${title}. ` : ''}${description}`;
+
   return (
     <View
-      style={[
-        {
+      style={{
           flexDirection: 'row',
           backgroundColor: config.bg,
           borderLeftWidth: 4,
@@ -80,10 +86,12 @@ export const Alert: React.FC<AlertProps> = ({
           borderRadius: Radius.lg,
           padding: Spacing['4'],
           ...containerStyle,
-        },
-      ]}
+        }}
+      accessible={true}
+      accessibilityRole="alert"
+      accessibilityLabel={derivedLabel}
     >
-      <View style={{ marginRight: Spacing['3'], paddingTop: 2 }}>
+      <View style={{ marginRight: Spacing['3'], paddingTop: 2 }} accessibilityElementsHidden={true}>
         {icon || config.icon}
       </View>
 
@@ -96,6 +104,7 @@ export const Alert: React.FC<AlertProps> = ({
               fontWeight: Typography.weights.semibold,
               marginBottom: title && description ? Spacing['1'] : 0,
             }}
+            accessibilityElementsHidden={true}
           >
             {title}
           </Text>
@@ -106,6 +115,7 @@ export const Alert: React.FC<AlertProps> = ({
             fontSize: Typography.sizes.sm,
             lineHeight: 20,
           }}
+          accessibilityElementsHidden={true}
         >
           {description}
         </Text>
@@ -113,6 +123,8 @@ export const Alert: React.FC<AlertProps> = ({
 
       {onClose && (
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Fechar alerta"
           onPress={handleClose}
           hitSlop={8}
           style={{ marginLeft: Spacing['2'], paddingTop: 2 }}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { TabNavigator } from './TabNavigator';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreenComponent from '../screens/SplashScreen';
 import LoginScreenNew from '../screens/LoginScreenNew';

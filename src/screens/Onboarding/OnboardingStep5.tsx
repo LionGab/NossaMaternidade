@@ -8,7 +8,7 @@ import { UserProfile, UserEmotion } from '../../types/user';
 interface OnboardingStepProps {
   step: number;
   formData: UserProfile;
-  updateData: (key: keyof UserProfile, value: any) => void;
+  updateData: <K extends keyof UserProfile>(key: K, value: UserProfile[K]) => void;
   nextStep: () => void;
   prevStep: () => void;
 }
@@ -29,7 +29,7 @@ export default function OnboardingStep5({ step, formData, updateData, nextStep, 
     <SafeAreaView className="flex-1" style={{ backgroundColor: '#020617' }}>
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 pt-4 mb-6">
-        <TouchableOpacity onPress={prevStep} className="p-2 -ml-2">
+        <TouchableOpacity accessibilityRole="button" onPress={prevStep} className="p-2 -ml-2">
           <ArrowLeft size={24} color="#FFFFFF" />
         </TouchableOpacity>
 
@@ -46,7 +46,7 @@ export default function OnboardingStep5({ step, formData, updateData, nextStep, 
           ))}
         </View>
 
-        <TouchableOpacity
+        <TouchableOpacity accessibilityRole="button"
           onPress={toggleTheme}
           className="w-10 h-10 rounded-full items-center justify-center"
           style={{
@@ -73,7 +73,7 @@ export default function OnboardingStep5({ step, formData, updateData, nextStep, 
           {feelings.map((feeling) => {
             const isSelected = formData.currentFeeling === feeling.val;
             return (
-              <TouchableOpacity
+              <TouchableOpacity accessibilityRole="button"
                 key={feeling.val}
                 onPress={() => {
                   updateData('currentFeeling', feeling.val);

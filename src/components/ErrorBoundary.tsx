@@ -1,11 +1,15 @@
 /**
- * Error Boundary component to catch React errors
+ * Error Boundary Global
+ * Captura erros React e exibe UI de fallback user-friendly
+ * Preparado para integração com Sentry
  */
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { AlertTriangle, RefreshCw } from 'lucide-react-native';
+import { logger } from '../utils/logger';
+import { captureException, addBreadcrumb } from '../services/sentry';
 
 interface Props {
   children: ReactNode;
@@ -17,9 +21,22 @@ interface State {
   hasError: boolean;
   error: Error | null;
   errorInfo: ErrorInfo | null;
+  errorId: string | null;
 }
 
 const isDevelopment = process.env.NODE_ENV === 'development' || __DEV__;
+
+// Cores do Design System (inline para garantir funcionamento mesmo com erro de tema)
+const colors = {
+  background: '#FFFFFF',
+  backgroundDark: '#F5F5F5',
+  text: '#1A1A2E',
+  textSecondary: '#6B7280',
+  error: '#EF4444',
+  errorLight: '#FEE2E2',
+  primary: '#FF6B9D',
+  white: '#FFFFFF',
+};
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
@@ -28,10 +45,11 @@ export class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
+      errorId: null,
     };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     return {
       hasError: true,
       error,
@@ -40,17 +58,48 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+    // Gerar ID único para o erro
+    const errorId = `ERR-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    // Logar erro com contexto
+    logger.error('[ErrorBoundary] Erro capturado', {
+      errorId,
+      message: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+    });
+
     this.setState({
       error,
       errorInfo,
+      errorId,
     });
 
-    // Call custom error handler if provided
+    // Callback para integração externa
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
+
+    // Enviar para Sentry (crash reporting)
+    captureException(error, {
+      tags: {
+        errorBoundary: 'true',
+        errorId,
+      },
+      extras: {
+        componentStack: errorInfo.componentStack,
+        message: error.message,
+      },
+      level: 'fatal',
+    });
+
+    // Adicionar breadcrumb para contexto
+    addBreadcrumb({
+      category: 'error',
+      message: `ErrorBoundary capturou: ${error.message}`,
+      level: 'error',
+      data: { errorId },
+    });
   }
 
   handleReset = () => {
@@ -58,53 +107,163 @@ export class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
+      errorId: null,
     });
   };
 
   render() {
     if (this.state.hasError) {
-      // Use custom fallback if provided
+      // Usar fallback customizado se fornecido
       if (this.props.fallback) {
         return this.props.fallback;
       }
 
-      // Default error UI
+      // UI de erro padrão com Design System
       return (
-        <SafeAreaView className="flex-1 bg-white">
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: colors.background }}
+          accessible={true}
+          accessibilityLabel="Tela de erro"
+        >
           <ScrollView
-            className="flex-1"
-            contentContainerClassName="items-center justify-center p-6"
+            style={{ flex: 1 }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 24,
+            }}
           >
-            <View className="items-center">
-              <Ionicons name="warning-outline" size={64} color="#FF6B6B" />
-              
-              <Text className="text-2xl font-bold text-gray-900 mt-6 text-center">
-                Algo deu errado
-              </Text>
-              
-              <Text className="text-base text-gray-600 mt-4 text-center">
-                Ocorreu um erro inesperado. Por favor, tente novamente.
+            <View style={{ alignItems: 'center', maxWidth: 320 }}>
+              {/* Ícone de erro */}
+              <View
+                style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: 40,
+                  backgroundColor: colors.errorLight,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 24,
+                }}
+                accessibilityLabel="Ícone de erro"
+              >
+                <AlertTriangle size={40} color={colors.error} />
+              </View>
+
+              {/* Título */}
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: 'bold',
+                  color: colors.text,
+                  textAlign: 'center',
+                  marginBottom: 12,
+                }}
+                accessibilityRole="header"
+              >
+                Ops! Algo deu errado
               </Text>
 
+              {/* Descrição */}
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: colors.textSecondary,
+                  textAlign: 'center',
+                  lineHeight: 24,
+                  marginBottom: 8,
+                }}
+              >
+                Encontramos um problema inesperado. Não se preocupe, isso foi
+                registrado e nossa equipe vai verificar.
+              </Text>
+
+              {/* ID do erro para suporte */}
+              {this.state.errorId && (
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: colors.textSecondary,
+                    textAlign: 'center',
+                    marginBottom: 24,
+                  }}
+                  selectable={true}
+                >
+                  Código: {this.state.errorId}
+                </Text>
+              )}
+
+              {/* Detalhes técnicos em desenvolvimento */}
               {isDevelopment && this.state.error && (
-                <View className="mt-6 p-4 bg-gray-100 rounded-lg w-full">
-                  <Text className="text-sm font-mono text-gray-800 mb-2">
+                <View
+                  style={{
+                    width: '100%',
+                    padding: 16,
+                    backgroundColor: colors.backgroundDark,
+                    borderRadius: 12,
+                    marginBottom: 24,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontFamily: 'monospace',
+                      color: colors.error,
+                      marginBottom: 8,
+                    }}
+                  >
                     {this.state.error.toString()}
                   </Text>
-                  {this.state.errorInfo && (
-                    <Text className="text-xs font-mono text-gray-600">
-                      {this.state.errorInfo.componentStack}
-                    </Text>
+                  {this.state.errorInfo?.componentStack && (
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={true}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontFamily: 'monospace',
+                          color: colors.textSecondary,
+                        }}
+                      >
+                        {this.state.errorInfo.componentStack.slice(0, 500)}
+                      </Text>
+                    </ScrollView>
                   )}
                 </View>
               )}
 
+              {/* Botão de retry */}
               <TouchableOpacity
                 onPress={this.handleReset}
-                className="mt-8 bg-blue-500 px-8 py-4 rounded-full"
-                activeOpacity={0.7}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: colors.primary,
+                  paddingHorizontal: 32,
+                  paddingVertical: 16,
+                  borderRadius: 30,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 3,
+                }}
+                activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel="Tentar novamente"
+                accessibilityHint="Recarrega a aplicação para tentar novamente"
               >
-                <Text className="text-white font-semibold text-base">
+                <RefreshCw size={20} color={colors.white} />
+                <Text
+                  style={{
+                    color: colors.white,
+                    fontWeight: '600',
+                    fontSize: 16,
+                    marginLeft: 8,
+                  }}
+                >
                   Tentar Novamente
                 </Text>
               </TouchableOpacity>

@@ -1,0 +1,129 @@
+module.exports = {
+  root: true,
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 2022,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+    project: './tsconfig.json',
+  },
+  env: {
+    'react-native/react-native': true,
+    es2022: true,
+    node: true,
+  },
+  plugins: [
+    '@typescript-eslint',
+    'react',
+    'react-hooks',
+    'react-native',
+    'react-native-a11y',
+  ],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+    'plugin:react-native/all',
+    'plugin:react-native-a11y/all',
+  ],
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+  rules: {
+    // TypeScript
+    '@typescript-eslint/no-unused-vars': ['warn', {
+      argsIgnorePattern: '^_',
+      varsIgnorePattern: '^_',
+    }],
+    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-require-imports': 'off',
+    '@typescript-eslint/no-var-requires': 'off', // Legacy code uses require()
+    '@typescript-eslint/ban-ts-comment': 'warn', // Will fix gradually
+    '@typescript-eslint/no-namespace': 'warn', // Legacy pattern
+    '@typescript-eslint/ban-types': 'warn', // Will fix gradually
+
+    // React
+    'react/react-in-jsx-scope': 'off', // React 17+ doesn't need import
+    'react/prop-types': 'off', // Using TypeScript
+    'react/display-name': 'off',
+    'react/no-unescaped-entities': 'warn', // PT-BR text often has quotes
+
+    // React Hooks
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
+
+    // React Native
+    'react-native/no-unused-styles': 'warn',
+    'react-native/split-platform-components': 'off',
+    'react-native/no-inline-styles': 'off', // Using inline styles with theme tokens
+    'react-native/no-color-literals': 'off', // Using theme tokens
+    'react-native/no-raw-text': 'off', // Text inside Text components is fine
+    'react-native/sort-styles': 'off', // Not critical for MVP
+    'react-native/no-single-element-style-arrays': 'warn', // Not critical
+
+    // Accessibility (a11y) - Will be fixed in FASE 2
+    // Using 'warn' now, will upgrade to 'error' after FASE 2 completion
+    'react-native-a11y/has-accessibility-hint': 'warn',
+    'react-native-a11y/has-accessibility-props': 'warn',
+    'react-native-a11y/has-valid-accessibility-actions': 'warn',
+    'react-native-a11y/has-valid-accessibility-role': 'warn',
+    'react-native-a11y/has-valid-accessibility-state': 'warn',
+    'react-native-a11y/has-valid-accessibility-states': 'warn',
+    'react-native-a11y/has-valid-accessibility-component-type': 'warn',
+    'react-native-a11y/has-valid-accessibility-traits': 'warn',
+    'react-native-a11y/has-valid-accessibility-value': 'warn',
+    'react-native-a11y/no-nested-touchables': 'warn',
+    'react-native-a11y/has-valid-accessibility-ignores-invert-colors': 'warn',
+    'react-native-a11y/has-valid-accessibility-live-region': 'warn',
+    'react-native-a11y/has-valid-important-for-accessibility': 'warn',
+    'react-native-a11y/has-valid-accessibility-descriptors': 'warn',
+
+    // General
+    'no-console': ['warn', { allow: ['warn', 'error'] }],
+    'no-debugger': 'error',
+    'prefer-const': 'warn',
+    'no-var': 'error',
+    'no-case-declarations': 'warn', // Will fix gradually
+  },
+  overrides: [
+    {
+      // Test files
+      files: ['**/__tests__/**/*', '**/*.test.ts', '**/*.test.tsx'],
+      env: {
+        jest: true,
+      },
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+      },
+    },
+    {
+      // Config files
+      files: ['*.config.js', '*.config.ts', 'babel.config.js', 'metro.config.js'],
+      rules: {
+        '@typescript-eslint/no-require-imports': 'off',
+      },
+    },
+  ],
+  ignorePatterns: [
+    'node_modules/',
+    '.expo/',
+    'dist/',
+    'build/',
+    'android/',
+    'ios/',
+    'web-build/',
+    '*.config.js',
+    'babel.config.js',
+    'metro.config.js',
+    'tailwind.config.js',
+    'nativewind-env.d.ts',
+    'expo-env.d.ts',
+  ],
+};

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProgressIndicator, Button, Input, Avatar } from '../components';
-import { Colors } from '../constants/Colors';
+import { Colors } from '../theme';
 import { useHaptics } from '../hooks/useHaptics';
 import { nathAvatar } from '../assets/images';
 

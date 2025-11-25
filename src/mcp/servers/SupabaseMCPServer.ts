@@ -10,7 +10,9 @@ import {
   MCPResponse,
   createMCPResponse,
   MCPError,
+  JsonValue,
 } from '../types';
+import { logger } from '../../utils/logger';
 
 export class SupabaseMCPServer implements MCPServer {
   name = 'supabase-mcp';
@@ -31,19 +33,19 @@ export class SupabaseMCPServer implements MCPServer {
       this.client = createClient(supabaseUrl, supabaseKey);
       this.initialized = true;
 
-      console.log('[SupabaseMCP] Initialized successfully');
+      logger.info('[SupabaseMCP] Initialized successfully');
     } catch (error) {
-      console.error('[SupabaseMCP] Initialization failed:', error);
+      logger.error('[SupabaseMCP] Initialization failed', error);
       throw error;
     }
   }
 
-  async handleRequest(request: MCPRequest): Promise<MCPResponse> {
+  async handleRequest<T = JsonValue>(request: MCPRequest): Promise<MCPResponse<T>> {
     if (!this.initialized || !this.client) {
-      return createMCPResponse(request.id, undefined, {
+      return createMCPResponse(request.id, null, {
         code: 'NOT_INITIALIZED',
         message: 'MCP Server not initialized',
-      });
+      }) as MCPResponse<T>;
     }
 
     try {
@@ -51,53 +53,54 @@ export class SupabaseMCPServer implements MCPServer {
 
       switch (category) {
         case 'auth':
-          return await this.handleAuth(request.id, action, request.params);
+          return (await this.handleAuth(request.id, action, request.params)) as MCPResponse<T>;
         case 'db':
-          return await this.handleDatabase(request.id, action, request.params);
+          return (await this.handleDatabase(request.id, action, request.params)) as MCPResponse<T>;
         case 'storage':
-          return await this.handleStorage(request.id, action, request.params);
+          return (await this.handleStorage(request.id, action, request.params)) as MCPResponse<T>;
         default:
-          return createMCPResponse(request.id, undefined, {
+          return createMCPResponse(request.id, null, {
             code: 'UNKNOWN_METHOD',
             message: `Unknown method category: ${category}`,
-          });
+          }) as MCPResponse<T>;
       }
-    } catch (error: any) {
-      return createMCPResponse(request.id, undefined, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+      return createMCPResponse(request.id, null, {
         code: 'INTERNAL_ERROR',
-        message: error.message || 'Internal server error',
-        details: error,
-      });
+        message: errorMessage,
+        details: error instanceof Error ? { message: error.message, stack: error.stack ?? '' } : { error: String(error) },
+      }) as MCPResponse<T>;
     }
   }
 
   private async handleAuth(
     id: string,
     action: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
     if (!this.client) throw new Error('Client not initialized');
 
     switch (action) {
       case 'signIn': {
-        const { email, password } = params;
+        const { email, password } = params as { email: string; password: string };
         const { data, error } = await this.client.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) {
-          return createMCPResponse(id, undefined, {
+          return createMCPResponse(id, null, {
             code: 'AUTH_ERROR',
             message: error.message,
           });
         }
 
-        return createMCPResponse(id, data);
+        return createMCPResponse(id, JSON.parse(JSON.stringify(data)) as JsonValue);
       }
 
       case 'signUp': {
-        const { email, password, metadata } = params;
+        const { email, password, metadata } = params as { email: string; password: string; metadata?: Record<string, unknown> };
         const { data, error } = await this.client.auth.signUp({
           email,
           password,
@@ -105,20 +108,20 @@ export class SupabaseMCPServer implements MCPServer {
         });
 
         if (error) {
-          return createMCPResponse(id, undefined, {
+          return createMCPResponse(id, null, {
             code: 'AUTH_ERROR',
             message: error.message,
           });
         }
 
-        return createMCPResponse(id, data);
+        return createMCPResponse(id, JSON.parse(JSON.stringify(data)) as JsonValue);
       }
 
       case 'signOut': {
         const { error } = await this.client.auth.signOut();
 
         if (error) {
-          return createMCPResponse(id, undefined, {
+          return createMCPResponse(id, null, {
             code: 'AUTH_ERROR',
             message: error.message,
           });
@@ -128,7 +131,7 @@ export class SupabaseMCPServer implements MCPServer {
       }
 
       default:
-        return createMCPResponse(id, undefined, {
+        return createMCPResponse(id, null, {
           code: 'UNKNOWN_ACTION',
           message: `Unknown auth action: ${action}`,
         });
@@ -138,49 +141,49 @@ export class SupabaseMCPServer implements MCPServer {
   private async handleDatabase(
     id: string,
     action: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
     if (!this.client) throw new Error('Client not initialized');
 
-    const { table } = params;
+    const { table } = params as { table: string };
 
     switch (action) {
       case 'query': {
-        const { query } = params;
+        const { query } = params as { query: { select?: string; match?: Record<string, unknown> } };
         const { data, error } = await this.client
           .from(table)
           .select(query.select || '*')
           .match(query.match || {});
 
         if (error) {
-          return createMCPResponse(id, undefined, {
+          return createMCPResponse(id, null, {
             code: 'DB_ERROR',
             message: error.message,
           });
         }
 
-        return createMCPResponse(id, data);
+        return createMCPResponse(id, data as JsonValue);
       }
 
       case 'insert': {
-        const { data: insertData } = params;
+        const { data: insertData } = params as { data: Record<string, unknown> };
         const { data, error } = await this.client
           .from(table)
           .insert(insertData)
           .select();
 
         if (error) {
-          return createMCPResponse(id, undefined, {
+          return createMCPResponse(id, null, {
             code: 'DB_ERROR',
             message: error.message,
           });
         }
 
-        return createMCPResponse(id, data);
+        return createMCPResponse(id, data as JsonValue);
       }
 
       case 'update': {
-        const { id: recordId, data: updateData } = params;
+        const { id: recordId, data: updateData } = params as { id: string; data: Record<string, unknown> };
         const { data, error } = await this.client
           .from(table)
           .update(updateData)
@@ -188,24 +191,24 @@ export class SupabaseMCPServer implements MCPServer {
           .select();
 
         if (error) {
-          return createMCPResponse(id, undefined, {
+          return createMCPResponse(id, null, {
             code: 'DB_ERROR',
             message: error.message,
           });
         }
 
-        return createMCPResponse(id, data);
+        return createMCPResponse(id, data as JsonValue);
       }
 
       case 'delete': {
-        const { id: recordId } = params;
+        const { id: recordId } = params as { id: string };
         const { error } = await this.client
           .from(table)
           .delete()
           .eq('id', recordId);
 
         if (error) {
-          return createMCPResponse(id, undefined, {
+          return createMCPResponse(id, null, {
             code: 'DB_ERROR',
             message: error.message,
           });
@@ -215,7 +218,7 @@ export class SupabaseMCPServer implements MCPServer {
       }
 
       default:
-        return createMCPResponse(id, undefined, {
+        return createMCPResponse(id, null, {
           code: 'UNKNOWN_ACTION',
           message: `Unknown database action: ${action}`,
         });
@@ -225,27 +228,27 @@ export class SupabaseMCPServer implements MCPServer {
   private async handleStorage(
     id: string,
     action: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
     if (!this.client) throw new Error('Client not initialized');
 
-    const { bucket, path } = params;
+    const { bucket, path } = params as { bucket: string; path: string };
 
     switch (action) {
       case 'upload': {
-        const { file } = params;
+        const { file } = params as { file: Blob | File };
         const { data, error } = await this.client.storage
           .from(bucket)
           .upload(path, file);
 
         if (error) {
-          return createMCPResponse(id, undefined, {
+          return createMCPResponse(id, null, {
             code: 'STORAGE_ERROR',
             message: error.message,
           });
         }
 
-        return createMCPResponse(id, data);
+        return createMCPResponse(id, data as JsonValue);
       }
 
       case 'download': {
@@ -254,13 +257,19 @@ export class SupabaseMCPServer implements MCPServer {
           .download(path);
 
         if (error) {
-          return createMCPResponse(id, undefined, {
+          return createMCPResponse(id, null, {
             code: 'STORAGE_ERROR',
             message: error.message,
           });
         }
 
-        return createMCPResponse(id, data);
+        // Return URL or metadata instead of Blob to match JsonValue type
+        return createMCPResponse(id, {
+          size: data.size,
+          type: data.type,
+          // Note: Blob can't be serialized, so we return metadata
+          // Actual file download should be handled differently in production
+        });
       }
 
       case 'delete': {
@@ -269,7 +278,7 @@ export class SupabaseMCPServer implements MCPServer {
           .remove([path]);
 
         if (error) {
-          return createMCPResponse(id, undefined, {
+          return createMCPResponse(id, null, {
             code: 'STORAGE_ERROR',
             message: error.message,
           });
@@ -279,7 +288,7 @@ export class SupabaseMCPServer implements MCPServer {
       }
 
       default:
-        return createMCPResponse(id, undefined, {
+        return createMCPResponse(id, null, {
           code: 'UNKNOWN_ACTION',
           message: `Unknown storage action: ${action}`,
         });
@@ -289,7 +298,7 @@ export class SupabaseMCPServer implements MCPServer {
   async shutdown(): Promise<void> {
     this.client = null;
     this.initialized = false;
-    console.log('[SupabaseMCP] Shutdown complete');
+    logger.info('[SupabaseMCP] Shutdown complete');
   }
 }
 

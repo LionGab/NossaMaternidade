@@ -1,15 +1,15 @@
 // Mock AsyncStorage
 jest.mock('@react-native-async-storage/async-storage', () => {
-    const storage: Record<string, string> = {};
+    const storage = {};
     return {
         __esModule: true,
         default: {
-            getItem: jest.fn((key: string) => Promise.resolve(storage[key] || null)),
-            setItem: jest.fn((key: string, value: string) => {
+            getItem: jest.fn((key) => Promise.resolve(storage[key] || null)),
+            setItem: jest.fn((key, value) => {
                 storage[key] = value;
                 return Promise.resolve();
             }),
-            removeItem: jest.fn((key: string) => {
+            removeItem: jest.fn((key) => {
                 delete storage[key];
                 return Promise.resolve();
             }),
@@ -21,30 +21,23 @@ jest.mock('@react-native-async-storage/async-storage', () => {
     };
 });
 
-// Mock React Native Platform
-jest.mock('react-native', () => {
-    const RN = jest.requireActual('react-native');
-    return {
-        ...RN,
-        Platform: {
-            OS: 'ios',
-            select: jest.fn((dict) => dict.ios || dict.default),
-        },
-    };
-});
-
-// Mock expo modules
-jest.mock('expo-camera', () => ({
-    Camera: {
-        requestCameraPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
-        requestMicrophonePermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
-    },
+// Mock expo-secure-store
+jest.mock('expo-secure-store', () => ({
+    getItemAsync: jest.fn(() => Promise.resolve(null)),
+    setItemAsync: jest.fn(() => Promise.resolve()),
+    deleteItemAsync: jest.fn(() => Promise.resolve()),
 }));
 
-jest.mock('expo-image-picker', () => ({
-    requestMediaLibraryPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
-    launchImageLibraryAsync: jest.fn(() => Promise.resolve({ cancelled: false, uri: 'mock-uri' })),
-    launchCameraAsync: jest.fn(() => Promise.resolve({ cancelled: false, uri: 'mock-uri' })),
+// Mock expo-constants
+jest.mock('expo-constants', () => ({
+    default: {
+        expoConfig: {
+            extra: {
+                supabaseUrl: 'https://test.supabase.co',
+                supabaseAnonKey: 'test-key',
+            },
+        },
+    },
 }));
 
 // Mock console methods para não poluir os logs durante os testes

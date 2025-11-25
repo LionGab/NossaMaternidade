@@ -14,6 +14,7 @@ import {
   NathiaPersonalityAgent,
   SleepAnalysisAgent,
 } from '../agents';
+import { logger } from '../utils/logger';
 
 interface AgentsContextValue {
   initialized: boolean;
@@ -50,12 +51,12 @@ export function AgentsProvider({ children }: AgentsProviderProps) {
   useEffect(() => {
     async function initializeAgents() {
       try {
-        console.log('[AgentsContext] 🚀 Initializing EXPANDED agent system...');
-        console.log('[AgentsContext] 📦 Creating 6 specialized agents...');
+        logger.info('[AgentsContext] Initializing EXPANDED agent system...');
+        logger.info('[AgentsContext] Creating 6 specialized agents...');
 
         // 1. Inicializar Orchestrator (inicializa todos os MCPs)
         await orchestrator.initialize();
-        console.log('[AgentsContext] ✅ Orchestrator initialized');
+        logger.info('[AgentsContext] Orchestrator initialized');
 
         // 2. Criar TODOS os agentes (3 principais + 3 novos especializados)
         const maternal = new MaternalChatAgent();
@@ -65,7 +66,7 @@ export function AgentsProvider({ children }: AgentsProviderProps) {
         const nathia = new NathiaPersonalityAgent();
         const sleep = new SleepAnalysisAgent();
 
-        console.log('[AgentsContext] 📦 6 agents created, initializing...');
+        logger.info('[AgentsContext] 6 agents created, initializing...');
 
         // 3. Inicializar TODOS os agentes em paralelo
         await Promise.all([
@@ -77,7 +78,7 @@ export function AgentsProvider({ children }: AgentsProviderProps) {
           sleep.initialize(),
         ]);
 
-        console.log('[AgentsContext] ✅ All agents initialized');
+        logger.info('[AgentsContext] All agents initialized');
 
         // 4. Registrar TODOS no orchestrator
         orchestrator.registerAgent(maternal);
@@ -87,7 +88,7 @@ export function AgentsProvider({ children }: AgentsProviderProps) {
         orchestrator.registerAgent(nathia);
         orchestrator.registerAgent(sleep);
 
-        console.log('[AgentsContext] ✅ All agents registered in orchestrator');
+        logger.info('[AgentsContext] All agents registered in orchestrator');
 
         // 5. Atualizar estado com TODOS os agentes
         setChatAgent(maternal);
@@ -98,10 +99,10 @@ export function AgentsProvider({ children }: AgentsProviderProps) {
         setSleepAgent(sleep);
         setInitialized(true);
 
-        console.log('[AgentsContext] ✅ 6 AGENTES ATIVOS! Sistema expandido pronto! 🤖');
-        console.log('[AgentsContext] 📊 Agents: MaternalChat, Content, Habits, Emotion, Nathia, Sleep');
+        logger.info('[AgentsContext] 6 AGENTES ATIVOS! Sistema expandido pronto!');
+        logger.debug('[AgentsContext] Agents: MaternalChat, Content, Habits, Emotion, Nathia, Sleep');
       } catch (err: any) {
-        console.error('[AgentsContext] ❌ Initialization failed:', err);
+        logger.error('[AgentsContext] Initialization failed', err);
         setError(err.message || 'Failed to initialize agents');
       }
     }
@@ -110,7 +111,7 @@ export function AgentsProvider({ children }: AgentsProviderProps) {
 
     // Cleanup
     return () => {
-      orchestrator.shutdown().catch(console.error);
+      orchestrator.shutdown().catch((err) => logger.error('[AgentsContext] Shutdown failed', err));
     };
   }, []);
 

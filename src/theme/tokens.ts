@@ -5,7 +5,7 @@
  */
 
 import { Dimensions, Platform } from 'react-native';
-import type { ThemeColors } from './ThemeContext';
+import type { ThemeColors as _ThemeColors } from './ThemeContext';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -228,7 +228,7 @@ export const DarkTheme = {
     secondary: '#D1D5DB',     // Cinza claro
     tertiary: '#9CA3AF',      // Cinza médio
     disabled: '#6B7280',      // Desabilitado
-    placeholder: '#6B7280',   // Placeholder text
+    placeholder: '#9CA3AF',   // Placeholder text (melhor contraste WCAG AA)
     inverse: '#171717',       // Texto em fundos claros
     link: '#60A5FA',          // Link azul claro
     success: '#34D399',

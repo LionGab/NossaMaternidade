@@ -9,7 +9,9 @@ import {
   MCPRequest,
   MCPResponse,
   createMCPResponse,
+  JsonValue,
 } from '../types';
+import { logger } from '../../utils/logger';
 
 export class GoogleAIMCPServer implements MCPServer {
   name = 'google-ai-mcp';
@@ -71,19 +73,19 @@ LIMITAÇÕES:
       });
 
       this.initialized = true;
-      console.log('[GoogleAIMCP] Initialized successfully');
+      logger.info('[GoogleAIMCP] Initialized successfully');
     } catch (error) {
-      console.error('[GoogleAIMCP] Initialization failed:', error);
+      logger.error('[GoogleAIMCP] Initialization failed', error);
       throw error;
     }
   }
 
-  async handleRequest(request: MCPRequest): Promise<MCPResponse> {
+  async handleRequest<T = JsonValue>(request: MCPRequest): Promise<MCPResponse<T>> {
     if (!this.initialized || !this.model) {
-      return createMCPResponse(request.id, undefined, {
+      return createMCPResponse(request.id, null, {
         code: 'NOT_INITIALIZED',
         message: 'MCP Server not initialized',
-      });
+      }) as MCPResponse<T>;
     }
 
     try {
@@ -91,38 +93,43 @@ LIMITAÇÕES:
 
       switch (category) {
         case 'chat':
-          return await this.handleChat(request.id, action, request.params);
+          return (await this.handleChat(request.id, action, request.params)) as MCPResponse<T>;
         case 'analyze':
-          return await this.handleAnalyze(request.id, action, request.params);
+          return (await this.handleAnalyze(request.id, action, request.params)) as MCPResponse<T>;
         case 'generate':
-          return await this.handleGenerate(request.id, action, request.params);
+          return (await this.handleGenerate(request.id, action, request.params)) as MCPResponse<T>;
         case 'summarize':
-          return await this.handleSummarize(request.id, action, request.params);
+          return (await this.handleSummarize(request.id, action, request.params)) as MCPResponse<T>;
         default:
-          return createMCPResponse(request.id, undefined, {
+          return createMCPResponse(request.id, null, {
             code: 'UNKNOWN_METHOD',
             message: `Unknown method category: ${category}`,
-          });
+          }) as MCPResponse<T>;
       }
-    } catch (error: any) {
-      return createMCPResponse(request.id, undefined, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+      return createMCPResponse(request.id, null, {
         code: 'INTERNAL_ERROR',
-        message: error.message || 'Internal server error',
-        details: error,
-      });
+        message: errorMessage,
+        details: error instanceof Error ? { message: error.message, stack: error.stack ?? '' } : { error: String(error) },
+      }) as MCPResponse<T>;
     }
   }
 
   private async handleChat(
     id: string,
     action: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
     if (!this.model) throw new Error('Model not initialized');
 
     switch (action) {
       case 'send': {
-        const { message, context, history } = params;
+        const { message, context, history } = params as {
+          message: string;
+          context?: Record<string, unknown>;
+          history?: Array<{ role: string; parts: Array<{ text: string }> }>
+        };
 
         // Criar contexto enriquecido
         let enrichedPrompt = message;
@@ -135,7 +142,14 @@ LIMITAÇÕES:
             emotion,
             challenges,
             supportNetwork,
-          } = context;
+          } = context as {
+            name?: string;
+            lifeStage?: string;
+            timeline?: string;
+            emotion?: string;
+            challenges?: string[];
+            supportNetwork?: string;
+          };
 
           enrichedPrompt = `
 CONTEXTO DA USUÁRIA:
@@ -160,9 +174,9 @@ MENSAGEM: ${message}
 
         return createMCPResponse(id, {
           message: response,
-          context,
+          context: context as JsonValue,
           timestamp: Date.now(),
-        });
+        } as JsonValue);
       }
 
       case 'stream': {
@@ -175,7 +189,7 @@ MENSAGEM: ${message}
       }
 
       default:
-        return createMCPResponse(id, undefined, {
+        return createMCPResponse(id, null, {
           code: 'UNKNOWN_ACTION',
           message: `Unknown chat action: ${action}`,
         });
@@ -185,13 +199,13 @@ MENSAGEM: ${message}
   private async handleAnalyze(
     id: string,
     action: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
     if (!this.model) throw new Error('Model not initialized');
 
     switch (action) {
       case 'emotion': {
-        const { text } = params;
+        const { text } = params as { text: string };
 
         const prompt = `
 Analise o estado emocional do seguinte texto de uma mãe.
@@ -220,7 +234,7 @@ Retorne APENAS o JSON, sem explicações adicionais.
       }
 
       case 'sentiment': {
-        const { text } = params;
+        const { text } = params as { text: string };
 
         const prompt = `
 Analise o sentimento do seguinte texto e retorne um JSON com:
@@ -247,7 +261,7 @@ Retorne APENAS o JSON.
       }
 
       default:
-        return createMCPResponse(id, undefined, {
+        return createMCPResponse(id, null, {
           code: 'UNKNOWN_ACTION',
           message: `Unknown analyze action: ${action}`,
         });
@@ -257,13 +271,13 @@ Retorne APENAS o JSON.
   private async handleGenerate(
     id: string,
     action: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
     if (!this.model) throw new Error('Model not initialized');
 
     switch (action) {
       case 'content': {
-        const { prompt, context } = params;
+        const { prompt, context } = params as { prompt: string; context?: Record<string, unknown> };
 
         let enrichedPrompt = prompt;
         if (context) {
@@ -280,7 +294,7 @@ Retorne APENAS o JSON.
       }
 
       default:
-        return createMCPResponse(id, undefined, {
+        return createMCPResponse(id, null, {
           code: 'UNKNOWN_ACTION',
           message: `Unknown generate action: ${action}`,
         });
@@ -290,13 +304,13 @@ Retorne APENAS o JSON.
   private async handleSummarize(
     id: string,
     action: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
     if (!this.model) throw new Error('Model not initialized');
 
     switch (action) {
       case 'text': {
-        const { text, maxLength = 200 } = params;
+        const { text, maxLength = 200 } = params as { text: string; maxLength?: number };
 
         const prompt = `
 Resuma o seguinte texto em no máximo ${maxLength} caracteres, mantendo as informações mais importantes:
@@ -317,7 +331,7 @@ Retorne apenas o resumo, sem introduções ou explicações.
       }
 
       default:
-        return createMCPResponse(id, undefined, {
+        return createMCPResponse(id, null, {
           code: 'UNKNOWN_ACTION',
           message: `Unknown summarize action: ${action}`,
         });
@@ -328,7 +342,7 @@ Retorne apenas o resumo, sem introduções ou explicações.
     this.model = null;
     this.genAI = null;
     this.initialized = false;
-    console.log('[GoogleAIMCP] Shutdown complete');
+    logger.info('[GoogleAIMCP] Shutdown complete');
   }
 }
 

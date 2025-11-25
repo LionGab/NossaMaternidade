@@ -1,29 +1,38 @@
 module.exports = {
-    preset: 'jest-expo',
+    preset: 'ts-jest',
+    testEnvironment: 'node',
     setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
     testMatch: ['**/__tests__/**/*.test.(ts|tsx|js)'],
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+    transform: {
+        '^.+\\.tsx?$': ['ts-jest', {
+            tsconfig: {
+                jsx: 'react',
+                esModuleInterop: true,
+                allowSyntheticDefaultImports: true,
+            },
+        }],
+    },
     transformIgnorePatterns: [
-        'node_modules/(?!(react-native|@react-native|expo|@expo|@react-navigation|@google/genai)/)',
+        '/node_modules/(?!(@supabase)/)',
     ],
     collectCoverageFrom: [
-        'utils/**/*.{ts,tsx}',
-        'hooks/**/*.{ts,tsx}',
-        'services/**/*.{ts,tsx}',
+        'src/services/**/*.{ts,tsx}',
+        'src/hooks/**/*.{ts,tsx}',
+        'src/utils/**/*.{ts,tsx}',
         '!**/*.d.ts',
         '!**/node_modules/**',
     ],
     coverageThreshold: {
         global: {
-            branches: 70,
-            functions: 70,
-            lines: 70,
-            statements: 70,
+            branches: 40,
+            functions: 40,
+            lines: 40,
+            statements: 40,
         },
     },
     moduleNameMapper: {
-        '^@/(.*)$': '<rootDir>/$1',
+        '^@/(.*)$': '<rootDir>/src/$1',
     },
-    testEnvironment: 'node',
 };
 

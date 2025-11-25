@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Image, Text } from 'react-native';
-import { Colors } from '../constants/Colors';
+import { View, Image, Text, TouchableOpacity } from 'react-native';
+import { useThemeColors } from '@/theme';
+import { Tokens } from '@/theme/tokens';
 
 export interface AvatarProps {
   size?: number;
@@ -17,9 +18,8 @@ export const Avatar: React.FC<AvatarProps> = ({
   className = '',
   onPress,
 }) => {
-  const TouchableComponent = onPress
-    ? require('react-native').TouchableOpacity
-    : View;
+  const colors = useThemeColors();
+  const TouchableComponent = onPress ? TouchableOpacity : View;
 
   const content = (
     <View
@@ -27,20 +27,16 @@ export const Avatar: React.FC<AvatarProps> = ({
       style={{
         width: size,
         height: size,
-        backgroundColor: Colors.background.card,
+        backgroundColor: colors.background.card,
         borderRadius: size / 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+        ...Tokens.shadows.sm,
       }}
     >
       {source ? (
         <Image
           source={source}
-          style={{ 
-            width: size, 
+          style={{
+            width: size,
             height: size,
           }}
           resizeMode="cover"
@@ -49,7 +45,7 @@ export const Avatar: React.FC<AvatarProps> = ({
         <Text
           className="font-semibold"
           style={{
-            color: Colors.text.primary,
+            color: colors.text.primary,
             fontSize: size * 0.4,
           }}
         >

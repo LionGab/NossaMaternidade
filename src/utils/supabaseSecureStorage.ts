@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import { logger } from './logger';
 
 /**
  * Secure storage adapter for Supabase authentication
@@ -23,7 +24,7 @@ class SupabaseSecureStorage {
       }
       return await SecureStore.getItemAsync(key);
     } catch (error) {
-      console.error(`SecureStore getItem error for ${key}:`, error);
+      logger.error(`SecureStore getItem error for ${key}:`, error);
       return null;
     }
   }
@@ -42,7 +43,7 @@ class SupabaseSecureStorage {
         await SecureStore.setItemAsync(key, value);
       }
     } catch (error) {
-      console.error(`SecureStore setItem error for ${key}:`, error);
+      logger.error(`SecureStore setItem error for ${key}:`, error);
       throw error;
     }
   }
@@ -60,7 +61,7 @@ class SupabaseSecureStorage {
         await SecureStore.deleteItemAsync(key);
       }
     } catch (error) {
-      console.error(`SecureStore removeItem error for ${key}:`, error);
+      logger.error(`SecureStore removeItem error for ${key}:`, error);
       throw error;
     }
   }
@@ -74,7 +75,7 @@ class SupabaseSecureStorage {
 export async function migrateSupabaseSessionToSecureStore(): Promise<void> {
   // Skip migration on web since we use AsyncStorage for both old and new storage
   if (Platform.OS === 'web') {
-    console.log('Web platform detected - skipping SecureStore migration');
+    logger.debug('Web platform detected - skipping SecureStore migration');
     return;
   }
 
@@ -105,21 +106,21 @@ export async function migrateSupabaseSessionToSecureStore(): Promise<void> {
           await SecureStore.setItemAsync(key, value);
           await AsyncStorage.removeItem(key);
           migratedCount++;
-          console.log(`[Migration] ✅ Migrated: ${key}`);
+          logger.debug(`[Migration] Migrated: ${key}`);
         }
       } catch (keyError) {
-        console.warn(`[Migration] ⚠️ Failed to migrate key ${key}:`, keyError);
+        logger.warn(`[Migration] Failed to migrate key ${key}:`, keyError);
         // Continuar com outras chaves mesmo se uma falhar
       }
     }
 
     if (migratedCount > 0) {
-      console.log(`✅ [Migration] Migrated ${migratedCount} Supabase session keys to SecureStore`);
+      logger.info(`[Migration] Migrated ${migratedCount} Supabase session keys to SecureStore`);
     } else {
-      console.log('ℹ️ [Migration] No Supabase session keys found in AsyncStorage (migration already done or no sessions)');
+      logger.debug('[Migration] No Supabase session keys found in AsyncStorage');
     }
   } catch (error) {
-    console.error('❌ [Migration] Error migrating Supabase session:', error);
+    logger.error('[Migration] Error migrating Supabase session:', error);
     // Don't throw - migration failure shouldn't break the app
   }
 }

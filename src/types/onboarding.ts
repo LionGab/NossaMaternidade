@@ -151,46 +151,46 @@ export interface OnboardingState {
 }
 
 // Props para cada step do onboarding
-export interface OnboardingStepProps {
-  onNext: (data: any) => void;
+export interface OnboardingStepProps<T = Partial<UserProfile>> {
+  onNext: (data: T) => void;
   onBack?: () => void;
-  initialData?: any;
+  initialData?: T;
 }
 
 // Validação de steps
-export const validateStep = (step: number, data: any): boolean => {
+export const validateStep = (step: number, data: Partial<UserProfile>): boolean => {
   switch (step) {
     case 1: // Nome
       return typeof data.name === 'string' && data.name.trim().length > 0;
 
     case 2: // Fase da vida
-      return Object.values(UserLifeStage).includes(data.lifeStage);
+      return data.lifeStage !== undefined && Object.values(UserLifeStage).includes(data.lifeStage);
 
     case 3: // Timeline (opcional para algumas fases)
       return true; // Timeline é opcional
 
     case 4: // Emoção
-      return Object.values(UserEmotion).includes(data.emotion);
+      return data.emotion !== undefined && Object.values(UserEmotion).includes(data.emotion);
 
     case 5: // Desafios
       return (
         Array.isArray(data.challenges) &&
         data.challenges.length > 0 &&
-        data.challenges.every((c: any) => Object.values(UserChallenge).includes(c))
+        data.challenges.every((c: unknown) => Object.values(UserChallenge).includes(c as UserChallenge))
       );
 
     case 6: // Rede de apoio
-      return Object.values(SupportLevel).includes(data.supportLevel);
+      return data.supportLevel !== undefined && Object.values(SupportLevel).includes(data.supportLevel);
 
     case 7: // Necessidades
       return (
         Array.isArray(data.primaryNeeds) &&
         data.primaryNeeds.length > 0 &&
-        data.primaryNeeds.every((n: any) => Object.values(UserNeed).includes(n))
+        data.primaryNeeds.every((n: unknown) => Object.values(UserNeed).includes(n as UserNeed))
       );
 
     case 8: // Notificações
-      return typeof data.notifications === 'object';
+      return typeof data.notifications === 'object' && data.notifications !== null;
 
     case 9: // Termos
       return data.agreedToTerms === true && data.agreedToPrivacy === true;

@@ -1,13 +1,15 @@
 /**
  * ContentCard Component
  * Card reutilizável para exibir conteúdo do Mundo Nath
+ * Theme-aware with Design System tokens
  */
 
-import React, { useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Animated } from 'react-native';
+import React, { useRef, useMemo } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Animated, ViewStyle, TextStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ContentItem, ContentType } from '../types/content';
-import { Colors } from '../constants/Colors';
+import { useThemeColors, type ThemeColors } from '@/theme';
+import { Tokens } from '@/theme/tokens';
 import { useHaptics } from '../hooks/useHaptics';
 
 interface ContentCardProps {
@@ -25,8 +27,6 @@ const getTypeIcon = (type: ContentType): string => {
       return 'headset';
     case 'text':
       return 'document-text';
-    // case 'Bastidor':
-    //   return 'camera';
     case 'reels':
       return 'film';
     default:
@@ -34,20 +34,18 @@ const getTypeIcon = (type: ContentType): string => {
   }
 };
 
-const getTypeColor = (type: ContentType): string => {
+const getTypeColor = (type: ContentType, colors: ThemeColors): string => {
   switch (type) {
     case 'video':
-      return Colors.primary.main;
+      return colors.primary.main;
     case 'audio':
-      return Colors.accent.orange;
+      return colors.raw.warning[500];
     case 'text':
-      return Colors.accent.green;
-    // case 'Bastidor':
-    //   return Colors.accent.pink;
+      return colors.raw.success[500];
     case 'reels':
-      return '#E91E63';
+      return colors.raw.secondary[400];
     default:
-      return Colors.text.secondary;
+      return colors.text.secondary;
   }
 };
 
@@ -57,10 +55,15 @@ export const ContentCard: React.FC<ContentCardProps> = ({
   onLike,
   onComment,
 }) => {
+  const colors = useThemeColors();
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const haptics = useHaptics();
   const [isLiked, setIsLiked] = React.useState(false);
   const [likesCount, setLikesCount] = React.useState(item.likes || 0);
+
+  const typeColor = getTypeColor(item.type, colors);
+
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
@@ -94,6 +97,8 @@ export const ContentCard: React.FC<ContentCardProps> = ({
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
       <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityLabel={`Conteúdo: ${item.title}`}
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
@@ -107,7 +112,7 @@ export const ContentCard: React.FC<ContentCardProps> = ({
           {/* Exclusive Badge */}
           {item.isExclusive && (
             <View style={styles.exclusiveBadge}>
-              <Ionicons name="lock-closed" size={10} color="#fff" />
+              <Ionicons name="lock-closed" size={10} color={colors.raw.neutral[0]} />
               <Text style={styles.exclusiveBadgeText}>EXCLUSIVO</Text>
             </View>
           )}
@@ -116,13 +121,13 @@ export const ContentCard: React.FC<ContentCardProps> = ({
           <View
             style={[
               styles.typeIconContainer,
-              { backgroundColor: `${getTypeColor(item.type)}40` },
+              { backgroundColor: `${typeColor}40` },
             ]}
           >
             <Ionicons
               name={getTypeIcon(item.type) as any}
               size={20}
-              color={getTypeColor(item.type)}
+              color={typeColor}
             />
           </View>
 
@@ -136,11 +141,11 @@ export const ContentCard: React.FC<ContentCardProps> = ({
           {/* Stats */}
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
-              <Ionicons name="eye-outline" size={12} color="#fff" />
+              <Ionicons name="eye-outline" size={12} color={colors.raw.neutral[0]} />
               <Text style={styles.statText}>{item.views?.toLocaleString()}</Text>
             </View>
             <View style={styles.statItem}>
-              <Ionicons name="heart-outline" size={12} color="#fff" />
+              <Ionicons name="heart-outline" size={12} color={colors.raw.neutral[0]} />
               <Text style={styles.statText}>{item.likes?.toLocaleString()}</Text>
             </View>
           </View>
@@ -151,11 +156,11 @@ export const ContentCard: React.FC<ContentCardProps> = ({
             <View
               style={[
                 styles.typeBadge,
-                { backgroundColor: `${getTypeColor(item.type)}20` },
+                { backgroundColor: `${typeColor}20` },
               ]}
             >
               <Text
-                style={[styles.typeBadgeText, { color: getTypeColor(item.type) }]}
+                style={[styles.typeBadgeText, { color: typeColor }]}
               >
                 {item.type}
               </Text>
@@ -183,6 +188,8 @@ export const ContentCard: React.FC<ContentCardProps> = ({
           {/* Action Buttons */}
           <View style={styles.cardActions}>
             <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={isLiked ? 'Remover curtida' : 'Curtir'}
               style={styles.actionButton}
               onPress={handleLikePress}
               activeOpacity={0.7}
@@ -190,12 +197,12 @@ export const ContentCard: React.FC<ContentCardProps> = ({
               <Ionicons
                 name={isLiked ? 'heart' : 'heart-outline'}
                 size={20}
-                color={isLiked ? '#EF4444' : Colors.text.secondary}
+                color={isLiked ? colors.raw.error[500] : colors.text.secondary}
               />
               <Text
                 style={[
                   styles.actionButtonText,
-                  isLiked && styles.actionButtonTextActive,
+                  isLiked && { color: colors.raw.error[500] },
                 ]}
               >
                 {likesCount.toLocaleString()}
@@ -203,11 +210,13 @@ export const ContentCard: React.FC<ContentCardProps> = ({
             </TouchableOpacity>
 
             <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel="Comentar"
               style={styles.actionButton}
               onPress={handleCommentPress}
               activeOpacity={0.7}
             >
-              <Ionicons name="chatbubble-outline" size={20} color={Colors.text.secondary} />
+              <Ionicons name="chatbubble-outline" size={20} color={colors.text.secondary} />
               <Text style={styles.actionButtonText}>Comentar</Text>
             </TouchableOpacity>
           </View>
@@ -217,14 +226,14 @@ export const ContentCard: React.FC<ContentCardProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   contentCard: {
-    backgroundColor: Colors.background.card,
-    borderRadius: 16,
+    backgroundColor: colors.background.card,
+    borderRadius: Tokens.radius['2xl'],
     overflow: 'hidden',
-    marginBottom: 16,
+    marginBottom: Tokens.spacing['4'],
     borderWidth: 1,
-    borderColor: Colors.border.light,
+    borderColor: colors.border.light,
   },
   cardImageContainer: {
     width: '100%',
@@ -245,26 +254,26 @@ const styles = StyleSheet.create({
   },
   exclusiveBadge: {
     position: 'absolute',
-    top: 12,
-    left: 12,
+    top: Tokens.spacing['3'],
+    left: Tokens.spacing['3'],
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.accent.pink,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    backgroundColor: colors.raw.secondary[400],
+    paddingHorizontal: Tokens.spacing['2'],
+    paddingVertical: Tokens.spacing['1'],
+    borderRadius: Tokens.radius.md,
     gap: 4,
   },
   exclusiveBadgeText: {
-    fontSize: 9,
-    fontWeight: '700',
-    color: '#fff',
+    fontSize: Tokens.typography.sizes.xs - 3,
+    fontWeight: Tokens.typography.weights.bold,
+    color: colors.raw.neutral[0],
     letterSpacing: 0.5,
   },
   typeIconContainer: {
     position: 'absolute',
-    top: 12,
-    right: 12,
+    top: Tokens.spacing['3'],
+    right: Tokens.spacing['3'],
     width: 36,
     height: 36,
     borderRadius: 18,
@@ -273,117 +282,114 @@ const styles = StyleSheet.create({
   },
   durationBadge: {
     position: 'absolute',
-    bottom: 12,
-    right: 12,
+    bottom: Tokens.spacing['3'],
+    right: Tokens.spacing['3'],
     backgroundColor: 'rgba(0,0,0,0.7)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: Tokens.spacing['2'],
+    paddingVertical: Tokens.spacing['1'],
+    borderRadius: Tokens.radius.md,
   },
   durationText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#fff',
+    fontSize: Tokens.typography.sizes.xs,
+    fontWeight: Tokens.typography.weights.semibold,
+    color: colors.raw.neutral[0],
   },
   statsContainer: {
     position: 'absolute',
-    bottom: 12,
-    left: 12,
+    bottom: Tokens.spacing['3'],
+    left: Tokens.spacing['3'],
     flexDirection: 'row',
-    gap: 12,
+    gap: Tokens.spacing['3'],
   },
   statItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: Tokens.spacing['2'],
+    paddingVertical: Tokens.spacing['1'],
+    borderRadius: Tokens.radius.md,
   },
   statText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#fff',
+    fontSize: Tokens.typography.sizes.xs,
+    fontWeight: Tokens.typography.weights.semibold,
+    color: colors.raw.neutral[0],
   },
   cardContent: {
-    padding: 16,
+    padding: Tokens.spacing['4'],
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: Tokens.spacing['3'],
   },
   typeBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: Tokens.spacing['2.5'],
+    paddingVertical: Tokens.spacing['1'],
+    borderRadius: Tokens.radius.md,
   },
   typeBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: Tokens.typography.sizes.xs,
+    fontWeight: Tokens.typography.weights.bold,
     letterSpacing: 0.5,
   },
   cardDate: {
-    fontSize: 12,
-    color: Colors.text.tertiary,
+    fontSize: Tokens.typography.sizes.xs,
+    color: colors.text.tertiary,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: Colors.text.primary,
-    marginBottom: 6,
+    fontSize: Tokens.typography.sizes.lg,
+    fontWeight: Tokens.typography.weights.bold,
+    color: colors.text.primary,
+    marginBottom: Tokens.spacing['1.5'],
     lineHeight: 24,
   },
   cardDescription: {
-    fontSize: 14,
-    color: Colors.text.secondary,
+    fontSize: Tokens.typography.sizes.sm,
+    color: colors.text.secondary,
     lineHeight: 20,
-    marginBottom: 12,
+    marginBottom: Tokens.spacing['3'],
   },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
-    marginBottom: 12,
+    gap: Tokens.spacing['1.5'],
+    marginBottom: Tokens.spacing['3'],
   },
   tag: {
-    backgroundColor: Colors.background.dark,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    backgroundColor: colors.background.elevated,
+    paddingHorizontal: Tokens.spacing['2'],
+    paddingVertical: Tokens.spacing['1'],
+    borderRadius: Tokens.radius.sm,
   },
   tagText: {
-    fontSize: 11,
-    color: Colors.text.secondary,
+    fontSize: Tokens.typography.sizes.xs,
+    color: colors.text.secondary,
   },
   cardActions: {
     flexDirection: 'row',
-    gap: 16,
-    marginTop: 12,
-    paddingTop: 12,
+    gap: Tokens.spacing['4'],
+    marginTop: Tokens.spacing['3'],
+    paddingTop: Tokens.spacing['3'],
     borderTopWidth: 1,
-    borderTopColor: Colors.border.dark,
+    borderTopColor: colors.border.light,
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    backgroundColor: Colors.background.dark,
+    gap: Tokens.spacing['1.5'],
+    paddingVertical: Tokens.spacing['1.5'],
+    paddingHorizontal: Tokens.spacing['3'],
+    borderRadius: Tokens.radius.lg,
+    backgroundColor: colors.background.elevated,
+    minHeight: Tokens.touchTargets.min,
   },
   actionButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: Colors.text.secondary,
-  },
-  actionButtonTextActive: {
-    color: '#EF4444',
+    fontSize: Tokens.typography.sizes.sm - 1,
+    fontWeight: Tokens.typography.weights.semibold,
+    color: colors.text.secondary,
   },
 });
 
 export default ContentCard;
-

@@ -1,9 +1,10 @@
 /**
  * AudioPlayer Component - UI component for audio playback
  * Componente de UI para reprodução de áudio (sem player real por enquanto)
+ * Theme-aware with Design System tokens
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -13,7 +14,8 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../constants/Colors';
+import { useThemeColors, type ThemeColors } from '@/theme';
+import { Tokens } from '@/theme/tokens';
 import { useHaptics } from '../hooks/useHaptics';
 
 interface AudioPlayerProps {
@@ -33,13 +35,16 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   onPause,
   onEnd,
 }) => {
+  const colors = useThemeColors();
   const [isPlaying, setIsPlaying] = useState(false);
   const [position, setPosition] = useState(0);
   const [durationMs, setDurationMs] = useState(0);
   const haptics = useHaptics();
-  
+
   const progressAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   // Converter duration string para milliseconds se fornecido
   useEffect(() => {
@@ -99,7 +104,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
   const playPause = () => {
     haptics.light();
-    
+
     if (isPlaying) {
       setIsPlaying(false);
       onPause?.();
@@ -127,6 +132,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       <View style={styles.playerContainer}>
         {/* Play/Pause Button */}
         <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel={isPlaying ? 'Pausar áudio' : 'Reproduzir áudio'}
           style={styles.playButton}
           onPress={playPause}
           activeOpacity={0.7}
@@ -140,9 +147,9 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             ]}
           >
             {isPlaying ? (
-              <Ionicons name="pause" size={24} color="#fff" />
+              <Ionicons name="pause" size={24} color={colors.raw.neutral[0]} />
             ) : (
-              <Ionicons name="play" size={24} color="#fff" />
+              <Ionicons name="play" size={24} color={colors.raw.neutral[0]} />
             )}
           </Animated.View>
         </TouchableOpacity>
@@ -177,28 +184,29 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     width: '100%',
-    paddingVertical: 16,
+    paddingVertical: Tokens.spacing['4'],
   },
   playerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-    marginBottom: 12,
+    gap: Tokens.spacing['4'],
+    marginBottom: Tokens.spacing['3'],
   },
   playButton: {
     width: 56,
     height: 56,
-    borderRadius: 28,
-    backgroundColor: Colors.primary.main,
+    borderRadius: Tokens.radius.full,
+    backgroundColor: colors.primary.main,
     alignItems: 'center',
     justifyContent: 'center',
+    minHeight: Tokens.touchTargets.min,
     ...(Platform.OS === 'web' ? {
       boxShadow: `0px 4px 8px 0px rgba(13, 95, 255, 0.3)`,
     } : {
-      shadowColor: Colors.primary.main,
+      shadowColor: colors.primary.main,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.3,
       shadowRadius: 8,
@@ -208,39 +216,41 @@ const styles = StyleSheet.create({
   playButtonInner: {
     width: 56,
     height: 56,
-    borderRadius: 28,
+    borderRadius: Tokens.radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
   infoContainer: {
     flex: 1,
-    gap: 4,
+    gap: Tokens.spacing['1'],
   },
   title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.text.primary,
+    fontSize: Tokens.typography.sizes.base,
+    fontWeight: Tokens.typography.weights.semibold,
+    color: colors.text.primary,
   },
   timeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Tokens.spacing['2'],
   },
   time: {
-    fontSize: 13,
-    color: Colors.text.secondary,
+    fontSize: Tokens.typography.sizes.sm - 1,
+    color: colors.text.secondary,
     fontVariant: ['tabular-nums'],
   },
   progressBarContainer: {
     width: '100%',
     height: 4,
-    backgroundColor: Colors.background.card,
-    borderRadius: 2,
+    backgroundColor: colors.background.card,
+    borderRadius: Tokens.radius.sm,
     overflow: 'hidden',
   },
   progressBar: {
     height: '100%',
-    backgroundColor: Colors.primary.main,
-    borderRadius: 2,
+    backgroundColor: colors.primary.main,
+    borderRadius: Tokens.radius.sm,
   },
 });
+
+export default AudioPlayer;

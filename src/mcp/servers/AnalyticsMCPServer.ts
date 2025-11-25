@@ -12,6 +12,7 @@ import {
   MCPRequest,
   MCPResponse,
   createMCPResponse,
+  JsonValue,
 } from '../types';
 import { sessionManager } from '../../services/sessionManager';
 import { logger } from '../../utils/logger';
@@ -21,7 +22,7 @@ const ANALYTICS_SESSION_KEY = '@analytics_session_id';
 interface AnalyticsEvent {
   id: string;
   name: string;
-  properties?: Record<string, any>;
+  properties?: Record<string, JsonValue>;
   timestamp: number;
   userId?: string;
   sessionId?: string;
@@ -29,7 +30,7 @@ interface AnalyticsEvent {
 
 interface UserIdentity {
   userId: string;
-  traits?: Record<string, any>;
+  traits?: Record<string, JsonValue>;
   timestamp: number;
 }
 
@@ -98,7 +99,7 @@ export class AnalyticsMCPServer implements MCPServer {
       }
 
       this.initialized = true;
-      console.log('[AnalyticsMCP] Initialized successfully');
+      logger.info('[AnalyticsMCP] Initialized successfully');
 
       // Track session start
       await this.trackEvent('session_start', {
@@ -106,17 +107,17 @@ export class AnalyticsMCPServer implements MCPServer {
         timestamp: Date.now(),
       });
     } catch (error) {
-      console.error('[AnalyticsMCP] Initialization failed:', error);
+      logger.error('[AnalyticsMCP] Initialization failed', error);
       throw error;
     }
   }
 
-  async handleRequest(request: MCPRequest): Promise<MCPResponse> {
+  async handleRequest<T = JsonValue>(request: MCPRequest): Promise<MCPResponse<T>> {
     if (!this.initialized) {
-      return createMCPResponse(request.id, undefined, {
+      return createMCPResponse(request.id, null, {
         code: 'NOT_INITIALIZED',
         message: 'MCP Server not initialized',
-      });
+      }) as MCPResponse<T>;
     }
 
     try {
@@ -124,35 +125,36 @@ export class AnalyticsMCPServer implements MCPServer {
 
       switch (category) {
         case 'event':
-          return await this.handleEvent(request.id, action, request.params);
+          return (await this.handleEvent(request.id, action, request.params)) as MCPResponse<T>;
         case 'screen':
-          return await this.handleScreen(request.id, action, request.params);
+          return (await this.handleScreen(request.id, action, request.params)) as MCPResponse<T>;
         case 'user':
-          return await this.handleUser(request.id, action, request.params);
+          return (await this.handleUser(request.id, action, request.params)) as MCPResponse<T>;
         default:
-          return createMCPResponse(request.id, undefined, {
+          return createMCPResponse(request.id, null, {
             code: 'UNKNOWN_METHOD',
             message: `Unknown method category: ${category}`,
-          });
+          }) as MCPResponse<T>;
       }
-    } catch (error: any) {
-      return createMCPResponse(request.id, undefined, {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+      return createMCPResponse(request.id, null, {
         code: 'INTERNAL_ERROR',
-        message: error.message || 'Internal server error',
-        details: error,
-      });
+        message: errorMessage,
+        details: error instanceof Error ? { message: error.message, stack: error.stack ?? '' } : { error: String(error) },
+      }) as MCPResponse<T>;
     }
   }
 
   private async handleEvent(
     id: string,
     action: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
     switch (action) {
       case 'track': {
-        const { name, properties } = params;
-        await this.trackEvent(name, properties);
+        const { name, properties } = params as { name: string; properties?: Record<string, JsonValue> };
+        await this.trackEvent(name as string, properties);
 
         return createMCPResponse(id, {
           success: true,
@@ -162,7 +164,7 @@ export class AnalyticsMCPServer implements MCPServer {
       }
 
       default:
-        return createMCPResponse(id, undefined, {
+        return createMCPResponse(id, null, {
           code: 'UNKNOWN_ACTION',
           message: `Unknown event action: ${action}`,
         });
@@ -172,11 +174,11 @@ export class AnalyticsMCPServer implements MCPServer {
   private async handleScreen(
     id: string,
     action: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
     switch (action) {
       case 'view': {
-        const { name, properties } = params;
+        const { name, properties } = params as { name: string; properties?: Record<string, JsonValue> };
         await this.trackEvent('screen_view', {
           screen_name: name,
           ...properties,
@@ -190,7 +192,7 @@ export class AnalyticsMCPServer implements MCPServer {
       }
 
       default:
-        return createMCPResponse(id, undefined, {
+        return createMCPResponse(id, null, {
           code: 'UNKNOWN_ACTION',
           message: `Unknown screen action: ${action}`,
         });
@@ -200,18 +202,18 @@ export class AnalyticsMCPServer implements MCPServer {
   private async handleUser(
     id: string,
     action: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
     switch (action) {
       case 'identify': {
-        const { userId, traits } = params;
+        const { userId, traits } = params as { userId: string; traits?: Record<string, JsonValue> };
 
         this.userId = userId;
         await AsyncStorage.setItem('@user_id', userId);
 
         await this.trackEvent('user_identify', {
           userId,
-          traits,
+          ...(traits ? { traits } : {}),
         });
 
         return createMCPResponse(id, {
@@ -222,7 +224,7 @@ export class AnalyticsMCPServer implements MCPServer {
       }
 
       case 'alias': {
-        const { previousId, userId } = params;
+        const { previousId, userId } = params as { previousId: string; userId: string };
 
         await this.trackEvent('user_alias', {
           previousId,
@@ -238,7 +240,7 @@ export class AnalyticsMCPServer implements MCPServer {
       }
 
       default:
-        return createMCPResponse(id, undefined, {
+        return createMCPResponse(id, null, {
           code: 'UNKNOWN_ACTION',
           message: `Unknown user action: ${action}`,
         });
@@ -247,7 +249,7 @@ export class AnalyticsMCPServer implements MCPServer {
 
   private async trackEvent(
     name: string,
-    properties?: Record<string, any>
+    properties?: Record<string, JsonValue>
   ): Promise<void> {
     const event: AnalyticsEvent = {
       id: `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -273,15 +275,15 @@ export class AnalyticsMCPServer implements MCPServer {
         JSON.stringify(this.eventQueue)
       );
     } catch (error) {
-      console.error('[AnalyticsMCP] Failed to persist events:', error);
+      logger.error('[AnalyticsMCP] Failed to persist events', error);
     }
 
     // Log para desenvolvimento
-    console.log('[AnalyticsMCP] Event tracked:', {
+    logger.debug('[AnalyticsMCP] Event tracked', {
       name,
       properties,
-      userId: this.userId,
-      sessionId: this.sessionId,
+      userId: this.userId ?? undefined,
+      sessionId: this.sessionId ?? undefined,
     });
 
     // TODO: Enviar para backend analytics quando implementado
@@ -328,7 +330,7 @@ export class AnalyticsMCPServer implements MCPServer {
         JSON.stringify(this.eventQueue)
       );
     } catch (error) {
-      console.error('[AnalyticsMCP] Failed to persist final events:', error);
+      logger.error('[AnalyticsMCP] Failed to persist final events', error);
     }
 
     // Session ID é mantido para continuidade entre restarts
@@ -336,7 +338,7 @@ export class AnalyticsMCPServer implements MCPServer {
 
     this.initialized = false;
 
-    console.log('[AnalyticsMCP] Shutdown complete');
+    logger.info('[AnalyticsMCP] Shutdown complete');
   }
 }
 

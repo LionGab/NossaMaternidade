@@ -8,6 +8,8 @@ import {
   Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useThemeColors } from '@/theme';
+import { Tokens } from '@/theme/tokens';
 
 export interface ModalProps {
   visible: boolean;
@@ -28,6 +30,8 @@ export const Modal: React.FC<ModalProps> = ({
   fullScreen = false,
   className = '',
 }) => {
+  const colors = useThemeColors();
+
   return (
     <RNModal
       visible={visible}
@@ -36,6 +40,8 @@ export const Modal: React.FC<ModalProps> = ({
       onRequestClose={onClose}
     >
       <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Fechar modal"
         style={styles.backdrop}
         onPress={onClose}
       >
@@ -43,35 +49,62 @@ export const Modal: React.FC<ModalProps> = ({
           edges={['top']}
           className="flex-1 justify-end"
         >
-          <Pressable onPress={(e) => e.stopPropagation()}>
+          <Pressable accessibilityRole="button" onPress={(e) => e.stopPropagation()}>
             <View
-              className={`
-                bg-white
-                ${fullScreen ? 'h-full' : 'rounded-t-3xl'}
-                ${className}
-              `}
+              className={`${fullScreen ? 'h-full' : 'rounded-t-3xl'} ${className}`}
+              style={{ backgroundColor: colors.background.card }}
             >
               {/* Header */}
               {(title || showCloseButton) && (
-                <View className="flex-row items-center justify-between px-4 py-4 border-b border-border">
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    paddingHorizontal: Tokens.spacing['4'],
+                    paddingVertical: Tokens.spacing['4'],
+                    borderBottomWidth: 1,
+                    borderBottomColor: colors.border.light,
+                  }}
+                >
                   {title && (
-                    <Text className="text-xl font-semibold text-text flex-1">
+                    <Text
+                      style={{
+                        fontSize: Tokens.typography.sizes.xl,
+                        fontWeight: Tokens.typography.weights.semibold,
+                        color: colors.text.primary,
+                        flex: 1,
+                      }}
+                    >
                       {title}
                     </Text>
                   )}
                   {showCloseButton && (
                     <TouchableOpacity
+                      accessibilityRole="button"
+                      accessibilityLabel="Fechar"
                       onPress={onClose}
-                      className="p-2 -mr-2"
+                      style={{
+                        minWidth: Tokens.touchTargets.min,
+                        minHeight: Tokens.touchTargets.min,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginRight: -Tokens.spacing['2'],
+                      }}
                     >
-                      <Text className="text-2xl text-text-light">
+                      <Text
+                        style={{
+                          fontSize: Tokens.typography.sizes['2xl'],
+                          color: colors.text.tertiary,
+                        }}
+                      >
                         ×
                       </Text>
                     </TouchableOpacity>
                   )}
                 </View>
               )}
-              
+
               {/* Content */}
               <View className={fullScreen ? 'flex-1' : ''}>
                 {children}

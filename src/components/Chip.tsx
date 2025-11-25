@@ -8,7 +8,7 @@ import { Text, View, Pressable, ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { X } from 'lucide-react-native';
 import { useThemeColors } from '@/theme';
-import { Spacing, Radius, Typography } from '@/theme/tokens';
+import { Spacing, Radius, Typography, TouchTargets } from '@/theme/tokens';
 
 export type ChipVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error';
 export type ChipSize = 'sm' | 'md' | 'lg';
@@ -70,27 +70,27 @@ export const Chip: React.FC<ChipProps> = ({
     },
     primary: {
       bg: colors.primary.main,
-      text: '#FFFFFF',
+      text: colors.raw.neutral[0],
       border: colors.primary.main,
     },
     secondary: {
       bg: colors.secondary.main,
-      text: '#FFFFFF',
+      text: colors.raw.neutral[0],
       border: colors.secondary.main,
     },
     success: {
       bg: colors.status.success,
-      text: '#FFFFFF',
+      text: colors.raw.neutral[0],
       border: colors.status.success,
     },
     warning: {
       bg: colors.status.warning,
-      text: '#FFFFFF',
+      text: colors.raw.neutral[0],
       border: colors.status.warning,
     },
     error: {
       bg: colors.status.error,
-      text: '#FFFFFF',
+      text: colors.raw.neutral[0],
       border: colors.status.error,
     },
   };
@@ -113,9 +113,11 @@ export const Chip: React.FC<ChipProps> = ({
   const containerStyles: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     alignSelf: 'flex-start',
     paddingHorizontal,
     paddingVertical,
+    minHeight: TouchTargets.min,
     borderRadius: Radius.full,
     backgroundColor: outlined ? 'transparent' : colorConfig.bg,
     borderWidth: outlined ? 1 : 0,
@@ -143,7 +145,7 @@ export const Chip: React.FC<ChipProps> = ({
         {label}
       </Text>
       {onDelete && (
-        <Pressable
+        <Pressable accessibilityRole="button"
           onPress={handleDelete}
           disabled={disabled}
           hitSlop={8}
@@ -157,7 +159,7 @@ export const Chip: React.FC<ChipProps> = ({
 
   if (onPress) {
     return (
-      <Pressable
+      <Pressable accessibilityRole="button"
         onPress={handlePress}
         disabled={disabled}
         style={({ pressed }) => [containerStyles, pressed && { opacity: 0.7 }]}

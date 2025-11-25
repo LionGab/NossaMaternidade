@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+/**
+ * CommentItem Component
+ * Componente de comentário individual com suporte a tema
+ */
+
+import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Avatar } from './Avatar';
-import { Colors } from '../constants/Colors';
+import { useThemeColors, type ThemeColors } from '@/theme';
+import { Tokens } from '@/theme/tokens';
 import { Ionicons } from '@expo/vector-icons';
 import { Comment } from '../types/comments';
 import { nathAvatar } from '../assets/images';
@@ -18,9 +24,12 @@ export const CommentItem: React.FC<CommentItemProps> = ({
   onLike,
   onReply,
 }) => {
+  const colors = useThemeColors();
   const [isLiked, setIsLiked] = useState(comment.isLiked);
   const [likesCount, setLikesCount] = useState(comment.likes);
   const haptics = useHaptics();
+
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const handleLike = () => {
     haptics.light();
@@ -51,18 +60,18 @@ export const CommentItem: React.FC<CommentItemProps> = ({
               <Text style={styles.authorName}>{comment.author}</Text>
               {comment.isFromNath && (
                 <View style={styles.verifiedBadge}>
-                  <Ionicons name="checkmark-circle" size={14} color={Colors.primary.main} />
+                  <Ionicons name="checkmark-circle" size={14} color={colors.primary.main} />
                 </View>
               )}
               {comment.isPinned && (
                 <View style={styles.pinnedBadge}>
-                  <Ionicons name="pin" size={12} color={Colors.accent.orange} />
+                  <Ionicons name="pin" size={12} color={colors.raw.warning[500]} />
                   <Text style={styles.pinnedBadgeText}>FIXADO</Text>
                 </View>
               )}
               {comment.isAngelOfTheDay && (
                 <View style={styles.angelBadge}>
-                  <Ionicons name="star" size={12} color="#FCD34D" />
+                  <Ionicons name="star" size={12} color={colors.raw.warning[300]} />
                   <Text style={styles.angelBadgeText}>ANJO DO DIA</Text>
                 </View>
               )}
@@ -80,6 +89,8 @@ export const CommentItem: React.FC<CommentItemProps> = ({
       {/* Actions */}
       <View style={styles.commentActions}>
         <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel={isLiked ? 'Remover curtida' : 'Curtir comentário'}
           style={styles.actionButton}
           onPress={handleLike}
           activeOpacity={0.7}
@@ -87,12 +98,12 @@ export const CommentItem: React.FC<CommentItemProps> = ({
           <Ionicons
             name={isLiked ? 'heart' : 'heart-outline'}
             size={18}
-            color={isLiked ? '#EF4444' : Colors.text.secondary}
+            color={isLiked ? colors.raw.error[500] : colors.text.secondary}
           />
           <Text
             style={[
               styles.actionText,
-              isLiked && styles.actionTextLiked,
+              isLiked && { color: colors.raw.error[500] },
             ]}
           >
             {likesCount}
@@ -101,11 +112,13 @@ export const CommentItem: React.FC<CommentItemProps> = ({
 
         {onReply && (
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Responder comentário"
             style={styles.actionButton}
             onPress={() => onReply(comment.id)}
             activeOpacity={0.7}
           >
-            <Ionicons name="chatbubble-outline" size={18} color={Colors.text.secondary} />
+            <Ionicons name="chatbubble-outline" size={18} color={colors.text.secondary} />
             <Text style={styles.actionText}>Responder</Text>
           </TouchableOpacity>
         )}
@@ -114,32 +127,32 @@ export const CommentItem: React.FC<CommentItemProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   commentContainer: {
-    padding: 16,
-    marginBottom: 12,
-    backgroundColor: Colors.background.card,
-    borderRadius: 12,
+    padding: Tokens.spacing['4'],
+    marginBottom: Tokens.spacing['3'],
+    backgroundColor: colors.background.card,
+    borderRadius: Tokens.radius.lg,
     borderWidth: 1,
-    borderColor: Colors.border.light,
+    borderColor: colors.border.light,
   },
   pinnedComment: {
-    borderColor: Colors.accent.orange,
+    borderColor: colors.raw.warning[500],
     borderWidth: 2,
-    backgroundColor: `${Colors.accent.orange}10`,
+    backgroundColor: `${colors.raw.warning[500]}10`,
   },
   nathComment: {
-    borderColor: Colors.primary.main,
+    borderColor: colors.primary.main,
     borderWidth: 2,
-    backgroundColor: `${Colors.primary.main}10`,
+    backgroundColor: `${colors.primary.main}10`,
   },
   commentHeader: {
-    marginBottom: 8,
+    marginBottom: Tokens.spacing['2'],
   },
   authorInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: Tokens.spacing['3'],
   },
   authorText: {
     flex: 1,
@@ -147,13 +160,13 @@ const styles = StyleSheet.create({
   authorRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Tokens.spacing['1.5'],
     marginBottom: 2,
   },
   authorName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: Colors.text.primary,
+    fontSize: Tokens.typography.sizes.base - 1,
+    fontWeight: Tokens.typography.weights.semibold,
+    color: colors.text.primary,
   },
   verifiedBadge: {
     marginLeft: 2,
@@ -161,61 +174,58 @@ const styles = StyleSheet.create({
   pinnedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: `${Colors.accent.orange}20`,
-    paddingHorizontal: 6,
+    backgroundColor: `${colors.raw.warning[500]}20`,
+    paddingHorizontal: Tokens.spacing['1.5'],
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: Tokens.radius.sm,
     gap: 3,
   },
   pinnedBadgeText: {
-    fontSize: 9,
-    fontWeight: '700',
-    color: Colors.accent.orange,
+    fontSize: Tokens.typography.sizes.xs - 3,
+    fontWeight: Tokens.typography.weights.bold,
+    color: colors.raw.warning[500],
     letterSpacing: 0.5,
   },
   angelBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FCD34D20',
-    paddingHorizontal: 6,
+    backgroundColor: `${colors.raw.warning[300]}20`,
+    paddingHorizontal: Tokens.spacing['1.5'],
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: Tokens.radius.sm,
     gap: 3,
   },
   angelBadgeText: {
-    fontSize: 9,
-    fontWeight: '700',
-    color: '#FCD34D',
+    fontSize: Tokens.typography.sizes.xs - 3,
+    fontWeight: Tokens.typography.weights.bold,
+    color: colors.raw.warning[300],
     letterSpacing: 0.5,
   },
   timestamp: {
-    fontSize: 12,
-    color: Colors.text.tertiary,
+    fontSize: Tokens.typography.sizes.xs,
+    color: colors.text.tertiary,
   },
   commentContent: {
-    fontSize: 15,
-    color: Colors.text.primary,
+    fontSize: Tokens.typography.sizes.base - 1,
+    color: colors.text.primary,
     lineHeight: 22,
-    marginBottom: 12,
+    marginBottom: Tokens.spacing['3'],
   },
   commentActions: {
     flexDirection: 'row',
-    gap: 20,
+    gap: Tokens.spacing['5'],
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Tokens.spacing['1.5'],
+    minHeight: Tokens.touchTargets.min,
   },
   actionText: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-    fontWeight: '500',
-  },
-  actionTextLiked: {
-    color: '#EF4444',
+    fontSize: Tokens.typography.sizes.sm,
+    color: colors.text.secondary,
+    fontWeight: Tokens.typography.weights.medium,
   },
 });
 
 export default CommentItem;
-

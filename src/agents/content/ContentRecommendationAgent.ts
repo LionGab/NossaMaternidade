@@ -68,7 +68,7 @@ export class ContentRecommendationAgent extends BaseAgent {
    */
   async process(
     input: RecommendationRequest,
-    options?: any
+    options?: Record<string, unknown>
   ): Promise<RecommendationResult> {
     const {
       userId,
@@ -91,7 +91,7 @@ export class ContentRecommendationAgent extends BaseAgent {
       });
 
       // Filtrar conteúdo baseado em filtros fornecidos
-      let filteredContent = this.applyFilters(contentPool, filters);
+      const filteredContent = this.applyFilters(contentPool, filters);
 
       // Calcular scores de relevância para cada item
       const scoredContent = await this.scoreContent(
@@ -130,7 +130,7 @@ export class ContentRecommendationAgent extends BaseAgent {
       });
 
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(
         '[ContentRecommendationAgent] Error processing recommendations:',
         error
@@ -300,8 +300,11 @@ Use um tom acolhedor e personalizado.
         prompt,
       });
 
-      if (response.success && response.data?.content) {
-        return response.data.content;
+      if (response.success && response.data) {
+        const data = response.data as { content?: string };
+        if (data.content) {
+          return data.content;
+        }
       }
 
       return 'Selecionamos esses conteúdos especialmente para você, considerando sua fase e necessidades.';
@@ -358,8 +361,26 @@ Use um tom acolhedor e personalizado.
   protected async callMCP(
     server: string,
     method: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
-    return await orchestrator.callMCP(server, method, params);
+    // Cast method to proper type based on the server
+    if (server === 'googleai') {
+      return await orchestrator.callMCP(
+        server,
+        method as keyof import('../../mcp/types').GoogleAIMCPMethods,
+        params as any
+      );
+    } else if (server === 'analytics') {
+      return await orchestrator.callMCP(
+        server,
+        method as keyof import('../../mcp/types').AnalyticsMCPMethods,
+        params as any
+      );
+    }
+    return await orchestrator.callMCP(
+      server,
+      method as keyof import('../../mcp/types').AllMCPMethods,
+      params as any
+    );
   }
 }

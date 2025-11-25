@@ -23,6 +23,10 @@ export interface LinkProps extends Omit<PressableProps, 'children' | 'style'> {
   external?: boolean;
   style?: TextStyle;
   onPress?: () => void;
+  /** Label de acessibilidade */
+  accessibilityLabel?: string;
+  /** Hint de acessibilidade */
+  accessibilityHint?: string;
 }
 
 const sizeMap = {
@@ -41,6 +45,8 @@ export function Link({
   external = false,
   style,
   onPress,
+  accessibilityLabel,
+  accessibilityHint,
   ...props
 }: LinkProps) {
   const colors = useThemeColors();
@@ -75,6 +81,9 @@ export function Link({
     ...style,
   };
 
+  // Derivar label de acessibilidade do conteúdo se não fornecido
+  const derivedLabel = accessibilityLabel || (typeof children === 'string' ? children : undefined);
+
   return (
     <Pressable
       onPress={handlePress}
@@ -82,6 +91,10 @@ export function Link({
       onPressOut={() => setIsPressed(false)}
       onHoverIn={() => setIsHovered(true)}
       onHoverOut={() => setIsHovered(false)}
+      accessible={true}
+      accessibilityRole="link"
+      accessibilityLabel={derivedLabel}
+      accessibilityHint={accessibilityHint || (external ? 'Abre em um navegador externo' : undefined)}
       {...props}
     >
       <RNText style={computedStyle}>{children}</RNText>

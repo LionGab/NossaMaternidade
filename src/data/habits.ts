@@ -4,7 +4,7 @@
  */
 
 import { Habit } from '../types/habits';
-import { Colors } from '../constants/Colors';
+import { Colors } from '../theme';
 
 export const DEFAULT_HABITS: Habit[] = [
   // Autocuidado

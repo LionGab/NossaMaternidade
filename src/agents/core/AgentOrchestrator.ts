@@ -9,12 +9,49 @@ import {
   googleAIMCP,
   analyticsMCP,
   createMCPRequest,
+  MCPServer,
 } from '../../mcp/servers';
+import { logger } from '../../utils/logger';
+import {
+  MCPMethod,
+  MCPMethodParams,
+  MCPResponse,
+  JsonValue,
+} from '../../mcp/types';
+
+/**
+ * Options for task execution
+ */
+export interface TaskExecutionOptions {
+  timeout?: number;
+  retries?: number;
+  metadata?: Record<string, JsonValue>;
+  [key: string]: unknown;
+}
+
+/**
+ * Input for agent processing
+ */
+export interface AgentInput {
+  query?: string;
+  data?: Record<string, JsonValue>;
+  context?: Partial<AgentContext>;
+}
+
+/**
+ * Result from agent task execution
+ */
+export interface AgentTaskResult<T = JsonValue> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  timestamp: number;
+}
 
 export class AgentOrchestrator {
   private static instance: AgentOrchestrator;
   private agents: Map<string, BaseAgent> = new Map();
-  private mcpServers: Map<string, any> = new Map();
+  private mcpServers: Map<string, MCPServer> = new Map();
   private initialized = false;
 
   private constructor() {}
@@ -29,9 +66,9 @@ export class AgentOrchestrator {
   /**
    * Inicializa o orchestrator e todos os servidores MCP
    */
-  async initialize(context?: AgentContext): Promise<void> {
+  async initialize(_context?: AgentContext): Promise<void> {
     try {
-      console.log('[AgentOrchestrator] Initializing...');
+      logger.debug('[AgentOrchestrator] Initializing...');
 
       // Inicializar servidores MCP
       await Promise.all([
@@ -46,7 +83,7 @@ export class AgentOrchestrator {
       this.mcpServers.set('analytics', analyticsMCP);
 
       this.initialized = true;
-      console.log('[AgentOrchestrator] Initialized successfully');
+      logger.info('[AgentOrchestrator] Initialized successfully');
 
       // Track initialization
       const request = createMCPRequest('event.track', {
@@ -55,7 +92,7 @@ export class AgentOrchestrator {
       });
       await analyticsMCP.handleRequest(request);
     } catch (error) {
-      console.error('[AgentOrchestrator] Initialization failed:', error);
+      logger.error('[AgentOrchestrator] Initialization failed:', error);
       throw error;
     }
   }
@@ -66,7 +103,7 @@ export class AgentOrchestrator {
   registerAgent(agent: BaseAgent): void {
     const info = agent.getInfo();
     this.agents.set(info.name, agent);
-    console.log(`[AgentOrchestrator] Registered agent: ${info.name}`);
+    logger.debug(`[AgentOrchestrator] Registered agent: ${info.name}`);
   }
 
   /**
@@ -74,7 +111,7 @@ export class AgentOrchestrator {
    */
   unregisterAgent(name: string): void {
     this.agents.delete(name);
-    console.log(`[AgentOrchestrator] Unregistered agent: ${name}`);
+    logger.debug(`[AgentOrchestrator] Unregistered agent: ${name}`);
   }
 
   /**
@@ -94,11 +131,11 @@ export class AgentOrchestrator {
   /**
    * Executa uma tarefa usando um agente específico
    */
-  async executeTask(
+  async executeTask<T = JsonValue>(
     agentName: string,
-    input: any,
-    options?: any
-  ): Promise<any> {
+    input: AgentInput,
+    options?: TaskExecutionOptions
+  ): Promise<AgentTaskResult<T>> {
     if (!this.initialized) {
       throw new Error('Orchestrator not initialized');
     }
@@ -126,33 +163,48 @@ export class AgentOrchestrator {
       });
       await analyticsMCP.handleRequest(completeRequest);
 
-      return result;
-    } catch (error: any) {
+      return {
+        success: true,
+        data: result as T,
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
       // Track error
       const errorRequest = createMCPRequest('event.track', {
         name: 'agent_task_failed',
         properties: {
           agentName,
-          error: error.message,
+          error: errorMessage,
           timestamp: Date.now(),
         },
       });
       await analyticsMCP.handleRequest(errorRequest);
 
-      throw error;
+      return {
+        success: false,
+        error: errorMessage,
+        timestamp: Date.now(),
+      };
     }
   }
 
   /**
    * Permite que agentes façam chamadas MCP
    */
-  async callMCP(server: string, method: string, params: any): Promise<any> {
+  async callMCP<T extends MCPMethod>(
+    server: string,
+    method: T,
+    params: MCPMethodParams<T> | Record<string, unknown>
+  ): Promise<MCPResponse<JsonValue>> {
     const mcpServer = this.mcpServers.get(server);
     if (!mcpServer) {
       throw new Error(`MCP Server not found: ${server}`);
     }
 
-    const request = createMCPRequest(method as any, params);
+    const request = createMCPRequest(method, params as Record<string, JsonValue>);
     return await mcpServer.handleRequest(request);
   }
 
@@ -185,7 +237,7 @@ export class AgentOrchestrator {
     this.mcpServers.clear();
     this.initialized = false;
 
-    console.log('[AgentOrchestrator] Shutdown complete');
+    logger.info('[AgentOrchestrator] Shutdown complete');
   }
 }
 

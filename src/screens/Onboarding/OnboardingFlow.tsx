@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../navigation/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserProfile } from '../../types/user';
 import OnboardingStep1 from './OnboardingStep1';
@@ -12,12 +14,14 @@ import OnboardingStep7 from './OnboardingStep7';
 import OnboardingStep8 from './OnboardingStep8';
 import OnboardingStep9 from './OnboardingStep9';
 
+type OnboardingNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Onboarding'>;
+
 export default function OnboardingFlow() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<OnboardingNavigationProp>();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<UserProfile>({});
 
-  const updateData = (key: keyof UserProfile, value: any) => {
+  const updateData = <K extends keyof UserProfile>(key: K, value: UserProfile[K]) => {
     setFormData(prev => ({ ...prev, [key]: value }));
   };
 
@@ -49,8 +53,7 @@ export default function OnboardingFlow() {
   const handleFinish = async () => {
     try {
       await AsyncStorage.setItem('nath_user', JSON.stringify(formData));
-      // @ts-ignore
-      navigation.navigate('Main');
+      navigation.navigate('Main' as never);
     } catch (error) {
       console.error('Erro ao salvar dados do usuário:', error);
     }

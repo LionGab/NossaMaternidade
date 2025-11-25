@@ -5,6 +5,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  * Todas as operações são assíncronas
  */
 
+export interface UserProfile {
+  id?: string;
+  name?: string;
+  email?: string;
+  [key: string]: unknown;
+}
+
+export interface ChatMessage {
+  id?: string;
+  content: string;
+  timestamp: Date;
+  role: 'user' | 'assistant';
+  [key: string]: unknown;
+}
+
 const STORAGE_KEYS = {
   USER: 'nath_user',
   CHAT_HISTORY: 'nathia_history',
@@ -14,7 +29,7 @@ const STORAGE_KEYS = {
 
 export const storage = {
   // User Profile
-  async getUser(): Promise<any | null> {
+  async getUser(): Promise<UserProfile | null> {
     try {
       const user = await AsyncStorage.getItem(STORAGE_KEYS.USER);
       return user ? JSON.parse(user) : null;
@@ -24,7 +39,7 @@ export const storage = {
     }
   },
 
-  async saveUser(user: any): Promise<void> {
+  async saveUser(user: UserProfile): Promise<void> {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
     } catch (error) {
@@ -43,22 +58,22 @@ export const storage = {
   },
 
   // Chat History
-  async getChatHistory(): Promise<any[] | null> {
+  async getChatHistory(): Promise<ChatMessage[] | null> {
     try {
       const history = await AsyncStorage.getItem(STORAGE_KEYS.CHAT_HISTORY);
       if (!history) return null;
       const parsed = JSON.parse(history);
-      return parsed.map((msg: any) => ({
+      return parsed.map((msg: Record<string, unknown>) => ({
         ...msg,
-        timestamp: new Date(msg.timestamp),
-      }));
+        timestamp: new Date(msg.timestamp as string),
+      })) as ChatMessage[];
     } catch (error) {
       console.error('Error getting chat history:', error);
       return null;
     }
   },
 
-  async saveChatHistory(messages: any[]): Promise<void> {
+  async saveChatHistory(messages: ChatMessage[]): Promise<void> {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(messages));
     } catch (error) {

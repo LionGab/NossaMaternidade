@@ -1,4 +1,9 @@
-import React, { useState } from 'react';
+/**
+ * CommentsSection Component
+ * Seção de comentários com suporte a tema
+ */
+
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -10,7 +15,8 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '../constants/Colors';
+import { useThemeColors, type ThemeColors } from '@/theme';
+import { Tokens } from '@/theme/tokens';
 import { CommentItem } from './CommentItem';
 import { Comment } from '../types/comments';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,8 +35,11 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
   onClose,
   onAddComment,
 }) => {
+  const colors = useThemeColors();
   const [newComment, setNewComment] = useState('');
   const haptics = useHaptics();
+
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const handleLike = (commentId: string) => {
     // Implementar lógica de like
@@ -58,8 +67,13 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
         <Text style={styles.headerTitle}>
           Comentários ({totalComments})
         </Text>
-        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-          <Ionicons name="close" size={24} color={Colors.text.primary} />
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel="Fechar comentários"
+          onPress={onClose}
+          style={styles.closeButton}
+        >
+          <Ionicons name="close" size={24} color={colors.text.primary} />
         </TouchableOpacity>
       </View>
 
@@ -80,7 +94,11 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
 
         {/* Load More */}
         {totalComments > comments.length && (
-          <TouchableOpacity style={styles.loadMoreButton}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Carregar mais comentários"
+            style={styles.loadMoreButton}
+          >
             <Text style={styles.loadMoreText}>
               Ver mais {totalComments - comments.length} comentários
             </Text>
@@ -95,15 +113,18 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
       >
         <View style={styles.inputWrapper}>
           <TextInput
+            accessibilityLabel="Campo de comentário"
             style={styles.input}
             placeholder="Compartilhe seu momento, mãe..."
-            placeholderTextColor={Colors.text.tertiary}
+            placeholderTextColor={colors.text.tertiary}
             value={newComment}
             onChangeText={setNewComment}
             multiline
             maxLength={500}
           />
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Enviar comentário"
             style={[
               styles.sendButton,
               !newComment.trim() && styles.sendButtonDisabled,
@@ -114,7 +135,7 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
             <Ionicons
               name="send"
               size={20}
-              color={newComment.trim() ? Colors.primary.main : Colors.text.tertiary}
+              color={newComment.trim() ? colors.primary.main : colors.text.tertiary}
             />
           </TouchableOpacity>
         </View>
@@ -123,74 +144,80 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.dark,
+    backgroundColor: colors.background.canvas,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: Tokens.spacing['5'],
+    paddingVertical: Tokens.spacing['4'],
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border.light,
+    borderBottomColor: colors.border.light,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: Colors.text.primary,
+    fontSize: Tokens.typography.sizes.xl,
+    fontWeight: Tokens.typography.weights.bold,
+    color: colors.text.primary,
   },
   closeButton: {
-    padding: 4,
+    padding: Tokens.spacing['1'],
+    minWidth: Tokens.touchTargets.min,
+    minHeight: Tokens.touchTargets.min,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   commentsList: {
     flex: 1,
   },
   commentsContent: {
-    padding: 20,
+    padding: Tokens.spacing['5'],
     paddingBottom: 100,
   },
   loadMoreButton: {
-    padding: 16,
+    padding: Tokens.spacing['4'],
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: Tokens.spacing['2'],
+    minHeight: Tokens.touchTargets.min,
+    justifyContent: 'center',
   },
   loadMoreText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.primary.main,
+    fontSize: Tokens.typography.sizes.sm,
+    fontWeight: Tokens.typography.weights.semibold,
+    color: colors.primary.main,
   },
   inputContainer: {
     borderTopWidth: 1,
-    borderTopColor: Colors.border.light,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    backgroundColor: Colors.background.dark,
+    borderTopColor: colors.border.light,
+    paddingHorizontal: Tokens.spacing['5'],
+    paddingVertical: Tokens.spacing['3'],
+    backgroundColor: colors.background.canvas,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    gap: 12,
+    gap: Tokens.spacing['3'],
   },
   input: {
     flex: 1,
-    minHeight: 44,
+    minHeight: Tokens.touchTargets.min,
     maxHeight: 100,
-    backgroundColor: Colors.background.card,
-    borderRadius: 22,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 15,
-    color: Colors.text.primary,
+    backgroundColor: colors.background.card,
+    borderRadius: Tokens.radius['2xl'],
+    paddingHorizontal: Tokens.spacing['4'],
+    paddingVertical: Tokens.spacing['3'],
+    fontSize: Tokens.typography.sizes.base - 1,
+    color: colors.text.primary,
     textAlignVertical: 'top',
   },
   sendButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.background.card,
+    width: Tokens.touchTargets.min,
+    height: Tokens.touchTargets.min,
+    borderRadius: Tokens.radius['2xl'],
+    backgroundColor: colors.background.card,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -200,4 +227,3 @@ const styles = StyleSheet.create({
 });
 
 export default CommentsSection;
-

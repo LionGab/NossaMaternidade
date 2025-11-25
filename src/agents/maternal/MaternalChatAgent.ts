@@ -10,12 +10,34 @@ import { sessionPersistence } from '../../services/sessionPersistence';
 import { sessionManager } from '../../services/sessionManager';
 import { logger } from '../../utils/logger';
 
+export interface ChatMessageMetadata {
+  model?: string;
+  responseTime?: number;
+  error?: boolean;
+  [key: string]: unknown;
+}
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: number;
-  metadata?: any;
+  metadata?: ChatMessageMetadata;
+}
+
+export interface EmotionAnalysis {
+  emotions?: string[];
+  intensity?: number;
+  [key: string]: unknown;
+}
+
+export interface UserContext {
+  name?: string;
+  lifeStage?: 'pregnant' | 'new-mother' | 'experienced-mother' | 'trying' | string;
+  emotion?: 'anxious' | 'tired' | 'happy' | string;
+  lastEmotionAnalysis?: EmotionAnalysis;
+  analyzedAt?: number;
+  [key: string]: unknown;
 }
 
 export interface ChatSession {
@@ -24,7 +46,30 @@ export interface ChatSession {
   messages: ChatMessage[];
   startedAt: number;
   lastActivityAt: number;
-  context?: any;
+  context?: UserContext;
+}
+
+export interface ProcessInput {
+  message: string;
+  attachContext?: boolean;
+}
+
+export interface ProcessOptions {
+  [key: string]: unknown;
+}
+
+export interface GoogleAIHistoryMessage {
+  role: 'model' | 'user';
+  parts: Array<{ text: string }>;
+}
+
+export interface GoogleAIChatResponse {
+  message: string;
+  [key: string]: unknown;
+}
+
+export interface AnalyticsEventProperties {
+  [key: string]: unknown;
 }
 
 export class MaternalChatAgent extends BaseAgent {
@@ -50,13 +95,13 @@ export class MaternalChatAgent extends BaseAgent {
   /**
    * Inicia uma nova sessão de chat
    */
-  async startSession(userId: string, userContext?: any): Promise<ChatSession> {
+  async startSession(userId: string, userContext?: UserContext): Promise<ChatSession> {
     // Tentar carregar última sessão primeiro
     const lastSession = await this.loadSession();
     if (lastSession && lastSession.userId === userId) {
       // Continuar sessão existente
       this.currentSession = lastSession;
-      console.log('[MaternalChatAgent] Continuando sessão existente:', lastSession.id);
+      logger.info('[MaternalChatAgent] Continuando sessão existente', { sessionId: lastSession.id });
     } else {
       // Criar nova sessão
       const session: ChatSession = {
@@ -89,12 +134,12 @@ export class MaternalChatAgent extends BaseAgent {
         sessionId: this.currentSession.id,
         userId,
         context: userContext,
-      },
+      } as AnalyticsEventProperties,
     });
 
     // Persistir sessão inicial
     this.persistSession().catch((error) => {
-      console.error('[MaternalChatAgent] Erro ao persistir sessão inicial:', error);
+      logger.error('[MaternalChatAgent] Erro ao persistir sessão inicial', error);
     });
 
     return this.currentSession;
@@ -104,8 +149,8 @@ export class MaternalChatAgent extends BaseAgent {
    * Processa uma mensagem do usuário
    */
   async process(
-    input: { message: string; attachContext?: boolean },
-    options?: any
+    input: ProcessInput,
+    options?: ProcessOptions
   ): Promise<ChatMessage> {
     if (!this.currentSession) {
       throw new Error('No active chat session. Call startSession() first.');
@@ -127,9 +172,9 @@ export class MaternalChatAgent extends BaseAgent {
 
     // Preparar histórico (últimas 20 mensagens para não estourar tokens do AI)
     // Todas as mensagens estão salvas no banco, mas limitamos o contexto para a IA
-    const history = this.currentSession.messages
+    const history: GoogleAIHistoryMessage[] = this.currentSession.messages
       .slice(-20)
-      .map((msg) => ({
+      .map((msg): GoogleAIHistoryMessage => ({
         role: msg.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: msg.content }],
       }));
@@ -147,10 +192,11 @@ export class MaternalChatAgent extends BaseAgent {
       }
 
       // Criar mensagem de resposta
+      const responseData = response.data as GoogleAIChatResponse;
       const assistantMessage: ChatMessage = {
         id: `msg_${Date.now()}`,
         role: 'assistant',
-        content: response.data.message,
+        content: responseData.message,
         timestamp: Date.now(),
         metadata: {
           model: 'gemini-2.0-flash-exp',
@@ -165,7 +211,7 @@ export class MaternalChatAgent extends BaseAgent {
 
       // Analisar emoção da mensagem do usuário (em background)
       this.analyzeUserEmotion(message).catch((error) => {
-        console.error('[MaternalChatAgent] Failed to analyze emotion:', error);
+        logger.error('[MaternalChatAgent] Failed to analyze emotion', error);
       });
 
       // Track message exchange
@@ -175,12 +221,12 @@ export class MaternalChatAgent extends BaseAgent {
           sessionId: this.currentSession.id,
           messageLength: message.length,
           responseLength: assistantMessage.content.length,
-        },
+        } as AnalyticsEventProperties,
       });
 
       return assistantMessage;
-    } catch (error: any) {
-      console.error('[MaternalChatAgent] Error processing message:', error);
+    } catch (error: unknown) {
+      logger.error('[MaternalChatAgent] Error processing message', error);
 
       // Mensagem de fallback
       const fallbackMessage: ChatMessage = {
@@ -207,13 +253,15 @@ export class MaternalChatAgent extends BaseAgent {
       });
 
       if (response.success && response.data) {
-        console.log('[MaternalChatAgent] Emotion analysis:', response.data);
+        logger.debug('[MaternalChatAgent] Emotion analysis', { data: response.data });
+
+        const emotionData = response.data as EmotionAnalysis;
 
         // Atualizar contexto se necessário
         if (this.currentSession) {
           this.currentSession.context = {
             ...this.currentSession.context,
-            lastEmotionAnalysis: response.data,
+            lastEmotionAnalysis: emotionData,
             analyzedAt: Date.now(),
           };
         }
@@ -223,20 +271,20 @@ export class MaternalChatAgent extends BaseAgent {
           name: 'user_emotion_detected',
           properties: {
             sessionId: this.currentSession?.id,
-            emotions: response.data.emotions,
-            intensity: response.data.intensity,
-          },
+            emotions: emotionData.emotions,
+            intensity: emotionData.intensity,
+          } as AnalyticsEventProperties,
         });
       }
     } catch (error) {
-      console.error('[MaternalChatAgent] Emotion analysis failed:', error);
+      logger.error('[MaternalChatAgent] Emotion analysis failed', error);
     }
   }
 
   /**
    * Cria mensagem de boas-vindas personalizada
    */
-  private createWelcomeMessage(context?: any): string | null {
+  private createWelcomeMessage(context?: UserContext): string | null {
     if (!context) return null;
 
     const { name, lifeStage, emotion } = context;
@@ -321,7 +369,7 @@ export class MaternalChatAgent extends BaseAgent {
           sessionId: this.currentSession.id,
           duration: Date.now() - this.currentSession.startedAt,
           messageCount: this.currentSession.messages.length,
-        },
+        } as AnalyticsEventProperties,
       });
 
       // Limpar do session manager
@@ -404,8 +452,26 @@ export class MaternalChatAgent extends BaseAgent {
   protected async callMCP(
     server: string,
     method: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse> {
-    return await orchestrator.callMCP(server, method, params);
+    // Cast method to proper type based on the server
+    if (server === 'googleai') {
+      return await orchestrator.callMCP(
+        server,
+        method as keyof import('../../mcp/types').GoogleAIMCPMethods,
+        params as any
+      );
+    } else if (server === 'analytics') {
+      return await orchestrator.callMCP(
+        server,
+        method as keyof import('../../mcp/types').AnalyticsMCPMethods,
+        params as any
+      );
+    }
+    return await orchestrator.callMCP(
+      server,
+      method as keyof import('../../mcp/types').AllMCPMethods,
+      params as any
+    );
   }
 }

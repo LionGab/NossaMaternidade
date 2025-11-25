@@ -3,7 +3,8 @@
  * Classe base para todos os agentes IA do sistema
  */
 
-import { MCPRequest, MCPResponse } from '../../mcp/types';
+import { MCPResponse } from '../../mcp/types';
+import { logger } from '../../utils/logger';
 
 export interface AgentConfig {
   name: string;
@@ -12,14 +13,33 @@ export interface AgentConfig {
   capabilities: string[];
 }
 
+export interface UserProfile {
+  id: string;
+  name?: string;
+  email?: string;
+  preferences?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
 export interface AgentContext {
   userId?: string;
   sessionId?: string;
-  userProfile?: any;
-  metadata?: Record<string, any>;
+  userProfile?: UserProfile;
+  metadata?: Record<string, unknown>;
 }
 
-export abstract class BaseAgent {
+export interface AgentProcessOptions {
+  timeout?: number;
+  priority?: 'low' | 'normal' | 'high';
+  metadata?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export abstract class BaseAgent<
+  TInput = unknown,
+  TOutput = unknown,
+  TOptions extends AgentProcessOptions = AgentProcessOptions
+> {
   protected config: AgentConfig;
   protected context: AgentContext;
   protected initialized = false;
@@ -37,7 +57,7 @@ export abstract class BaseAgent {
       this.context = { ...this.context, ...context };
     }
     this.initialized = true;
-    console.log(`[${this.config.name}] Initialized`);
+    logger.debug(`[${this.config.name}] Initialized`);
   }
 
   /**
@@ -64,7 +84,7 @@ export abstract class BaseAgent {
   /**
    * Método abstrato para processar requisições
    */
-  abstract process(input: any, options?: any): Promise<any>;
+  abstract process(input: TInput, options?: TOptions): Promise<TOutput>;
 
   /**
    * Método abstrato para fazer chamadas MCP
@@ -72,7 +92,7 @@ export abstract class BaseAgent {
   protected abstract callMCP(
     server: string,
     method: string,
-    params: any
+    params: Record<string, unknown>
   ): Promise<MCPResponse>;
 
   /**
@@ -80,6 +100,6 @@ export abstract class BaseAgent {
    */
   async shutdown(): Promise<void> {
     this.initialized = false;
-    console.log(`[${this.config.name}] Shutdown complete`);
+    logger.debug(`[${this.config.name}] Shutdown complete`);
   }
 }

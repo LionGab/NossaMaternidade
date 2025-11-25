@@ -510,7 +510,7 @@ class CommunityService {
   /**
    * Upload de imagem do post
    */
-  private async uploadPostImage(uri: string): Promise<{ url: string | null; error?: any }> {
+  private async uploadPostImage(uri: string): Promise<{ url: string | null; error?: string }> {
     try {
       const userId = await this.getCurrentUserId();
       if (!userId) return { url: null, error: 'Usuária não autenticada' };
@@ -532,7 +532,7 @@ class CommunityService {
 
       if (uploadError) {
         console.error('Erro ao fazer upload:', uploadError);
-        return { url: null, error: uploadError };
+        return { url: null, error: uploadError.message };
       }
 
       const { data: { publicUrl } } = supabase.storage
@@ -541,8 +541,9 @@ class CommunityService {
 
       return { url: publicUrl };
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Upload error';
       console.error('Erro inesperado ao fazer upload:', error);
-      return { url: null, error };
+      return { url: null, error: errorMessage };
     }
   }
 

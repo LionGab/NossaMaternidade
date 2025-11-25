@@ -80,7 +80,7 @@ export const Switch: React.FC<SwitchProps> = ({
   });
 
   return (
-    <Pressable
+    <Pressable accessibilityRole="button"
       onPress={handlePress}
       disabled={disabled}
       style={[

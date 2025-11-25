@@ -1,9 +1,10 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { FlashList } from '@shopify/flash-list';
 import { Heart, MessageCircle, Share2, BookmarkPlus, Play, FileText, Mic, Video } from 'lucide-react-native';
-import { useTheme } from '../theme/ThemeContext';
+import { useTheme, ThemeColors } from '../theme/ThemeContext';
 import { Tokens } from '../theme';
 import { useHaptics } from '../hooks/useHaptics';
 import { MOCK_POSTS } from '../constants/data';
@@ -13,7 +14,7 @@ type FilterType = 'all' | 'video' | 'text' | 'audio' | 'reels';
 
 interface PostCardProps {
   item: typeof MOCK_POSTS[0];
-  colors: any;
+  colors: ThemeColors;
   onPress?: () => void;
 }
 
@@ -159,6 +160,7 @@ export default function FeedScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background.canvas }]}
+      edges={['top']}
       accessible={true}
       accessibilityLabel="Tela do Feed Mundo Nath"
     >
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
     paddingRight: 16,
   },
   listContent: {
-    paddingBottom: 100,
+    paddingBottom: 120, // Espaço para tab bar
   },
   postCard: {
     padding: 16,

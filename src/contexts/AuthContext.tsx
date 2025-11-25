@@ -139,7 +139,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const isValid = await sessionManager.refreshAuth();
       const currentSession = sessionManager.getAuthSession();
-      const currentUser = sessionManager.getCurrentUser();
 
       return {
         session: currentSession,
@@ -211,4 +210,3 @@ export const useAuth = () => {
   }
   return context;
 };
-

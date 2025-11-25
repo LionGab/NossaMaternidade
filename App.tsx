@@ -10,6 +10,10 @@ import { Navigation } from './src/navigation';
 import { ErrorBoundary } from './src/components';
 import { ThemeProvider } from './src/theme/ThemeContext';
 import { AgentsProvider } from './src/contexts/AgentsContext';
+import { initSentry } from './src/services/sentry';
+
+// Inicializar Sentry antes de qualquer componente
+initSentry();
 
 export default function App() {
   return (

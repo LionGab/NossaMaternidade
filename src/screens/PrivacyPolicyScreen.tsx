@@ -4,12 +4,12 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 import { ArrowLeft } from 'lucide-react-native';
-import { useTheme } from '../theme/ThemeContext';
+import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import * as Haptics from 'expo-haptics';
 
 export default function PrivacyPolicyScreen() {
@@ -26,7 +26,7 @@ export default function PrivacyPolicyScreen() {
       style={{ flex: 1, backgroundColor: colors.background.canvas }}
       accessibilityLabel="Tela de Política de Privacidade"
     >
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* Header */}
       <View
@@ -368,7 +368,7 @@ export default function PrivacyPolicyScreen() {
 // Helper Components
 interface SectionProps {
   title: string;
-  colors: any;
+  colors: ThemeColors;
   children: React.ReactNode;
 }
 
@@ -390,10 +390,10 @@ const Section: React.FC<SectionProps> = ({ title, colors, children }) => (
 );
 
 interface ParagraphProps {
-  colors: any;
+  colors: ThemeColors;
   children: React.ReactNode;
   bold?: boolean;
-  style?: any;
+  style?: Record<string, unknown>;
 }
 
 const Paragraph: React.FC<ParagraphProps> = ({
@@ -417,7 +417,7 @@ const Paragraph: React.FC<ParagraphProps> = ({
 );
 
 interface BulletPointProps {
-  colors: any;
+  colors: ThemeColors;
   children: React.ReactNode;
 }
 

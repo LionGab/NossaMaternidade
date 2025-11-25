@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { View, ViewStyle } from 'react-native';
-import { useTheme } from '../theme/ThemeContext';
+import { useThemeColors } from '@/theme';
 
 export interface ProgressIndicatorProps {
   currentStep: number;
@@ -18,7 +18,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   totalSteps,
   className = '',
 }) => {
-  const { colors, isDark } = useTheme();
+  const colors = useThemeColors();
 
   return (
     <View className={`flex-row gap-1 items-center ${className}`}>
@@ -31,12 +31,8 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
           height: 6,
           borderRadius: 3,
           backgroundColor: isActive
-            ? isDark
-              ? '#3B82F6'
-              : '#4285F4'
-            : isDark
-            ? 'rgba(255, 255, 255, 0.3)'
-            : '#E5E5E5',
+            ? colors.primary.main
+            : colors.border.light,
           width: isActive ? 16 : 6,
         };
 

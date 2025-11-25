@@ -6,24 +6,106 @@
 import { supabase } from './supabase';
 import { logger } from '../utils/logger';
 import { sessionManager } from './sessionManager';
-import { chatService } from './chatService';
-import { profileService } from './profileService';
+import { chatService, ChatConversation, ChatMessage } from './chatService';
+import { profileService, UserProfile } from './profileService';
+
+// Supabase database types
+interface SupabaseHabit {
+  id: string;
+  name: string;
+  description?: string;
+  category?: string;
+  icon?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+interface SupabaseUserHabit {
+  id: string;
+  user_id: string;
+  habit_id: string;
+  is_active: boolean;
+  reminder_time?: string;
+  created_at: string;
+  updated_at?: string;
+  habit?: SupabaseHabit;
+}
+
+interface SupabaseHabitLog {
+  id: string;
+  user_id: string;
+  habit_id: string;
+  completed_at: string;
+  notes?: string;
+  created_at: string;
+}
+
+interface SupabaseBabyMilestone {
+  id: string;
+  name: string;
+  description?: string;
+  category?: string;
+  typical_age_months?: number;
+  created_at: string;
+}
+
+interface SupabaseUserBabyMilestone {
+  id: string;
+  user_id: string;
+  milestone_id: string;
+  achieved_at?: string;
+  notes?: string;
+  created_at: string;
+  milestone?: SupabaseBabyMilestone;
+}
+
+interface SupabaseUserContentInteraction {
+  id: string;
+  user_id: string;
+  content_id: string;
+  interaction_type: 'view' | 'like' | 'save' | 'share' | 'comment';
+  created_at: string;
+  metadata?: Record<string, unknown>;
+}
+
+interface SupabaseCommunityPost {
+  id: string;
+  user_id: string;
+  title: string;
+  content: string;
+  category?: string;
+  created_at: string;
+  updated_at?: string;
+  likes_count?: number;
+  comments_count?: number;
+}
+
+interface SupabaseCommunityComment {
+  id: string;
+  user_id: string;
+  post_id: string;
+  content: string;
+  parent_comment_id?: string;
+  created_at: string;
+  updated_at?: string;
+  likes_count?: number;
+}
 
 export interface ExportedUserData {
-  profile: any;
+  profile: UserProfile | Record<string, never>;
   chatConversations: Array<{
-    conversation: any;
-    messages: any[];
+    conversation: ChatConversation;
+    messages: ChatMessage[];
   }>;
   habits: Array<{
     type: 'user_habit' | 'habit_log';
-    data: any;
+    data: SupabaseUserHabit | SupabaseHabitLog;
   }>;
-  milestones: any[];
-  interactions: any[];
+  milestones: SupabaseUserBabyMilestone[];
+  interactions: SupabaseUserContentInteraction[];
   community?: {
-    posts: any[];
-    comments: any[];
+    posts: SupabaseCommunityPost[];
+    comments: SupabaseCommunityComment[];
   };
   exportedAt: string;
   version: string;
@@ -34,7 +116,7 @@ class UserDataService {
    * Exporta todos os dados do usuário (LGPD compliance)
    * Retorna JSON completo com todos os dados pessoais
    */
-  async exportUserData(): Promise<{ data: ExportedUserData | null; error: any }> {
+  async exportUserData(): Promise<{ data: ExportedUserData | null; error: string | Error | null }> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -48,8 +130,8 @@ class UserDataService {
 
       // 2. Conversas de chat
       const conversations = await chatService.getConversations(1000); // Buscar todas
-      const allMessages: any[] = [];
-      
+      const allMessages: ChatMessage[] = [];
+
       for (const conv of conversations) {
         const messages = await chatService.getMessages(conv.id, 1000);
         allMessages.push(...messages);
@@ -99,8 +181,8 @@ class UserDataService {
           messages: allMessages.filter(m => m.conversation_id === conv.id),
         })),
         habits: [
-          ...(userHabits || []).map((h: any) => ({ type: 'user_habit' as const, data: h })),
-          ...(habitLogs || []).map((l: any) => ({ type: 'habit_log' as const, data: l })),
+          ...(userHabits || []).map((h) => ({ type: 'user_habit' as const, data: h })),
+          ...(habitLogs || []).map((l) => ({ type: 'habit_log' as const, data: l })),
         ],
         milestones: milestones || [],
         interactions: interactions || [],
@@ -121,7 +203,10 @@ class UserDataService {
       return { data: exportedData, error: null };
     } catch (error) {
       logger.error('[UserDataService] Erro ao exportar dados', error);
-      return { data: null, error };
+      return {
+        data: null,
+        error: error instanceof Error ? error : new Error(String(error))
+      };
     }
   }
 
@@ -129,7 +214,7 @@ class UserDataService {
    * Deleta permanentemente a conta e todos os dados (LGPD compliance)
    * ⚠️ ATENÇÃO: Esta operação é IRREVERSÍVEL
    */
-  async deleteAccount(): Promise<{ success: boolean; error: any }> {
+  async deleteAccount(): Promise<{ success: boolean; error: string | Error | null }> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -145,7 +230,7 @@ class UserDataService {
       const { data: { session } } = await supabase.auth.getSession();
       
       // Tentar chamar Edge Function se disponível
-      const { data, error } = await supabase.functions.invoke('delete-account', {
+      const { data: _data, error } = await supabase.functions.invoke('delete-account', {
         body: { userId: user.id },
         headers: session?.access_token ? {
           Authorization: `Bearer ${session.access_token}`,
@@ -181,7 +266,10 @@ class UserDataService {
       return { success: true, error: null };
     } catch (error) {
       logger.error('[UserDataService] Erro ao deletar conta', error);
-      return { success: false, error };
+      return {
+        success: false,
+        error: error instanceof Error ? error : new Error(String(error))
+      };
     }
   }
 
@@ -189,7 +277,7 @@ class UserDataService {
    * Request account deletion (soft delete - marca para deleção após período de retenção)
    * Mais seguro que hard delete imediato
    */
-  async requestAccountDeletion(): Promise<{ success: boolean; error: any }> {
+  async requestAccountDeletion(): Promise<{ success: boolean; error: string | Error | null }> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -219,7 +307,10 @@ class UserDataService {
       return { success: true, error: null };
     } catch (error) {
       logger.error('[UserDataService] Erro ao solicitar deleção', error);
-      return { success: false, error };
+      return {
+        success: false,
+        error: error instanceof Error ? error : new Error(String(error))
+      };
     }
   }
 }

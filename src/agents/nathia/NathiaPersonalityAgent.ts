@@ -14,26 +14,37 @@
 import { BaseAgent, AgentContext } from '../core/BaseAgent';
 import { orchestrator } from '../core/AgentOrchestrator';
 import { createMCPRequest } from '../../mcp/servers';
+import { logger } from '../../utils/logger';
+import { MCPResponse } from '../../mcp/types';
+
+export interface NathiaContext {
+  userEmotion?: string;
+  lifeStage?: string;
+  recentTopics?: string[];
+}
 
 export interface NathiaMessage {
   originalText: string;
-  context?: {
-    userEmotion?: string;
-    lifeStage?: string;
-    recentTopics?: string[];
-  };
+  context?: NathiaContext;
+}
+
+export type NathiaTone = 'empathetic' | 'validating' | 'firm-but-kind' | 'vulnerable' | 'celebratory';
+export type IssueType = 'medical-advice' | 'off-context' | 'inappropriate-tone';
+export type IssueSeverity = 'low' | 'medium' | 'high';
+export type SpecialistType = 'medico' | 'psicologo' | 'nutricionista' | 'obstetra';
+
+export interface NathiaIssue {
+  type: IssueType;
+  severity: IssueSeverity;
+  suggestion: string;
 }
 
 export interface NathiaResponse {
   processedText: string;
-  tone: 'empathetic' | 'validating' | 'firm-but-kind' | 'vulnerable' | 'celebratory';
-  flaggedIssues: Array<{
-    type: 'medical-advice' | 'off-context' | 'inappropriate-tone';
-    severity: 'low' | 'medium' | 'high';
-    suggestion: string;
-  }>;
+  tone: NathiaTone;
+  flaggedIssues: NathiaIssue[];
   redirectToSpecialist: boolean;
-  specialistType?: 'medico' | 'psicologo' | 'nutricionista' | 'obstetra';
+  specialistType?: SpecialistType;
 }
 
 /**
@@ -107,14 +118,14 @@ export class NathiaPersonalityAgent extends BaseAgent {
   }
 
   async initialize(): Promise<void> {
-    console.log('[NathiaPersonalityAgent] 🎭 Voz da Nathália ATIVA');
+    logger.info('[NathiaPersonalityAgent] Voz da Nathália ATIVA');
     this.initialized = true;
   }
 
   /**
    * Processa qualquer mensagem IA para garantir voz da Nathália
    */
-  async process(input: NathiaMessage, options?: any): Promise<NathiaResponse> {
+  async process(input: NathiaMessage, options?: Record<string, unknown>): Promise<NathiaResponse> {
     const { originalText, context } = input;
 
     // 1. Detectar problemas na mensagem original
@@ -147,12 +158,8 @@ export class NathiaPersonalityAgent extends BaseAgent {
   /**
    * Detecta problemas na mensagem (conselhos médicos, tom errado, etc.)
    */
-  private detectIssues(text: string): Array<{
-    type: 'medical-advice' | 'off-context' | 'inappropriate-tone';
-    severity: 'low' | 'medium' | 'high';
-    suggestion: string;
-  }> {
-    const issues: Array<any> = [];
+  private detectIssues(text: string): NathiaIssue[] {
+    const issues: NathiaIssue[] = [];
     const lowerText = text.toLowerCase();
 
     // 1. Detectar conselhos médicos (CRÍTICO)
@@ -246,8 +253,8 @@ export class NathiaPersonalityAgent extends BaseAgent {
    */
   private checkForSpecialistRedirect(
     text: string,
-    issues: any[]
-  ): { redirect: boolean; type?: 'medico' | 'psicologo' | 'nutricionista' | 'obstetra' } {
+    issues: NathiaIssue[]
+  ): { redirect: boolean; type?: SpecialistType } {
     const hasMedicalIssue = issues.some((i) => i.type === 'medical-advice' && i.severity === 'high');
 
     if (hasMedicalIssue) {
@@ -281,8 +288,8 @@ export class NathiaPersonalityAgent extends BaseAgent {
    */
   private async reprocessWithNathiaVoice(
     originalText: string,
-    issues: any[],
-    context?: any
+    issues: NathiaIssue[],
+    context?: NathiaContext
   ): Promise<string> {
     try {
       const issuesSummary = issues.map((i) => `- ${i.type}: ${i.suggestion}`).join('\n');
@@ -323,22 +330,31 @@ IMPORTANTE: Se houver questão médica, VALIDE + REDIRECIONE (ex: "Eu entendo su
 RESPOSTA REPROCESSADA (apenas o texto, sem explicações):
       `;
 
-      const request = createMCPRequest('chat.send' as any, {
-        prompt,
-        temperature: 0.8,
-        maxTokens: 300,
+      interface ChatSendResponse {
+        text?: string;
+      }
+
+      const request = createMCPRequest('chat.send', {
+        message: prompt,
+        context: {
+          temperature: 0.8,
+          maxTokens: 300,
+        },
       });
 
       const response = await orchestrator.callMCP('googleai', 'chat.send', request.params);
 
-      if (response.success && response.data?.text) {
-        return response.data.text.trim();
+      if (response.success && response.data) {
+        const data = response.data as ChatSendResponse;
+        if (data.text) {
+          return data.text.trim();
+        }
       }
 
       // Fallback: retornar versão segura genérica
       return this.createSafeFallback(issues);
     } catch (error) {
-      console.error('[NathiaPersonalityAgent] Reprocess error:', error);
+      logger.error('[NathiaPersonalityAgent] Reprocess error', error);
       return this.createSafeFallback(issues);
     }
   }
@@ -363,7 +379,7 @@ RESPOSTA REPROCESSADA (apenas o texto, sem explicações):
   /**
    * Cria resposta segura em caso de falha
    */
-  private createSafeFallback(issues: any[]): string {
+  private createSafeFallback(issues: NathiaIssue[]): string {
     const hasMedical = issues.some((i) => i.type === 'medical-advice');
 
     if (hasMedical) {
@@ -376,7 +392,7 @@ RESPOSTA REPROCESSADA (apenas o texto, sem explicações):
   /**
    * Detecta tom da mensagem
    */
-  private detectTone(text: string): 'empathetic' | 'validating' | 'firm-but-kind' | 'vulnerable' | 'celebratory' {
+  private detectTone(text: string): NathiaTone {
     const lowerText = text.toLowerCase();
 
     if (lowerText.includes('parabéns') || lowerText.includes('incrível') || lowerText.includes('você conseguiu')) {
@@ -432,11 +448,33 @@ RESPOSTA REPROCESSADA (apenas o texto, sem explicações):
   /**
    * Implementação do callMCP
    */
-  protected async callMCP(server: string, method: string, params: any): Promise<any> {
-    return await orchestrator.callMCP(server, method, params);
+  protected async callMCP(
+    server: string,
+    method: string,
+    params: Record<string, unknown>
+  ): Promise<MCPResponse> {
+    // Cast method to proper type based on the server
+    if (server === 'googleai') {
+      return await orchestrator.callMCP(
+        server,
+        method as keyof import('../../mcp/types').GoogleAIMCPMethods,
+        params as any
+      );
+    } else if (server === 'analytics') {
+      return await orchestrator.callMCP(
+        server,
+        method as keyof import('../../mcp/types').AnalyticsMCPMethods,
+        params as any
+      );
+    }
+    return await orchestrator.callMCP(
+      server,
+      method as keyof import('../../mcp/types').AllMCPMethods,
+      params as any
+    );
   }
 
   async shutdown(): Promise<void> {
-    console.log('[NathiaPersonalityAgent] 🎭 Shutdown');
+    logger.info('[NathiaPersonalityAgent] Shutdown');
   }
 }

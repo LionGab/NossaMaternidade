@@ -4,7 +4,8 @@
  */
 
 import React, { useState } from 'react';
-import { ScrollView, View, SafeAreaView } from 'react-native';
+import { ScrollView, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Mail, Heart, Star, User } from 'lucide-react-native';
 import { useTheme } from '@/theme';
 import { Spacing } from '@/theme/tokens';

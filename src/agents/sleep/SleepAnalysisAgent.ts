@@ -7,6 +7,8 @@
 import { BaseAgent } from '../core/BaseAgent';
 import { orchestrator } from '../core/AgentOrchestrator';
 import { createMCPRequest } from '../../mcp/servers';
+import { logger } from '../../utils/logger';
+import { MCPResponse } from '../../mcp/types';
 
 export interface SleepEntry {
   date: string;
@@ -54,11 +56,11 @@ export class SleepAnalysisAgent extends BaseAgent {
   }
 
   async initialize(): Promise<void> {
-    console.log('[SleepAnalysisAgent] Inicializando...');
+    logger.info('[SleepAnalysisAgent] Inicializando...');
     this.initialized = true;
   }
 
-  async process(input: { entries: SleepEntry[] }, options?: any): Promise<SleepAnalysisResult> {
+  async process(input: { entries: SleepEntry[] }, options?: Record<string, unknown>): Promise<SleepAnalysisResult> {
     const { entries } = input;
 
     if (!entries || entries.length === 0) {
@@ -239,7 +241,7 @@ export class SleepAnalysisAgent extends BaseAgent {
   }
 
   private async generateRecommendations(
-    currentState: any,
+    currentState: SleepAnalysisResult['currentState'],
     patterns: SleepPattern
   ): Promise<string[]> {
     try {
@@ -259,27 +261,32 @@ export class SleepAnalysisAgent extends BaseAgent {
         Formato: 3 recomendações, uma por linha.
       `;
 
-      const request = createMCPRequest('chat.send' as any, {
-        prompt,
-        temperature: 0.7,
-        maxTokens: 200,
+      const request = createMCPRequest('chat.send', {
+        message: prompt,
+        context: {
+          temperature: 0.7,
+          maxTokens: 200,
+        },
       });
 
       const response = await orchestrator.callMCP('googleai', 'chat.send', request.params);
 
-      if (response.success && response.data?.text) {
-        const lines = response.data.text
-          .split('\n')
-          .filter((line: string) => line.trim().length > 0)
-          .map((line: string) => line.replace(/^[-•*]\s*/, '').trim())
-          .slice(0, 3);
+      if (response.success && response.data) {
+        const data = response.data as { text?: string };
+        if (data.text) {
+          const lines = data.text
+            .split('\n')
+            .filter((line: string) => line.trim().length > 0)
+            .map((line: string) => line.replace(/^[-•*]\s*/, '').trim())
+            .slice(0, 3);
 
-        return lines.length > 0 ? lines : this.getFallbackRecommendations(patterns.deprivationLevel);
+          return lines.length > 0 ? lines : this.getFallbackRecommendations(patterns.deprivationLevel);
+        }
       }
 
       return this.getFallbackRecommendations(patterns.deprivationLevel);
     } catch (error) {
-      console.error('[SleepAnalysisAgent] Error generating recommendations:', error);
+      logger.error('[SleepAnalysisAgent] Error generating recommendations', error);
       return this.getFallbackRecommendations(patterns.deprivationLevel);
     }
   }
@@ -311,7 +318,7 @@ export class SleepAnalysisAgent extends BaseAgent {
     return recommendations[deprivation] || recommendations['moderate'];
   }
 
-  private createAlerts(patterns: SleepPattern, currentState: any) {
+  private createAlerts(patterns: SleepPattern, currentState: SleepAnalysisResult['currentState']) {
     const alerts: Array<{ type: 'warning' | 'danger' | 'info'; message: string }> = [];
 
     if (patterns.deprivationLevel === 'severe') {
@@ -372,11 +379,33 @@ export class SleepAnalysisAgent extends BaseAgent {
   /**
    * Implementação do callMCP
    */
-  protected async callMCP(server: string, method: string, params: any): Promise<any> {
-    return await orchestrator.callMCP(server, method, params);
+  protected async callMCP(
+    server: string,
+    method: string,
+    params: Record<string, unknown>
+  ): Promise<MCPResponse> {
+    // Cast method to proper type based on the server
+    if (server === 'googleai') {
+      return await orchestrator.callMCP(
+        server,
+        method as keyof import('../../mcp/types').GoogleAIMCPMethods,
+        params as any
+      );
+    } else if (server === 'analytics') {
+      return await orchestrator.callMCP(
+        server,
+        method as keyof import('../../mcp/types').AnalyticsMCPMethods,
+        params as any
+      );
+    }
+    return await orchestrator.callMCP(
+      server,
+      method as keyof import('../../mcp/types').AllMCPMethods,
+      params as any
+    );
   }
 
   async shutdown(): Promise<void> {
-    console.log('[SleepAnalysisAgent] Shutdown');
+    logger.info('[SleepAnalysisAgent] Shutdown');
   }
 }

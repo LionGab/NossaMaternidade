@@ -115,22 +115,24 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: () => void }> = ({ toast, o
     opacity: opacity.value,
   }));
 
+  const iconColor = colors.raw.neutral[0];
+
   const variantConfig = {
     info: {
       bg: colors.status.info,
-      icon: <Info size={20} color="#FFFFFF" />,
+      icon: <Info size={20} color={iconColor} />,
     },
     success: {
       bg: colors.status.success,
-      icon: <CheckCircle2 size={20} color="#FFFFFF" />,
+      icon: <CheckCircle2 size={20} color={iconColor} />,
     },
     warning: {
       bg: colors.status.warning,
-      icon: <AlertTriangle size={20} color="#FFFFFF" />,
+      icon: <AlertTriangle size={20} color={iconColor} />,
     },
     error: {
       bg: colors.status.error,
-      icon: <AlertCircle size={20} color="#FFFFFF" />,
+      icon: <AlertCircle size={20} color={iconColor} />,
     },
   };
 
@@ -151,23 +153,32 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: () => void }> = ({ toast, o
           ...Shadows.lg,
         },
       ]}
+      accessible={true}
+      accessibilityRole="alert"
+      accessibilityLiveRegion="polite"
+      accessibilityLabel={`${toast.variant === 'error' ? 'Erro' : toast.variant === 'warning' ? 'Aviso' : toast.variant === 'success' ? 'Sucesso' : 'Informação'}: ${toast.message}`}
     >
-      <View style={{ marginRight: Spacing['3'] }}>{config.icon}</View>
+      <View style={{ marginRight: Spacing['3'] }} accessibilityElementsHidden={true}>
+        {config.icon}
+      </View>
 
       <Text
         style={{
           flex: 1,
-          color: '#FFFFFF',
+          color: colors.raw.neutral[0],
           fontSize: Typography.sizes.sm,
           fontWeight: Typography.weights.medium,
         }}
         numberOfLines={2}
+        accessibilityElementsHidden={true}
       >
         {toast.message}
       </Text>
 
       {toast.action && (
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={toast.action.label}
           onPress={() => {
             toast.action?.onPress();
             dismiss();
@@ -176,7 +187,7 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: () => void }> = ({ toast, o
         >
           <Text
             style={{
-              color: '#FFFFFF',
+              color: colors.raw.neutral[0],
               fontSize: Typography.sizes.sm,
               fontWeight: Typography.weights.bold,
             }}
@@ -186,8 +197,14 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: () => void }> = ({ toast, o
         </Pressable>
       )}
 
-      <Pressable onPress={dismiss} hitSlop={8} style={{ marginLeft: Spacing['2'] }}>
-        <X size={18} color="#FFFFFF" />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Fechar notificação"
+        onPress={dismiss}
+        hitSlop={8}
+        style={{ marginLeft: Spacing['2'] }}
+      >
+        <X size={18} color={colors.raw.neutral[0]} />
       </Pressable>
     </Animated.View>
   );

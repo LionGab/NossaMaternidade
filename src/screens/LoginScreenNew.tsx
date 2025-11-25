@@ -4,8 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { Eye, EyeOff, ChevronLeft, Sun, Moon, Apple } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens } from '../theme';
+import type { RootStackParamList } from '../navigation/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface LoginScreenProps {
@@ -14,7 +16,7 @@ interface LoginScreenProps {
 }
 
 export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { isDark, toggleTheme, colors } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,10 +41,10 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
         onLogin();
       } else if (savedUser) {
         // Se já completou onboarding, vai direto para Main
-        navigation.navigate('Main');
+        navigation.navigate('Main' as never);
       } else {
         // Se não completou, vai para Onboarding
-        navigation.navigate('Onboarding');
+        navigation.navigate('Onboarding' as never);
       }
     } catch (error) {
       console.error('Erro no login:', error);
@@ -60,11 +62,11 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
       
       // Verificar se usuário já completou onboarding
       const savedUser = await AsyncStorage.getItem('nath_user');
-      
+
       if (savedUser) {
-        navigation.navigate('Main');
+        navigation.navigate('Main' as never);
       } else {
-        navigation.navigate('Onboarding');
+        navigation.navigate('Onboarding' as never);
       }
     } catch (error) {
       console.error(`Erro no login ${provider}:`, error);
@@ -95,10 +97,13 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background.canvas }}>
+    <SafeAreaView 
+      style={{ flex: 1, backgroundColor: colors.background.canvas }}
+      edges={['top']}
+    >
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ flexGrow: 1, padding: 24 }}
+        contentContainerStyle={{ flexGrow: 1, padding: 24, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Top Navigation */}
@@ -111,6 +116,10 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
               backgroundColor: colors.text.primary
             }}
             activeOpacity={0.9}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Voltar"
+            accessibilityHint="Retorna para a tela anterior"
           >
             <ChevronLeft size={20} color={colors.background.canvas} />
           </TouchableOpacity>
@@ -127,6 +136,10 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
               borderWidth: 1,
               borderColor: colors.border.light
             }}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={isDark ? "Alternar para modo claro" : "Alternar para modo escuro"}
+            accessibilityHint="Muda o tema entre claro e escuro"
           >
             {isDark ? <Sun size={20} color={colors.text.primary} /> : <Moon size={20} color={colors.text.primary} />}
           </TouchableOpacity>
@@ -177,6 +190,10 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            autoComplete="email"
+            accessible={true}
+            accessibilityLabel="Campo de e-mail"
+            accessibilityHint="Digite seu endereço de e-mail"
             style={{
               width: '100%',
               paddingHorizontal: 16,
@@ -203,10 +220,15 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
+              autoComplete="password"
+              accessible={true}
+              accessibilityLabel="Campo de senha"
+              accessibilityHint="Digite sua senha"
               style={{
                 width: '100%',
                 paddingHorizontal: 16,
                 paddingVertical: 16,
+                paddingRight: 48,
                 borderRadius: 12,
                 fontSize: Tokens.typography.sizes.sm,
                 backgroundColor: colors.background.card,
@@ -218,6 +240,10 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
               style={{ position: 'absolute', right: 12, top: 16, padding: 4 }}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={showPassword ? "Ocultar senha" : "Mostrar senha"}
+              accessibilityHint="Alterna a visibilidade da senha"
             >
               {showPassword ? (
                 <EyeOff size={18} color={colors.text.tertiary} />
@@ -229,7 +255,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
         </View>
 
         <View style={{ alignItems: 'flex-end', marginBottom: 24 }}>
-          <TouchableOpacity onPress={handleForgotPassword}>
+          <TouchableOpacity accessibilityRole="button" onPress={handleForgotPassword}>
             <Text style={{ fontSize: Tokens.typography.sizes.xs, fontWeight: Tokens.typography.weights.bold, color: colors.primary.main }}>
               Esqueceu a senha?
             </Text>
@@ -249,6 +275,11 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
             opacity: isLoading ? 0.7 : 1
           }}
           activeOpacity={0.9}
+          accessible={true}
+          accessibilityRole="button"
+          accessibilityLabel="Entrar"
+          accessibilityHint="Faz login com e-mail e senha"
+          accessibilityState={{ disabled: isLoading }}
         >
           {isLoading ? (
             <ActivityIndicator color={colors.text.inverse} />
@@ -268,7 +299,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
 
         {/* Social Login */}
         <View style={{ marginBottom: 24 }}>
-          <TouchableOpacity
+          <TouchableOpacity accessibilityRole="button"
             onPress={() => handleSocialLogin('apple')}
             disabled={isLoading}
             style={{
@@ -293,7 +324,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          <TouchableOpacity accessibilityRole="button"
             onPress={() => handleSocialLogin('google')}
             disabled={isLoading}
             style={{
@@ -318,7 +349,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={handleSignUp}>
+        <TouchableOpacity accessibilityRole="button" onPress={handleSignUp}>
           <Text style={{ textAlign: 'center', fontSize: Tokens.typography.sizes.xs, color: colors.text.tertiary }}>
             Ainda não tem conta?{' '}
             <Text style={{ fontWeight: Tokens.typography.weights.bold, color: colors.secondary.main }}>

@@ -40,6 +40,8 @@
   "exclude": [
     "node_modules",
     "temp_import",
+    "Lilia-App",
+    "backend",
     "**/__tests__/**",
     "**/*.test.ts",
     "**/*.test.tsx",

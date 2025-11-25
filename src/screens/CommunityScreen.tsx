@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { FlashList } from '@shopify/flash-list';
 import { useTheme } from '../theme/ThemeContext';
@@ -41,6 +42,7 @@ export default function CommunityScreen() {
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.background.canvas }}
+      edges={['top']}
       accessible={true}
       accessibilityLabel="Tela da Comunidade MãesValentes"
     >
@@ -115,7 +117,7 @@ export default function CommunityScreen() {
               accessibilityLabel="Anjo do Dia: Paula Santos, mãe de 2, São Paulo. Ajudou 12 mães esta semana com apoio emocional e dicas práticas"
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <Crown size={20} color="#F59E0B" />
+                <Crown size={20} color={colors.raw.warning[500]} />
                 <Text
                   style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
                   accessibilityRole="header"
@@ -156,7 +158,7 @@ export default function CommunityScreen() {
                     accessibilityLabel="Conectar com Paula Santos"
                     accessibilityHint="Envia solicitação de conexão para Paula Santos"
                   >
-                    <Text style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '600' }}>
+                    <Text style={{ color: colors.text.inverse, fontSize: 12, fontWeight: '600' }}>
                       Conectar
                     </Text>
                   </TouchableOpacity>
@@ -188,7 +190,7 @@ export default function CommunityScreen() {
                         paddingHorizontal: 16,
                         paddingVertical: 8,
                         borderRadius: 20,
-                        backgroundColor: isDark ? colors.background.elevated : '#E8F0FE',
+                        backgroundColor: isDark ? colors.background.elevated : colors.raw.primary[50],
                         borderWidth: 1,
                         borderColor: colors.border.light,
                         marginRight: 8,
@@ -284,7 +286,7 @@ export default function CommunityScreen() {
           </TouchableOpacity>
         )}
         ListFooterComponent={() => (
-          <View style={{ padding: 16, paddingTop: 0, paddingBottom: 32 }}>
+          <View style={{ padding: 16, paddingTop: 0, paddingBottom: 120 }}>
             <TouchableOpacity
               style={{
                 backgroundColor: colors.primary.main,
@@ -296,7 +298,7 @@ export default function CommunityScreen() {
               accessibilityLabel="Iniciar Nova Conversa"
               accessibilityHint="Toque para criar uma nova discussão na comunidade"
             >
-              <Text style={{ color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' }}>
+              <Text style={{ color: colors.text.inverse, fontSize: 16, fontWeight: 'bold' }}>
                 + Iniciar Nova Conversa
               </Text>
             </TouchableOpacity>

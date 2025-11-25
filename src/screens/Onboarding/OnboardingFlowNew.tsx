@@ -4,14 +4,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { ArrowRight, Check, Sun, ArrowLeft, Heart, Baby, Users, Brain, Bell, Shield } from 'lucide-react-native';
 import { UserEmotion, UserStage, UserProfile, UserChallenge, UserSupport, UserNeed } from '../../types/user';
-import { Colors } from '../../constants/Colors';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../navigation/types';
 import { useTheme } from '../../theme/ThemeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useHaptics } from '../../hooks/useHaptics';
 
+type OnboardingNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Onboarding'>;
+
 export default function OnboardingFlow() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<OnboardingNavigationProp>();
   const { isDark, toggleTheme, colors } = useTheme();
   const haptics = useHaptics();
   const { width } = useWindowDimensions();
@@ -54,7 +57,7 @@ export default function OnboardingFlow() {
     paddingBottom: 24,
   };
 
-  const updateData = (key: keyof UserProfile, value: any) => {
+  const updateData = <K extends keyof UserProfile>(key: K, value: UserProfile[K]) => {
     haptics.light();
     setFormData(prev => ({ ...prev, [key]: value }));
   };
@@ -87,7 +90,7 @@ export default function OnboardingFlow() {
     haptics.success();
     try {
       await AsyncStorage.setItem('nath_user', JSON.stringify(formData));
-      navigation.navigate('Main');
+      navigation.navigate('Main' as never);
     } catch (error) {
       console.error('Erro ao salvar dados do usuário:', error);
       haptics.error();
@@ -159,77 +162,95 @@ export default function OnboardingFlow() {
   // 1. WELCOME (After Splash)
   if (step === 1) {
     return (
-      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          className="flex-1"
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.background.canvas,
+          ...(Platform.OS === 'web' ? { width: '100%' } : {}),
+        }}
+      >
+        <SafeAreaView 
+          className="flex-1" 
+          style={{ backgroundColor: colors.background.canvas }}
+          edges={['top', 'bottom']}
         >
-          <View className="flex-1" style={containerStyle}>
-            <Header />
-            <View className="flex-1 justify-center items-center">
-              {/* Title - Nossa Maternidade */}
-              <View className="mb-6 sm:mb-8">
+          <KeyboardAvoidingView 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            className="flex-1"
+            style={{ width: '100%' }}
+          >
+            <View className="flex-1" style={containerStyle}>
+            {step > 1 && <Header />}
+            {step === 1 && (
+              <View className="absolute top-6 right-6 z-10">
+                <TouchableOpacity
+                  onPress={() => {
+                    haptics.light();
+                    toggleTheme();
+                  }}
+                  className="w-10 h-10 rounded-full items-center justify-center"
+                  style={{
+                    backgroundColor: colors.background.card,
+                    borderWidth: 1,
+                    borderColor: colors.border.light
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel={isDark ? "Alternar para modo claro" : "Alternar para modo escuro"}
+                >
+                  <Sun size={18} color={colors.text.primary} />
+                </TouchableOpacity>
+              </View>
+            )}
+            <View className="flex-1" style={{ width: '100%' }}>
+              {/* Title - Nossa Maternidade (Topo esquerdo) */}
+              <View className="absolute top-20 left-6" style={{ zIndex: 10 }}>
+                <Sun size={24} color={colors.text.primary} style={{ marginBottom: 12 }} />
                 <Text 
-                  className="text-3xl sm:text-4xl font-bold text-center mb-2" 
-                  style={{ color: colors.text.primary }}
+                  className="text-3xl sm:text-4xl font-bold" 
+                  style={{ color: colors.text.primary, marginBottom: 4 }}
                   accessibilityRole="header"
                   accessibilityLabel="Nossa Maternidade"
                 >
-                  Nossa{'\n'}Maternidade
+                  Nossa
+                </Text>
+                <Text 
+                  className="text-3xl sm:text-4xl font-bold" 
+                  style={{ color: colors.text.primary }}
+                >
+                  Maternidade
                 </Text>
               </View>
 
-              {/* Circular Illustration */}
-              <View 
-                className="rounded-full mb-6 sm:mb-8 overflow-hidden border-4 shadow-xl" 
-                style={{ 
-                  width: isSmallScreen ? 140 : isLargeScreen ? 180 : 160,
-                  height: isSmallScreen ? 140 : isLargeScreen ? 180 : 160,
-                  borderColor: colors.background.card, 
-                  shadowColor: '#000', 
-                  shadowOffset: { width: 0, height: 4 }, 
-                  shadowOpacity: 0.3, 
-                  shadowRadius: 8, 
-                  elevation: 8 
-                }}
-                accessible={true}
-                accessibilityLabel="Ilustração circular de mãe e bebê"
-                accessibilityRole="image"
-              >
-                <Image
-                  source={{ uri: 'https://i.imgur.com/GDYdiuy.jpg' }}
-                  className="w-full h-full"
-                  contentFit="cover"
-                  transition={200}
-                />
+              {/* Conteúdo no canto inferior esquerdo */}
+              <View className="absolute bottom-32 left-6" style={{ width: '100%', maxWidth: 400 }}>
+                {/* Quote */}
+                <Text 
+                  className="text-xl font-medium mb-8" 
+                  style={{ color: colors.text.primary, lineHeight: 32 }}
+                  accessibilityRole="text"
+                  accessibilityLabel="Você é forte. Mesmo nos dias em que não parece."
+                >
+                  Você é forte.{'\n'}Mesmo nos dias em que não parece.
+                </Text>
+
+                <TouchableOpacity
+                  onPress={nextStep}
+                  className="w-full py-4 rounded-xl shadow-lg active:scale-95 flex-row items-center gap-3"
+                  style={{ backgroundColor: colors.primary.main, paddingHorizontal: 20 }}
+                  activeOpacity={0.9}
+                  accessibilityRole="button"
+                  accessibilityLabel="Começar com a Nath"
+                  accessibilityHint="Inicia o processo de onboarding"
+                >
+                  <ArrowRight size={20} color={colors.text.inverse} />
+                  <Text className="text-white font-bold text-base">Começar com a Nath</Text>
+                </TouchableOpacity>
               </View>
-
-              {/* Quote */}
-              <Text 
-                className="text-base sm:text-lg font-medium text-center italic mb-6 sm:mb-8 max-w-[280px]" 
-                style={{ color: colors.text.primary }}
-                accessibilityRole="text"
-                accessibilityLabel="Você é forte. Mesmo nos dias em que não parece."
-              >
-                "Você é forte.{'\n'}Mesmo nos dias em que não parece."
-              </Text>
-
-              <TouchableOpacity
-                onPress={nextStep}
-                className="w-full py-4 rounded-xl shadow-lg active:scale-95 flex-row items-center justify-center gap-2"
-                style={{ backgroundColor: colors.primary.main }}
-                activeOpacity={0.9}
-                accessibilityRole="button"
-                accessibilityLabel="Começar com a Nath"
-                accessibilityHint="Inicia o processo de onboarding"
-              >
-                <Text className="text-white font-bold text-base">Começar com a Nath</Text>
-                <ArrowRight size={20} color={colors.text.inverse} />
-              </TouchableOpacity>
             </View>
           </View>
         </KeyboardAvoidingView>
-      </SafeAreaView>
+        </SafeAreaView>
+      </View>
     );
   }
 
@@ -485,8 +506,8 @@ export default function OnboardingFlow() {
                 className="px-5 sm:px-6 py-3 rounded-full"
                 style={{
                   borderWidth: 1,
-                  borderColor: formData.currentFeeling === feeling ? Colors.accent.pink : colors.border.light,
-                  backgroundColor: formData.currentFeeling === feeling ? Colors.accent.pink : colors.background.card,
+                  borderColor: formData.currentFeeling === feeling ? colors.secondary.main : colors.border.light,
+                  backgroundColor: formData.currentFeeling === feeling ? colors.secondary.main : colors.background.card,
                   minHeight: isSmallScreen ? 40 : 44
                 }}
                 activeOpacity={0.9}
@@ -847,7 +868,7 @@ export default function OnboardingFlow() {
             </TouchableOpacity>
 
             {!canProceed && (
-              <Text className="text-[10px] mt-2" style={{ color: colors.raw.warning[500] }}>
+              <Text className="text-xs mt-2" style={{ color: colors.raw.warning[500] }}>
                 ⚠️ É necessário aceitar os termos para continuar
               </Text>
             )}
@@ -869,7 +890,7 @@ export default function OnboardingFlow() {
               <Text className="text-xs font-bold" style={{ color: colors.text.primary }}>
                 Lembretes de autocuidado
               </Text>
-              <Text className="text-[10px]" style={{ color: colors.text.tertiary }}>
+              <Text className="text-xs" style={{ color: colors.text.tertiary }}>
                 Posso te mandar um carinho por dia?
               </Text>
             </View>
@@ -908,8 +929,8 @@ export default function OnboardingFlow() {
 
           {/* Footer */}
           <View className="flex-row items-center gap-1 mt-4">
-            <Shield size={10} color={colors.text.tertiary} />
-            <Text className="text-[10px]" style={{ color: colors.text.tertiary }}>
+            <Shield size={12} color={colors.text.tertiary} />
+            <Text className="text-xs" style={{ color: colors.text.tertiary }}>
               Seus dados estão seguros comigo.
             </Text>
           </View>

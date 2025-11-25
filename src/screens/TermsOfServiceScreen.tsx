@@ -4,13 +4,13 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ArrowLeft, CheckCircle2, Circle } from 'lucide-react-native';
-import { useTheme } from '../theme/ThemeContext';
+import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -77,7 +77,7 @@ export default function TermsOfServiceScreen() {
       style={{ flex: 1, backgroundColor: colors.background.canvas }}
       accessibilityLabel="Tela de Termos de Serviço"
     >
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* Header */}
       <View
@@ -480,7 +480,7 @@ export default function TermsOfServiceScreen() {
 // Helper Components
 interface SectionProps {
   title: string;
-  colors: any;
+  colors: ThemeColors;
   children: React.ReactNode;
 }
 
@@ -502,10 +502,10 @@ const Section: React.FC<SectionProps> = ({ title, colors, children }) => (
 );
 
 interface ParagraphProps {
-  colors: any;
+  colors: ThemeColors;
   children: React.ReactNode;
   bold?: boolean;
-  style?: any;
+  style?: Record<string, unknown>;
 }
 
 const Paragraph: React.FC<ParagraphProps> = ({
@@ -529,7 +529,7 @@ const Paragraph: React.FC<ParagraphProps> = ({
 );
 
 interface BulletPointProps {
-  colors: any;
+  colors: ThemeColors;
   children: React.ReactNode;
 }
 

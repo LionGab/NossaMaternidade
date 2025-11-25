@@ -1,18 +1,28 @@
 export type ContentType = 'video' | 'article' | 'audio' | 'reels' | 'text';
 
+export interface ContentAuthor {
+  name: string;
+  avatar: number | { uri: string } | string; // ImageSourcePropType
+}
+
+export interface ContentStats {
+  likes: number;
+  comments: number;
+}
+
 export interface ContentItem {
   id: string;
   title: string;
   description: string;
   type: ContentType;
   category: string;
-  thumbnail?: any; // Made optional
-  thumbnailUrl?: string; // Added
+  thumbnail?: number | { uri: string } | string; // ImageSourcePropType
+  thumbnailUrl?: string;
   imageUrl?: string;
-  videoUrl?: string; // Added
-  content?: string; // Added
+  videoUrl?: string;
+  content?: string;
   audioUrl?: string;
-  duration?: string; // Made optional
+  duration?: string;
   date?: string;
   views?: number;
   likes?: number;
@@ -20,14 +30,8 @@ export interface ContentItem {
   isOriginal?: boolean;
   isExclusive?: boolean;
   tags?: string[];
-  author?: {
-    name: string;
-    avatar: any;
-  };
-  stats?: {
-    likes: number;
-    comments: number;
-  };
+  author?: ContentAuthor;
+  stats?: ContentStats;
 }
 
 export interface Post {

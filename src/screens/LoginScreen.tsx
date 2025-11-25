@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Input, Avatar } from '../components';
-import { Colors } from '../constants/Colors';
+import { Colors } from '../theme';
 import { useHaptics } from '../hooks/useHaptics';
 import { Ionicons } from '@expo/vector-icons';
 import { nathAvatar } from '../assets/images';
@@ -35,7 +35,7 @@ export default function LoginScreen({
     >
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 pt-4">
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity accessibilityRole="button" onPress={() => {}}>
           <Ionicons name="arrow-back" size={24} color={Colors.text.primary} />
         </TouchableOpacity>
         <Avatar
@@ -90,7 +90,7 @@ export default function LoginScreen({
             placeholderTextColor={Colors.text.tertiary}
             secureTextEntry={!showPassword}
             rightIcon={
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <TouchableOpacity accessibilityRole="button" onPress={() => setShowPassword(!showPassword)}>
                 <Ionicons
                   name={showPassword ? 'eye-off' : 'eye'}
                   size={20}
@@ -100,7 +100,7 @@ export default function LoginScreen({
             }
             containerStyle={{ marginBottom: 0 }}
           />
-          <TouchableOpacity
+          <TouchableOpacity accessibilityRole="button"
             onPress={onForgotPassword}
             className="self-end mt-2"
           >
@@ -140,7 +140,7 @@ export default function LoginScreen({
         </View>
 
         {/* Social Login */}
-        <TouchableOpacity
+        <TouchableOpacity accessibilityRole="button"
           className="w-full flex-row items-center justify-center p-4 rounded-xl mb-3 border"
           style={{
             backgroundColor: Colors.background.card,
@@ -156,7 +156,7 @@ export default function LoginScreen({
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        <TouchableOpacity accessibilityRole="button"
           className="w-full flex-row items-center justify-center p-4 rounded-xl mb-6 border"
           style={{
             backgroundColor: Colors.background.card,
@@ -180,7 +180,7 @@ export default function LoginScreen({
           >
             Ainda não tem conta?{' '}
           </Text>
-          <TouchableOpacity onPress={onSignUp}>
+          <TouchableOpacity accessibilityRole="button" onPress={onSignUp}>
             <Text
               className="text-sm font-bold"
               style={{ color: Colors.primary.main }}

@@ -8,7 +8,7 @@ import { UserProfile } from '../../types/user';
 interface OnboardingStepProps {
   step: number;
   formData: UserProfile;
-  updateData: (key: keyof UserProfile, value: any) => void;
+  updateData: <K extends keyof UserProfile>(key: K, value: UserProfile[K]) => void;
   nextStep: () => void;
   prevStep: () => void;
 }
@@ -21,7 +21,7 @@ export default function OnboardingStep2({ step, formData, updateData, nextStep, 
     <SafeAreaView className="flex-1" style={{ backgroundColor: '#020617' }}>
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 pt-4 mb-6">
-        <TouchableOpacity onPress={prevStep} className="p-2 -ml-2">
+        <TouchableOpacity accessibilityRole="button" onPress={prevStep} className="p-2 -ml-2">
           <ArrowLeft size={24} color="#FFFFFF" />
         </TouchableOpacity>
 
@@ -38,7 +38,7 @@ export default function OnboardingStep2({ step, formData, updateData, nextStep, 
           ))}
         </View>
 
-        <TouchableOpacity
+        <TouchableOpacity accessibilityRole="button"
           onPress={toggleTheme}
           className="w-10 h-10 rounded-full items-center justify-center"
           style={{
@@ -60,7 +60,7 @@ export default function OnboardingStep2({ step, formData, updateData, nextStep, 
           Quero que nossa conversa seja íntima, como amigas.
         </Text>
 
-        <TextInput
+        <TextInput accessibilityLabel="Text input field"
           value={formData.name || ''}
           onChangeText={(text) => updateData('name', text)}
           placeholder="Seu nome ou apelido"
@@ -77,7 +77,7 @@ export default function OnboardingStep2({ step, formData, updateData, nextStep, 
 
       {/* Button */}
       <View className="px-6 pb-8">
-        <TouchableOpacity
+        <TouchableOpacity accessibilityRole="button"
           onPress={nextStep}
           disabled={!formData.name}
           className="w-full py-4 rounded-xl items-center justify-center"

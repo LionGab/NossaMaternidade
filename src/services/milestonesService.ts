@@ -395,10 +395,16 @@ class MilestonesService {
   private calculateProgressByCategory(
     allMilestones: BabyMilestone[],
     userMilestones: UserBabyMilestone[]
-  ) {
+  ): MilestoneProgress['by_category'] {
     const categories: MilestoneCategory[] = ['motor', 'cognitivo', 'linguagem', 'social', 'sensorial'];
 
-    const result: any = {};
+    const result: MilestoneProgress['by_category'] = {
+      motor: { total: 0, completed: 0 },
+      cognitivo: { total: 0, completed: 0 },
+      linguagem: { total: 0, completed: 0 },
+      social: { total: 0, completed: 0 },
+      sensorial: { total: 0, completed: 0 },
+    };
 
     categories.forEach(category => {
       const categoryMilestones = allMilestones.filter(m => m.category === category);

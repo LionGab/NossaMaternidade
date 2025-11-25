@@ -97,7 +97,7 @@ const createStyles = (colors: ThemeColors) => ({
     overflow: 'hidden' as const,
   },
   progressBar: {
-    height: '100%' as any,
+    height: 8,
     borderRadius: 4,
     backgroundColor: colors.primary.main,
   },
@@ -306,7 +306,7 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onToggle, isCompletedToday
             { backgroundColor: `${habit.color}20` },
           ]}
         >
-          <Ionicons name={habit.icon as any} size={28} color={habit.color} />
+          <Ionicons name={habit.icon as keyof typeof Ionicons.glyphMap} size={28} color={habit.color} />
         </View>
 
         {/* Content */}
@@ -577,7 +577,7 @@ export default function HabitsScreen() {
               accessibilityHint={`Toque para ${isSelected ? 'deselecionar' : 'filtrar'} hábitos da categoria ${category.name}`}
             >
               <Ionicons
-                name={category.icon as any}
+                name={category.icon as keyof typeof Ionicons.glyphMap}
                 size={18}
                 color={isSelected ? category.color : colors.text.secondary}
               />

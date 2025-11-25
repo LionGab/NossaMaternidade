@@ -4,11 +4,11 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
   Linking,
   StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { Image } from 'expo-image';
 import { ScrollView as HorizontalScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -30,7 +30,7 @@ import {
   Flame,
 } from 'lucide-react-native';
 import { MOCK_POSTS } from '../constants/data';
-import { useTheme } from '../theme/ThemeContext';
+import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { useHaptics } from '../hooks/useHaptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { MainTabParamList, RootStackParamList } from '../navigation/types';
@@ -48,13 +48,13 @@ interface QuickActionCardProps {
   title: string;
   description: string;
   action: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ size?: number; color?: string }>;
   iconColor: string;
   bgColor: string;
   badge?: { text: string; bg: string; textColor: string };
   actionColor: string;
   onPress: () => void;
-  colors: any;
+  colors: ThemeColors;
   isDark: boolean;
 }
 
@@ -108,7 +108,7 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
 
 interface ContentCardProps {
   item: typeof MOCK_POSTS[0];
-  colors: any;
+  colors: ThemeColors;
   onPress?: () => void;
 }
 
@@ -217,7 +217,7 @@ export default function MundoNathScreen() {
         actionColor: colors.primary.main,
         onPress: () => {
           haptics.light();
-          (navigation as any).navigate('Chat');
+          navigation.navigate('Chat' as never);
         },
       },
       {
@@ -233,7 +233,7 @@ export default function MundoNathScreen() {
         actionColor: '#9333EA',
         onPress: () => {
           haptics.light();
-          (navigation as any).navigate('Ritual');
+          navigation.navigate('Ritual' as never);
         },
       },
     ],
@@ -258,8 +258,13 @@ export default function MundoNathScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.canvas }]}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+    <SafeAreaView 
+      style={[styles.container, { backgroundColor: colors.background.canvas }]}
+      edges={['top']}
+      accessible={true}
+      accessibilityLabel="Tela Mundo Nath - Conteúdo exclusivo"
+    >
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       <ScrollView className="flex-1" contentContainerStyle={styles.scrollContent}>
         {/* Header */}
@@ -286,10 +291,10 @@ export default function MundoNathScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>Hoje eu tô com você</Text>
-            <TouchableOpacity
+            <TouchableOpacity accessibilityRole="button"
               onPress={() => {
                 haptics.light();
-                (navigation as any).navigate('Chat');
+                navigation.navigate('Chat' as never);
               }}
             >
               <Text style={[styles.sectionLink, { color: colors.primary.main }]}>Ver tudo</Text>
@@ -369,7 +374,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 100,
+    paddingBottom: 120, // Espaço para tab bar
   },
   header: {
     paddingHorizontal: 24,

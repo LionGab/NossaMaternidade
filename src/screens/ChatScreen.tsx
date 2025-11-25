@@ -7,10 +7,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  SafeAreaView,
-  StatusBar,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { Image } from 'expo-image';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -213,10 +213,11 @@ export default function ChatScreen() {
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.background.canvas }}
+      edges={['top']}
       accessible={true}
       accessibilityLabel="Tela de Chat com MãesValente"
     >
-      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
+      <StatusBar style={isDark ? "light" : "dark"} />
 
       {/* Header */}
       <View
@@ -316,7 +317,7 @@ export default function ChatScreen() {
               data={messages}
               renderItem={renderItem}
               keyExtractor={item => item.id}
-              contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
+              contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
               showsVerticalScrollIndicator={false}
               accessible={false}
               ListFooterComponent={

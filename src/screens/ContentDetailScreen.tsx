@@ -14,7 +14,7 @@ import {
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { Colors } from '../constants/Colors';
+import { Colors } from '../theme';
 import { Button, CommentsSection, AudioPlayer } from '../components';
 import { Ionicons } from '@expo/vector-icons';
 import { ContentItem, ContentType } from '../types/content';
@@ -147,7 +147,7 @@ export default function ContentDetailScreen({
         <View style={styles.heroOverlay} />
 
         {/* Back Button */}
-        <TouchableOpacity
+        <TouchableOpacity accessibilityRole="button"
           style={styles.backButton}
           onPress={onBack}
           activeOpacity={0.8}
@@ -159,7 +159,7 @@ export default function ContentDetailScreen({
 
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
-          <TouchableOpacity
+          <TouchableOpacity accessibilityRole="button"
             style={styles.actionButton}
             onPress={onToggleFavorite}
             activeOpacity={0.8}
@@ -170,7 +170,7 @@ export default function ContentDetailScreen({
               color={isFavorite ? '#EF4444' : Colors.text.primary}
             />
           </TouchableOpacity>
-          <TouchableOpacity
+          <TouchableOpacity accessibilityRole="button"
             style={styles.actionButton}
             onPress={onShare}
             activeOpacity={0.8}
@@ -188,7 +188,7 @@ export default function ContentDetailScreen({
             ]}
           >
             <Ionicons
-              name={getTypeIcon(content.type) as any}
+              name={getTypeIcon(content.type) as keyof typeof Ionicons.glyphMap}
               size={20}
               color={getTypeColor(content.type)}
             />
@@ -251,7 +251,7 @@ export default function ContentDetailScreen({
                 </Text>
               </View>
             )}
-            <TouchableOpacity
+            <TouchableOpacity accessibilityRole="button"
               style={styles.statItem}
               onPress={handleLike}
               activeOpacity={0.7}
@@ -270,7 +270,7 @@ export default function ContentDetailScreen({
                 {likesCount.toLocaleString()} curtidas
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            <TouchableOpacity accessibilityRole="button"
               style={styles.statItem}
               onPress={handleShowComments}
               activeOpacity={0.7}
@@ -333,7 +333,7 @@ export default function ContentDetailScreen({
               <Text style={styles.commentsPreviewTitle}>
                 Comentários ({TOTAL_COMMENTS})
               </Text>
-              <TouchableOpacity onPress={handleShowComments}>
+              <TouchableOpacity accessibilityRole="button" onPress={handleShowComments}>
                 <Text style={styles.seeAllComments}>Ver todos</Text>
               </TouchableOpacity>
             </View>
@@ -358,7 +358,7 @@ export default function ContentDetailScreen({
                 </Text>
                 <View style={styles.commentPreviewFooter}>
                   <Text style={styles.commentTimestamp}>{comment.timestamp}</Text>
-                  <TouchableOpacity style={styles.commentLikeButton}>
+                  <TouchableOpacity accessibilityRole="button" style={styles.commentLikeButton}>
                     <Ionicons name="heart-outline" size={14} color={Colors.text.secondary} />
                     <Text style={styles.commentLikes}>{comment.likes}</Text>
                   </TouchableOpacity>

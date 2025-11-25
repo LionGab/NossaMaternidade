@@ -335,7 +335,7 @@ class HabitsService {
     today.setHours(0, 0, 0, 0);
 
     // Começar de hoje ou ontem (caso não tenha completado hoje ainda)
-    let checkDate = new Date(today);
+    const checkDate = new Date(today);
     const lastCompletion = new Date(completions[0]);
     lastCompletion.setHours(0, 0, 0, 0);
 

@@ -3,7 +3,7 @@
  * Centraliza gerenciamento de todas as sessões (auth, chat, analytics)
  */
 
-import { Session, User } from '@supabase/supabase-js';
+import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 import { supabase, isSupabaseReady, initSecureStorageMigration } from './supabase';
 import { ensureValidSession, getValidSession } from '../middleware/sessionValidator';
 import { logger } from '../utils/logger';
@@ -25,6 +25,10 @@ export interface SessionState {
 
 type StateListener = (state: SessionState) => void;
 
+interface AuthSubscription {
+  unsubscribe: () => void;
+}
+
 class SessionManager {
   private state: SessionState = {
     auth: {
@@ -42,7 +46,7 @@ class SessionManager {
   };
 
   private listeners: Set<StateListener> = new Set();
-  private authSubscription: any = null;
+  private authSubscription: AuthSubscription | null = null;
   private initialized = false;
 
   /**
