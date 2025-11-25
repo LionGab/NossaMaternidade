@@ -73,14 +73,23 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
 
   return (
     <View style={styles.headerContainer}>
-      <View accessible accessibilityRole="header">
-        <Text style={styles.headerTitle} accessibilityLabel={`Olá, ${userName}`}>
-          Oi, {userName}.
-        </Text>
-        <View style={styles.headerSubtitleRow}>
-          <Text style={styles.headerSubtitle} accessibilityLabel="Tô aqui com você">
-            Tô aqui com você 💙
+      <View accessible accessibilityRole="header" style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <Image
+          source={require('../../assets/logo.png')}
+          style={{ width: 44, height: 44, borderRadius: 10 }}
+          contentFit="cover"
+          transition={200}
+          accessibilityLabel="Logo Nossa Maternidade"
+        />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.headerTitle} accessibilityLabel={`Olá, ${userName}`}>
+            Oi, {userName}.
           </Text>
+          <View style={styles.headerSubtitleRow}>
+            <Text style={styles.headerSubtitle} accessibilityLabel="Tô aqui com você">
+              Tô aqui com você 💙
+            </Text>
+          </View>
         </View>
       </View>
       <View style={styles.headerActions}>
@@ -145,9 +154,10 @@ const SleepCard: React.FC<SleepCardProps> = ({ colors, onPress }) => (
     accessibilityLabel="Como você dormiu hoje?"
   >
     <Image
-      source={{ uri: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=800&q=80' }}
+      source={{ uri: 'https://i.imgur.com/JQagI8x.jpg' }}
       style={StyleSheet.absoluteFill}
       contentFit="cover"
+      contentPosition="center"
       transition={200}
     />
     <LinearGradient
@@ -177,8 +187,8 @@ const SleepCard: React.FC<SleepCardProps> = ({ colors, onPress }) => (
 const sleepCardStyles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 180,
-    borderRadius: 22,
+    height: 200,
+    borderRadius: 24,
     overflow: 'hidden',
     marginBottom: 16,
   },
@@ -774,7 +784,7 @@ const HomeScreen: React.FC = () => {
             <QuickActionCard
               icon={<MessageCircleHeart size={16} color="#A855F7" strokeWidth={2.5} />}
               title="Conversar"
-              subtitle="MãesValente IA"
+              subtitle="NathIA"
               colors={colors}
               onPress={() => handleNavigate('Chat')}
               iconBgColor={isDark ? 'rgba(168, 85, 247, 0.2)' : '#F3E8FF'}

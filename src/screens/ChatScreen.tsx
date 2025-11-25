@@ -23,11 +23,12 @@ import { profileService } from '../services/profileService';
 import { MessageBubble } from '../components/MessageBubble';
 
 const INITIAL_CHAT_GREETING = "Oi, mãe. Tô aqui com você. Como você está se sentindo agora?";
-const AVATAR_URL = "https://i.imgur.com/RRIaE7t.jpg";
+const AVATAR_URL = "https://i.imgur.com/oB9ewPG.jpg";
 
 export default function ChatScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const [avatarError, setAvatarError] = useState(false);
   const { colors, isDark } = useTheme();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -215,7 +216,7 @@ export default function ChatScreen() {
       style={{ flex: 1, backgroundColor: colors.background.canvas }}
       edges={['top']}
       accessible={true}
-      accessibilityLabel="Tela de Chat com MãesValente"
+      accessibilityLabel="Tela de Chat com NathIA"
     >
       <StatusBar style={isDark ? "light" : "dark"} />
 
@@ -238,28 +239,50 @@ export default function ChatScreen() {
         <View
           style={{ position: 'relative' }}
           accessible={true}
-          accessibilityLabel="Avatar da MãesValente. Online"
+          accessibilityLabel="Avatar da NathIA. Online"
         >
-          <View style={{ width: 40, height: 40, backgroundColor: isDark ? colors.background.card : colors.primary.light, borderRadius: 20, overflow: 'hidden', borderWidth: 1, borderColor: isDark ? colors.border.light : colors.background.card }}>
-            <Image source={{ uri: AVATAR_URL }} style={{ width: '100%', height: '100%' }} contentFit="cover" transition={200} />
+          <View style={{ width: 32, height: 32, backgroundColor: isDark ? colors.background.card : colors.primary.light, borderRadius: 16, overflow: 'hidden', borderWidth: 1, borderColor: isDark ? colors.border.light : colors.background.card }}>
+            {!avatarError ? (
+              <Image 
+                source={{ uri: AVATAR_URL }} 
+                style={{ width: '100%', height: '100%' }} 
+                contentFit="cover" 
+                transition={200}
+                cachePolicy="memory-disk"
+                onError={() => setAvatarError(true)}
+              />
+            ) : (
+              <View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary.light }}>
+                <Text style={{ color: colors.primary.main, fontSize: 16 }}>💙</Text>
+              </View>
+            )}
           </View>
-          <View style={{ position: 'absolute', bottom: 0, right: 0, width: 12, height: 12, backgroundColor: colors.status.success, borderRadius: 6, borderWidth: 2, borderColor: colors.background.card }} />
+          <View style={{ position: 'absolute', bottom: -1, right: -1, width: 8, height: 8, backgroundColor: colors.status.success, borderRadius: 4, borderWidth: 1.5, borderColor: colors.background.card }} />
         </View>
 
         <View
-          style={{ flex: 1 }}
+          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}
           accessible={true}
           accessibilityRole="header"
-          accessibilityLabel="Chat com MãesValente, assistente de inteligência artificial"
+          accessibilityLabel="Chat com NathIA, assistente de inteligência artificial"
         >
-          <Text style={{ fontSize: Tokens.typography.sizes['3xs'], fontWeight: Tokens.typography.weights.bold, color: colors.primary.main, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 2 }}>
-            Nossa Maternidade
-          </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Text style={{ fontWeight: Tokens.typography.weights.bold, fontSize: Tokens.typography.sizes.lg, color: colors.text.primary }}>
-              MãesValente
+          <Image
+            source={require('../../assets/logo.png')}
+            style={{ width: 36, height: 36, borderRadius: 8 }}
+            contentFit="cover"
+            transition={200}
+            accessibilityLabel="Logo Nossa Maternidade"
+          />
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: Tokens.typography.sizes['3xs'], fontWeight: Tokens.typography.weights.bold, color: colors.primary.main, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 2 }}>
+              Nossa Maternidade
             </Text>
-            <Sparkles size={12} color={colors.primary.main} />
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Text style={{ fontWeight: Tokens.typography.weights.bold, fontSize: Tokens.typography.sizes.lg, color: colors.text.primary }}>
+                NathIA
+              </Text>
+              <Sparkles size={12} color={colors.primary.main} />
+            </View>
           </View>
         </View>
 
@@ -287,18 +310,31 @@ export default function ChatScreen() {
               style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: -48, paddingHorizontal: 24 }}
               accessible={true}
               accessibilityRole="text"
-              accessibilityLabel={`Bem-vinda ao chat com MãesValente. ${INITIAL_CHAT_GREETING}`}
+              accessibilityLabel={`Bem-vinda ao chat com NathIA. ${INITIAL_CHAT_GREETING}`}
             >
               <View
-                style={{ width: 144, height: 144, borderRadius: 72, borderWidth: 4, borderColor: colors.background.card, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 8, overflow: 'hidden', marginBottom: 16, backgroundColor: colors.border.medium }}
+                style={{ width: 96, height: 96, borderRadius: 48, borderWidth: 2, borderColor: colors.background.card, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.1, shadowRadius: 6, elevation: 6, overflow: 'hidden', marginBottom: 12, backgroundColor: colors.border.medium }}
                 accessible={true}
-                accessibilityLabel="Avatar da MãesValente"
+                accessibilityLabel="Avatar da NathIA"
               >
-                <Image source={{ uri: AVATAR_URL }} style={{ width: '100%', height: '100%' }} contentFit="cover" transition={200} />
+                {!avatarError ? (
+                  <Image 
+                    source={{ uri: AVATAR_URL }} 
+                    style={{ width: '100%', height: '100%' }} 
+                    contentFit="cover" 
+                    transition={200}
+                    cachePolicy="memory-disk"
+                    onError={() => setAvatarError(true)}
+                  />
+                ) : (
+                  <View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary.light }}>
+                    <Text style={{ color: colors.primary.main, fontSize: 44 }}>💙</Text>
+                  </View>
+                )}
               </View>
 
               <Text style={{ fontSize: Tokens.typography.sizes['3xl'], fontWeight: Tokens.typography.weights.bold, color: colors.text.primary, marginBottom: 4, textAlign: 'center' }}>
-                MãesValente
+                NathIA
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 24 }}>
                 <Sparkles size={14} color={colors.primary.main} />
@@ -325,7 +361,7 @@ export default function ChatScreen() {
                   <View
                     style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 16 }}
                     accessible={true}
-                    accessibilityLabel="MãesValente está digitando"
+                    accessibilityLabel="NathIA está digitando"
                   >
                     <View style={{ backgroundColor: colors.background.card, padding: 16, borderRadius: 16, borderBottomLeftRadius: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1, borderWidth: 1, borderColor: isDark ? colors.border.light : 'transparent' }}>
                       <ActivityIndicator size="small" color={colors.text.tertiary} />
@@ -386,7 +422,7 @@ export default function ChatScreen() {
                 borderColor: colors.border.light
               }}
               accessibilityLabel="Campo de mensagem"
-              accessibilityHint="Digite sua mensagem para MãesValente"
+              accessibilityHint="Digite sua mensagem para NathIA"
             />
             <TouchableOpacity
               onPress={() => handleSend()}
@@ -405,7 +441,7 @@ export default function ChatScreen() {
               }}
               accessibilityRole="button"
               accessibilityLabel={loading ? "Enviando mensagem" : "Enviar mensagem"}
-              accessibilityHint="Envia sua mensagem para MãesValente"
+              accessibilityHint="Envia sua mensagem para NathIA"
               accessibilityState={{ disabled: !input.trim() || loading }}
             >
               {loading ? (

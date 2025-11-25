@@ -93,26 +93,35 @@ export default function DiaryScreen() {
           <ArrowLeft size={20} color={isDark ? '#000000' : '#FFFFFF'} />
         </TouchableOpacity>
 
-        <View className="items-center" accessible={true} accessibilityRole="header">
-          <Text
-            className="text-[10px] font-bold uppercase tracking-widest"
-            style={{ color: colors.primary.main }}
-            accessibilityLabel="Nossa Maternidade"
-          >
-            Nossa Maternidade
-          </Text>
-          <View className="flex-row items-center gap-1">
+        <View className="items-center" accessible={true} accessibilityRole="header" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Image
+            source={require('../../assets/logo.png')}
+            style={{ width: 32, height: 32, borderRadius: 8 }}
+            contentFit="cover"
+            transition={200}
+            accessibilityLabel="Logo Nossa Maternidade"
+          />
+          <View className="items-center">
             <Text
-              className="text-sm font-bold"
-              style={{ color: colors.text.primary }}
-              accessibilityLabel="Diário MãesValente"
+              className="text-[10px] font-bold uppercase tracking-widest"
+              style={{ color: colors.primary.main }}
+              accessibilityLabel="Nossa Maternidade"
             >
-              Diário{' '}
+              Nossa Maternidade
             </Text>
-            <Sparkles size={10} color={colors.primary.main} />
-            <Text className="text-sm font-bold" style={{ color: colors.text.primary }}>
-              {' '}MãesValente
-            </Text>
+            <View className="flex-row items-center gap-1">
+              <Text
+                className="text-sm font-bold"
+                style={{ color: colors.text.primary }}
+                accessibilityLabel="Diário MãesValente"
+              >
+                Diário{' '}
+              </Text>
+              <Sparkles size={10} color={colors.primary.main} />
+              <Text className="text-sm font-bold" style={{ color: colors.text.primary }}>
+                {' '}MãesValente
+              </Text>
+            </View>
           </View>
         </View>
 
@@ -185,15 +194,16 @@ export default function DiaryScreen() {
             {/* NathIA Response */}
             <View className="flex-row gap-4 mb-8">
               <View
-                className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md"
+                style={{ width: 32, height: 32, borderRadius: 16, overflow: 'hidden', borderWidth: 1.5, borderColor: '#FFFFFF', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 2, elevation: 2 }}
                 accessible={true}
-                accessibilityLabel="Avatar da MãesValente"
+                accessibilityLabel="Avatar da NathIA"
               >
                 <Image
-                  source={{ uri: 'https://i.imgur.com/RRIaE7t.jpg' }}
-                  className="w-full h-full"
+                  source={{ uri: 'https://i.imgur.com/oB9ewPG.jpg' }}
+                  style={{ width: '100%', height: '100%' }}
                   contentFit="cover"
                   transition={200}
+                  cachePolicy="memory-disk"
                 />
               </View>
               <View
@@ -202,7 +212,7 @@ export default function DiaryScreen() {
                   backgroundColor: isDark ? '#0B1220' : '#E8F0FE',
                 }}
                 accessible={true}
-                accessibilityLabel={`Resposta da MãesValente: ${response}`}
+                accessibilityLabel={`Resposta da NathIA: ${response}`}
                 accessibilityRole="text"
               >
                 <Sparkles
@@ -256,7 +266,7 @@ export default function DiaryScreen() {
           }}
         >
           <Button
-            title={isAnalyzing ? 'Analisando com carinho...' : 'Enviar para MãesValente'}
+            title={isAnalyzing ? 'Analisando com carinho...' : 'Enviar para NathIA'}
             onPress={handleSubmit}
             disabled={!entry.trim() || isAnalyzing}
             loading={isAnalyzing}

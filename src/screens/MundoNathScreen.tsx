@@ -40,7 +40,7 @@ type NavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList>
 >;
 
-const AVATAR_URL = 'https://i.imgur.com/RRIaE7t.jpg';
+const AVATAR_URL = 'https://i.imgur.com/tNIrNIs.jpg';
 
 interface QuickActionCardProps {
   id: string;
@@ -269,12 +269,21 @@ export default function MundoNathScreen() {
       <ScrollView className="flex-1" contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <View style={styles.greetingRow}>
-              <Text style={[styles.greeting, { color: colors.text.secondary }]}>{getGreeting()},</Text>
-              <Sparkles size={14} color="#FF8FA3" />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <Image
+              source={{ uri: AVATAR_URL }}
+              style={styles.headerAvatar}
+              contentFit="cover"
+              transition={200}
+              accessibilityLabel="Avatar Mundo Nath"
+            />
+            <View>
+              <View style={styles.greetingRow}>
+                <Text style={[styles.greeting, { color: colors.text.secondary }]}>{getGreeting()},</Text>
+                <Sparkles size={14} color="#FF8FA3" />
+              </View>
+              <Text style={[styles.userName, { color: colors.text.primary }]}>{userName}</Text>
             </View>
-            <Text style={[styles.userName, { color: colors.text.primary }]}>{userName}</Text>
           </View>
 
           <TouchableOpacity
@@ -397,6 +406,13 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 24,
     fontWeight: 'bold',
+  },
+  headerAvatar: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 2.5,
+    borderColor: 'rgba(255, 143, 163, 0.4)',
   },
   themeButton: {
     padding: 8,

@@ -31,10 +31,7 @@ export const refugioNath = {
 
 // 4. Logo Principal - Mãe segurando bebê dormindo (intimidade)
 // Usada em: SplashScreen, Logo principal
-export const logoPrincipal = {
-  uri: 'https://i.imgur.com/GDYdiuy.jpg',
-  // Para usar imagem local: require('./logo-principal.png')
-};
+export const logoPrincipal = require('../../../assets/logo.png');
 
 export default {
   nathAvatar,

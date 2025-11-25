@@ -58,7 +58,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       accessibilityRole="text"
       accessibilityLabel={
         accessibilityLabel ||
-        (isUser ? `Você disse: ${content}` : `MãesValente respondeu: ${content}`)
+        (isUser ? `Você disse: ${content}` : `NathIA respondeu: ${content}`)
       }
     >
       <View style={bubbleStyle}>

@@ -204,7 +204,16 @@ export default function OnboardingFlow() {
             <View className="flex-1" style={{ width: '100%' }}>
               {/* Title - Nossa Maternidade (Topo esquerdo) */}
               <View className="absolute top-20 left-6" style={{ zIndex: 10 }}>
-                <Sun size={24} color={colors.text.primary} style={{ marginBottom: 12 }} />
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                  <Image
+                    source={require('../../../assets/logo.png')}
+                    style={{ width: 48, height: 48, borderRadius: 10 }}
+                    contentFit="cover"
+                    transition={200}
+                    accessibilityLabel="Logo Nossa Maternidade"
+                  />
+                  <Sun size={24} color={colors.text.primary} />
+                </View>
                 <Text 
                   className="text-3xl sm:text-4xl font-bold" 
                   style={{ color: colors.text.primary, marginBottom: 4 }}
