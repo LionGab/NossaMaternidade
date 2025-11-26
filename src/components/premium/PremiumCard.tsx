@@ -25,7 +25,7 @@ export interface PremiumCardProps {
   animationType?: 'fadeIn' | 'slideUp' | 'scaleIn' | 'slideInLeft' | 'slideInRight';
   delay?: number;
   style?: ViewStyle;
-  gradientColors?: any;
+  gradientColors?: string[];
   hapticFeedback?: boolean;
   fullWidth?: boolean;
 }
@@ -41,7 +41,7 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
   animationType = 'fadeIn',
   delay = 0,
   style,
-  gradientColors = COLORS.background.gradient.premium as any,
+  gradientColors = COLORS.background.gradient.premium as string[],
   hapticFeedback = true,
   fullWidth = false,
 }) => {
@@ -222,7 +222,7 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
   };
 
   const getAnimatedStyle = () => {
-    const transforms: any[] = [];
+    const transforms: Array<{ scale?: Animated.Value; translateY?: Animated.Value; translateX?: Animated.Value }> = [];
 
     // Sempre adicionar scale
     transforms.push({ scale: pressScale });
@@ -267,7 +267,7 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
 
   const content = variant === 'gradient' ? (
     <LinearGradient
-      colors={gradientColors}
+      colors={gradientColors as readonly [string, string, ...string[]]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[styles.gradientContainer, getPaddingStyle()]}
@@ -280,7 +280,7 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
 
   if (onPress) {
     return (
-      <Animated.View style={animatedCardStyle}>
+      <Animated.View style={animatedCardStyle as any}>
         <TouchableOpacity
           onPress={handlePress}
           onPressIn={handlePressIn}
@@ -298,7 +298,7 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
   }
 
   return (
-    <Animated.View style={animatedCardStyle}>
+    <Animated.View style={animatedCardStyle as any}>
       {content}
     </Animated.View>
   );

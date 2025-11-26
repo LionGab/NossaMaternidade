@@ -99,6 +99,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       return () => clearInterval(interval);
     } else {
       pulseAnim.setValue(1);
+      return undefined;
     }
   }, [isPlaying, durationMs]);
 
