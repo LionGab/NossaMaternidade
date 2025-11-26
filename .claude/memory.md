@@ -291,7 +291,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGci... (configurado)
 POSTGRES_CONNECTION_STRING=postgresql://postgres:9E2XLJVsYzGGhuKP@db.mnszbkeuerjcevjvdqme.supabase.co:5432/postgres
 
 # Gemini
-EXPO_PUBLIC_GEMINI_API_KEY=AIzaSyC9YVWRmnGyGu4c9y7g-mNkkipDqb5JBZg
+EXPO_PUBLIC_GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
 
 # GitHub
 GITHUB_PERSONAL_ACCESS_TOKEN=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

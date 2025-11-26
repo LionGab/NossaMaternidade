@@ -112,7 +112,7 @@ export default function ContentDetailScreen({
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [fadeAnim, slideAnim]);
 
   const handlePlay = () => {
     haptics.medium();

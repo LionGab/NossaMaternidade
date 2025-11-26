@@ -3,7 +3,7 @@
  * Seção de comentários com suporte a tema
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,

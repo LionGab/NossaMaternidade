@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -33,7 +33,6 @@ import {
   TrendingUp,
   Settings,
 } from 'lucide-react-native';
-import { FlashList } from '@shopify/flash-list';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { Tokens } from '../theme/tokens';
 import { profileService } from '../services/profileService';
@@ -42,6 +41,7 @@ import { habitsService, UserHabit } from '../services/habitsService';
 import { milestonesService } from '../services/milestonesService';
 import { useHaptics } from '../hooks/useHaptics';
 import type { MainTabParamList, RootStackParamList } from '../navigation/types';
+import { logger } from '../utils/logger';
 
 type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'Home'>,
@@ -61,6 +61,60 @@ interface HomeHeaderProps {
   navigation: NavigationProp;
 }
 
+const headerStyles = StyleSheet.create({
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Tokens.spacing['4'],
+    paddingVertical: Tokens.spacing['3'],
+    borderBottomWidth: 1,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  headerSubtitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  avatarButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    overflow: 'hidden',
+    borderWidth: 2,
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+  },
+  avatarPlaceholder: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
 const HomeHeader: React.FC<HomeHeaderProps> = ({
   userName,
   avatarUrl,
@@ -69,10 +123,8 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   onToggleTheme,
   navigation,
 }) => {
-  const styles = useMemo(() => createStyles(colors, isDark), [colors, isDark]);
-
   return (
-    <View style={styles.headerContainer}>
+    <View style={[headerStyles.headerContainer, { backgroundColor: colors.background.card, borderBottomColor: colors.border.light }]}>
       <View accessible accessibilityRole="header" style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <Image
           source={require('../../assets/logo.png')}
@@ -82,20 +134,20 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           accessibilityLabel="Logo Nossa Maternidade"
         />
         <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle} accessibilityLabel={`Olá, ${userName}`}>
+          <Text style={[headerStyles.headerTitle, { color: colors.text.primary }]} accessibilityLabel={`Olá, ${userName}`}>
             Oi, {userName}.
           </Text>
-          <View style={styles.headerSubtitleRow}>
-            <Text style={styles.headerSubtitle} accessibilityLabel="Tô aqui com você">
+          <View style={headerStyles.headerSubtitleRow}>
+            <Text style={[headerStyles.headerSubtitle, { color: colors.primary.main }]} accessibilityLabel="Tô aqui com você">
               Tô aqui com você 💙
             </Text>
           </View>
         </View>
       </View>
-      <View style={styles.headerActions}>
+      <View style={headerStyles.headerActions}>
         <TouchableOpacity
           onPress={() => navigation.navigate('Settings' as never)}
-          style={styles.iconButton}
+          style={[headerStyles.iconButton, { backgroundColor: colors.background.canvas, borderColor: colors.border.light }]}
           accessibilityRole="button"
           accessibilityLabel="Configurações"
         >
@@ -103,7 +155,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onToggleTheme}
-          style={styles.iconButton}
+          style={[headerStyles.iconButton, { backgroundColor: colors.background.canvas, borderColor: colors.border.light }]}
           accessibilityRole="button"
           accessibilityLabel={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
         >
@@ -114,19 +166,19 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
           )}
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.avatarButton, { borderColor: colors.primary.main }]}
+          style={[headerStyles.avatarButton, { borderColor: colors.primary.main }]}
           accessibilityRole="button"
           accessibilityLabel="Foto de perfil"
         >
           {avatarUrl ? (
             <Image
               source={{ uri: avatarUrl }}
-              style={styles.avatarImage}
+              style={headerStyles.avatarImage}
               contentFit="cover"
               transition={200}
             />
           ) : (
-            <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary.light }]}>
+            <View style={[headerStyles.avatarPlaceholder, { backgroundColor: colors.primary.light }]}>
               <Text style={{ color: colors.text.primary, fontSize: 18 }}>👤</Text>
             </View>
           )}
@@ -145,7 +197,7 @@ interface SleepCardProps {
   onPress: () => void;
 }
 
-const SleepCard: React.FC<SleepCardProps> = ({ colors, onPress }) => (
+const SleepCard: React.FC<SleepCardProps> = ({ onPress }) => (
   <TouchableOpacity
     onPress={onPress}
     style={sleepCardStyles.container}
@@ -654,10 +706,83 @@ const contentCardStyles = StyleSheet.create({
 /*                                HOME SCREEN                                 */
 /* -------------------------------------------------------------------------- */
 
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 120,
+  },
+  mainContainer: {
+    paddingHorizontal: Tokens.spacing['4'],
+    paddingTop: Tokens.spacing['4'],
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  sectionBadge: {
+    backgroundColor: '#3B82F6',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  sectionBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  quickActionsRow: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  habitsRow: {
+    flexDirection: 'row',
+  },
+  mundoNathSection: {
+    marginTop: 24,
+  },
+  mundoNathHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  verTudoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  verTudoText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  contentListContainer: {
+    height: 200,
+  },
+});
+
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const { colors, isDark, toggleTheme } = useTheme();
-  const { width } = useWindowDimensions();
+  const { width: _width } = useWindowDimensions();
   const haptics = useHaptics();
 
   const [loading, setLoading] = useState(true);
@@ -668,15 +793,13 @@ const HomeScreen: React.FC = () => {
   const [userHabits, setUserHabits] = useState<UserHabit[]>([]);
   const [milestoneProgress, setMilestoneProgress] = useState(0);
 
-  const styles = useMemo(() => createStyles(colors, isDark), [colors, isDark]);
-
   const handleNavigate = useCallback(
     (screen: keyof RootStackParamList | keyof MainTabParamList) => {
       try {
         haptics.light();
         navigation.navigate(screen as never);
       } catch (error) {
-        console.error(`Erro ao navegar para ${screen}:`, error);
+        logger.error(`Erro ao navegar para ${screen}`, error);
       }
     },
     [navigation, haptics]
@@ -700,7 +823,7 @@ const HomeScreen: React.FC = () => {
       setUserHabits((habits || []).slice(0, 2));
       setMilestoneProgress(progress?.progress_percentage || 0);
     } catch (error) {
-      console.error('Erro ao carregar dados da home:', error);
+      logger.error('Erro ao carregar dados da home', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -717,7 +840,7 @@ const HomeScreen: React.FC = () => {
     loadHomeData();
   }, [loadHomeData, haptics]);
 
-  const renderContentCard = useCallback(
+  const _renderContentCard = useCallback(
     ({ item }: { item: ContentItem }) => (
       <ContentCard
         item={item}
@@ -829,7 +952,7 @@ const HomeScreen: React.FC = () => {
                 <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
                   Mundo Nath
                 </Text>
-                <TouchableOpacity
+                <TouchableOpacity accessibilityRole="button"
                   onPress={() => handleNavigate('MundoNath')}
                   style={styles.verTudoButton}
                 >
@@ -863,138 +986,3 @@ const HomeScreen: React.FC = () => {
 };
 
 export default HomeScreen;
-
-/* -------------------------------------------------------------------------- */
-/*                                   STYLES                                   */
-/* -------------------------------------------------------------------------- */
-
-const createStyles = (colors: ThemeColors, isDark: boolean) =>
-  StyleSheet.create({
-    safeArea: {
-      flex: 1,
-    },
-    loadingContainer: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    scrollView: {
-      flex: 1,
-    },
-    scrollContent: {
-      paddingBottom: 120,
-    },
-    mainContainer: {
-      paddingHorizontal: Tokens.spacing['4'],
-      paddingTop: Tokens.spacing['4'],
-    },
-    headerContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: Tokens.spacing['4'],
-      paddingVertical: Tokens.spacing['3'],
-      backgroundColor: colors.background.card,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border.light,
-    },
-    headerTitle: {
-      fontSize: 20,
-      fontWeight: '700',
-      color: colors.text.primary,
-    },
-    headerSubtitleRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginTop: 4,
-    },
-    headerSubtitle: {
-      fontSize: 14,
-      fontWeight: '500',
-      color: colors.primary.main,
-    },
-    headerActions: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 12,
-    },
-    iconButton: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: colors.background.canvas,
-      borderWidth: 1,
-      borderColor: colors.border.light,
-    },
-    avatarButton: {
-      width: 48,
-      height: 48,
-      borderRadius: 24,
-      overflow: 'hidden',
-      borderWidth: 2,
-    },
-    avatarImage: {
-      width: '100%',
-      height: '100%',
-    },
-    avatarPlaceholder: {
-      width: '100%',
-      height: '100%',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    sectionHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 16,
-    },
-    sectionTitle: {
-      fontSize: 16,
-      fontWeight: '700',
-    },
-    sectionBadge: {
-      backgroundColor: '#3B82F6',
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-      borderRadius: 20,
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 4,
-    },
-    sectionBadgeText: {
-      color: '#FFFFFF',
-      fontSize: 10,
-      fontWeight: '700',
-    },
-    quickActionsRow: {
-      flexDirection: 'row',
-      marginBottom: 16,
-    },
-    habitsRow: {
-      flexDirection: 'row',
-    },
-    mundoNathSection: {
-      marginTop: 24,
-    },
-    mundoNathHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 16,
-    },
-    verTudoButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 4,
-    },
-    verTudoText: {
-      fontSize: 12,
-      fontWeight: '700',
-    },
-    contentListContainer: {
-      height: 200,
-    },
-  });

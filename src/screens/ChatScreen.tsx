@@ -43,14 +43,6 @@ export default function ChatScreen() {
     initializeChat();
   }, []);
 
-  // Handle initial message from params
-  useEffect(() => {
-    const params = route.params as { initialMessage?: string } | undefined;
-    if (params?.initialMessage && conversationId) {
-      handleSend(params.initialMessage);
-    }
-  }, [route.params, conversationId]);
-
   const initializeChat = async () => {
     try {
       setLoadingMessages(true);
@@ -101,7 +93,7 @@ export default function ChatScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
-  const handleSend = async (textOverride?: string) => {
+  const handleSend = React.useCallback(async (textOverride?: string) => {
     const textToSend = textOverride || input;
     if (!textToSend.trim() || loading || !conversationId) return;
 
@@ -128,7 +120,15 @@ export default function ChatScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [conversationId, input, loading]);
+
+  // Handle initial message from params
+  useEffect(() => {
+    const params = route.params as { initialMessage?: string } | undefined;
+    if (params?.initialMessage && conversationId) {
+      handleSend(params.initialMessage);
+    }
+  }, [route.params, conversationId, handleSend]);
 
   const handleClearHistory = async () => {
     if (!conversationId) return;

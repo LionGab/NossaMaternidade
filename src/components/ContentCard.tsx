@@ -4,8 +4,8 @@
  * Theme-aware with Design System tokens
  */
 
-import React, { useRef, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Animated, ViewStyle, TextStyle } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Animated, GestureResponderEvent } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ContentItem, ContentType } from '../types/content';
 import { useThemeColors, type ThemeColors } from '@/theme';
@@ -19,7 +19,7 @@ interface ContentCardProps {
   onComment?: (item: ContentItem) => void;
 }
 
-const getTypeIcon = (type: ContentType): string => {
+const getTypeIcon = (type: ContentType): keyof typeof Ionicons.glyphMap => {
   switch (type) {
     case 'video':
       return 'play-circle';
@@ -49,191 +49,12 @@ const getTypeColor = (type: ContentType, colors: ThemeColors): string => {
   }
 };
 
-export const ContentCard: React.FC<ContentCardProps> = ({
-  item,
-  onPress,
-  onLike,
-  onComment,
-}) => {
-  const colors = useThemeColors();
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const haptics = useHaptics();
-  const [isLiked, setIsLiked] = React.useState(false);
-  const [likesCount, setLikesCount] = React.useState(item.likes || 0);
-
-  const typeColor = getTypeColor(item.type, colors);
-
-  const styles = useMemo(() => createStyles(colors), [colors]);
-
-  const handlePressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.97,
-      useNativeDriver: true,
-    }).start();
-    haptics.light();
-  };
-
-  const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handleLikePress = (e: any) => {
-    e.stopPropagation();
-    setIsLiked(!isLiked);
-    setLikesCount(isLiked ? likesCount - 1 : likesCount + 1);
-    haptics.medium();
-    onLike?.(item);
-  };
-
-  const handleCommentPress = (e: any) => {
-    e.stopPropagation();
-    haptics.light();
-    onComment?.(item);
-  };
-
-  return (
-    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-      <TouchableOpacity
-        accessibilityRole="button"
-        accessibilityLabel={`Conteúdo: ${item.title}`}
-        onPress={onPress}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        activeOpacity={0.9}
-        style={styles.contentCard}
-      >
-        <View style={styles.cardImageContainer}>
-          <Image source={{ uri: item.imageUrl }} style={styles.cardImage} />
-          <View style={styles.cardImageOverlay} />
-
-          {/* Exclusive Badge */}
-          {item.isExclusive && (
-            <View style={styles.exclusiveBadge}>
-              <Ionicons name="lock-closed" size={10} color={colors.raw.neutral[0]} />
-              <Text style={styles.exclusiveBadgeText}>EXCLUSIVO</Text>
-            </View>
-          )}
-
-          {/* Type Icon */}
-          <View
-            style={[
-              styles.typeIconContainer,
-              { backgroundColor: `${typeColor}40` },
-            ]}
-          >
-            <Ionicons
-              name={getTypeIcon(item.type) as any}
-              size={20}
-              color={typeColor}
-            />
-          </View>
-
-          {/* Duration */}
-          {item.duration && (
-            <View style={styles.durationBadge}>
-              <Text style={styles.durationText}>{item.duration}</Text>
-            </View>
-          )}
-
-          {/* Stats */}
-          <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <Ionicons name="eye-outline" size={12} color={colors.raw.neutral[0]} />
-              <Text style={styles.statText}>{item.views?.toLocaleString()}</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Ionicons name="heart-outline" size={12} color={colors.raw.neutral[0]} />
-              <Text style={styles.statText}>{item.likes?.toLocaleString()}</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.cardContent}>
-          <View style={styles.cardHeader}>
-            <View
-              style={[
-                styles.typeBadge,
-                { backgroundColor: `${typeColor}20` },
-              ]}
-            >
-              <Text
-                style={[styles.typeBadgeText, { color: typeColor }]}
-              >
-                {item.type}
-              </Text>
-            </View>
-            <Text style={styles.cardDate}>{item.date}</Text>
-          </View>
-
-          <Text style={styles.cardTitle} numberOfLines={2}>
-            {item.title}
-          </Text>
-          <Text style={styles.cardDescription} numberOfLines={2}>
-            {item.description}
-          </Text>
-
-          {item.tags && item.tags.length > 0 && (
-            <View style={styles.tagsContainer}>
-              {item.tags.slice(0, 3).map((tag, index) => (
-                <View key={index} style={styles.tag}>
-                  <Text style={styles.tagText}>#{tag}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-
-          {/* Action Buttons */}
-          <View style={styles.cardActions}>
-            <TouchableOpacity
-              accessibilityRole="button"
-              accessibilityLabel={isLiked ? 'Remover curtida' : 'Curtir'}
-              style={styles.actionButton}
-              onPress={handleLikePress}
-              activeOpacity={0.7}
-            >
-              <Ionicons
-                name={isLiked ? 'heart' : 'heart-outline'}
-                size={20}
-                color={isLiked ? colors.raw.error[500] : colors.text.secondary}
-              />
-              <Text
-                style={[
-                  styles.actionButtonText,
-                  isLiked && { color: colors.raw.error[500] },
-                ]}
-              >
-                {likesCount.toLocaleString()}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              accessibilityRole="button"
-              accessibilityLabel="Comentar"
-              style={styles.actionButton}
-              onPress={handleCommentPress}
-              activeOpacity={0.7}
-            >
-              <Ionicons name="chatbubble-outline" size={20} color={colors.text.secondary} />
-              <Text style={styles.actionButtonText}>Comentar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-};
-
-const createStyles = (colors: ThemeColors) => StyleSheet.create({
+const styles = StyleSheet.create({
   contentCard: {
-    backgroundColor: colors.background.card,
     borderRadius: Tokens.radius['2xl'],
     overflow: 'hidden',
     marginBottom: Tokens.spacing['4'],
     borderWidth: 1,
-    borderColor: colors.border.light,
   },
   cardImageContainer: {
     width: '100%',
@@ -258,7 +79,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     left: Tokens.spacing['3'],
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.raw.secondary[400],
     paddingHorizontal: Tokens.spacing['2'],
     paddingVertical: Tokens.spacing['1'],
     borderRadius: Tokens.radius.md,
@@ -267,7 +87,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   exclusiveBadgeText: {
     fontSize: Tokens.typography.sizes.xs - 3,
     fontWeight: Tokens.typography.weights.bold,
-    color: colors.raw.neutral[0],
     letterSpacing: 0.5,
   },
   typeIconContainer: {
@@ -292,7 +111,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   durationText: {
     fontSize: Tokens.typography.sizes.xs,
     fontWeight: Tokens.typography.weights.semibold,
-    color: colors.raw.neutral[0],
   },
   statsContainer: {
     position: 'absolute',
@@ -313,7 +131,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   statText: {
     fontSize: Tokens.typography.sizes.xs,
     fontWeight: Tokens.typography.weights.semibold,
-    color: colors.raw.neutral[0],
   },
   cardContent: {
     padding: Tokens.spacing['4'],
@@ -336,18 +153,15 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   cardDate: {
     fontSize: Tokens.typography.sizes.xs,
-    color: colors.text.tertiary,
   },
   cardTitle: {
     fontSize: Tokens.typography.sizes.lg,
     fontWeight: Tokens.typography.weights.bold,
-    color: colors.text.primary,
     marginBottom: Tokens.spacing['1.5'],
     lineHeight: 24,
   },
   cardDescription: {
     fontSize: Tokens.typography.sizes.sm,
-    color: colors.text.secondary,
     lineHeight: 20,
     marginBottom: Tokens.spacing['3'],
   },
@@ -358,14 +172,12 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     marginBottom: Tokens.spacing['3'],
   },
   tag: {
-    backgroundColor: colors.background.elevated,
     paddingHorizontal: Tokens.spacing['2'],
     paddingVertical: Tokens.spacing['1'],
     borderRadius: Tokens.radius.sm,
   },
   tagText: {
     fontSize: Tokens.typography.sizes.xs,
-    color: colors.text.secondary,
   },
   cardActions: {
     flexDirection: 'row',
@@ -373,7 +185,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     marginTop: Tokens.spacing['3'],
     paddingTop: Tokens.spacing['3'],
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
   },
   actionButton: {
     flexDirection: 'row',
@@ -382,14 +193,188 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     paddingVertical: Tokens.spacing['1.5'],
     paddingHorizontal: Tokens.spacing['3'],
     borderRadius: Tokens.radius.lg,
-    backgroundColor: colors.background.elevated,
     minHeight: Tokens.touchTargets.min,
   },
   actionButtonText: {
     fontSize: Tokens.typography.sizes.sm - 1,
     fontWeight: Tokens.typography.weights.semibold,
-    color: colors.text.secondary,
   },
 });
+
+export const ContentCard: React.FC<ContentCardProps> = ({
+  item,
+  onPress,
+  onLike,
+  onComment,
+}) => {
+  const colors = useThemeColors();
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const haptics = useHaptics();
+  const [isLiked, setIsLiked] = React.useState(false);
+  const [likesCount, setLikesCount] = React.useState(item.likes || 0);
+
+  const typeColor = getTypeColor(item.type, colors);
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.97,
+      useNativeDriver: true,
+    }).start();
+    haptics.light();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleLikePress = (e: GestureResponderEvent) => {
+    e.stopPropagation();
+    setIsLiked(!isLiked);
+    setLikesCount(isLiked ? likesCount - 1 : likesCount + 1);
+    haptics.medium();
+    onLike?.(item);
+  };
+
+  const handleCommentPress = (e: GestureResponderEvent) => {
+    e.stopPropagation();
+    haptics.light();
+    onComment?.(item);
+  };
+
+  return (
+    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityLabel={`Conteúdo: ${item.title}`}
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        activeOpacity={0.9}
+        style={[styles.contentCard, { backgroundColor: colors.background.card, borderColor: colors.border.light }]}
+      >
+        <View style={styles.cardImageContainer}>
+          <Image source={{ uri: item.imageUrl }} style={styles.cardImage} />
+          <View style={styles.cardImageOverlay} />
+
+          {/* Exclusive Badge */}
+          {item.isExclusive && (
+            <View style={[styles.exclusiveBadge, { backgroundColor: colors.raw.secondary[400] }]}>
+              <Ionicons name="lock-closed" size={10} color={colors.raw.neutral[0]} />
+              <Text style={[styles.exclusiveBadgeText, { color: colors.raw.neutral[0] }]}>EXCLUSIVO</Text>
+            </View>
+          )}
+
+          {/* Type Icon */}
+          <View
+            style={[
+              styles.typeIconContainer,
+              { backgroundColor: `${typeColor}40` },
+            ]}
+          >
+            <Ionicons
+              name={getTypeIcon(item.type)}
+              size={20}
+              color={typeColor}
+            />
+          </View>
+
+          {/* Duration */}
+          {item.duration && (
+            <View style={styles.durationBadge}>
+              <Text style={[styles.durationText, { color: colors.raw.neutral[0] }]}>{item.duration}</Text>
+            </View>
+          )}
+
+          {/* Stats */}
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <Ionicons name="eye-outline" size={12} color={colors.raw.neutral[0]} />
+              <Text style={[styles.statText, { color: colors.raw.neutral[0] }]}>{item.views?.toLocaleString()}</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Ionicons name="heart-outline" size={12} color={colors.raw.neutral[0]} />
+              <Text style={[styles.statText, { color: colors.raw.neutral[0] }]}>{item.likes?.toLocaleString()}</Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.cardContent}>
+          <View style={styles.cardHeader}>
+            <View
+              style={[
+                styles.typeBadge,
+                { backgroundColor: `${typeColor}20` },
+              ]}
+            >
+              <Text
+                style={[styles.typeBadgeText, { color: typeColor }]}
+              >
+                {item.type}
+              </Text>
+            </View>
+            <Text style={[styles.cardDate, { color: colors.text.tertiary }]}>{item.date}</Text>
+          </View>
+
+          <Text style={[styles.cardTitle, { color: colors.text.primary }]} numberOfLines={2}>
+            {item.title}
+          </Text>
+          <Text style={[styles.cardDescription, { color: colors.text.secondary }]} numberOfLines={2}>
+            {item.description}
+          </Text>
+
+          {item.tags && item.tags.length > 0 && (
+            <View style={styles.tagsContainer}>
+              {item.tags.slice(0, 3).map((tag, index) => (
+                <View key={index} style={[styles.tag, { backgroundColor: colors.background.elevated }]}>
+                  <Text style={[styles.tagText, { color: colors.text.secondary }]}>#{tag}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Action Buttons */}
+          <View style={[styles.cardActions, { borderTopColor: colors.border.light }]}>
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={isLiked ? 'Remover curtida' : 'Curtir'}
+              style={[styles.actionButton, { backgroundColor: colors.background.elevated }]}
+              onPress={handleLikePress}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={isLiked ? 'heart' : 'heart-outline'}
+                size={20}
+                color={isLiked ? colors.raw.error[500] : colors.text.secondary}
+              />
+              <Text
+                style={[
+                  styles.actionButtonText,
+                  { color: colors.text.secondary },
+                  isLiked && { color: colors.raw.error[500] },
+                ]}
+              >
+                {likesCount.toLocaleString()}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel="Comentar"
+              style={[styles.actionButton, { backgroundColor: colors.background.elevated }]}
+              onPress={handleCommentPress}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="chatbubble-outline" size={20} color={colors.text.secondary} />
+              <Text style={[styles.actionButtonText, { color: colors.text.secondary }]}>Comentar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
 
 export default ContentCard;

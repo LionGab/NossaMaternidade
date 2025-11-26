@@ -238,7 +238,7 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onToggle, isCompletedToday
       tension: 100,
       friction: 7,
     }).start();
-  }, [isCompletedToday]);
+  }, [isCompletedToday, checkAnim]);
 
   const handlePress = () => {
     haptics.medium();

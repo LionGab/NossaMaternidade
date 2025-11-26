@@ -7,7 +7,7 @@
  * <ProgressIndicator type="circular" indeterminate />
  */
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -84,7 +84,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   const sizeValue = getSizeValue();
 
   // Verificar milestones para haptic
-  const checkMilestones = (value: number) => {
+  const checkMilestones = useCallback((value: number) => {
     if (!hapticOnMilestones) return;
 
     const milestones = [0.25, 0.5, 0.75, 1];
@@ -99,7 +99,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
         break;
       }
     }
-  };
+  }, [hapticOnMilestones]);
 
   // Animação de progresso
   useEffect(() => {

@@ -1,6 +1,6 @@
 // @ts-nocheck
 // NOTA: Este arquivo não está sendo usado no app atualmente (não está registrado na navegação)
-// Desabilitando type-checking para evitar erros que bloqueiam o build
+// TODO: Refatorar para usar os Tokens do Design System quando for ativado
 import React, { useState, useRef, useCallback } from 'react';
 import {
   View,
@@ -10,9 +10,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
-  Platform,
   StatusBar,
-  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,7 +18,7 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-import { PremiumButton, PremiumCard } from '../components/premium';
+import { PremiumButton } from '../components/premium';
 
 // Theme constants (migrated from deleted Theme.ts)
 const COLORS = {
@@ -104,7 +102,7 @@ const ANIMATIONS = {
   },
 };
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface OnboardingSlide {
   id: string;
@@ -154,7 +152,7 @@ const OnboardingSlideComponent: React.FC<{
   slide: OnboardingSlide;
   index: number;
   isActive: boolean;
-}> = ({ slide, index, isActive }) => {
+}> = ({ slide, isActive }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -193,7 +191,7 @@ const OnboardingSlideComponent: React.FC<{
         }),
       ]).start();
     }
-  }, [isActive]);
+  }, [isActive, fadeAnim, rotateAnim, scaleAnim]);
 
   return (
     <View style={styles.slide}>
@@ -303,7 +301,7 @@ const PremiumOnboarding: React.FC = () => {
       duration: ANIMATIONS.duration.normal,
       useNativeDriver: false,
     }).start();
-  }, [currentIndex]);
+  }, [currentIndex, progressAnim]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>

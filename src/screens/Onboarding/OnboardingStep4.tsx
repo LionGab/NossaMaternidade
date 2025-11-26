@@ -16,13 +16,13 @@ interface OnboardingStepProps {
 }
 
 export default function OnboardingStep4({ step, formData, updateData, nextStep, prevStep }: OnboardingStepProps) {
-  const { colors, isDark, toggleTheme } = useTheme();
+  const { colors, toggleTheme, isDark } = useTheme();
   const TOTAL_STEPS = 9;
   const [sliderValue, setSliderValue] = useState(20);
   
   const isPregnant = formData.stage === 'Gestante';
   const maxVal = isPregnant ? 42 : 24;
-  const label = isPregnant ? 'Semanas de gestação' : 'Meses do bebê';
+  const _label = isPregnant ? 'Semanas de gestação' : 'Meses do bebê';
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: isDark ? '#020617' : '#FFFFFF' }}>

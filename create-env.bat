@@ -27,10 +27,10 @@ echo # ============================================
 echo # APIs DE IA (Edge Functions apenas - NÃO usar EXPO_PUBLIC_*)
 echo # ============================================
 echo.
-echo GEMINI_API_KEY=AIzaSyC9YVWRmnGyGu4c9y7g-mNkkipDqb5JBZg
-echo CLAUDE_API_KEY=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
-echo OPENAI_API_KEY=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
-echo PERPLEXITY_API_KEY=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
+echo GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
+echo CLAUDE_API_KEY=YOUR_CLAUDE_API_KEY_HERE
+echo OPENAI_API_KEY=YOUR_OPENAI_API_KEY_HERE
+echo PERPLEXITY_API_KEY=YOUR_PERPLEXITY_API_KEY_HERE
 echo.
 echo # ============================================
 echo # FEATURE FLAGS

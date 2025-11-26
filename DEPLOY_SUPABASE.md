@@ -72,7 +72,7 @@ supabase link
 
 ```bash
 # Configurar Gemini API Key na Edge Function
-supabase secrets set GEMINI_API_KEY=AIzaSyC9YVWRmnGyGu4c9y7g-mNkkipDqb5JBZg
+supabase secrets set GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
 
 # Verificar secrets
 supabase secrets list
@@ -189,7 +189,7 @@ supabase functions deploy chat-ai --no-verify-jwt
 ### **Problema: "GEMINI_API_KEY not set"**
 ```bash
 # Configurar secret
-supabase secrets set GEMINI_API_KEY=AIzaSyC9YVWRmnGyGu4c9y7g-mNkkipDqb5JBZg
+supabase secrets set GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
 
 # Re-deploy
 supabase functions deploy chat-ai --no-verify-jwt
@@ -304,7 +304,7 @@ supabase login
 supabase link --project-ref bbcwitnbnosyfpfjtzkr
 
 # 3. Configurar secret
-supabase secrets set GEMINI_API_KEY=AIzaSyC9YVWRmnGyGu4c9y7g-mNkkipDqb5JBZg
+supabase secrets set GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
 
 # 4. Deploy
 supabase functions deploy chat-ai --no-verify-jwt
