@@ -32,8 +32,8 @@ export default function OnboardingStep1({ onNext }: OnboardingStep1Props) {
       <LinearGradient
         colors={
           isDark
-            ? ['#020617', '#1E293B', '#334155'] as [string, string, ...string[]]
-            : ['#F0F8FF', '#E6F0FA', '#FFFFFF'] as [string, string, ...string[]]
+            ? (colors.background.gradient.primary as [string, string, ...string[]])
+            : ([colors.background.gradient.primary[0], colors.background.gradient.primary[1], colors.background.card] as [string, string, ...string[]])
         }
         style={StyleSheet.absoluteFill}
       />
@@ -64,8 +64,8 @@ export default function OnboardingStep1({ onNext }: OnboardingStep1Props) {
             styles.illustrationCircle,
             {
               backgroundColor: isDark
-                ? 'rgba(96, 165, 250, 0.1)'
-                : 'rgba(0, 78, 154, 0.05)',
+                ? `${colors.primary.main}1A` // 0.1 opacity
+                : `${colors.primary.main}0D`, // 0.05 opacity
               borderColor: colors.primary.main,
             },
           ]}
@@ -130,11 +130,11 @@ export default function OnboardingStep1({ onNext }: OnboardingStep1Props) {
           }}
         >
           <View style={styles.buttonContent}>
-            <Heart size={20} color="#FFFFFF" fill="#FFFFFF" />
+            <Heart size={20} color={colors.text.inverse} fill={colors.text.inverse} />
             <Text
               size="lg"
               weight="bold"
-              style={{ color: '#FFFFFF', marginLeft: Tokens.spacing['2'] }}
+              style={{ color: colors.text.inverse, marginLeft: Tokens.spacing['2'] }}
             >
               Começar agora
             </Text>

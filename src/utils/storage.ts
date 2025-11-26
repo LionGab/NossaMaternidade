@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Message } from '../types/chat';
+import { ChatMessage } from '../types/chat';
 
 const CHAT_HISTORY_KEY = '@nossa_maternidade:chat_history';
 const API_KEY_STORAGE = '@nossa_maternidade:gemini_api_key';
 
 export const storageService = {
   // Chat history operations
-  async saveMessages(messages: Message[]): Promise<void> {
+  async saveMessages(messages: ChatMessage[]): Promise<void> {
     try {
       const jsonValue = JSON.stringify(messages);
       await AsyncStorage.setItem(CHAT_HISTORY_KEY, jsonValue);
@@ -16,7 +16,7 @@ export const storageService = {
     }
   },
 
-  async loadMessages(): Promise<Message[]> {
+  async loadMessages(): Promise<ChatMessage[]> {
     try {
       const jsonValue = await AsyncStorage.getItem(CHAT_HISTORY_KEY);
       return jsonValue != null ? JSON.parse(jsonValue) : [];

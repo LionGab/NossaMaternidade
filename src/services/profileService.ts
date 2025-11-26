@@ -3,46 +3,11 @@ import * as FileSystem from 'expo-file-system';
 import { decode } from 'base64-arraybuffer';
 import type { PostgrestError } from '@supabase/supabase-js';
 import type { StorageError } from '@supabase/storage-js';
+import type { UserProfile } from '@/types/user';
+import { logger } from '@/utils/logger';
 
-export interface UserProfile {
-  id: string;
-  email?: string;
-  full_name?: string;
-  display_name?: string; // Nome/apelido do onboarding rápido
-  avatar_url?: string;
-  phone?: string;
-
-  // Dados do onboarding
-  motherhood_stage?: 'trying_to_conceive' | 'pregnant' | 'postpartum' | 'experienced_mother';
-  pregnancy_week?: number;
-  baby_birth_date?: string;
-  baby_name?: string;
-  baby_gender?: 'male' | 'female' | 'unknown' | 'prefer_not_say';
-
-  // Dados do onboarding rápido (5-7 perguntas)
-  life_stage_generic?: 'pregnant' | 'has_children' | 'trying' | 'caregiver' | 'self_care';
-  main_goals?: string[];
-  baseline_emotion?: 'bem' | 'triste' | 'ansiosa' | 'cansada' | 'calma';
-  first_focus?: 'emotional_care' | 'organization' | 'reduce_fatigue' | 'community' | 'content';
-  preferred_language_tone?: 'friendly' | 'direct' | 'mentor';
-  notification_opt_in?: boolean;
-
-  // Preferências
-  emotions?: string[];
-  needs?: string[];
-  interests?: string[];
-
-  // Configurações
-  theme?: 'light' | 'dark' | 'auto';
-  language?: string;
-  notifications_enabled?: boolean;
-
-  // Metadata
-  onboarding_completed?: boolean;
-  onboarding_step?: number;
-  created_at?: string;
-  updated_at?: string;
-}
+// Re-export UserProfile for backward compatibility
+export type { UserProfile } from '@/types/user';
 
 export interface ServiceResponse {
   success: boolean;
@@ -86,7 +51,7 @@ class ProfileService {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        console.log('Usuária não autenticada');
+        logger.info('Usuária não autenticada');
         return null;
       }
 
@@ -97,13 +62,13 @@ class ProfileService {
         .single();
 
       if (error) {
-        console.error('Erro ao buscar perfil:', error);
+        logger.error('Erro ao buscar perfil:', error);
         return null;
       }
 
-      return data as UserProfile;
+      return { ...data, id: user.id } as UserProfile;
     } catch (error) {
-      console.error('Erro inesperado ao buscar perfil:', error);
+      logger.error('Erro inesperado ao buscar perfil:', error, { service: 'ProfileService' });
       return null;
     }
   }
@@ -120,13 +85,13 @@ class ProfileService {
         .single();
 
       if (error) {
-        console.error('Erro ao buscar perfil:', error);
+        logger.error('Erro ao buscar perfil:', error, { service: 'ProfileService', userId });
         return null;
       }
 
-      return data as UserProfile;
+      return { ...data, id: userId } as UserProfile;
     } catch (error) {
-      console.error('Erro inesperado ao buscar perfil:', error);
+      logger.error('Erro inesperado ao buscar perfil:', error, { service: 'ProfileService', userId });
       return null;
     }
   }
@@ -148,13 +113,13 @@ class ProfileService {
         .eq('id', user.id);
 
       if (error) {
-        console.error('Erro ao atualizar perfil:', error);
+        logger.error('Erro ao atualizar perfil:', error, { service: 'ProfileService', userId: user.id });
         return { success: false, error };
       }
 
       return { success: true };
     } catch (error) {
-      console.error('Erro inesperado ao atualizar perfil:', error);
+      logger.error('Erro inesperado ao atualizar perfil:', error, { service: 'ProfileService' });
       const errorMsg = error instanceof Error ? error.message : String(error);
       return { success: false, error: errorMsg };
     }
@@ -190,7 +155,7 @@ class ProfileService {
         });
 
       if (uploadError) {
-        console.error('Erro ao fazer upload de avatar:', uploadError);
+        logger.error('Erro ao fazer upload de avatar:', uploadError, { service: 'ProfileService', userId: user.id });
         return { url: null, error: uploadError };
       }
 
@@ -204,7 +169,7 @@ class ProfileService {
 
       return { url: publicUrl };
     } catch (error) {
-      console.error('Erro inesperado ao fazer upload de avatar:', error);
+      logger.error('Erro inesperado ao fazer upload de avatar:', error, { service: 'ProfileService' });
       const errorMsg = error instanceof Error ? error.message : String(error);
       return { url: null, error: errorMsg };
     }
@@ -235,7 +200,7 @@ class ProfileService {
         .remove([filePath]);
 
       if (deleteError) {
-        console.error('Erro ao deletar avatar:', deleteError);
+        logger.error('Erro ao deletar avatar:', deleteError, { service: 'ProfileService', userId: user.id });
         return { success: false, error: deleteError };
       }
 
@@ -244,7 +209,7 @@ class ProfileService {
 
       return { success: true };
     } catch (error) {
-      console.error('Erro inesperado ao deletar avatar:', error);
+      logger.error('Erro inesperado ao deletar avatar:', error, { service: 'ProfileService' });
       const errorMsg = error instanceof Error ? error.message : String(error);
       return { success: false, error: errorMsg };
     }

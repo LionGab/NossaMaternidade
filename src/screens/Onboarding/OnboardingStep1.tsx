@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowRight, Sun } from 'lucide-react-native';
 import { useTheme } from '../../theme/ThemeContext';
+import { useThemeColors } from '../../theme';
 import { UserProfile } from '../../types/user';
 
 interface OnboardingStepProps {
@@ -16,21 +17,22 @@ interface OnboardingStepProps {
 
 export default function OnboardingStep1({ nextStep }: OnboardingStepProps) {
   const { isDark, toggleTheme } = useTheme();
+  const colors = useThemeColors();
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: '#020617' }}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
       {/* Top Right Sun Icon */}
       <View className="absolute top-6 right-6 z-10">
         <TouchableOpacity accessibilityRole="button"
           onPress={toggleTheme}
           className="w-10 h-10 rounded-full items-center justify-center"
           style={{
-            backgroundColor: '#0B1220',
+            backgroundColor: colors.background.card,
             borderWidth: 1,
-            borderColor: 'rgba(148, 163, 184, 0.24)',
+            borderColor: colors.border.light,
           }}
         >
-          <Sun size={20} color="#FBBF24" />
+          <Sun size={20} color={colors.status.warning} />
         </TouchableOpacity>
       </View>
 
@@ -50,7 +52,7 @@ export default function OnboardingStep1({ nextStep }: OnboardingStepProps) {
 
       <View className="flex-1 items-center justify-center px-6">
         {/* Circular Illustration */}
-        <View className="w-40 h-40 rounded-full mb-6 overflow-hidden border-6 border-white shadow-xl" style={{ borderColor: '#0B1220' }}>
+        <View className="w-40 h-40 rounded-full mb-6 overflow-hidden border-6 border-white shadow-xl" style={{ borderColor: colors.background.card }}>
           <Image
             source={{ uri: 'https://i.imgur.com/GDYdiuy.jpg' }}
             className="w-full h-full"
@@ -60,17 +62,17 @@ export default function OnboardingStep1({ nextStep }: OnboardingStepProps) {
         </View>
 
         {/* Title */}
-        <Text className="text-4xl font-bold text-center mb-1" style={{ color: '#FFFFFF' }}>
+        <Text className="text-4xl font-bold text-center mb-1" style={{ color: colors.text.inverse }}>
           Oi, que bom que você{'\n'}chegou.
         </Text>
 
         {/* Italic Blue Text */}
-        <Text className="text-base text-center mb-6 italic max-w-[280px]" style={{ color: '#60A5FA' }}>
+        <Text className="text-base text-center mb-6 italic max-w-[280px]" style={{ color: colors.primary.main }}>
           "Aqui, você não precisa fingir que está{'\n'}tudo bem."
         </Text>
 
         {/* Description */}
-        <Text className="text-sm text-center mb-10 max-w-[280px] leading-relaxed" style={{ color: '#D1D5DB' }}>
+        <Text className="text-sm text-center mb-10 max-w-[280px] leading-relaxed" style={{ color: colors.text.secondary }}>
           Eu sou a MãesValente. Quero criar um{'\n'}espaço seguro para você.{'\n'}Vamos conversar rapidinho?
         </Text>
 
@@ -78,11 +80,11 @@ export default function OnboardingStep1({ nextStep }: OnboardingStepProps) {
         <TouchableOpacity accessibilityRole="button"
           onPress={nextStep}
           className="w-full py-4 rounded-xl flex-row items-center justify-center gap-2"
-          style={{ backgroundColor: '#3B82F6' }}
+          style={{ backgroundColor: colors.primary.main }}
           activeOpacity={0.8}
         >
           <Text className="text-white font-bold text-base">Começar agora</Text>
-          <ArrowRight size={20} color="#FFFFFF" />
+          <ArrowRight size={20} color={colors.text.inverse} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>

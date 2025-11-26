@@ -1,49 +1,62 @@
 /**
- * Tipos para sistema de hábitos
+ * Tipos do sistema de hábitos diários
  */
 
-export interface Habit {
-  id: string;
-  title: string;
-  description: string;
-  icon: string; // Nome do ícone Ionicons
-  color: string;
-  category: HabitCategory;
-  frequency: HabitFrequency;
-  streak: number; // Sequência atual
-  bestStreak: number; // Melhor sequência
-  totalCompletions: number;
-  createdAt: number;
-  isActive: boolean;
-  reminderTime?: string; // HH:mm format
-}
-
-export type HabitCategory =
-  | 'autocuidado'
+export type HabitCategory = 
   | 'saude'
-  | 'alimentacao'
-  | 'exercicio'
-  | 'sono'
+  | 'autocuidado'
+  | 'bebe'
+  | 'mental'
   | 'social'
-  | 'produtividade'
-  | 'bemestar';
+  | 'bemestar'
+  | 'exercicio'
+  | 'alimentacao'
+  | 'sono';
 
 export type HabitFrequency = 'daily' | 'weekly' | 'custom';
 
+export interface Habit {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  category: HabitCategory;
+  icon?: string; // emoji ou nome do ícone
+  frequency: HabitFrequency;
+  target_days?: number[]; // [0-6] para dias da semana
+  reminder_time?: string; // HH:mm
+  is_active: boolean;
+  created_at: string;
+  // Legacy/compatibilidade fields
+  color?: string;
+  streak?: number;
+  bestStreak?: number;
+  totalCompletions?: number;
+}
+
+export interface HabitLog {
+  id: string;
+  habit_id: string;
+  user_id: string;
+  completed: boolean;
+  completed_at?: string;
+  notes?: string;
+  date: string; // YYYY-MM-DD
+}
+
+export interface HabitStats {
+  habit_id: string;
+  total_completions: number;
+  current_streak: number;
+  longest_streak: number;
+  completion_rate: number; // 0-100%
+}
+
+// Legacy types (mantidos para compatibilidade)
 export interface HabitCompletion {
   habitId: string;
   date: string; // YYYY-MM-DD format
   completed: boolean;
   notes?: string;
-}
-
-export interface HabitStats {
-  totalHabits: number;
-  activeHabits: number;
-  completedToday: number;
-  totalCompletions: number;
-  currentStreak: number;
-  longestStreak: number;
-  completionRate: number; // 0-100
 }
 

@@ -324,10 +324,10 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onToggle, isCompletedToday
                 {habit.streak} dias
               </Text>
             </View>
-            {habit.bestStreak > habit.streak && (
+            {(habit.bestStreak ?? 0) > (habit.streak ?? 0) && (
               <View style={styles.statItem}>
                 <Ionicons name="trophy" size={14} color={colors.text.tertiary} />
-                <Text style={styles.statText}>Melhor: {habit.bestStreak}</Text>
+                <Text style={styles.statText}>Melhor: {habit.bestStreak ?? 0}</Text>
               </View>
             )}
           </View>
@@ -426,7 +426,7 @@ export default function HabitsScreen() {
 
   // Calcular estatísticas
   const today = new Date().toISOString().split('T')[0];
-  const activeHabits = habits.filter((h) => h.isActive);
+  const activeHabits = habits.filter((h) => h.is_active);
   const filteredHabits =
     selectedCategory === 'all'
       ? activeHabits
@@ -437,7 +437,7 @@ export default function HabitsScreen() {
   ).length;
   const completionRate =
     filteredHabits.length > 0 ? (completedCount / filteredHabits.length) * 100 : 0;
-  const currentStreak = Math.max(...activeHabits.map((h) => h.streak), 0);
+  const currentStreak = Math.max(...activeHabits.map((h) => h.streak ?? 0), 0);
 
   const handleToggleHabit = useCallback(
     (habitId: string) => {
@@ -456,12 +456,12 @@ export default function HabitsScreen() {
         // Marcar como completo
         const updatedHabits = habits.map((h) => {
           if (h.id === habitId) {
-            const newStreak = h.streak + 1;
+            const newStreak = (h.streak ?? 0) + 1;
             return {
               ...h,
               streak: newStreak,
-              bestStreak: Math.max(h.bestStreak, newStreak),
-              totalCompletions: h.totalCompletions + 1,
+              bestStreak: Math.max(h.bestStreak ?? 0, newStreak),
+              totalCompletions: (h.totalCompletions ?? 0) + 1,
             };
           }
           return h;
@@ -473,7 +473,7 @@ export default function HabitsScreen() {
           if (h.id === habitId) {
             return {
               ...h,
-              streak: Math.max(0, h.streak - 1),
+              streak: Math.max(0, (h.streak ?? 0) - 1),
             };
           }
           return h;

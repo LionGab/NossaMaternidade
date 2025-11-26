@@ -1,6 +1,70 @@
+/**
+ * Tipos de usuário e perfil
+ * Seguindo o schema do Supabase
+ */
+
+import { EmotionType } from './emotion';
+
+export type MaternityPhase = 
+  | 'tentante'
+  | 'gestacao'
+  | 'pos_parto'
+  | 'primeira_infancia'
+  | 'maternidade';
+
+export type PregnancyTrimester = '1' | '2' | '3';
+
 export interface UserProfile {
-  name?: string;
+  // Campos básicos (obrigatórios)
+  id?: string;
   email?: string;
+  name?: string;
+  
+  // Campos opcionais de perfil
+  avatar_url?: string;
+  phone?: string;
+  
+  // Dados da maternidade
+  phase?: MaternityPhase;
+  pregnancy_week?: number; // semanas de gestação (1-42)
+  pregnancy_trimester?: PregnancyTrimester;
+  due_date?: string; // ISO date string
+  baby_birth_date?: string; // ISO date string
+  baby_name?: string;
+  baby_age_months?: number;
+  
+  // Estado emocional atual (cache)
+  current_emotion?: EmotionType | null;
+  last_emotion_update?: string; // ISO timestamp
+  
+  // Preferências
+  notification_enabled?: boolean;
+  daily_reminder_time?: string; // HH:mm format
+  theme_preference?: 'light' | 'dark' | 'auto';
+  
+  // Campos de onboarding
+  onboarding_completed?: boolean;
+  onboarding_step?: number;
+  
+  // Campos do perfil completo (Fase 2)
+  bio?: string;
+  city?: string;
+  state?: string;
+  preferred_topics?: string[]; // ex: ['amamentacao', 'sono', 'desenvolvimento']
+  support_network?: 'family' | 'friends' | 'alone' | 'partner';
+  
+  // Subscription
+  subscription_tier?: 'free' | 'premium';
+  subscription_expires_at?: string;
+  
+  // Timestamps
+  created_at?: string;
+  updated_at?: string;
+  last_seen_at?: string;
+
+  // Legacy fields (mantidos para compatibilidade)
+  full_name?: string;
+  display_name?: string; // Nome/apelido do onboarding rápido
   stage?: UserStage;
   timelineInfo?: string;
   biggestChallenge?: UserChallenge;
@@ -8,6 +72,38 @@ export interface UserProfile {
   currentFeeling?: UserEmotion;
   primaryNeed?: string;
   notificationsEnabled?: boolean;
+  motherhood_stage?: 'trying_to_conceive' | 'pregnant' | 'postpartum' | 'experienced_mother';
+  baby_gender?: 'male' | 'female' | 'unknown' | 'prefer_not_say';
+  life_stage_generic?: 'pregnant' | 'has_children' | 'trying' | 'caregiver' | 'self_care';
+  main_goals?: string[];
+  baseline_emotion?: 'bem' | 'triste' | 'ansiosa' | 'cansada' | 'calma';
+  first_focus?: 'emotional_care' | 'organization' | 'reduce_fatigue' | 'community' | 'content';
+  preferred_language_tone?: 'friendly' | 'direct' | 'mentor';
+  notification_opt_in?: boolean;
+  emotions?: string[];
+  needs?: string[];
+  interests?: string[];
+  theme?: 'light' | 'dark' | 'auto';
+  language?: string;
+  notifications_enabled?: boolean;
+}
+
+export interface UserStats {
+  total_messages: number;
+  total_check_ins: number;
+  streak_days: number;
+  habits_completed: number;
+  posts_created: number;
+  helpful_votes_received: number;
+}
+
+export interface OnboardingData {
+  name: string;
+  phase: MaternityPhase;
+  pregnancy_week?: number;
+  due_date?: string;
+  baby_birth_date?: string;
+  notification_enabled: boolean;
 }
 
 // Onboarding enums - valores usados pelos screens

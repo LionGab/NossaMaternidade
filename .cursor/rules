@@ -1,0 +1,454 @@
+# Instruções de Desenvolvimento - Nossa Maternidade
+
+## 🎯 CONTEXTO DO PROJETO
+
+### Visão
+App mobile React Native + Expo + TypeScript para mães brasileiras com foco em **apoio emocional, comunidade e autocuidado**.
+
+### Essencial Saber
+- **Nome:** Nossa Maternidade
+- **Público:** Mães 18-45 anos, classes C-D, Brasil
+- **Compliance:** LGPD (RLS policies obrigatórias)
+- **Status:** MVP funcional (repo: LionGab/NossaMaternidade), refatoração em progresso
+- **Personas IA:** NathIA (chat acolhedor), MaternalChatAgent, ContentRecommendationAgent, HabitsAnalysisAgent
+
+### Proposta de Valor
+```
+"Um lugar seguro onde você pode ser imperfeita, vulnerável e real.
+Sem julgamentos. Com outras mães que entendem.
+E com NathIA, uma IA que você pode chamar de amiga."
+```
+
+### Fases
+1. **Fase 1 (W1-4):** MVP (Home + Chat + Emocional + Hábitos, 0 TS errors)
+2. **Fase 2 (W5-8):** Ampliação (Feed MundoNath + Profile 15Q + IA avançada, 60% tests)
+3. **Fase 3 (W9-12):** Comunidade (MãesValente + Embeddings + Launch, 80% tests)
+
+---
+
+## 🛠️ STACK CONFIRMADA
+
+### Frontend
+| Componente | Tech | Versão | Nota |
+|-----------|------|--------|------|
+| Framework | React Native + Expo | 51+ | Managed, sem Xcode/Android Studio |
+| Language | TypeScript | 5.7+ | Strict mode, zero `any` |
+| Styling | NativeWind | latest | Tailwind para RN |
+| Navigation | React Navigation | 6+ | Stack + Tab + Modal |
+| State | TanStack Query | latest | Cache + sync Supabase |
+| UI System | Customizado | — | Box, Text, Button, etc (primitives) |
+| Theme | Bubblegum | design tokens | Azul #B3D9E8, rosa pastel, verde segurança |
+| Testing | Jest + RTL | latest | 40% MVP → 80% final |
+
+### Backend
+| Componente | Tech | Nota |
+|-----------|------|------|
+| Database | PostgreSQL (Supabase) | RLS + migrations versionadas |
+| Auth | Supabase Auth | Magic links + social |
+| Storage | Supabase Storage | Avatares, thumbnails |
+| Realtime | Supabase Realtime | Comunidade live |
+| Edge Functions | Supabase (Deno) | Orquestração IA, webhooks |
+
+### IA Stack (Multi-Provider com Fallback)
+```
+Chat Normal:          Gemini 2.5 Flash → GPT-4o → Claude Opus
+Crise Emocional:      GPT-4o → Gemini thinking → Claude Opus
+Análise Profunda:     Gemini 2.5 thinking → Claude Opus
+Embeddings:           Gemini 1.5 → OpenAI text-embed-3
+Moderação:            Claude API → OpenAI Moderation
+```
+
+**Arquitetura:**
+- `llmRouter.ts`: Roteamento inteligente (crise? → GPT; normal? → Gemini)
+- Agents: MaternalChatAgent, ContentRecommendationAgent, HabitsAnalysisAgent
+- MCP: SupabaseMCP, GoogleAIMCP, OpenAIMCP, AnthropicMCP
+- Fallback automático: se provider cai, tenta próximo
+- Logging: cada chamada (provider, tokens, BRL, risk flags)
+
+---
+
+## 📁 ESTRUTURA DE PASTAS
+
+```
+NossaMaternidade/
+├── src/
+│   ├── app/                    # App.tsx, navegação root
+│   │   └── App.tsx
+│   │
+│   ├── screens/                # Telas do app (1 arquivo = 1 tela)
+│   │   ├── HomeScreen.tsx
+│   │   ├── ChatScreen.tsx
+│   │   ├── MundoNathScreen.tsx
+│   │   ├── HabitsScreen.tsx
+│   │   ├── MaesValenteScreen.tsx      # Comunidade
+│   │   ├── OnboardingScreen.tsx
+│   │   ├── ProfileScreen.tsx
+│   │   └── SettingsScreen.tsx
+│   │
+│   ├── components/
+│   │   ├── primitives/         # Atoms (reutilizáveis 100x)
+│   │   │   ├── Box.tsx
+│   │   │   ├── Text.tsx
+│   │   │   ├── Button.tsx
+│   │   │   ├── HapticButton.tsx
+│   │   │   ├── ProgressIndicator.tsx
+│   │   │   └── IconButton.tsx
+│   │   │
+│   │   ├── molecules/          # Compostos simples
+│   │   │   ├── Avatar.tsx
+│   │   │   ├── Badge.tsx
+│   │   │   ├── EmotionalPrompt.tsx   # 5 emojis
+│   │   │   ├── ProgressRing.tsx
+│   │   │   └── Card.tsx
+│   │   │
+│   │   ├── organisms/          # Componentes especializados
+│   │   │   ├── MaternalCard.tsx      # 6 variants (hero|insight|action|progress|content|emotional)
+│   │   │   └── MaternalHeader.tsx
+│   │   │
+│   │   └── templates/          # Layouts padrão
+│   │       ├── ScreenLayout.tsx      # Safe area + scroll
+│   │       └── SectionLayout.tsx     # Section com título
+│   │
+│   ├── services/
+│   │   ├── supabase/
+│   │   │   ├── profileService.ts
+│   │   │   ├── chatService.ts
+│   │   │   ├── emotionService.ts
+│   │   │   ├── habitService.ts
+│   │   │   └── contentService.ts
+│   │   │
+│   │   ├── ai/
+│   │   │   ├── llmRouter.ts           # Roteamento inteligente
+│   │   │   ├── aiOrchestrator.ts      # Orquestração
+│   │   │   └── aiFallback.ts          # Retry automático
+│   │   │
+│   │   └── geminiService.ts           # Legacy (manter compatível)
+│   │
+│   ├── ai/
+│   │   ├── config/
+│   │   │   ├── llmConfig.ts           # Profiles: CHAT_DEFAULT, CRISIS_SAFE, ANALYSIS_DEEP
+│   │   │   └── llmRouter.ts           # Lógica de decisão
+│   │   │
+│   │   ├── agents/
+│   │   │   ├── MaternalChatAgent.ts
+│   │   │   ├── ContentRecommendationAgent.ts
+│   │   │   └── HabitsAnalysisAgent.ts
+│   │   │
+│   │   ├── prompts/                   # System prompts (versionados)
+│   │   │   ├── nathia.system.md       # Principal
+│   │   │   ├── crisis.system.md       # Para crise
+│   │   │   └── moderation.system.md   # Para moderação
+│   │   │
+│   │   └── moderation/
+│   │       └── MedicalModerationService.ts
+│   │
+│   ├── theme/                  # Design system centralizado
+│   │   ├── colors.ts           # Paleta Bubblegum
+│   │   ├── typography.ts       # Font sizes, weights
+│   │   ├── spacing.ts          # Grid 4px
+│   │   └── tokens.ts           # Todos os tokens
+│   │
+│   ├── types/                  # Tipos centralizados (TypeScript)
+│   │   ├── user.ts             # UserProfile, EmotionValue, LifeStage
+│   │   ├── ai.ts               # LlmProfile, RoutingContext, CrisisFlags
+│   │   ├── content.ts          # ContentItem, Post, Comment
+│   │   ├── chat.ts             # Message, ChatSession
+│   │   └── index.ts            # Exports
+│   │
+│   ├── hooks/
+│   │   ├── useAIRouting.ts
+│   │   ├── useEmotionTracking.ts
+│   │   ├── useHabits.ts
+│   │   └── useSupabase.ts
+│   │
+│   ├── utils/
+│   │   ├── logger.ts           # logger.info(), logger.error()
+│   │   ├── ai.ts               # Helper functions
+│   │   └── supabase.ts         # Client setup
+│   │
+│   ├── constants/
+│   │   ├── emotions.ts         # 5 emojis: bem, triste, ansiosa, cansada, calma
+│   │   ├── onboarding.ts       # Perguntas da onboarding
+│   │   └── lifeStages.ts       # Fases da maternidade
+│   │
+│   └── __tests__/              # Testes (mirror de src/)
+│       ├── services/
+│       ├── components/
+│       └── hooks/
+│
+├── supabase/
+│   ├── migrations/             # SQL versionadas
+│   │   ├── 001_initial_schema.sql
+│   │   ├── 002_rls_policies.sql
+│   │   └── 003_indexes_performance.sql
+│   │
+│   ├── functions/              # Edge Functions (Deno)
+│   │   ├── chat/
+│   │   │   └── index.ts        # Orquestração NathIA
+│   │   ├── emotion-log/
+│   │   │   └── index.ts        # Check-in emocional
+│   │   ├── moderate-content/
+│   │   │   └── index.ts        # Moderação IA
+│   │   └── profile-complete/
+│   │       └── index.ts        # Onboarding 15Q
+│   │
+│   └── seed/
+│       └── seed.sql            # Dados iniciais (local)
+│
+├── .cursor/
+│   └── rules                   # Este arquivo (instruções)
+│
+├── app.json                    # Expo config
+├── eas.json                    # EAS Build config
+├── package.json                # Dependencies
+├── tsconfig.json               # TypeScript (strict: true)
+├── jest.config.js              # Testing
+├── .eslintrc.json              # Linting
+├── .env.example                # Template vars
+└── README.md                   # Documentação
+```
+
+---
+
+## ✅ REGRAS CRÍTICAS
+
+### TypeScript (Obrigatório)
+- ✅ `"strict": true` sempre ativo
+- ✅ Zero `any` (use `unknown` + type guards)
+- ✅ Todos arquivos `.tsx` / `.ts`
+- ✅ Types exportados de `src/types/`
+- ❌ Sem `// @ts-ignore` ou `@ts-expect-error`
+- ❌ Sem tipo implícito (sempre explicit)
+
+**Check:** `npm run type-check` deve retornar 0 errors
+
+### Naming Conventions
+| O Quê | Formato | Exemplo |
+|-------|---------|---------|
+| Arquivos | kebab-case | `emotion-service.ts`, `home-screen.tsx` |
+| Funções/Vars | camelCase | `saveEmotion()`, `userProfile` |
+| Tipos/Interfaces | PascalCase | `UserProfile`, `EmotionValue` |
+| Constantes | UPPER_SNAKE | `MAX_RETRY_ATTEMPTS`, `API_TIMEOUT` |
+| Componentes | PascalCase | `MaternalCard.tsx`, `EmotionalPrompt.tsx` |
+| Screens | *Screen | `HomeScreen.tsx`, `ChatScreen.tsx` |
+| Services | *Service | `profileService.ts`, `chatService.ts` |
+| Hooks | use* | `useAIRouting.ts`, `useEmotionTracking.ts` |
+
+### Logging (Não use console.log)
+```typescript
+// ✅ CORRETO
+import { logger } from '@/utils/logger';
+logger.info('[ChatService] Mensagem enviada:', message);
+logger.error('[ChatService] Erro ao salvar:', error);
+
+// ❌ ERRADO
+console.log('Debug');
+console.error('Erro');
+```
+
+### Styling
+- ✅ Use design tokens (`src/theme/tokens.ts`)
+- ✅ NativeWind (Tailwind) para consistency
+- ✅ Dark mode via `useColorScheme()`
+- ❌ Hardcoded colors/sizes
+- ❌ `StyleSheet.create` (use tokens diretamente)
+
+**Pattern:**
+```typescript
+import { colors, spacing } from '@/theme/tokens';
+
+<Box backgroundColor={colors.primary} padding={spacing.md} />
+```
+
+### Componentes
+- ✅ Usar apenas primitives (Box, Text, Button)
+- ✅ Memoized com `React.memo`
+- ✅ PropTypes ou TypeScript stricto
+- ✅ Accessibility labels em 100% dos interativos
+- ❌ Estilos inline (use className ou style from tokens)
+- ❌ Lógica complexa em componente (extrair para hook/service)
+
+### IA Integrations
+- ✅ Sempre rote via `llmRouter.ts` (nunca chame LLM direto)
+- ✅ Log cada chamada (provider, tokens, custo, risk flags)
+- ✅ Fallback automático entre providers
+- ✅ Crisis detection ANTES de qualquer resposta
+- ✅ Disclaimer médico dinâmico se necessário
+- ❌ Diagnóstico médico sem disclaimer
+- ❌ Enviar dados sensíveis sem criptografia
+
+### Supabase
+- ✅ RLS policies em TODAS as tables
+- ✅ Migrations versionadas (`001_*.sql`, `002_*.sql`)
+- ✅ Edge Functions para lógica complexa
+- ✅ AsyncStorage para offline cache
+- ✅ Índices em colunas de busca frequente
+- ❌ Queries sem índices (N+1, péssima performance)
+- ❌ User ID não filtrado (LGPD breach)
+
+**Pattern:**
+```typescript
+// ✅ Correto: filtra por user.id
+const { data } = await supabase
+  .from('messages')
+  .select('*')
+  .eq('user_id', user.id);
+
+// ❌ Errado: sem filtrar by user
+const { data } = await supabase.from('messages').select('*');
+```
+
+### Testing
+- ✅ Jest + React Native Testing Library
+- ✅ Mínimo 40% (MVP) → 60% (Phase 2) → 80% (final)
+- ✅ Test services FIRST (IA, Supabase, emocional)
+- ✅ Mock Supabase (não use DB real)
+- ✅ 1 arquivo de teste por service/component
+- ❌ Snapshot tests (frágeis)
+- ❌ Sem testes em código novo crítico
+
+**Pattern:**
+```typescript
+// tests/services/emotion.test.ts
+describe('emotionService', () => {
+  it('should save emotion to Supabase', async () => {
+    const result = await saveEmotion('ansiosa');
+    expect(result).toBeDefined();
+  });
+});
+```
+
+### Git + Commits
+- ✅ Branches: `feature/`, `fix/`, `refactor/`
+- ✅ Commits: `feat|fix|refactor(scope): description`
+- ✅ Pequenos commits (1 feature = 1 commit)
+- ❌ Commits gigantes (evita)
+
+**Exemplos:**
+```
+feat(ui): MaternalCard organism (6 variants)
+fix(ai): crash em crisis detection
+refactor(services): consolidar duplicate code
+```
+
+---
+
+## 🚀 PROMPTS RÁPIDOS (Copiar/Colar)
+
+### Criar Novo Componente
+```
+Crie @src/components/organisms/MaternalCard.tsx com 6 variants (hero, insight, action, progress, content, emotional).
+- Use apenas primitives (Box, Text, Button)
+- TypeScript strict, props tipadas
+- Memoized com React.memo
+- Design tokens apenas (sem hardcoded)
+- Teste básico em @src/__tests__/MaternalCard.test.tsx
+```
+
+### Integrar IA
+```
+Integre Gemini chat em @src/services/chatService.ts.
+- Roteamento via @src/ai/config/llmRouter.ts
+- Crisis detection ANTES de resposta
+- Log em Supabase (tokens, provider, custo, risk_flags)
+- Fallback automático para GPT-4o se Gemini falhar
+- Sem console.log, use logger
+```
+
+### Criar Service
+```
+Crie @src/services/supabase/emotionService.ts:
+- Funções: saveEmotion(), getTodayEmotion(), getEmotionHistory()
+- Types em @src/types/user.ts
+- RLS-ready (filtra por user.id)
+- Mock test em @src/__tests__/emotionService.test.ts
+- Logger, sem console
+```
+
+### Refatorar Tela
+```
+Refatore @src/screens/HomeScreen.tsx:
+- Use MaternalCard (6 blocos)
+- Aplique design tokens (sem hardcoded colors)
+- WCAG AAA accessibility labels
+- Dark mode support (useColorScheme)
+- Dados via useSupabase() hook
+- 0 TS errors
+```
+
+---
+
+## 📊 CHECKLIST PRÉ-COMMIT
+
+Antes de fazer push:
+- [ ] `npm run type-check` → 0 errors
+- [ ] `npm run lint` → 0 critical warnings
+- [ ] `npm test` → All green
+- [ ] Test coverage ≥ 40% (MVP)
+- [ ] Sem `console.log`, use logger
+- [ ] Sem hardcoded colors, use tokens
+- [ ] Accessibility labels em botões/inputs
+- [ ] 44pt+ touch targets
+- [ ] Sem re-renders evitáveis (memo/useMemo)
+- [ ] Commit message: feat|fix|refactor(scope): desc
+
+---
+
+## 🎯 WORKFLOW TÍPICO
+
+### 1. Nova Feature
+```
+git checkout -b feature/emotion-tracking
+# Implementar
+npm run type-check    # OK?
+npm test              # OK?
+git add .
+git commit -m "feat(services): emotion tracking service"
+```
+
+### 2. Refatoração
+```
+git checkout -b refactor/home-design-system
+# Refatore usando MaternalCard, tokens, etc
+npm run type-check    # OK?
+npm test              # OK?
+git commit -m "refactor(screens): HomeScreen com design system"
+```
+
+### 3. Bug Fix
+```
+git checkout -b fix/chat-ai-crash
+# Fixe issue
+npm run type-check    # OK?
+npm test              # OK?
+git commit -m "fix(ai): crash em crisis detection"
+```
+
+---
+
+## 🔗 REFERÊNCIAS
+
+- **Repo:** LionGab/NossaMaternidade (GitHub)
+- **Design System:** `src/theme/tokens.ts` (Bubblegum palette)
+- **IA Docs:** `CLAUDE.md` + `src/ai/`
+- **Bug Fixes:** `BUG_FIX_PLAN.md` (16 TS errors)
+- **Plano de Ação:** Ver document "Plano-de-Acao-para-o-App-Nossa-Maternidade.docx"
+
+---
+
+## ℹ️ NOTAS IMPORTANTES
+
+1. **TypeScript Strict:** Zero tolerance. 0 errors sempre.
+2. **IA Route:** Nunca chame LLM direto. Use `llmRouter`.
+3. **LGPD:** RLS em toda tabela. User ID filtrado sempre.
+4. **Logger:** Não use console. Import `logger` sempre.
+5. **Tokens:** Não hardcode colors/spacing. Use design system.
+6. **Tests:** Mock Supabase. Não use DB real em testes.
+7. **Commits:** Pequenos, frequentes, descritivos.
+
+---
+
+**Status:** ✅ Pronto para Cursor usar  
+**Última atualização:** 2025-11-26  
+**Versão:** 1.0
+

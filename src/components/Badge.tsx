@@ -59,32 +59,32 @@ export const Badge: React.FC<BadgeProps> = ({
     },
     primary: {
       bg: colors.primary.main,
-      text: '#FFFFFF',
+      text: colors.text.inverse,
       border: colors.primary.main,
     },
     secondary: {
       bg: colors.secondary.main,
-      text: '#FFFFFF',
+      text: colors.text.inverse,
       border: colors.secondary.main,
     },
     success: {
       bg: colors.status.success,
-      text: '#FFFFFF',
+      text: colors.text.inverse,
       border: colors.status.success,
     },
     warning: {
       bg: colors.status.warning,
-      text: '#FFFFFF',
+      text: colors.text.inverse,
       border: colors.status.warning,
     },
     error: {
       bg: colors.status.error,
-      text: '#FFFFFF',
+      text: colors.text.inverse,
       border: colors.status.error,
     },
     info: {
       bg: colors.status.info,
-      text: '#FFFFFF',
+      text: colors.text.inverse,
       border: colors.status.info,
     },
   };

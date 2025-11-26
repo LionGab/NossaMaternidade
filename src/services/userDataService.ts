@@ -7,7 +7,8 @@ import { supabase } from './supabase';
 import { logger } from '../utils/logger';
 import { sessionManager } from './sessionManager';
 import { chatService, ChatConversation, ChatMessage } from './chatService';
-import { profileService, UserProfile } from './profileService';
+import { profileService } from './profileService';
+import type { UserProfile } from '@/types/user';
 
 // Supabase database types
 interface SupabaseHabit {

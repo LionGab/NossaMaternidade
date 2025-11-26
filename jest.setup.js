@@ -40,6 +40,20 @@ jest.mock('expo-constants', () => ({
     },
 }));
 
+// Mock expo-file-system
+jest.mock('expo-file-system', () => ({
+    documentDirectory: '/mock/document/',
+    cacheDirectory: '/mock/cache/',
+    bundleDirectory: '/mock/bundle/',
+    readAsStringAsync: jest.fn(() => Promise.resolve('')),
+    writeAsStringAsync: jest.fn(() => Promise.resolve()),
+    deleteAsync: jest.fn(() => Promise.resolve()),
+    makeDirectoryAsync: jest.fn(() => Promise.resolve()),
+    getInfoAsync: jest.fn(() => Promise.resolve({ exists: false })),
+    downloadAsync: jest.fn(() => Promise.resolve({ uri: '', status: 200 })),
+    uploadAsync: jest.fn(() => Promise.resolve({ body: {}, status: 200 })),
+}));
+
 // Mock console methods para não poluir os logs durante os testes
 global.console = {
     ...console,

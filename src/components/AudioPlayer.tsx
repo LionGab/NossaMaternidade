@@ -34,7 +34,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   onPlay,
   onPause,
   onEnd,
-}) => {
+}: AudioPlayerProps) => {
   const colors = useThemeColors();
   const [isPlaying, setIsPlaying] = useState(false);
   const [position, setPosition] = useState(0);
@@ -81,7 +81,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
       // Simular progresso (apenas visual)
       const interval = setInterval(() => {
-        setPosition((prev) => {
+        setPosition((prev: number) => {
           const newPos = prev + 100;
           if (newPos >= durationMs) {
             setIsPlaying(false);
@@ -204,7 +204,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     justifyContent: 'center',
     minHeight: Tokens.touchTargets.min,
     ...(Platform.OS === 'web' ? {
-      boxShadow: `0px 4px 8px 0px rgba(13, 95, 255, 0.3)`,
+      boxShadow: `0px 4px 8px 0px ${colors.primary.main}33`, // 0.3 opacity
     } : {
       shadowColor: colors.primary.main,
       shadowOffset: { width: 0, height: 4 },

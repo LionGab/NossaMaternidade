@@ -14,7 +14,7 @@ module.exports = {
         }],
     },
     transformIgnorePatterns: [
-        '/node_modules/(?!(@supabase)/)',
+        '/node_modules/(?!(@supabase|expo|@expo|@react-native|react-native|@react-navigation|expo-file-system|expo-constants|expo-secure-store|@react-native-async-storage)/)',
     ],
     collectCoverageFrom: [
         'src/services/**/*.{ts,tsx}',

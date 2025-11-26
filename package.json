@@ -40,7 +40,10 @@
     "check-ready": "pwsh -File scripts/check-ready.ps1",
     "check-ready:bash": "bash scripts/check-ready.sh",
     "validate:env": "node scripts/validate-env.js",
-    "test:connection": "node scripts/test-connection.js"
+    "test:connection": "node scripts/test-connection.js",
+    "validate:design": "node scripts/validate-design-tokens.js",
+    "validate": "npm run type-check && npm run validate:design && npm run validate:env || echo '⚠️  validate:env falhou (arquivo .env pode não existir)' && npm run lint || echo '⚠️  lint falhou'",
+    "precommit": "npm run validate:design && npm run type-check && npm run lint"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.0",

@@ -1,6 +1,9 @@
 import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './supabase';
+import { logger } from '@/utils/logger';
+import { NATHIA_TOOLS } from './aiTools/toolDefinitions';
+import type { AIToolCall, AIContext } from '@/types/ai';
 
 const SYSTEM_INSTRUCTION_BASE = `
   Você é a MãesValente, a assistente virtual de IA da influenciadora Nathália Valente, dentro do app "Nossa Maternidade".
@@ -29,12 +32,20 @@ class GeminiService {
         return ctx;
       }
     } catch (e) {
-      console.warn('Error reading user context:', e);
+      logger.warn('Error reading user context:', e);
     }
     return "";
   }
 
-  async sendMessage(message: string, history: { role: 'user' | 'model' | 'assistant', text: string }[] = []): Promise<{ text: string; error?: string }> {
+  /**
+   * Envia mensagem com suporte a Tool Calling
+   */
+  async sendMessage(
+    message: string,
+    history: { role: 'user' | 'model' | 'assistant'; text: string }[] = [],
+    context?: AIContext,
+    enableTools = true
+  ): Promise<{ text: string; error?: string; toolCall?: AIToolCall }> {
     try {
       const userCtx = await this.getUserContext();
 
@@ -56,17 +67,100 @@ class GeminiService {
         parts: [{ text: h.text }],
       }));
 
-      // Call Supabase Edge Function
+      // Call Supabase Edge Function com suporte a tools
       const { data, error } = await supabase.functions.invoke('chat-ai', {
         body: {
           message,
           history: chatHistory,
           systemInstruction,
+          tools: enableTools ? NATHIA_TOOLS : undefined,
+          context: context || undefined,
         },
       });
 
       if (error) {
-        console.error('[geminiService] Supabase function error:', error);
+        logger.error('[geminiService] Supabase function error:', error, {
+          service: 'GeminiService',
+        });
+        return {
+          text: '',
+          error: 'Sinto muito, minha conexão falhou um pouquinho. Pode repetir, querida?',
+        };
+      }
+
+      // Verifica se a IA quer chamar uma tool
+      if (data?.tool_call) {
+        return {
+          text: '',
+          toolCall: data.tool_call as AIToolCall,
+        };
+      }
+
+      if (!data || !data.text) {
+        return {
+          text: '',
+          error: 'Resposta inválida do servidor.',
+        };
+      }
+
+      return { text: data.text };
+
+    } catch (error) {
+      logger.error('Error sending message to backend:', error, {
+        service: 'GeminiService',
+      });
+      return {
+        text: '',
+        error: 'Sinto muito, minha conexão falhou um pouquinho. Pode repetir, querida?',
+      };
+    }
+  }
+
+  /**
+   * Envia mensagem com resultado de tool para obter resposta final
+   */
+  async sendMessageWithToolResult(
+    message: string,
+    toolResult: unknown,
+    history: { role: 'user' | 'model' | 'assistant'; text: string }[] = [],
+    context?: AIContext
+  ): Promise<{ text: string; error?: string }> {
+    try {
+      const userCtx = await this.getUserContext();
+      const systemInstruction = `
+        ${SYSTEM_INSTRUCTION_BASE}
+        CONTEXTO DA USUÁRIA ATUAL: [ ${userCtx} ]
+        Use o nome dela se souber. Adapte a resposta para a fase dela.
+
+        RESULTADO DA FERRAMENTA: ${JSON.stringify(toolResult)}
+        Use essas informações para responder de forma contextualizada e útil.
+
+        Regras OBRIGATÓRIAS para o CHAT:
+        1. Sempre comece acolhendo a emoção da usuária.
+        2. Faça perguntas abertas para entender melhor.
+        3. NUNCA dê diagnósticos médicos.
+        4. Mantenha as respostas concisas (máximo 3 parágrafos curtos).
+      `;
+
+      const chatHistory = history.map((h) => ({
+        role: h.role === 'user' ? 'user' : 'model',
+        parts: [{ text: h.text }],
+      }));
+
+      const { data, error } = await supabase.functions.invoke('chat-ai', {
+        body: {
+          message,
+          history: chatHistory,
+          systemInstruction,
+          tool_result: toolResult,
+          context: context || undefined,
+        },
+      });
+
+      if (error) {
+        logger.error('[geminiService] Erro ao enviar tool result', error, {
+          service: 'GeminiService',
+        });
         return {
           text: '',
           error: 'Sinto muito, minha conexão falhou um pouquinho. Pode repetir, querida?',
@@ -81,9 +175,10 @@ class GeminiService {
       }
 
       return { text: data.text };
-
     } catch (error) {
-      console.error('Error sending message to backend:', error);
+      logger.error('Error sending tool result to backend:', error, {
+        service: 'GeminiService',
+      });
       return {
         text: '',
         error: 'Sinto muito, minha conexão falhou um pouquinho. Pode repetir, querida?',
@@ -118,10 +213,12 @@ class GeminiService {
       });
 
       if (error) {
-        console.error('[geminiService] Supabase function error:', error);
+        logger.error('[geminiService] Supabase function error:', error, {
+          service: 'GeminiService',
+        });
         return {
           text: '',
-          error: 'Erro ao processar áudio.'
+          error: 'Erro ao processar áudio.',
         };
       }
 
@@ -135,7 +232,9 @@ class GeminiService {
       return { text: data.text };
 
     } catch (error) {
-      console.error('Error sending audio to backend:', error);
+      logger.error('Error sending audio to backend:', error, {
+        service: 'GeminiService',
+      });
       return { text: '', error: 'Erro ao processar áudio.' };
     }
   }
@@ -164,10 +263,12 @@ class GeminiService {
       });
 
       if (error) {
-        console.error('[geminiService] Supabase function error:', error);
+        logger.error('[geminiService] Supabase function error:', error, {
+          service: 'GeminiService',
+        });
         return {
           text: '',
-          error: 'Erro ao analisar entrada do diário.'
+          error: 'Erro ao analisar entrada do diário.',
         };
       }
 
@@ -181,7 +282,9 @@ class GeminiService {
       return { text: data.text };
 
     } catch (error) {
-      console.error('Error analyzing diary entry:', error);
+      logger.error('Error analyzing diary entry:', error, {
+        service: 'GeminiService',
+      });
       return { text: '', error: 'Erro ao analisar entrada do diário.' };
     }
   }

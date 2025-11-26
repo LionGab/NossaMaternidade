@@ -68,6 +68,21 @@ module.exports = {
     'react-native/sort-styles': 'off', // Not critical for MVP
     'react-native/no-single-element-style-arrays': 'warn', // Not critical
 
+    // Design System Rules (Custom)
+    'no-restricted-syntax': [
+      'warn',
+      {
+        // Bloquear cores hex hardcoded (exceto em arquivos de tokens)
+        selector: 'Literal[value=/^#[0-9A-Fa-f]{3,8}$/]',
+        message: 'Use design tokens em vez de cores hex hardcoded. Ex: colors.text.primary',
+      },
+      {
+        // Bloquear rgba/rgb hardcoded
+        selector: 'Literal[value=/^rgba?\\(/]',
+        message: 'Use design tokens em vez de rgba/rgb hardcoded. Ex: colors.border.light',
+      },
+    ],
+
     // Accessibility (a11y) - Will be fixed in FASE 2
     // Using 'warn' now, will upgrade to 'error' after FASE 2 completion
     'react-native-a11y/has-accessibility-hint': 'warn',
@@ -108,6 +123,13 @@ module.exports = {
       files: ['*.config.js', '*.config.ts', 'babel.config.js', 'metro.config.js'],
       rules: {
         '@typescript-eslint/no-require-imports': 'off',
+      },
+    },
+    {
+      // Design tokens files - permitir cores hardcoded
+      files: ['**/tokens.ts', '**/colors.ts', '**/ThemeContext.tsx'],
+      rules: {
+        'no-restricted-syntax': 'off',
       },
     },
   ],

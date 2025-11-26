@@ -167,7 +167,7 @@ export const LightTheme = {
   text: {
     primary: '#0F172A',       // Charcoal (web reference) - alto contraste
     secondary: '#334155',     // Slate (web reference)
-    tertiary: '#64748B',      // Silver (web reference)
+    tertiary: '#6B7280',      // Silver (web reference) - WCAG AA compliant (4.5:1+)
     disabled: '#94A3B8',      // Lighter silver
     placeholder: '#9CA3AF',   // Placeholder text
     inverse: '#FFFFFF',       // Texto em fundos escuros

@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
 import { geminiService } from './geminiService';
+import { profileService } from './profileService';
+import { logger } from '@/utils/logger';
 
 export interface ChatConversation {
   id: string;
@@ -224,36 +226,99 @@ class ChatService {
 
       return { userMsg, aiMsg };
     } catch (error) {
-      console.error('Erro ao enviar mensagem com IA:', error);
+      logger.error('Erro ao enviar mensagem com IA:', error, {
+        service: 'ChatService',
+      });
       return { userMsg: null, aiMsg: null };
     }
   }
 
   /**
-   * Obter resposta da IA (integração real com Gemini via Supabase Edge Functions)
+   * Obter resposta da IA com suporte a Tool Calling e Router Robusto
    */
   private async getAIResponse(history: ChatMessage[], userMessage: string): Promise<string> {
     try {
-      // Convert Supabase chat history format to Gemini format
-      const geminiHistory = history
-        .filter(msg => msg.role !== 'system') // Skip system messages
-        .slice(-20) // Limit to last 20 messages to avoid token limits
-        .map(msg => ({
-          role: (msg.role === 'user' ? 'user' : 'model') as 'user' | 'model' | 'assistant',
+      const userId = await this.getCurrentUserId();
+      if (!userId) {
+        return 'Desculpe, não consegui identificar você. Pode fazer login novamente?';
+      }
+
+      // Build context from profile
+      const profile = await profileService.getCurrentProfile();
+      const context = {
+        user_id: userId,
+        name: profile?.display_name || profile?.full_name || profile?.name,
+        phase: profile?.motherhood_stage || profile?.stage,
+        pregnancy_week: profile?.pregnancy_week,
+        recent_emotions: profile?.baseline_emotion ? [profile.baseline_emotion] : undefined,
+      };
+
+      // Convert history format
+      const aiHistory = history
+        .filter((msg) => msg.role !== 'system')
+        .slice(-20)
+        .map((msg) => ({
+          role: (msg.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
           text: msg.content,
         }));
 
-      // Call Gemini via Supabase Edge Function
-      const response = await geminiService.sendMessage(userMessage, geminiHistory);
+      // Import router e client
+      const { aiRouter } = await import('./aiRouter');
+      const { aiClient } = await import('./aiClient');
+      const { NATHIA_TOOLS } = await import('./aiTools/toolDefinitions');
 
-      if (response.error) {
-        console.error('[ChatService] AI response error:', response.error);
+      // Usar router robusto com fallback automático
+      const response = await aiRouter.route(
+        userMessage,
+        context,
+        async (model, msg, ctx) => {
+          return await aiClient.call(model, msg, ctx, aiHistory, NATHIA_TOOLS);
+        }
+      );
+
+      // Se a IA quer chamar uma tool
+      if (response.tool_call) {
+        const { aiToolExecutor } = await import('./aiTools');
+        const toolResult = await aiToolExecutor.executeTool(response.tool_call, userId);
+
+        // Envia resultado da tool de volta para IA obter resposta final
+        const finalResponse = await aiRouter.route(
+          userMessage,
+          context,
+          async (model, msg, ctx) => {
+            return await aiClient.call(
+              model,
+              msg,
+              ctx,
+              aiHistory,
+              undefined // Não passar tools na segunda chamada
+            );
+          }
+        );
+
+        if (!finalResponse.success || finalResponse.error) {
+          logger.error('[ChatService] AI response error after tool', finalResponse.error, {
+            service: 'ChatService',
+          });
+          return 'Desculpe, estou com dificuldades técnicas no momento. Pode tentar novamente em instantes?';
+        }
+
+        return finalResponse.message || 'Desculpa, não consegui processar sua mensagem. Tente novamente?';
+      }
+
+      if (!response.success || response.error) {
+        logger.error('[ChatService] AI response error:', response.error, {
+          service: 'ChatService',
+          model: response.model_used,
+        });
         return 'Desculpe, estou com dificuldades técnicas no momento. Pode tentar novamente em instantes?';
       }
 
-      return response.text || 'Desculpa, não consegui processar sua mensagem. Tente novamente?';
+      return response.message || 'Desculpa, não consegui processar sua mensagem. Tente novamente?';
     } catch (error) {
-      console.error('[ChatService] Erro ao obter resposta da IA:', error);
+      logger.error('[ChatService] Erro ao obter resposta da IA:', error, {
+        service: 'ChatService',
+      });
       return 'Ops, algo deu errado. Pode tentar novamente, querida?';
     }
   }
