@@ -66,11 +66,11 @@ const SIZE_CONFIG: Record<MaternalCardSize, { height: number; padding: keyof typ
 // ======================
 
 const EMOTION_GRADIENTS: Record<MaternalCardEmotion, readonly string[]> = {
-  calm: ['#0B1220', '#1D2843'],      // Azul noite suave (dark mode) - REDESIGN: era azul saturado neon
-  warm: ['#FFE2EC', '#FFC4D9'],      // Rosa leitoso, milky pink - REDESIGN: era rosa coral saturado
-  energetic: ['#FFD4A3', '#FFAB70'], // Laranja pastel - REDESIGN: mais suave
-  peaceful: ['#B4E7CE', '#8ED7B5'],  // Verde menta suave - REDESIGN: card de sono
-  safe: ['#A5D6FF', '#7CB8FF'],      // Azul céu suave - REDESIGN: menos saturado
+  calm: ['#004E9A', '#002244'],      // Ocean → Deep Navy (web reference) - professional, trustworthy
+  warm: ['#FFE2EC', '#FFC4D9'],      // Rosa leitoso, milky pink - MANTER para acolhimento maternal
+  energetic: ['#F59E0B', '#FB923C'], // Sunshine → Orange (web reference) - mais vibrante
+  peaceful: ['#236B62', '#0D4B3F'],  // Mint → Deep Mint (web reference) - calmo, natureza
+  safe: ['#60A5FA', '#3B82F6'],      // Light Ocean (web reference dark mode) - confiável, suave
 };
 
 // ======================
