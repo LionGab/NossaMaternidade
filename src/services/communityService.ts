@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import * as FileSystem from 'expo-file-system';
 import { decode } from 'base64-arraybuffer';
+import { logger } from '@/utils/logger';
 
 export interface CommunityPost {
   id: string;
@@ -79,7 +80,12 @@ class CommunityService {
         .range(page * limit, (page + 1) * limit - 1);
 
       if (error) {
-        console.error('Erro ao buscar posts:', error);
+        logger.error('Erro ao buscar posts da comunidade', error, {
+          service: 'CommunityService',
+          action: 'getPosts',
+          page,
+          limit,
+        });
         return [];
       }
 
@@ -96,7 +102,10 @@ class CommunityService {
 
       return (data || []) as CommunityPost[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar posts:', error);
+      logger.error('Erro inesperado ao buscar posts', error, {
+        service: 'CommunityService',
+        action: 'getPosts',
+      });
       return [];
     }
   }
@@ -118,7 +127,11 @@ class CommunityService {
         .single();
 
       if (error) {
-        console.error('Erro ao buscar post:', error);
+        logger.error('Erro ao buscar post por ID', error, {
+          service: 'CommunityService',
+          action: 'getPostById',
+          postId,
+        });
         return null;
       }
 
@@ -130,7 +143,11 @@ class CommunityService {
 
       return data as CommunityPost;
     } catch (error) {
-      console.error('Erro inesperado ao buscar post:', error);
+      logger.error('Erro inesperado ao buscar post', error, {
+        service: 'CommunityService',
+        action: 'getPostById',
+        postId,
+      });
       return null;
     }
   }
@@ -169,13 +186,22 @@ class CommunityService {
         .single();
 
       if (error) {
-        console.error('Erro ao criar post:', error);
+        logger.error('Erro ao criar post', error, {
+          service: 'CommunityService',
+          action: 'createPost',
+          userId,
+          hasTags: !!postData.tags,
+          hasImage: !!postData.image_uri,
+        });
         return null;
       }
 
       return data as CommunityPost;
     } catch (error) {
-      console.error('Erro inesperado ao criar post:', error);
+      logger.error('Erro inesperado ao criar post', error, {
+        service: 'CommunityService',
+        action: 'createPost',
+      });
       return null;
     }
   }
@@ -195,13 +221,22 @@ class CommunityService {
         .eq('user_id', userId);
 
       if (error) {
-        console.error('Erro ao atualizar post:', error);
+        logger.error('Erro ao atualizar post', error, {
+          service: 'CommunityService',
+          action: 'updatePost',
+          postId,
+          userId,
+        });
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Erro inesperado ao atualizar post:', error);
+      logger.error('Erro inesperado ao atualizar post', error, {
+        service: 'CommunityService',
+        action: 'updatePost',
+        postId,
+      });
       return false;
     }
   }
@@ -221,13 +256,22 @@ class CommunityService {
         .eq('user_id', userId);
 
       if (error) {
-        console.error('Erro ao deletar post:', error);
+        logger.error('Erro ao deletar post', error, {
+          service: 'CommunityService',
+          action: 'deletePost',
+          postId,
+          userId,
+        });
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Erro inesperado ao deletar post:', error);
+      logger.error('Erro inesperado ao deletar post', error, {
+        service: 'CommunityService',
+        action: 'deletePost',
+        postId,
+      });
       return false;
     }
   }
@@ -251,7 +295,13 @@ class CommunityService {
           .eq('user_id', userId);
 
         if (error) {
-          console.error('Erro ao remover like:', error);
+          logger.error('Erro ao remover like do post', error, {
+            service: 'CommunityService',
+            action: 'togglePostLike',
+            postId,
+            userId,
+            operation: 'unlike',
+          });
           return false;
         }
 
@@ -268,7 +318,13 @@ class CommunityService {
           });
 
         if (error) {
-          console.error('Erro ao adicionar like:', error);
+          logger.error('Erro ao adicionar like ao post', error, {
+            service: 'CommunityService',
+            action: 'togglePostLike',
+            postId,
+            userId,
+            operation: 'like',
+          });
           return false;
         }
 
@@ -277,7 +333,11 @@ class CommunityService {
         return true;
       }
     } catch (error) {
-      console.error('Erro inesperado ao dar like:', error);
+      logger.error('Erro inesperado ao dar like no post', error, {
+        service: 'CommunityService',
+        action: 'togglePostLike',
+        postId,
+      });
       return false;
     }
   }
@@ -331,7 +391,12 @@ class CommunityService {
         .limit(limit);
 
       if (error) {
-        console.error('Erro ao buscar comentários:', error);
+        logger.error('Erro ao buscar comentários do post', error, {
+          service: 'CommunityService',
+          action: 'getComments',
+          postId,
+          limit,
+        });
         return [];
       }
 
@@ -348,7 +413,11 @@ class CommunityService {
 
       return (data || []) as CommunityComment[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar comentários:', error);
+      logger.error('Erro inesperado ao buscar comentários', error, {
+        service: 'CommunityService',
+        action: 'getComments',
+        postId,
+      });
       return [];
     }
   }
@@ -375,7 +444,12 @@ class CommunityService {
         .single();
 
       if (error) {
-        console.error('Erro ao criar comentário:', error);
+        logger.error('Erro ao criar comentário', error, {
+          service: 'CommunityService',
+          action: 'createComment',
+          postId: commentData.post_id,
+          userId,
+        });
         return null;
       }
 
@@ -384,7 +458,10 @@ class CommunityService {
 
       return data as CommunityComment;
     } catch (error) {
-      console.error('Erro inesperado ao criar comentário:', error);
+      logger.error('Erro inesperado ao criar comentário', error, {
+        service: 'CommunityService',
+        action: 'createComment',
+      });
       return null;
     }
   }
@@ -404,7 +481,13 @@ class CommunityService {
         .eq('user_id', userId);
 
       if (error) {
-        console.error('Erro ao deletar comentário:', error);
+        logger.error('Erro ao deletar comentário', error, {
+          service: 'CommunityService',
+          action: 'deleteComment',
+          commentId,
+          postId,
+          userId,
+        });
         return false;
       }
 
@@ -413,7 +496,12 @@ class CommunityService {
 
       return true;
     } catch (error) {
-      console.error('Erro inesperado ao deletar comentário:', error);
+      logger.error('Erro inesperado ao deletar comentário', error, {
+        service: 'CommunityService',
+        action: 'deleteComment',
+        commentId,
+        postId,
+      });
       return false;
     }
   }
@@ -453,7 +541,11 @@ class CommunityService {
         return true;
       }
     } catch (error) {
-      console.error('Erro inesperado ao dar like em comentário:', error);
+      logger.error('Erro inesperado ao dar like em comentário', error, {
+        service: 'CommunityService',
+        action: 'toggleCommentLike',
+        commentId,
+      });
       return false;
     }
   }
@@ -531,7 +623,12 @@ class CommunityService {
         });
 
       if (uploadError) {
-        console.error('Erro ao fazer upload:', uploadError);
+        logger.error('Erro ao fazer upload de imagem do post', uploadError, {
+          service: 'CommunityService',
+          action: 'uploadPostImage',
+          userId,
+          fileExt,
+        });
         return { url: null, error: uploadError.message };
       }
 
@@ -542,7 +639,10 @@ class CommunityService {
       return { url: publicUrl };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Upload error';
-      console.error('Erro inesperado ao fazer upload:', error);
+      logger.error('Erro inesperado ao fazer upload de imagem', error, {
+        service: 'CommunityService',
+        action: 'uploadPostImage',
+      });
       return { url: null, error: errorMessage };
     }
   }
@@ -559,7 +659,11 @@ class CommunityService {
 
       return !error;
     } catch (error) {
-      console.error('Erro ao reportar post:', error);
+      logger.error('Erro ao reportar post', error, {
+        service: 'CommunityService',
+        action: 'reportPost',
+        postId,
+      });
       return false;
     }
   }
@@ -583,13 +687,21 @@ class CommunityService {
         .limit(limit);
 
       if (error) {
-        console.error('Erro ao buscar meus posts:', error);
+        logger.error('Erro ao buscar posts do usuário', error, {
+          service: 'CommunityService',
+          action: 'getMyPosts',
+          userId,
+          limit,
+        });
         return [];
       }
 
       return (data || []) as CommunityPost[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar meus posts:', error);
+      logger.error('Erro inesperado ao buscar posts do usuário', error, {
+        service: 'CommunityService',
+        action: 'getMyPosts',
+      });
       return [];
     }
   }
