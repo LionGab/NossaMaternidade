@@ -22,15 +22,15 @@ const feelings = [
 ];
 
 export default function OnboardingStep5({ step, formData, updateData, nextStep, prevStep }: OnboardingStepProps) {
-  const { isDark, toggleTheme } = useTheme();
+  const { colors, isDark, toggleTheme } = useTheme();
   const TOTAL_STEPS = 8;
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: '#020617' }}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 pt-4 mb-6">
         <TouchableOpacity accessibilityRole="button" onPress={prevStep} className="p-2 -ml-2">
-          <ArrowLeft size={24} color="#FFFFFF" />
+          <ArrowLeft size={24} color={colors.text.primary} />
         </TouchableOpacity>
 
         {/* Progress Dots */}
@@ -40,7 +40,7 @@ export default function OnboardingStep5({ step, formData, updateData, nextStep, 
               key={i}
               className="w-2 h-2 rounded-full"
               style={{
-                backgroundColor: step > i + 1 ? '#60A5FA' : step === i + 1 ? '#60A5FA' : '#4B5563',
+                backgroundColor: step > i + 1 ? colors.primary.main : step === i + 1 ? colors.primary.main : colors.text.disabled,
               }}
             />
           ))}
@@ -50,21 +50,21 @@ export default function OnboardingStep5({ step, formData, updateData, nextStep, 
           onPress={toggleTheme}
           className="w-10 h-10 rounded-full items-center justify-center"
           style={{
-            backgroundColor: '#0B1220',
+            backgroundColor: colors.background.card,
             borderWidth: 1,
-            borderColor: 'rgba(148, 163, 184, 0.24)',
+            borderColor: colors.border.light,
           }}
         >
-          <Sun size={20} color="#FBBF24" />
+          <Sun size={20} color={colors.status.warning} />
         </TouchableOpacity>
       </View>
 
       {/* Content */}
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-        <Text className="text-2xl font-bold mb-2" style={{ color: '#FFFFFF' }}>
+        <Text className="text-2xl font-bold mb-2" style={{ color: colors.text.primary }}>
           Como você está se sentindo hoje?
         </Text>
-        <Text className="text-base mb-8" style={{ color: '#9CA3AF' }}>
+        <Text className="text-base mb-8" style={{ color: colors.text.tertiary }}>
           Seja sincera. Aqui é um lugar livre de julgamentos.
         </Text>
 
@@ -81,15 +81,15 @@ export default function OnboardingStep5({ step, formData, updateData, nextStep, 
                 }}
                 className="px-6 py-3 rounded-full border"
                 style={{
-                  borderColor: isSelected ? '#3B82F6' : '#4B5563',
-                  backgroundColor: isSelected ? '#3B82F6' : '#0B1220',
+                  borderColor: isSelected ? colors.primary.main : colors.text.disabled,
+                  backgroundColor: isSelected ? colors.primary.main : colors.background.card,
                 }}
                 activeOpacity={0.7}
               >
                 <Text
                   className="text-sm"
                   style={{
-                    color: isSelected ? '#FFFFFF' : '#FFFFFF',
+                    color: isSelected ? colors.text.inverse : colors.text.primary,
                   }}
                 >
                   {feeling.label}

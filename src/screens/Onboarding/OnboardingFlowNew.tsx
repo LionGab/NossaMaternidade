@@ -205,7 +205,7 @@ export default function OnboardingFlow() {
             <View className="flex-1" style={{ width: '100%' }}>
               {/* Title - Nossa Maternidade (Topo esquerdo) */}
               <View className="absolute top-20 left-6" style={{ zIndex: 10 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: Tokens.spacing['3'], marginBottom: Tokens.spacing['3'] }}>
                   <Image
                     source={require('../../../assets/logo.png')}
                     style={{ width: 48, height: 48, borderRadius: 10 }}
@@ -236,7 +236,7 @@ export default function OnboardingFlow() {
                 {/* Quote */}
                 <Text 
                   className="text-xl font-medium mb-8" 
-                  style={{ color: colors.text.primary, lineHeight: 32 }}
+                  style={{ color: colors.text.primary, lineHeight: Tokens.typography.lineHeights['2xl'] }}
                   accessibilityRole="text"
                   accessibilityLabel="Você é forte. Mesmo nos dias em que não parece."
                 >
@@ -501,7 +501,7 @@ export default function OnboardingFlow() {
           <ScrollView 
             className="flex-1" 
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ ...contentStyle, flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingBottom: 20 }}
+            contentContainerStyle={{ ...contentStyle, flexDirection: 'row', flexWrap: 'wrap', gap: Tokens.spacing['3'], paddingBottom: Tokens.spacing['5'] }}
             accessible={true}
             accessibilityRole="list"
             accessibilityLabel="Lista de sentimentos"
@@ -708,7 +708,7 @@ export default function OnboardingFlow() {
               >
                 <View
                   className="w-12 h-12 rounded-full items-center justify-center"
-                  style={{ backgroundColor: formData.primaryNeed === n.val ? 'rgba(255,255,255,0.2)' : colors.primary.light }}
+                  style={{ backgroundColor: formData.primaryNeed === n.val ? `${colors.text.inverse}33` : colors.primary.light }}
                   accessible={false}
                 >
                   {React.cloneElement(n.icon, { color: formData.primaryNeed === n.val ? colors.raw.neutral[0] : colors.primary.main })}
@@ -722,7 +722,7 @@ export default function OnboardingFlow() {
                   </Text>
                   <Text 
                     className="text-xs sm:text-sm" 
-                    style={{ color: formData.primaryNeed === n.val ? 'rgba(255,255,255,0.7)' : colors.text.secondary }}
+                    style={{ color: formData.primaryNeed === n.val ? `${colors.text.inverse}B3` : colors.text.secondary }}
                   >
                     {n.sub}
                   </Text>

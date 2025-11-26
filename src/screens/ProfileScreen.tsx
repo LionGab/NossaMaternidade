@@ -19,7 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ArrowLeft, Settings, Save, ChevronRight } from 'lucide-react-native';
-import { useTheme } from '../theme/ThemeContext';
+import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { Tokens } from '../theme/tokens';
 import { profileService, UpdateProfileData } from '../services/profileService';
 import type { UserProfile } from '@/types/user';
@@ -281,7 +281,7 @@ export default function ProfileScreen() {
                   style={[
                     styles.chipText,
                     {
-                      color: motherhoodStage === stage.value ? '#FFFFFF' : colors.text.primary,
+                      color: motherhoodStage === stage.value ? colors.text.inverse : colors.text.primary,
                     },
                   ]}
                 >
@@ -355,7 +355,7 @@ export default function ProfileScreen() {
                   style={[
                     styles.chipText,
                     {
-                      color: emotions.includes(emotion) ? '#FFFFFF' : colors.text.primary,
+                      color: emotions.includes(emotion) ? colors.text.inverse : colors.text.primary,
                     },
                   ]}
                 >
@@ -386,7 +386,7 @@ export default function ProfileScreen() {
                   style={[
                     styles.chipText,
                     {
-                      color: needs.includes(need) ? '#FFFFFF' : colors.text.primary,
+                      color: needs.includes(need) ? colors.text.inverse : colors.text.primary,
                     },
                   ]}
                 >
@@ -417,7 +417,7 @@ export default function ProfileScreen() {
                   style={[
                     styles.chipText,
                     {
-                      color: interests.includes(interest) ? '#FFFFFF' : colors.text.primary,
+                      color: interests.includes(interest) ? colors.text.inverse : colors.text.primary,
                     },
                   ]}
                 >
@@ -444,11 +444,11 @@ export default function ProfileScreen() {
             accessibilityLabel="Salvar alterações"
           >
             {saving ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator size="small" color={colors.text.inverse} />
             ) : (
               <>
-                <Save size={20} color="#FFFFFF" />
-                <Text style={styles.saveButtonText}>Salvar alterações</Text>
+                <Save size={20} color={colors.text.inverse} />
+                <Text style={[styles.saveButtonText, { color: colors.text.inverse }]}>Salvar alterações</Text>
               </>
             )}
           </TouchableOpacity>
@@ -464,7 +464,7 @@ export default function ProfileScreen() {
 
 interface SectionTitleProps {
   children: React.ReactNode;
-  colors: any;
+  colors: ThemeColors;
 }
 
 const SectionTitle: React.FC<SectionTitleProps> = ({ children, colors }) => (
@@ -486,7 +486,7 @@ interface InputFieldProps {
   onChangeText: (text: string) => void;
   placeholder: string;
   keyboardType?: 'default' | 'phone-pad' | 'number-pad';
-  colors: any;
+  colors: ThemeColors;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -520,7 +520,7 @@ const InputField: React.FC<InputFieldProps> = ({
 );
 
 interface DividerProps {
-  colors: any;
+  colors: ThemeColors;
 }
 
 const Divider: React.FC<DividerProps> = ({ colors }) => (
@@ -633,7 +633,6 @@ const styles = StyleSheet.create({
     borderRadius: Tokens.radius.lg,
   },
   saveButtonText: {
-    color: '#FFFFFF',
     fontSize: Tokens.typography.sizes.base,
     fontWeight: Tokens.typography.weights.bold,
   },

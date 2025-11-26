@@ -25,7 +25,7 @@ export default function OnboardingStep4({ step, formData, updateData, nextStep, 
   const _label = isPregnant ? 'Semanas de gestação' : 'Meses do bebê';
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: isDark ? '#020617' : '#FFFFFF' }}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 pt-4 mb-6">
         <TouchableOpacity accessibilityRole="button" onPress={prevStep} className="p-2 -ml-2">
@@ -46,7 +46,7 @@ export default function OnboardingStep4({ step, formData, updateData, nextStep, 
                     ? `${colors.primary.main}80`
                     : isDark
                     ? colors.border.light
-                    : '#E5E7EB',
+                    : colors.border.medium,
               }}
             />
           ))}
@@ -56,12 +56,12 @@ export default function OnboardingStep4({ step, formData, updateData, nextStep, 
           onPress={toggleTheme}
           className="w-10 h-10 rounded-full items-center justify-center"
           style={{
-            backgroundColor: isDark ? '#0B1220' : '#F3F4F6',
+            backgroundColor: colors.background.card,
             borderWidth: 1,
             borderColor: colors.border.light,
           }}
         >
-          {isDark ? <Sun size={18} color="#FBBF24" /> : <Moon size={18} color={colors.text.primary} />}
+          {isDark ? <Sun size={18} color={colors.status.warning} /> : <Moon size={18} color={colors.text.primary} />}
         </TouchableOpacity>
       </View>
 
@@ -90,7 +90,7 @@ export default function OnboardingStep4({ step, formData, updateData, nextStep, 
           value={sliderValue}
           onValueChange={setSliderValue}
           minimumTrackTintColor={colors.primary.main}
-          maximumTrackTintColor={isDark ? colors.border.light : '#E5E7EB'}
+          maximumTrackTintColor={colors.border.medium}
           thumbTintColor={colors.primary.main}
         />
       </View>

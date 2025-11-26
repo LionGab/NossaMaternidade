@@ -34,18 +34,18 @@ export default function RitualScreen() {
   };
 
   const feelings = [
-    { icon: BatteryLow, label: 'Exausta', id: 'exausta', color: '#EF4444' },
-    { icon: Frown, label: 'Ansiosa', id: 'ansiosa', color: '#F97316' },
-    { icon: Meh, label: 'Confusa', id: 'confusa', color: '#EAB308' },
-    { icon: BatteryMedium, label: 'Ok', id: 'ok', color: '#3B82F6' },
-    { icon: BatteryFull, label: 'Grata', id: 'grata', color: '#10B981' },
+    { icon: BatteryLow, label: 'Exausta', id: 'exausta', color: colors.status.error },
+    { icon: Frown, label: 'Ansiosa', id: 'ansiosa', color: colors.raw.accent.orange },
+    { icon: Meh, label: 'Confusa', id: 'confusa', color: colors.status.warning },
+    { icon: BatteryMedium, label: 'Ok', id: 'ok', color: colors.primary.main },
+    { icon: BatteryFull, label: 'Grata', id: 'grata', color: colors.status.success },
   ];
 
   const desires = [
-    { icon: Shield, label: 'Mais forte', id: 'forte', color: '#3B82F6' },
-    { icon: Heart, label: 'Acolhida', id: 'acolhida', color: '#EC4899' },
-    { icon: Moon, label: 'Em paz', id: 'paz', color: '#9333EA' },
-    { icon: Sun, label: 'Energizada', id: 'energia', color: '#EAB308' },
+    { icon: Shield, label: 'Mais forte', id: 'forte', color: colors.primary.main },
+    { icon: Heart, label: 'Acolhida', id: 'acolhida', color: colors.raw.accent.pink },
+    { icon: Moon, label: 'Em paz', id: 'paz', color: colors.raw.accent.purple },
+    { icon: Sun, label: 'Energizada', id: 'energia', color: colors.status.warning },
   ];
 
   const practice = getPractice();
@@ -53,7 +53,7 @@ export default function RitualScreen() {
   return (
     <SafeAreaView
       className="flex-1"
-      style={{ backgroundColor: isDark ? '#020617' : '#FFF8F3' }}
+      style={{ backgroundColor: colors.background.canvas }}
       accessible={true}
       accessibilityLabel="Tela de Ritual de Respiração"
     >
@@ -61,7 +61,7 @@ export default function RitualScreen() {
       <View
         className="px-4 py-4 flex-row items-center justify-between border-b"
         style={{
-          backgroundColor: isDark ? '#0B1220CC' : '#FFFFFFCC',
+          backgroundColor: `${colors.background.card}CC`,
           borderBottomColor: colors.border.light,
         }}
       >
@@ -73,7 +73,7 @@ export default function RitualScreen() {
           accessibilityLabel="Voltar"
           accessibilityHint="Retorna para a tela anterior"
         >
-          <ArrowLeft size={20} color={isDark ? '#000000' : '#FFFFFF'} />
+          <ArrowLeft size={20} color={isDark ? colors.text.primary : colors.text.inverse} />
         </TouchableOpacity>
 
         <View className="flex-1 mx-4 items-center">
@@ -139,10 +139,8 @@ export default function RitualScreen() {
                       backgroundColor: isSelected
                         ? isDark
                           ? `${colors.primary.main}33`
-                          : '#E8F0FE'
-                        : isDark
-                        ? '#0B1220'
-                        : '#FFFFFF',
+                          : colors.primary.light
+                        : colors.background.card,
                       width: '47%',
                     }}
                     activeOpacity={0.7}
@@ -195,14 +193,12 @@ export default function RitualScreen() {
                     onPress={() => setDesiredFeeling(d.id)}
                     className="p-4 rounded-2xl border-2 items-center gap-2"
                     style={{
-                      borderColor: isSelected ? '#FF8FA3' : colors.border.light,
+                      borderColor: isSelected ? colors.raw.accent.pink : colors.border.light,
                       backgroundColor: isSelected
                         ? isDark
-                          ? '#FF8FA333'
-                          : '#FFF0F6'
-                        : isDark
-                        ? '#0B1220'
-                        : '#FFFFFF',
+                          ? `${colors.raw.accent.pink}33`
+                          : colors.secondary.light
+                        : colors.background.card,
                       width: '47%',
                     }}
                     activeOpacity={0.7}
@@ -215,7 +211,7 @@ export default function RitualScreen() {
                     <Text
                       className="font-medium"
                       style={{
-                        color: isSelected ? '#FF8FA3' : colors.text.primary,
+                        color: isSelected ? colors.raw.accent.pink : colors.text.primary,
                       }}
                     >
                       {d.label}
@@ -233,12 +229,12 @@ export default function RitualScreen() {
             <View
               className="w-16 h-16 rounded-full items-center justify-center mx-auto mb-6"
               style={{
-                backgroundColor: isDark ? '#065F4633' : '#D1FAE5',
+                backgroundColor: isDark ? `${colors.status.success}33` : colors.primary.light,
               }}
               accessible={true}
               accessibilityLabel="Ícone de exercício de respiração"
             >
-              <Coffee size={32} color={isDark ? '#34D399' : '#10B981'} />
+              <Coffee size={32} color={colors.status.success} />
             </View>
             <Text
               className="text-xl font-bold mb-4 text-center"

@@ -101,9 +101,9 @@ export function AgentsProvider({ children }: AgentsProviderProps) {
 
         logger.info('[AgentsContext] 6 AGENTES ATIVOS! Sistema expandido pronto!');
         logger.debug('[AgentsContext] Agents: MaternalChat, Content, Habits, Emotion, Nathia, Sleep');
-      } catch (err: any) {
+      } catch (err: unknown) {
         logger.error('[AgentsContext] Initialization failed', err);
-        setError(err.message || 'Failed to initialize agents');
+        setError(err instanceof Error ? err.message : 'Failed to initialize agents');
       }
     }
 

@@ -125,8 +125,36 @@ export interface AnalyticsMCPMethods {
   'user.alias': { previousId: string; userId: string };
 }
 
+// Tipos específicos para Design Tokens Validation MCP
+export interface DesignTokensValidationMCPMethods {
+  'design.validate.tokens': { filePath?: string };
+  'design.validate.screen': { screenPath: string };
+  'design.suggest.fix': { violation: Record<string, unknown> };
+  'design.check.darkmode': { filePath: string };
+}
+
+// Tipos específicos para Code Quality MCP
+export interface CodeQualityMCPMethods {
+  'code.analyze.design': { filePath: string };
+  'code.find.hardcoded': { pattern: 'colors' | 'spacing' | 'typography' | 'dimension'; filePath?: string };
+  'code.refactor.suggest': { filePath: string; violations: Array<Record<string, unknown>> };
+}
+
+// Tipos específicos para Accessibility MCP
+export interface AccessibilityMCPMethods {
+  'a11y.check.contrast': { foreground: string; background: string };
+  'a11y.check.touchTargets': { componentPath: string };
+  'a11y.check.labels': { screenPath: string };
+  'a11y.audit.screen': { screenPath: string };
+}
+
 // Union de todos os methods
-export type AllMCPMethods = SupabaseMCPMethods & GoogleAIMCPMethods & AnalyticsMCPMethods;
+export type AllMCPMethods = SupabaseMCPMethods &
+  GoogleAIMCPMethods &
+  AnalyticsMCPMethods &
+  DesignTokensValidationMCPMethods &
+  CodeQualityMCPMethods &
+  AccessibilityMCPMethods;
 
 // Union type de todos os métodos
 export type MCPMethod = keyof AllMCPMethods;

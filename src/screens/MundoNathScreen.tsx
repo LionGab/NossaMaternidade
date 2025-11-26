@@ -33,6 +33,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { MOCK_POSTS } from '../constants/data';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
+import { Tokens } from '../theme/tokens';
 import { useHaptics } from '../hooks/useHaptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { MainTabParamList, RootStackParamList } from '../navigation/types';
@@ -142,7 +143,7 @@ const ContentCard: React.FC<ContentCardProps> = ({ item, colors, onPress }) => {
       accessibilityLabel={`${item.title}. Tipo: ${item.type}. ${item.isNew ? 'Novo conteúdo' : ''}`}
       accessibilityHint="Toque para ver este conteúdo"
     >
-      <View style={styles.contentImageContainer}>
+      <View style={[styles.contentImageContainer, { backgroundColor: colors.border.medium }]}>
         <Image
           source={{ uri: item.thumbnailUrl }}
           style={styles.contentImage}
@@ -150,13 +151,13 @@ const ContentCard: React.FC<ContentCardProps> = ({ item, colors, onPress }) => {
           transition={200}
           accessibilityIgnoresInvertColors
         />
-        <View style={styles.contentTypeBadge}>
+        <View style={[styles.contentTypeBadge, { backgroundColor: `${colors.text.primary}80` }]}>
           {getIconForType()}
-          <Text style={styles.contentTypeText}>{item.type}</Text>
+          <Text style={[styles.contentTypeText, { color: colors.text.inverse }]}>{item.type}</Text>
         </View>
         {item.isNew && (
-          <View style={styles.contentNewBadge}>
-            <Text style={styles.contentNewText}>NOVO</Text>
+          <View style={[styles.contentNewBadge, { backgroundColor: colors.raw.accent.pink, shadowColor: colors.text.primary }]}>
+            <Text style={[styles.contentNewText, { color: colors.text.inverse }]}>NOVO</Text>
           </View>
         )}
       </View>
@@ -215,9 +216,9 @@ export default function MundoNathScreen() {
         description: 'Desabafa comigo. Eu tô aqui pra te ouvir sem julgamentos.',
         action: 'Conversar agora',
         icon: MessageCircleHeart,
-        iconColor: '#4285F4',
-        bgColor: isDark ? colors.background.canvas : '#E8F0FE',
-        badge: { text: 'Online agora', bg: '#D1FAE5', textColor: '#047857' },
+        iconColor: colors.primary.main,
+        bgColor: isDark ? colors.background.canvas : colors.primary.light,
+        badge: { text: 'Online agora', bg: colors.primary.light, textColor: colors.status.success },
         actionColor: colors.primary.main,
         onPress: () => {
           haptics.light();
@@ -231,10 +232,10 @@ export default function MundoNathScreen() {
         description: 'Vamos respirar juntas. Um ritual rápido pra acalmar o coração.',
         action: 'Começar ritual',
         icon: Wind,
-        iconColor: '#9333EA',
-        bgColor: isDark ? colors.background.canvas : '#F3E8FF',
-        badge: { text: '3 min', bg: '#F3E8FF', textColor: '#7E22CE' },
-        actionColor: '#9333EA',
+        iconColor: colors.raw.accent.purple,
+        bgColor: isDark ? colors.background.canvas : colors.primary.light,
+        badge: { text: '3 min', bg: colors.primary.light, textColor: colors.raw.accent.purple },
+        actionColor: colors.raw.accent.purple,
         onPress: () => {
           haptics.light();
           navigation.navigate('Ritual' as never);
@@ -273,10 +274,10 @@ export default function MundoNathScreen() {
       <ScrollView className="flex-1" contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: Tokens.spacing['3'] }}>
             <Image
               source={{ uri: AVATAR_URL }}
-              style={styles.headerAvatar}
+              style={[styles.headerAvatar, { borderColor: `${colors.raw.accent.pink}66` }]}
               contentFit="cover"
               transition={200}
               accessibilityLabel="Avatar Mundo Nath"
@@ -284,7 +285,7 @@ export default function MundoNathScreen() {
             <View>
               <View style={styles.greetingRow}>
                 <Text style={[styles.greeting, { color: colors.text.secondary }]}>{getGreeting()},</Text>
-                <Sparkles size={14} color="#FF8FA3" />
+                <Sparkles size={14} color={colors.raw.accent.pink} />
               </View>
               <Text style={[styles.userName, { color: colors.text.primary }]}>{userName}</Text>
             </View>
@@ -296,10 +297,10 @@ export default function MundoNathScreen() {
             style={[
               styles.themeButton,
               {
-                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+                backgroundColor: isDark ? `${colors.text.inverse}1A` : `${colors.text.primary}0D`,
                 borderWidth: 1,
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
-                shadowColor: isDark ? '#60A5FA' : '#F59E0B',
+                borderColor: isDark ? `${colors.text.inverse}33` : colors.border.light,
+                shadowColor: isDark ? colors.primary.main : colors.status.warning,
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.3,
                 shadowRadius: 4,
@@ -310,9 +311,9 @@ export default function MundoNathScreen() {
             accessibilityLabel={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
           >
             {isDark ? (
-              <Sun size={22} color="#FCD34D" strokeWidth={2.5} />
+              <Sun size={22} color={colors.status.warning} strokeWidth={2.5} />
             ) : (
-              <Moon size={22} color="#60A5FA" strokeWidth={2.5} fill="#60A5FA" />
+              <Moon size={22} color={colors.primary.main} strokeWidth={2.5} fill={colors.primary.main} />
             )}
           </TouchableOpacity>
         </View>
@@ -356,8 +357,8 @@ export default function MundoNathScreen() {
           <View style={styles.sectionHeader}>
             <View style={styles.sectionTitleRow}>
               <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>Mundo Nath</Text>
-              <View style={styles.exclusiveBadge}>
-                <Text style={styles.exclusiveText}>Exclusivo</Text>
+              <View style={[styles.exclusiveBadge, { backgroundColor: `${colors.raw.accent.pink}33` }]}>
+                <Text style={[styles.exclusiveText, { color: colors.raw.accent.pink }]}>Exclusivo</Text>
               </View>
             </View>
           </View>
@@ -377,31 +378,31 @@ export default function MundoNathScreen() {
             style={[
               styles.waitlistBanner,
               {
-                backgroundColor: isDark ? colors.background.card : '#5D4E4B',
+                backgroundColor: isDark ? colors.background.card : colors.text.primary,
               },
             ]}
           >
-            <View style={styles.waitlistDecoration1} />
-            <View style={styles.waitlistDecoration2} />
+            <View style={[styles.waitlistDecoration1, { backgroundColor: `${colors.raw.accent.pink}33` }]} />
+            <View style={[styles.waitlistDecoration2, { backgroundColor: `${colors.primary.main}33` }]} />
 
             <View style={styles.waitlistHeader}>
-              <Flame size={20} color="#FF8FA3" />
-              <Text style={styles.waitlistLabel}>Em breve</Text>
+              <Flame size={20} color={colors.raw.accent.pink} />
+              <Text style={[styles.waitlistLabel, { color: colors.raw.accent.pink }]}>Em breve</Text>
             </View>
 
-            <Text style={styles.waitlistTitle}>Comunidade MãesValente</Text>
-            <Text style={styles.waitlistDescription}>
+            <Text style={[styles.waitlistTitle, { color: colors.text.inverse }]}>Comunidade MãesValente</Text>
+            <Text style={[styles.waitlistDescription, { color: colors.text.secondary }]}>
               Um espaço seguro para trocar experiências com outras mães que te entendem de verdade.
             </Text>
 
             <TouchableOpacity
-              style={styles.waitlistButton}
+              style={[styles.waitlistButton, { backgroundColor: colors.background.card }]}
               onPress={handleWaitlistPress}
               accessibilityRole="button"
               accessibilityLabel="Entrar na lista de espera"
             >
-              <Text style={styles.waitlistButtonText}>Entrar na lista de espera</Text>
-              <ArrowRight size={16} color="#5D4E4B" />
+              <Text style={[styles.waitlistButtonText, { color: colors.text.primary }]}>Entrar na lista de espera</Text>
+              <ArrowRight size={16} color={colors.text.primary} />
             </TouchableOpacity>
           </View>
         </View>
@@ -415,12 +416,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 120, // Espaço para tab bar
+    paddingBottom: 120, // Espaço para tab bar (não há token para 120)
   },
   header: {
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 16,
+    paddingHorizontal: Tokens.spacing['6'],
+    paddingTop: Tokens.spacing['6'],
+    paddingBottom: Tokens.spacing['4'],
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
@@ -428,82 +429,77 @@ const styles = StyleSheet.create({
   greetingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
+    gap: Tokens.spacing['2'],
+    marginBottom: Tokens.spacing['1'],
   },
   greeting: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: Tokens.typography.sizes.sm,
+    fontWeight: Tokens.typography.weights.medium,
   },
   userName: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: Tokens.typography.sizes['2xl'],
+    fontWeight: Tokens.typography.weights.bold,
   },
   headerAvatar: {
     width: 52,
     height: 52,
     borderRadius: 26,
     borderWidth: 2.5,
-    borderColor: 'rgba(255, 143, 163, 0.4)',
   },
   themeButton: {
-    padding: 8,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    padding: Tokens.spacing['2'],
+    borderRadius: Tokens.radius.xl,
+    shadowOffset: { width: 0, height: Tokens.spacing['px'] },
     shadowOpacity: 0.05,
-    shadowRadius: 2,
+    shadowRadius: Tokens.spacing['0.5'],
     elevation: 1,
   },
   section: {
-    paddingHorizontal: 24,
-    marginBottom: 32,
+    paddingHorizontal: Tokens.spacing['6'],
+    marginBottom: Tokens.spacing['8'],
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: Tokens.spacing['4'],
   },
   sectionTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Tokens.spacing['2'],
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: Tokens.typography.sizes.lg,
+    fontWeight: Tokens.typography.weights.bold,
   },
   sectionLink: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: Tokens.typography.sizes.sm,
+    fontWeight: Tokens.typography.weights.medium,
   },
   exclusiveBadge: {
-    backgroundColor: 'rgba(255, 143, 163, 0.2)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
+    paddingHorizontal: Tokens.spacing['2'],
+    paddingVertical: Tokens.spacing['0.5'],
+    borderRadius: Tokens.radius.sm,
   },
   exclusiveText: {
-    color: '#FF8FA3',
-    fontSize: 10,
-    fontWeight: 'bold',
+    fontSize: Tokens.typography.sizes['2xs'],
+    fontWeight: Tokens.typography.weights.bold,
     textTransform: 'uppercase',
   },
   horizontalScroll: {
-    paddingLeft: 24,
-    paddingRight: 8,
-    marginLeft: -24,
+    paddingLeft: Tokens.spacing['6'],
+    paddingRight: Tokens.spacing['2'],
+    marginLeft: -Tokens.spacing['6'],
   },
   quickActionCard: {
-    marginRight: 16,
+    marginRight: Tokens.spacing['4'],
     width: 288,
-    padding: 20,
-    borderRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    padding: Tokens.spacing['5'],
+    borderRadius: Tokens.radius['3xl'],
+    shadowOffset: { width: 0, height: Tokens.spacing['px'] },
     shadowOpacity: 0.05,
-    shadowRadius: 2,
+    shadowRadius: Tokens.spacing['0.5'],
     elevation: 1,
     borderWidth: 1,
   },
@@ -511,54 +507,52 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 16,
+    marginBottom: Tokens.spacing['4'],
   },
   quickActionIconContainer: {
-    padding: 12,
-    borderRadius: 16,
+    padding: Tokens.spacing['3'],
+    borderRadius: Tokens.radius.xl,
   },
   quickActionBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 20,
+    paddingHorizontal: Tokens.spacing['2'],
+    paddingVertical: Tokens.spacing['1'],
+    borderRadius: Tokens.radius.xl,
   },
   quickActionBadgeText: {
-    fontSize: 10,
-    fontWeight: 'bold',
+    fontSize: Tokens.typography.sizes['2xs'],
+    fontWeight: Tokens.typography.weights.bold,
     textTransform: 'uppercase',
   },
   quickActionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 4,
+    fontSize: Tokens.typography.sizes.lg,
+    fontWeight: Tokens.typography.weights.bold,
+    marginBottom: Tokens.spacing['1'],
   },
   quickActionDescription: {
-    fontSize: 14,
-    marginBottom: 16,
+    fontSize: Tokens.typography.sizes.sm,
+    marginBottom: Tokens.spacing['4'],
   },
   quickActionFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Tokens.spacing['2'],
   },
   quickActionButton: {
-    fontWeight: 'bold',
-    fontSize: 14,
+    fontWeight: Tokens.typography.weights.bold,
+    fontSize: Tokens.typography.sizes.sm,
   },
   contentCard: {
-    marginRight: 16,
+    marginRight: Tokens.spacing['4'],
     width: 240,
-    borderRadius: 24,
+    borderRadius: Tokens.radius['3xl'],
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: Tokens.spacing['px'] },
     shadowOpacity: 0.05,
-    shadowRadius: 2,
+    shadowRadius: Tokens.spacing['0.5'],
     elevation: 1,
   },
   contentImageContainer: {
     height: 128,
-    backgroundColor: '#E5E7EB',
     position: 'relative',
   },
   contentImage: {
@@ -567,61 +561,56 @@ const styles = StyleSheet.create({
   },
   contentTypeBadge: {
     position: 'absolute',
-    top: 12,
-    left: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    top: Tokens.spacing['3'],
+    left: Tokens.spacing['3'],
+    paddingHorizontal: Tokens.spacing['2'],
+    paddingVertical: Tokens.spacing['1'],
+    borderRadius: Tokens.radius.md,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: Tokens.spacing['1'],
   },
   contentTypeText: {
-    color: 'white',
-    fontSize: 10,
-    fontWeight: '500',
+    fontSize: Tokens.typography.sizes['2xs'],
+    fontWeight: Tokens.typography.weights.medium,
   },
   contentNewBadge: {
     position: 'absolute',
-    top: 12,
-    right: 12,
-    backgroundColor: '#FF8FA3',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    top: Tokens.spacing['3'],
+    right: Tokens.spacing['3'],
+    paddingHorizontal: Tokens.spacing['2'],
+    paddingVertical: Tokens.spacing['1'],
+    borderRadius: Tokens.radius.md,
+    shadowOffset: { width: 0, height: Tokens.spacing['px'] },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: Tokens.spacing['0.5'],
     elevation: 1,
   },
   contentNewText: {
-    color: 'white',
-    fontSize: 10,
-    fontWeight: 'bold',
+    fontSize: Tokens.typography.sizes['2xs'],
+    fontWeight: Tokens.typography.weights.bold,
   },
   contentInfo: {
-    padding: 16,
+    padding: Tokens.spacing['4'],
   },
   contentTitle: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    lineHeight: 20,
-    marginBottom: 8,
+    fontWeight: Tokens.typography.weights.bold,
+    fontSize: Tokens.typography.sizes.base,
+    lineHeight: Tokens.typography.lineHeights.sm,
+    marginBottom: Tokens.spacing['2'],
   },
   contentFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Tokens.spacing['2'],
   },
   contentAction: {
-    fontSize: 12,
-    fontWeight: 'bold',
+    fontSize: Tokens.typography.sizes.xs,
+    fontWeight: Tokens.typography.weights.bold,
   },
   waitlistBanner: {
-    borderRadius: 24,
-    padding: 24,
+    borderRadius: Tokens.radius['3xl'],
+    padding: Tokens.spacing['6'],
     position: 'relative',
     overflow: 'hidden',
   },
@@ -631,10 +620,9 @@ const styles = StyleSheet.create({
     right: 0,
     width: 128,
     height: 128,
-    backgroundColor: 'rgba(255, 143, 163, 0.2)',
     borderRadius: 64,
-    marginRight: -40,
-    marginTop: -40,
+    marginRight: -Tokens.spacing['10'],
+    marginTop: -Tokens.spacing['10'],
   },
   waitlistDecoration2: {
     position: 'absolute',
@@ -642,48 +630,42 @@ const styles = StyleSheet.create({
     left: 0,
     width: 96,
     height: 96,
-    backgroundColor: 'rgba(66, 133, 244, 0.2)',
     borderRadius: 48,
-    marginLeft: -40,
-    marginBottom: -40,
+    marginLeft: -Tokens.spacing['10'],
+    marginBottom: -Tokens.spacing['10'],
   },
   waitlistHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 8,
+    gap: Tokens.spacing['2'],
+    marginBottom: Tokens.spacing['2'],
   },
   waitlistLabel: {
-    color: '#FF8FA3',
-    fontWeight: 'bold',
-    fontSize: 12,
+    fontWeight: Tokens.typography.weights.bold,
+    fontSize: Tokens.typography.sizes.xs,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: Tokens.typography.letterSpacing.widest,
   },
   waitlistTitle: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    fontSize: Tokens.typography.sizes.xl,
+    fontWeight: Tokens.typography.weights.bold,
+    marginBottom: Tokens.spacing['2'],
   },
   waitlistDescription: {
-    color: '#D1D5DB',
-    fontSize: 14,
-    marginBottom: 24,
-    lineHeight: 20,
+    fontSize: Tokens.typography.sizes.sm,
+    marginBottom: Tokens.spacing['6'],
+    lineHeight: Tokens.typography.lineHeights.sm,
   },
   waitlistButton: {
-    backgroundColor: '#FFFFFF',
     width: '100%',
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: Tokens.spacing['3'],
+    borderRadius: Tokens.radius.lg,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 8,
+    gap: Tokens.spacing['2'],
   },
   waitlistButtonText: {
-    color: '#5D4E4B',
-    fontWeight: 'bold',
+    fontWeight: Tokens.typography.weights.bold,
   },
 });

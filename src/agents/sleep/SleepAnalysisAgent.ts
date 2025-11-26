@@ -389,19 +389,19 @@ export class SleepAnalysisAgent extends BaseAgent {
       return await orchestrator.callMCP(
         server,
         method as keyof import('../../mcp/types').GoogleAIMCPMethods,
-        params as any
+        params
       );
     } else if (server === 'analytics') {
       return await orchestrator.callMCP(
         server,
         method as keyof import('../../mcp/types').AnalyticsMCPMethods,
-        params as any
+        params
       );
     }
     return await orchestrator.callMCP(
       server,
       method as keyof import('../../mcp/types').AllMCPMethods,
-      params as any
+      params
     );
   }
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeContext';
+import { Tokens } from '../theme/tokens';
 import { Play, Pause, Wind, Moon, Heart, Volume2, Timer, Sparkles } from 'lucide-react-native';
 
 interface Ritual {
@@ -25,7 +26,7 @@ export default function RefugioNathScreen() {
       description: 'Técnica de respiração para acalmar a ansiedade rapidamente',
       duration: '3 min',
       icon: Wind,
-      color: '#3B82F6',
+      color: colors.primary.main,
       category: 'breathing',
     },
     {
@@ -34,7 +35,7 @@ export default function RefugioNathScreen() {
       description: 'Relaxamento profundo para uma noite tranquila',
       duration: '10 min',
       icon: Moon,
-      color: '#8B5CF6',
+      color: colors.raw.accent.purple,
       category: 'meditation',
     },
     {
@@ -43,7 +44,7 @@ export default function RefugioNathScreen() {
       description: 'Momento de conexão com você mesma',
       duration: '5 min',
       icon: Heart,
-      color: '#EC4899',
+      color: colors.raw.accent.pink,
       category: 'self-care',
     },
     {
@@ -52,7 +53,7 @@ export default function RefugioNathScreen() {
       description: 'Exercício suave para momentos de estresse',
       duration: '2 min',
       icon: Wind,
-      color: '#10B981',
+      color: colors.status.success,
       category: 'breathing',
     },
     {
@@ -61,7 +62,7 @@ export default function RefugioNathScreen() {
       description: 'Cultive sentimentos de gratidão e positividade',
       duration: '7 min',
       icon: Sparkles,
-      color: '#F59E0B',
+      color: colors.status.warning,
       category: 'meditation',
     },
   ];
@@ -74,33 +75,33 @@ export default function RefugioNathScreen() {
       accessibilityLabel="Tela Refúgio Nath - Momentos de calma"
     >
       {/* Header */}
-      <View style={{ padding: 16, backgroundColor: colors.background.card, borderBottomWidth: 1, borderBottomColor: colors.border.light }}>
-        <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary, marginBottom: 4 }}>
+      <View style={{ padding: Tokens.spacing['4'], backgroundColor: colors.background.card, borderBottomWidth: 1, borderBottomColor: colors.border.light }}>
+        <Text style={{ fontSize: Tokens.typography.sizes['2xl'], fontWeight: Tokens.typography.weights.bold, color: colors.text.primary, marginBottom: Tokens.spacing['1'] }}>
           Refúgio Nath
         </Text>
-        <Text style={{ fontSize: 14, color: colors.text.secondary }}>
+        <Text style={{ fontSize: Tokens.typography.sizes.sm, color: colors.text.secondary }}>
           Momentos de calma para você
         </Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 120 }}>
+      <ScrollView contentContainerStyle={{ padding: Tokens.spacing['4'], paddingBottom: 120 }}>
         {/* Quick Stats */}
-        <View style={{ flexDirection: 'row', marginBottom: 24, gap: 12 }}>
-          <View style={{ flex: 1, backgroundColor: colors.background.card, padding: 16, borderRadius: 12, borderWidth: 1, borderColor: colors.border.light }}>
-            <Timer size={20} color={colors.primary.main} style={{ marginBottom: 8 }} />
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors.text.primary }}>12</Text>
-            <Text style={{ fontSize: 12, color: colors.text.secondary }}>Rituals feitos</Text>
+        <View style={{ flexDirection: 'row', marginBottom: Tokens.spacing['6'], gap: Tokens.spacing['3'] }}>
+          <View style={{ flex: 1, backgroundColor: colors.background.card, padding: Tokens.spacing['4'], borderRadius: Tokens.radius.lg, borderWidth: 1, borderColor: colors.border.light }}>
+            <Timer size={20} color={colors.primary.main} style={{ marginBottom: Tokens.spacing['2'] }} />
+            <Text style={{ fontSize: Tokens.typography.sizes.xl, fontWeight: Tokens.typography.weights.bold, color: colors.text.primary }}>12</Text>
+            <Text style={{ fontSize: Tokens.typography.sizes.xs, color: colors.text.secondary }}>Rituals feitos</Text>
           </View>
-          <View style={{ flex: 1, backgroundColor: colors.background.card, padding: 16, borderRadius: 12, borderWidth: 1, borderColor: colors.border.light }}>
-            <Volume2 size={20} color={colors.primary.main} style={{ marginBottom: 8 }} />
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors.text.primary }}>45min</Text>
-            <Text style={{ fontSize: 12, color: colors.text.secondary }}>Esta semana</Text>
+          <View style={{ flex: 1, backgroundColor: colors.background.card, padding: Tokens.spacing['4'], borderRadius: Tokens.radius.lg, borderWidth: 1, borderColor: colors.border.light }}>
+            <Volume2 size={20} color={colors.primary.main} style={{ marginBottom: Tokens.spacing['2'] }} />
+            <Text style={{ fontSize: Tokens.typography.sizes.xl, fontWeight: Tokens.typography.weights.bold, color: colors.text.primary }}>45min</Text>
+            <Text style={{ fontSize: Tokens.typography.sizes.xs, color: colors.text.secondary }}>Esta semana</Text>
           </View>
         </View>
 
         {/* Categories Filter (optional) */}
-        <View style={{ marginBottom: 16 }}>
-          <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary, marginBottom: 12 }}>
+        <View style={{ marginBottom: Tokens.spacing['4'] }}>
+          <Text style={{ fontSize: Tokens.typography.sizes.base, fontWeight: Tokens.typography.weights.bold, color: colors.text.primary, marginBottom: Tokens.spacing['3'] }}>
             Escolha seu ritual
           </Text>
         </View>
@@ -115,16 +116,16 @@ export default function RefugioNathScreen() {
               key={ritual.id}
               onPress={() => setPlaying(isPlaying ? null : ritual.id)}
               style={{
-                padding: 16,
+                padding: Tokens.spacing['4'],
                 backgroundColor: colors.background.card,
-                borderRadius: 16,
-                marginBottom: 16,
+                borderRadius: Tokens.radius.xl,
+                marginBottom: Tokens.spacing['4'],
                 flexDirection: 'row',
                 alignItems: 'center',
-                gap: 16,
+                gap: Tokens.spacing['4'],
                 borderWidth: isPlaying ? 2 : 1,
                 borderColor: isPlaying ? ritual.color : colors.border.light,
-                shadowColor: isPlaying ? ritual.color : '#000',
+                shadowColor: isPlaying ? ritual.color : colors.text.primary,
                 shadowOffset: { width: 0, height: isPlaying ? 4 : 1 },
                 shadowOpacity: isPlaying ? 0.3 : 0.05,
                 shadowRadius: isPlaying ? 8 : 2,
@@ -147,15 +148,15 @@ export default function RefugioNathScreen() {
 
               {/* Content */}
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.primary, marginBottom: 2 }}>
+                <Text style={{ fontSize: Tokens.typography.sizes.base, fontWeight: Tokens.typography.weights.semibold, color: colors.text.primary, marginBottom: Tokens.spacing['0.5'] }}>
                   {ritual.title}
                 </Text>
-                <Text style={{ fontSize: 12, color: colors.text.secondary, marginBottom: 6, lineHeight: 16 }}>
+                <Text style={{ fontSize: Tokens.typography.sizes.xs, color: colors.text.secondary, marginBottom: Tokens.spacing['1.5'], lineHeight: Tokens.typography.lineHeights.xs }}>
                   {ritual.description}
                 </Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: Tokens.spacing['1.5'] }}>
                   <Timer size={12} color={colors.text.tertiary} />
-                  <Text style={{ fontSize: 12, color: colors.text.tertiary, fontWeight: '500' }}>
+                  <Text style={{ fontSize: Tokens.typography.sizes.xs, color: colors.text.tertiary, fontWeight: Tokens.typography.weights.medium }}>
                     {ritual.duration}
                   </Text>
                 </View>
@@ -165,23 +166,23 @@ export default function RefugioNathScreen() {
               <TouchableOpacity accessibilityRole="button"
                 onPress={() => setPlaying(isPlaying ? null : ritual.id)}
                 style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
+                  width: Tokens.touchTargets.small,
+                  height: Tokens.touchTargets.small,
+                  borderRadius: Tokens.touchTargets.small / 2,
                   backgroundColor: isPlaying ? ritual.color : colors.primary.main,
                   alignItems: 'center',
                   justifyContent: 'center',
                   shadowColor: ritual.color,
-                  shadowOffset: { width: 0, height: 2 },
+                  shadowOffset: { width: 0, height: Tokens.spacing['0.5'] },
                   shadowOpacity: isPlaying ? 0.4 : 0.2,
-                  shadowRadius: 4,
-                  elevation: 4,
+                  shadowRadius: Tokens.spacing['1'],
+                  elevation: Tokens.spacing['1'],
                 }}
               >
                 {isPlaying ? (
-                  <Pause size={20} color="#FFFFFF" fill="#FFFFFF" />
+                  <Pause size={Tokens.icons.sm} color={colors.text.inverse} fill={colors.text.inverse} />
                 ) : (
-                  <Play size={20} color="#FFFFFF" fill="#FFFFFF" />
+                  <Play size={Tokens.icons.sm} color={colors.text.inverse} fill={colors.text.inverse} />
                 )}
               </TouchableOpacity>
             </TouchableOpacity>
@@ -189,23 +190,23 @@ export default function RefugioNathScreen() {
         })}
 
         {/* Bottom CTA */}
-        <View style={{ marginTop: 8, padding: 20, backgroundColor: isDark ? colors.background.card : '#F0F7FF', borderRadius: 16, borderWidth: 1, borderColor: colors.border.light }}>
-          <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary, marginBottom: 8 }}>
+        <View style={{ marginTop: Tokens.spacing['2'], padding: Tokens.spacing['5'], backgroundColor: isDark ? colors.background.card : colors.primary.light, borderRadius: Tokens.radius.xl, borderWidth: 1, borderColor: colors.border.light }}>
+          <Text style={{ fontSize: Tokens.typography.sizes.base, fontWeight: Tokens.typography.weights.bold, color: colors.text.primary, marginBottom: Tokens.spacing['2'] }}>
             Precisa de mais ajuda?
           </Text>
-          <Text style={{ fontSize: 14, color: colors.text.secondary, lineHeight: 20, marginBottom: 12 }}>
+          <Text style={{ fontSize: Tokens.typography.sizes.sm, color: colors.text.secondary, lineHeight: Tokens.typography.lineHeights.sm, marginBottom: Tokens.spacing['3'] }}>
             Converse com a MãesValente IA para receber suporte personalizado
           </Text>
           <TouchableOpacity accessibilityRole="button"
             style={{
               backgroundColor: colors.primary.main,
-              paddingVertical: 12,
-              paddingHorizontal: 20,
-              borderRadius: 10,
+              paddingVertical: Tokens.spacing['3'],
+              paddingHorizontal: Tokens.spacing['5'],
+              borderRadius: Tokens.radius.md,
               alignItems: 'center',
             }}
           >
-            <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '600' }}>
+            <Text style={{ color: colors.text.inverse, fontSize: Tokens.typography.sizes.sm, fontWeight: Tokens.typography.weights.semibold }}>
               Falar com a IA
             </Text>
           </TouchableOpacity>
