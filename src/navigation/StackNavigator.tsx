@@ -3,10 +3,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { TabNavigator } from './TabNavigator';
 import { useAuth } from '../contexts/AuthContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreenComponent from '../screens/SplashScreen';
 import LoginScreenNew from '../screens/LoginScreenNew';
-import OnboardingFlowNew from '../screens/Onboarding/OnboardingFlowNew';
+import OnboardingScreen from '../screens/Onboarding/OnboardingScreen';
 import RitualScreen from '../screens/RitualScreen';
 import DiaryScreen from '../screens/DiaryScreen';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
@@ -15,6 +14,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import AgentsStatusScreen from '../screens/AgentsStatusScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import ContentDetailScreen from '../screens/ContentDetailScreen';
+import { onboardingService } from '../services/onboardingService';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -29,10 +29,16 @@ export const StackNavigator = () => {
 
     const checkOnboarding = async () => {
       try {
-        // Verificar se usuário completou onboarding
-        const savedUser = await AsyncStorage.getItem('nath_user');
-        if (isMounted) {
-          setHasCompletedOnboarding(!!savedUser);
+        // Verificar se usuário completou onboarding via serviço
+        if (user) {
+          const completed = await onboardingService.isOnboardingCompleted();
+          if (isMounted) {
+            setHasCompletedOnboarding(completed);
+          }
+        } else {
+          if (isMounted) {
+            setHasCompletedOnboarding(false);
+          }
         }
       } catch (error) {
         console.warn('[StackNavigator] Erro ao verificar onboarding:', error);
@@ -51,7 +57,7 @@ export const StackNavigator = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [user]);
 
   // Loading enquanto verifica autenticação ou onboarding
   const loading = authLoading || onboardingLoading;
@@ -64,12 +70,19 @@ export const StackNavigator = () => {
   // Determinar rota inicial baseado no estado
   // ✅ Usa user do AuthContext (já validado e gerenciado)
   const getInitialRouteName = (): keyof RootStackParamList => {
-    if (hasCompletedOnboarding && user) {
+    // Se usuário está logado E completou onboarding → Main
+    if (user && hasCompletedOnboarding) {
       return 'Main';
     }
-    if (hasCompletedOnboarding && !user) {
+    // Se usuário está logado MAS NÃO completou onboarding → Onboarding
+    if (user && !hasCompletedOnboarding) {
+      return 'Onboarding';
+    }
+    // Se usuário NÃO está logado → Auth
+    if (!user) {
       return 'Auth';
     }
+    // Fallback → Splash
     return 'Splash';
   };
 
@@ -84,7 +97,7 @@ export const StackNavigator = () => {
     >
       <Stack.Screen name="Splash" component={SplashScreenComponent} />
       <Stack.Screen name="Auth" component={LoginScreenNew} />
-      <Stack.Screen name="Onboarding" component={OnboardingFlowNew} />
+      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="Main" component={TabNavigator} />
       {/* Modais */}
       <Stack.Screen 
