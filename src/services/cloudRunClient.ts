@@ -49,6 +49,7 @@ export interface ChatRequest {
   message: string;
   history?: Array<{ role: string; parts: Array<{ text: string }> }>;
   systemInstruction?: string;
+  [key: string]: unknown;
 }
 
 export interface ChatResponse {
@@ -62,6 +63,7 @@ export interface AudioRequest {
   mimeType: string;
   systemInstruction?: string;
   prompt?: string;
+  [key: string]: unknown;
 }
 
 export interface AudioResponse {
@@ -72,6 +74,7 @@ export interface AudioResponse {
 export interface AnalyzeDiaryRequest {
   entry: string;
   systemInstruction?: string;
+  [key: string]: unknown;
 }
 
 export interface AnalyzeDiaryResponse {
@@ -126,7 +129,7 @@ class CloudRunClient {
    */
   async post<T = unknown>(
     endpoint: string,
-    body: Record<string, unknown>,
+    body: Record<string, unknown> | { [key: string]: unknown },
     options?: RequestInit
   ): Promise<CloudRunResponse<T>> {
     try {
@@ -232,14 +235,16 @@ class CloudRunClient {
    * Send chat message to AI
    */
   async sendChatMessage(request: ChatRequest): Promise<CloudRunResponse<ChatResponse>> {
-    return this.post<ChatResponse>('/api/chat', request);
+    // ChatRequest já tem index signature [key: string]: unknown, então é compatível com Record<string, unknown>
+    return this.post<ChatResponse>('/api/chat', request as Record<string, unknown>);
   }
 
   /**
    * Send audio for transcription and AI response
    */
   async sendAudio(request: AudioRequest): Promise<CloudRunResponse<AudioResponse>> {
-    return this.post<AudioResponse>('/api/audio', request);
+    // AudioRequest já tem index signature [key: string]: unknown, então é compatível com Record<string, unknown>
+    return this.post<AudioResponse>('/api/audio', request as Record<string, unknown>);
   }
 
   /**
@@ -248,7 +253,8 @@ class CloudRunClient {
   async analyzeDiary(
     request: AnalyzeDiaryRequest
   ): Promise<CloudRunResponse<AnalyzeDiaryResponse>> {
-    return this.post<AnalyzeDiaryResponse>('/api/analyze-diary', request);
+    // AnalyzeDiaryRequest já tem index signature [key: string]: unknown, então é compatível com Record<string, unknown>
+    return this.post<AnalyzeDiaryResponse>('/api/analyze-diary', request as Record<string, unknown>);
   }
 
   /**
