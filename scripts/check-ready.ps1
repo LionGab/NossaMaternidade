@@ -13,22 +13,39 @@ $total = 8
 $errors = 0
 $warnings = 0
 
-# 1. app.json
-Write-Host "📱 Verificando app.json..." -ForegroundColor Yellow
-if (Test-Path "app.json") {
-    Write-Host "  ✅ app.json encontrado" -ForegroundColor Green
-    $checks++
-    
-    # Verificar bundle ID
-    $appJson = Get-Content "app.json" -Raw
-    if ($appJson -match "com\.nossamaternidade\.app") {
-        Write-Host "  ✅ Bundle ID correto" -ForegroundColor Green
-    } else {
-        Write-Host "  ⚠️  Bundle ID precisa ser 'com.nossamaternidade.app'" -ForegroundColor Yellow
-        $warnings++
+# 1. app.json ou app.config.js (Expo suporta ambos)
+Write-Host "📱 Verificando configuração Expo..." -ForegroundColor Yellow
+$hasAppJson = Test-Path "app.json"
+$hasAppConfig = Test-Path "app.config.js"
+
+if ($hasAppJson -or $hasAppConfig) {
+    if ($hasAppConfig) {
+        Write-Host "  ✅ app.config.js encontrado (config dinâmica)" -ForegroundColor Green
+        $checks++
+
+        # Verificar bundle ID no app.config.js
+        $appConfig = Get-Content "app.config.js" -Raw
+        if ($appConfig -match "com\.nossamaternidade\.app") {
+            Write-Host "  ✅ Bundle ID correto" -ForegroundColor Green
+        } else {
+            Write-Host "  ⚠️  Bundle ID precisa ser 'com.nossamaternidade.app'" -ForegroundColor Yellow
+            $warnings++
+        }
+    } elseif ($hasAppJson) {
+        Write-Host "  ✅ app.json encontrado" -ForegroundColor Green
+        $checks++
+
+        # Verificar bundle ID no app.json
+        $appJson = Get-Content "app.json" -Raw
+        if ($appJson -match "com\.nossamaternidade\.app") {
+            Write-Host "  ✅ Bundle ID correto" -ForegroundColor Green
+        } else {
+            Write-Host "  ⚠️  Bundle ID precisa ser 'com.nossamaternidade.app'" -ForegroundColor Yellow
+            $warnings++
+        }
     }
 } else {
-    Write-Host "  ❌ app.json NÃO encontrado" -ForegroundColor Red
+    Write-Host "  ❌ app.json ou app.config.js NÃO encontrado" -ForegroundColor Red
     $errors++
 }
 Write-Host ""
