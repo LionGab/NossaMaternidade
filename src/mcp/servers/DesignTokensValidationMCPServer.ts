@@ -411,7 +411,7 @@ export class DesignTokensValidationMCPServer implements MCPServer {
       });
     }
 
-    let before = violation.content;
+    const before = violation.content;
     let after = violation.content;
     let explanation = '';
 

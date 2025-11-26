@@ -360,10 +360,9 @@ export class AccessibilityMCPServer implements MCPServer {
 
     // Contar problemas de roles
     const content = fs.readFileSync(fullPath, 'utf-8');
-    let missingRoles = 0;
     const interactiveComponents = content.match(/<(TouchableOpacity|Pressable|Button)/g) || [];
     const hasRoles = content.match(/accessibilityRole/g) || [];
-    missingRoles = Math.max(0, interactiveComponents.length - hasRoles.length);
+    const missingRoles = Math.max(0, interactiveComponents.length - hasRoles.length);
 
     // Contar problemas de navegação por teclado (básico)
     let keyboardNavigation = 0;

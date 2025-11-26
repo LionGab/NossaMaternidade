@@ -6,7 +6,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { ArrowRight, Check, ArrowLeft, Moon, Sun, Coffee, Heart, Shield, Smile, Meh, Frown, BatteryLow, BatteryMedium, BatteryFull } from 'lucide-react-native';
+import { ArrowLeft, Moon, Sun, Coffee, Heart, Shield, Meh, Frown, BatteryLow, BatteryMedium, BatteryFull } from 'lucide-react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { Button } from '../components';
 

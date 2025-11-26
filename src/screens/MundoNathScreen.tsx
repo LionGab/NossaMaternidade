@@ -28,9 +28,7 @@ import {
   MessageCircleHeart,
   ArrowRight,
   Flame,
-  Star,
 } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MOCK_POSTS } from '../constants/data';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { Tokens } from '../theme/tokens';

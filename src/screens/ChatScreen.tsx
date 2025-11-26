@@ -25,17 +25,15 @@ import {
   Brain,
   Globe,
   Mic,
-  Square,
   AudioLines,
   MessageCircle,
   ImagePlus,
-  X
 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens } from '../theme';
-import { chatService, ChatMessage, ChatConversation } from '../services/chatService';
+import { chatService, ChatMessage } from '../services/chatService';
 import { profileService } from '../services/profileService';
 import { MessageBubble } from '../components/MessageBubble';
 import { HeroBanner } from '@/components/molecules/HeroBanner';
@@ -73,6 +71,8 @@ export default function ChatScreen() {
   const [aiMode, setAiMode] = useState<AIMode>('balanced');
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  // TODO: Implementar envio de imagem no chat
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Load messages on mount

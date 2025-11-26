@@ -185,11 +185,8 @@ class MedicalModerationService {
     }
 
     // ADICIONAR disclaimers quando apropriado
-    let moderatedText = text;
     const disclaimer = this.buildDisclaimer(flags);
-    if (disclaimer) {
-      moderatedText = `${text}${disclaimer}`;
-    }
+    const moderatedText = disclaimer ? `${text}${disclaimer}` : text;
 
     logger.info('[MedicalModeration] Resposta moderada', { flags, severity });
 
@@ -207,8 +204,7 @@ class MedicalModerationService {
    * Gera resposta segura quando conteúdo perigoso é detectado
    */
   private generateSafeResponse(
-    flags: ModerationResult['flags'],
-    userMessage?: string
+    flags: ModerationResult['flags']
   ): string {
     if (flags.crisis) {
       return `

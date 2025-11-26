@@ -27,13 +27,8 @@ export default function OnboardingFlow() {
   };
 
   const nextStep = () => {
-    let next = step + 1;
-
-    // Skip Timeline (Step 4) if not applicable
-    if (step === 3) {
-      const needsTimeline = formData.stage === 'Gestante' || formData.stage === 'Puérpera (Recém-nascido)';
-      if (!needsTimeline) next = 5;
-    }
+    const needsTimeline = formData.stage === 'Gestante' || formData.stage === 'Puérpera (Recém-nascido)';
+    const next = step === 3 && !needsTimeline ? 5 : step + 1;
 
     if (next > 9) {
       handleFinish();
@@ -43,11 +38,8 @@ export default function OnboardingFlow() {
   };
 
   const prevStep = () => {
-    let prev = step - 1;
-    if (step === 5) {
-      const needsTimeline = formData.stage === 'Gestante' || formData.stage === 'Puérpera (Recém-nascido)';
-      if (!needsTimeline) prev = 3;
-    }
+    const needsTimeline = formData.stage === 'Gestante' || formData.stage === 'Puérpera (Recém-nascido)';
+    const prev = step === 5 && !needsTimeline ? 3 : step - 1;
     setStep(Math.max(1, prev));
   };
 

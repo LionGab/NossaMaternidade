@@ -132,9 +132,7 @@ LIMITAÇÕES:
         };
 
         // Criar contexto enriquecido
-        let enrichedPrompt = message;
-
-        if (context) {
+        const enrichedPrompt = context ? (() => {
           const {
             name,
             lifeStage,
@@ -151,7 +149,7 @@ LIMITAÇÕES:
             supportNetwork?: string;
           };
 
-          enrichedPrompt = `
+          return `
 CONTEXTO DA USUÁRIA:
 - Nome: ${name || 'mãe'}
 - Fase: ${lifeStage || 'não especificada'}
@@ -162,7 +160,7 @@ CONTEXTO DA USUÁRIA:
 
 MENSAGEM: ${message}
 `;
-        }
+        })() : message;
 
         // Criar chat com histórico
         const chat = this.model.startChat({
@@ -279,10 +277,9 @@ Retorne APENAS o JSON.
       case 'content': {
         const { prompt, context } = params as { prompt: string; context?: Record<string, unknown> };
 
-        let enrichedPrompt = prompt;
-        if (context) {
-          enrichedPrompt = `${JSON.stringify(context, null, 2)}\n\n${prompt}`;
-        }
+        const enrichedPrompt = context
+          ? `${JSON.stringify(context, null, 2)}\n\n${prompt}`
+          : prompt;
 
         const result = await this.model.generateContent(enrichedPrompt);
         const response = result.response.text();

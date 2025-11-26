@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 import { useTheme } from '../../theme/ThemeContext';
+import { Tokens } from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useHaptics } from '../../hooks/useHaptics';
 import { logger } from '../../utils/logger';
@@ -19,7 +20,6 @@ export default function OnboardingFlow() {
   const { isDark, toggleTheme, colors } = useTheme();
   const haptics = useHaptics();
   const { width } = useWindowDimensions();
-  const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
 
   // Flow Management
   const [step, setStep] = useState(1);
@@ -44,7 +44,6 @@ export default function OnboardingFlow() {
   }, []);
 
   const isSmallScreen = width < 375;
-  const isLargeScreen = width > 414;
   const isXL = width >= 768;
 
   const containerStyle = {
@@ -66,24 +65,15 @@ export default function OnboardingFlow() {
   // Logic to skip timeline screen if not pregnant or new mom
   const nextStep = () => {
     haptics.medium();
-    let next = step + 1;
-
-    // Skip Timeline (Step 4) if not applicable
-    if (step === 3) {
-      const needsTimeline = formData.stage === UserStage.PREGNANT || formData.stage === UserStage.NEW_MOM;
-      if (!needsTimeline) next = 5;
-    }
-
+    const needsTimeline = formData.stage === UserStage.PREGNANT || formData.stage === UserStage.NEW_MOM;
+    const next = step === 3 && !needsTimeline ? 5 : step + 1;
     setStep(next);
   };
 
   const prevStep = () => {
     haptics.light();
-    let prev = step - 1;
-    if (step === 5) {
-      const needsTimeline = formData.stage === UserStage.PREGNANT || formData.stage === UserStage.NEW_MOM;
-      if (!needsTimeline) prev = 3;
-    }
+    const needsTimeline = formData.stage === UserStage.PREGNANT || formData.stage === UserStage.NEW_MOM;
+    const prev = step === 5 && !needsTimeline ? 3 : step - 1;
     setStep(Math.max(1, prev));
   };
 

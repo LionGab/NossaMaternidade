@@ -26,28 +26,28 @@ export const StackNavigator = () => {
   const [onboardingLoading, setOnboardingLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
+    const isMounted = { current: true };
 
     const checkOnboarding = async () => {
       try {
         // Verificar se usuário completou onboarding via serviço
         if (user) {
           const completed = await onboardingService.isOnboardingCompleted();
-          if (isMounted) {
-            setHasCompletedOnboarding(completed);
-          }
-        } else {
-          if (isMounted) {
-            setHasCompletedOnboarding(false);
-          }
+        if (isMounted.current) {
+          setHasCompletedOnboarding(completed);
         }
-      } catch (error) {
-        logger.warn('[StackNavigator] Erro ao verificar onboarding', error);
-        if (isMounted) {
+      } else {
+        if (isMounted.current) {
           setHasCompletedOnboarding(false);
         }
-      } finally {
-        if (isMounted) {
+      }
+    } catch (error) {
+      logger.warn('[StackNavigator] Erro ao verificar onboarding', error);
+      if (isMounted.current) {
+        setHasCompletedOnboarding(false);
+      }
+    } finally {
+      if (isMounted.current) {
           setOnboardingLoading(false);
         }
       }
@@ -56,7 +56,7 @@ export const StackNavigator = () => {
     checkOnboarding();
 
     return () => {
-      isMounted = false;
+      isMounted.current = false;
     };
   }, [user]);
 

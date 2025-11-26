@@ -128,7 +128,7 @@ export class CostTracker {
   ): Promise<T> {
     const startTime = Date.now();
     let success = true;
-    let errorMessage: string | undefined;
+    let errorMessage: string | undefined = undefined;
     let inputTokens = 0;
     let outputTokens = 0;
 

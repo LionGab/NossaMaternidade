@@ -23,13 +23,13 @@ class GeminiService {
       const savedUser = await AsyncStorage.getItem('nath_user');
       if (savedUser) {
         const user = JSON.parse(savedUser);
-        let ctx = "";
-        if (user.name) ctx += ` Nome da usuária: ${user.name}.`;
-        if (user.stage) ctx += ` Fase: ${user.stage}.`;
-        if (user.timelineInfo) ctx += ` Tempo: ${user.timelineInfo}.`;
-        if (user.biggestChallenge) ctx += ` Maior desafio atual: ${user.biggestChallenge}.`;
-        if (user.supportLevel) ctx += ` Rede de apoio: ${user.supportLevel}.`;
-        return ctx;
+        const ctxParts: string[] = [];
+        if (user.name) ctxParts.push(` Nome da usuária: ${user.name}.`);
+        if (user.stage) ctxParts.push(` Fase: ${user.stage}.`);
+        if (user.timelineInfo) ctxParts.push(` Tempo: ${user.timelineInfo}.`);
+        if (user.biggestChallenge) ctxParts.push(` Maior desafio atual: ${user.biggestChallenge}.`);
+        if (user.supportLevel) ctxParts.push(` Rede de apoio: ${user.supportLevel}.`);
+        return ctxParts.join('');
       }
     } catch (e) {
       logger.warn('Error reading user context:', e);

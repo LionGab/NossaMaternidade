@@ -143,9 +143,7 @@ TOM:
         };
 
         // Construir contexto enriquecido
-        let userMessage = message;
-
-        if (context) {
+        const userMessage = context ? (() => {
           const {
             name,
             lifeStage,
@@ -164,7 +162,7 @@ TOM:
             complexityLevel?: 'low' | 'medium' | 'high';
           };
 
-          const contextInfo = `
+          return `
 CONTEXTO DETALHADO DA USUÁRIA:
 - Nome: ${name || 'mãe'}
 - Fase: ${lifeStage || 'não especificada'}
@@ -176,8 +174,7 @@ ${complexityLevel ? `- Nível de complexidade: ${complexityLevel}` : ''}
 
 SITUAÇÃO: ${message}
 `;
-          userMessage = contextInfo;
-        }
+        })() : message;
 
         // Converter histórico de Gemini para Anthropic
         const messages: MessageParam[] = [];

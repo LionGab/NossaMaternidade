@@ -140,9 +140,7 @@ LIMITAÇÕES ESTRITAS:
         };
 
         // Construir contexto enriquecido
-        let userMessage = message;
-
-        if (context) {
+        const userMessage = context ? (() => {
           const {
             name,
             lifeStage,
@@ -155,7 +153,7 @@ LIMITAÇÕES ESTRITAS:
             riskLevel?: 'low' | 'medium' | 'high' | 'critical';
           };
 
-          const contextInfo = `
+          return `
 CONTEXTO DA USUÁRIA:
 - Nome: ${name || 'mãe'}
 - Fase: ${lifeStage || 'não especificada'}
@@ -164,8 +162,7 @@ ${riskLevel ? `- Nível de risco: ${riskLevel}` : ''}
 
 MENSAGEM: ${message}
 `;
-          userMessage = contextInfo;
-        }
+        })() : message;
 
         // Converter histórico de Gemini para OpenAI
         const messages: ChatCompletionMessageParam[] = [

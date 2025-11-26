@@ -263,10 +263,7 @@ class ProfileService {
   } {
     const weeks = pregnancyWeek;
     const days = 0; // Pode ser expandido para incluir dias também
-
-    let trimester = 1;
-    if (weeks >= 13) trimester = 2;
-    if (weeks >= 27) trimester = 3;
+    const trimester = weeks >= 27 ? 3 : weeks >= 13 ? 2 : 1;
 
     return { weeks, days, trimester };
   }
