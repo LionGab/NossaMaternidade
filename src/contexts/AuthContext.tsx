@@ -4,6 +4,7 @@ import { supabase, isSupabaseReady } from '../services/supabase';
 import { sessionManager } from '../services/sessionManager';
 import { ensureValidSession } from '../middleware/sessionValidator';
 import { Loading } from '../components';
+import { logger } from '../utils/logger';
 
 interface AuthContextType {
   user: User | null;
@@ -28,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     // Inicializar session manager
     sessionManager.initialize().catch((error) => {
-      console.error('[AuthContext] Erro ao inicializar session manager:', error);
+      logger.error('[AuthContext] Erro ao inicializar session manager', error);
     });
 
     // Escutar mudanças do session manager
@@ -118,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await sessionManager.clearAllSessions();
     } catch (error) {
-      console.warn('[AuthContext] Erro ao fazer logout:', error);
+      logger.warn('[AuthContext] Erro ao fazer logout', error);
     }
   };
 

@@ -14,6 +14,7 @@ import { ArrowLeft, Sparkles, Send, Layout, Calendar, BookHeart, Shield } from '
 import { geminiService } from '../services/geminiService';
 import { useTheme } from '../theme/ThemeContext';
 import { Button } from '../components';
+import { logger } from '../utils/logger';
 
 export default function DiaryScreen() {
   const navigation = useNavigation();
@@ -30,7 +31,7 @@ export default function DiaryScreen() {
       const aiResponse = await geminiService.analyzeDiaryEntry(entry);
       setResponse(aiResponse.text || 'Guardei seu desabafo com carinho, mesmo com minha conexão instável.');
     } catch (error) {
-      console.error('Error analyzing diary:', error);
+      logger.error('Error analyzing diary', error);
       setResponse('Guardei seu desabafo com carinho, mesmo com minha conexão instável.');
     } finally {
       setIsAnalyzing(false);

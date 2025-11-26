@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logger } from '../utils/logger';
 
 /**
  * Hook para gerenciar AsyncStorage de forma reativa
@@ -21,7 +22,7 @@ export function useAsyncStorage<T>(
           setStoredValue(JSON.parse(item));
         }
       } catch (error) {
-        console.error(`Erro ao carregar ${key}:`, error);
+        logger.error(`Erro ao carregar ${key}`, error);
       } finally {
         setLoading(false);
       }
@@ -39,7 +40,7 @@ export function useAsyncStorage<T>(
         setStoredValue(valueToStore);
         await AsyncStorage.setItem(key, JSON.stringify(valueToStore));
       } catch (error) {
-        console.error(`Erro ao salvar ${key}:`, error);
+        logger.error(`Erro ao salvar ${key}`, error);
       }
     },
     [key, storedValue]

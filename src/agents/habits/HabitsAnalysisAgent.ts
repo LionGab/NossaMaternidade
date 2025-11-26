@@ -6,6 +6,7 @@
 import { BaseAgent, AgentConfig, AgentContext } from '../core/BaseAgent';
 import { orchestrator } from '../core/AgentOrchestrator';
 import { MCPResponse } from '../../mcp/types';
+import { logger } from '../../utils/logger';
 
 export interface HabitEntry {
   id: string;
@@ -133,7 +134,7 @@ export class HabitsAnalysisAgent extends BaseAgent {
 
       return analysis;
     } catch (error: unknown) {
-      console.error('[HabitsAnalysisAgent] Error analyzing habits:', error);
+      logger.error('[HabitsAnalysisAgent] Error analyzing habits', error);
       throw error;
     }
   }
@@ -439,7 +440,7 @@ Seja específica e empática.
 
       return this.getDefaultRecommendations(overallScore);
     } catch (error) {
-      console.error('[HabitsAnalysisAgent] Failed to generate recommendations:', error);
+      logger.error('[HabitsAnalysisAgent] Failed to generate recommendations', error);
       return this.getDefaultRecommendations(overallScore);
     }
   }

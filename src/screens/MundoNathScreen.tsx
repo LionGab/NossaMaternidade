@@ -37,6 +37,7 @@ import { useHaptics } from '../hooks/useHaptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { MainTabParamList, RootStackParamList } from '../navigation/types';
 import { HeroBanner } from '@/components/molecules/HeroBanner';
+import { logger } from '../utils/logger';
 
 type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'MundoNath'>,
@@ -245,7 +246,7 @@ export default function MundoNathScreen() {
 
   const handleWaitlistPress = useCallback(() => {
     haptics.light();
-    Linking.openURL('https://forms.gle/waitlist').catch((err) => console.error('Erro ao abrir link:', err));
+    Linking.openURL('https://forms.gle/waitlist').catch((err) => logger.error('Erro ao abrir link', err));
   }, [haptics]);
 
   const renderQuickAction = useCallback(

@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
 import { supabaseSecureStorage, migrateSupabaseSessionToSecureStore } from '../utils/supabaseSecureStorage';
+import { logger } from '@/utils/logger';
 
 // Get Supabase URL and anon key from Expo config or environment
 const supabaseUrl =
@@ -17,9 +18,7 @@ const supabaseAnonKey =
 const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 
 if (!isSupabaseConfigured) {
-  console.warn(
-    '⚠️ Supabase não configurado. Adicione supabaseUrl e supabaseAnonKey em app.json.extra ou variáveis de ambiente.'
-  );
+  logger.warn('⚠️ Supabase não configurado. Adicione supabaseUrl e supabaseAnonKey em app.json.extra ou variáveis de ambiente.');
 }
 
 // Migrar sessões existentes do AsyncStorage para SecureStore (executa uma vez)
@@ -31,7 +30,7 @@ export const initSecureStorageMigration = async () => {
     try {
       await migrateSupabaseSessionToSecureStore();
     } catch (error) {
-      console.error('[Supabase] Erro na migração para SecureStore:', error);
+      logger.error('[Supabase] Erro na migração para SecureStore', error);
       // Não lançar erro - migração não deve bloquear o app
     }
   }

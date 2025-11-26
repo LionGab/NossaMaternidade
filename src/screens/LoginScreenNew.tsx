@@ -9,6 +9,7 @@ import { useTheme } from '../theme/ThemeContext';
 import { Tokens } from '../theme';
 import type { RootStackParamList } from '../navigation/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logger } from '../utils/logger';
 
 interface LoginScreenProps {
   onLogin?: () => void;
@@ -47,7 +48,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
         navigation.navigate('Onboarding' as never);
       }
     } catch (error) {
-      console.error('Erro no login:', error);
+      logger.error('Erro no login', error);
       Alert.alert('Erro', 'Não foi possível fazer login. Tente novamente.');
     } finally {
       setIsLoading(false);
@@ -69,7 +70,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
         navigation.navigate('Onboarding' as never);
       }
     } catch (error) {
-      console.error(`Erro no login ${provider}:`, error);
+      logger.error(`Erro no login ${provider}`, error);
       Alert.alert('Erro', `Não foi possível fazer login com ${provider === 'apple' ? 'Apple' : 'Google'}. Tente novamente.`);
     } finally {
       setIsLoading(false);

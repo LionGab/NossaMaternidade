@@ -10,6 +10,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import { useTheme } from '../../theme/ThemeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useHaptics } from '../../hooks/useHaptics';
+import { logger } from '../../utils/logger';
 
 type OnboardingNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Onboarding'>;
 
@@ -92,7 +93,7 @@ export default function OnboardingFlow() {
       await AsyncStorage.setItem('nath_user', JSON.stringify(formData));
       navigation.navigate('Main' as never);
     } catch (error) {
-      console.error('Erro ao salvar dados do usuário:', error);
+      logger.error('Erro ao salvar dados do usuário', error);
       haptics.error();
     }
   };
@@ -749,7 +750,7 @@ export default function OnboardingFlow() {
 
         handleFinish();
       } catch (error) {
-        console.error('Erro ao salvar aceitação:', error);
+        logger.error('Erro ao salvar aceitação', error);
       }
     };
 

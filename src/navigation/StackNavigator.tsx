@@ -15,6 +15,7 @@ import AgentsStatusScreen from '../screens/AgentsStatusScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import ContentDetailScreen from '../screens/ContentDetailScreen';
 import { onboardingService } from '../services/onboardingService';
+import { logger } from '../utils/logger';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -41,7 +42,7 @@ export const StackNavigator = () => {
           }
         }
       } catch (error) {
-        console.warn('[StackNavigator] Erro ao verificar onboarding:', error);
+        logger.warn('[StackNavigator] Erro ao verificar onboarding', error);
         if (isMounted) {
           setHasCompletedOnboarding(false);
         }

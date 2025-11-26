@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import * as TrackingTransparency from 'expo-tracking-transparency';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logger } from '@/utils/logger';
 
 const TRACKING_PERMISSION_ASKED_KEY = 'tracking_permission_asked';
 
@@ -22,7 +23,7 @@ class TrackingService {
       const { status } = await TrackingTransparency.getTrackingPermissionsAsync();
       return status as TrackingStatus;
     } catch (error) {
-      console.error('Erro ao verificar status de tracking:', error);
+      logger.error('Erro ao verificar status de tracking', error);
       return 'unavailable';
     }
   }
@@ -52,7 +53,7 @@ class TrackingService {
 
       return status as TrackingStatus;
     } catch (error) {
-      console.error('Erro ao solicitar permissão de tracking:', error);
+      logger.error('Erro ao solicitar permissão de tracking', error);
       return 'unavailable';
     }
   }

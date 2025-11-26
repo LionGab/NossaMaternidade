@@ -39,6 +39,7 @@ import { chatService, ChatMessage, ChatConversation } from '../services/chatServ
 import { profileService } from '../services/profileService';
 import { MessageBubble } from '../components/MessageBubble';
 import { HeroBanner } from '@/components/molecules/HeroBanner';
+import { logger } from '../utils/logger';
 
 const INITIAL_CHAT_GREETING = "Oi, mãe. Tô aqui com você. Como você está se sentindo agora?";
 const AVATAR_URL = "https://i.imgur.com/oB9ewPG.jpg";
@@ -118,7 +119,7 @@ export default function ChatScreen() {
         }
       }
     } catch (error) {
-      console.error('Erro ao inicializar chat:', error);
+      logger.error('Erro ao inicializar chat', error);
       Alert.alert('Erro', 'Não foi possível carregar o chat');
     } finally {
       setLoadingMessages(false);
@@ -151,7 +152,7 @@ export default function ChatScreen() {
         setTimeout(() => flashListRef.current?.scrollToEnd({ animated: true }), 100);
       }
     } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
+      logger.error('Erro ao enviar mensagem', error);
       Alert.alert('Erro', 'Não foi possível enviar a mensagem');
     } finally {
       setLoading(false);
@@ -206,7 +207,7 @@ export default function ChatScreen() {
                   }
                 }
               } catch (error) {
-                console.error('Erro ao limpar histórico:', error);
+                logger.error('Erro ao limpar histórico', error);
                 Alert.alert('Erro', 'Não foi possível limpar o histórico');
               }
             },
@@ -258,7 +259,7 @@ export default function ChatScreen() {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
     } catch (error) {
-      console.error('Error picking image:', error);
+      logger.error('Error picking image', error);
       Alert.alert('Erro', 'Não foi possível selecionar a imagem.');
     }
   };
