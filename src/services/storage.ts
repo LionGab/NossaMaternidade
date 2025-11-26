@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logger } from '@/utils/logger';
 
 /**
  * Wrapper utilitário para AsyncStorage que substitui localStorage
@@ -34,7 +35,10 @@ export const storage = {
       const user = await AsyncStorage.getItem(STORAGE_KEYS.USER);
       return user ? JSON.parse(user) : null;
     } catch (error) {
-      console.error('Error getting user:', error);
+      logger.error('Error getting user', error, {
+        service: 'StorageService',
+        action: 'getUser',
+      });
       return null;
     }
   },
@@ -43,7 +47,10 @@ export const storage = {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
     } catch (error) {
-      console.error('Error saving user:', error);
+      logger.error('Error saving user', error, {
+        service: 'StorageService',
+        action: 'saveUser',
+      });
       throw error;
     }
   },
@@ -52,7 +59,10 @@ export const storage = {
     try {
       await AsyncStorage.removeItem(STORAGE_KEYS.USER);
     } catch (error) {
-      console.error('Error removing user:', error);
+      logger.error('Error removing user', error, {
+        service: 'StorageService',
+        action: 'removeUser',
+      });
       throw error;
     }
   },
@@ -68,7 +78,10 @@ export const storage = {
         timestamp: new Date(msg.timestamp as string),
       })) as ChatMessage[];
     } catch (error) {
-      console.error('Error getting chat history:', error);
+      logger.error('Error getting chat history', error, {
+        service: 'StorageService',
+        action: 'getChatHistory',
+      });
       return null;
     }
   },
@@ -77,7 +90,10 @@ export const storage = {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.CHAT_HISTORY, JSON.stringify(messages));
     } catch (error) {
-      console.error('Error saving chat history:', error);
+      logger.error('Error saving chat history', error, {
+        service: 'StorageService',
+        action: 'saveChatHistory',
+      });
       throw error;
     }
   },
@@ -86,7 +102,10 @@ export const storage = {
     try {
       await AsyncStorage.removeItem(STORAGE_KEYS.CHAT_HISTORY);
     } catch (error) {
-      console.error('Error clearing chat history:', error);
+      logger.error('Error clearing chat history', error, {
+        service: 'StorageService',
+        action: 'clearChatHistory',
+      });
       throw error;
     }
   },
@@ -97,7 +116,10 @@ export const storage = {
       const theme = await AsyncStorage.getItem(STORAGE_KEYS.THEME);
       return theme as 'light' | 'dark' | null;
     } catch (error) {
-      console.error('Error getting theme:', error);
+      logger.error('Error getting theme', error, {
+        service: 'StorageService',
+        action: 'getTheme',
+      });
       return null;
     }
   },
@@ -106,7 +128,10 @@ export const storage = {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.THEME, theme);
     } catch (error) {
-      console.error('Error saving theme:', error);
+      logger.error('Error saving theme', error, {
+        service: 'StorageService',
+        action: 'saveTheme',
+      });
       throw error;
     }
   },
@@ -116,7 +141,10 @@ export const storage = {
     try {
       return await AsyncStorage.getItem(STORAGE_KEYS.API_KEY);
     } catch (error) {
-      console.error('Error getting API key:', error);
+      logger.error('Error getting API key', error, {
+        service: 'StorageService',
+        action: 'getApiKey',
+      });
       return null;
     }
   },
@@ -125,7 +153,10 @@ export const storage = {
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.API_KEY, apiKey);
     } catch (error) {
-      console.error('Error saving API key:', error);
+      logger.error('Error saving API key', error, {
+        service: 'StorageService',
+        action: 'saveApiKey',
+      });
       throw error;
     }
   },
@@ -135,7 +166,11 @@ export const storage = {
     try {
       return await AsyncStorage.getItem(key);
     } catch (error) {
-      console.error(`Error getting item ${key}:`, error);
+      logger.error('Error getting item', error, {
+        service: 'StorageService',
+        action: 'getItem',
+        key,
+      });
       return null;
     }
   },
@@ -144,7 +179,11 @@ export const storage = {
     try {
       await AsyncStorage.setItem(key, value);
     } catch (error) {
-      console.error(`Error setting item ${key}:`, error);
+      logger.error('Error setting item', error, {
+        service: 'StorageService',
+        action: 'setItem',
+        key,
+      });
       throw error;
     }
   },
@@ -153,7 +192,11 @@ export const storage = {
     try {
       await AsyncStorage.removeItem(key);
     } catch (error) {
-      console.error(`Error removing item ${key}:`, error);
+      logger.error('Error removing item', error, {
+        service: 'StorageService',
+        action: 'removeItem',
+        key,
+      });
       throw error;
     }
   },
@@ -162,7 +205,10 @@ export const storage = {
     try {
       await AsyncStorage.clear();
     } catch (error) {
-      console.error('Error clearing storage:', error);
+      logger.error('Error clearing storage', error, {
+        service: 'StorageService',
+        action: 'clear',
+      });
       throw error;
     }
   },
