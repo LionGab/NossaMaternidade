@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { logger } from '@/utils/logger';
 
 export type MilestoneCategory = 'motor' | 'cognitivo' | 'linguagem' | 'social' | 'sensorial';
 
@@ -56,13 +57,19 @@ class MilestonesService {
         .order('category');
 
       if (error) {
-        console.error('Erro ao buscar marcos:', error);
+        logger.error('Erro ao buscar marcos', error, {
+          service: 'MilestonesService',
+          action: 'getAllMilestones',
+        });
         return [];
       }
 
       return (data || []) as BabyMilestone[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar marcos:', error);
+      logger.error('Erro inesperado ao buscar marcos', error, {
+        service: 'MilestonesService',
+        action: 'getAllMilestones',
+      });
       return [];
     }
   }
@@ -81,13 +88,23 @@ class MilestonesService {
         .order('category');
 
       if (error) {
-        console.error('Erro ao buscar marcos por idade:', error);
+        logger.error('Erro ao buscar marcos por idade', error, {
+          service: 'MilestonesService',
+          action: 'getMilestonesByAge',
+          startMonths,
+          endMonths,
+        });
         return [];
       }
 
       return (data || []) as BabyMilestone[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar marcos por idade:', error);
+      logger.error('Erro inesperado ao buscar marcos por idade', error, {
+        service: 'MilestonesService',
+        action: 'getMilestonesByAge',
+        startMonths,
+        endMonths,
+      });
       return [];
     }
   }
@@ -104,13 +121,21 @@ class MilestonesService {
         .order('age_months');
 
       if (error) {
-        console.error('Erro ao buscar marcos por categoria:', error);
+        logger.error('Erro ao buscar marcos por categoria', error, {
+          service: 'MilestonesService',
+          action: 'getMilestonesByCategory',
+          category,
+        });
         return [];
       }
 
       return (data || []) as BabyMilestone[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar marcos por categoria:', error);
+      logger.error('Erro inesperado ao buscar marcos por categoria', error, {
+        service: 'MilestonesService',
+        action: 'getMilestonesByCategory',
+        category,
+      });
       return [];
     }
   }
@@ -133,13 +158,20 @@ class MilestonesService {
         .order('milestone(age_months)');
 
       if (error) {
-        console.error('Erro ao buscar progresso:', error);
+        logger.error('Erro ao buscar progresso do usuário', error, {
+          service: 'MilestonesService',
+          action: 'getUserMilestones',
+          userId,
+        });
         return [];
       }
 
       return (data || []) as UserBabyMilestone[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar progresso:', error);
+      logger.error('Erro inesperado ao buscar progresso', error, {
+        service: 'MilestonesService',
+        action: 'getUserMilestones',
+      });
       return [];
     }
   }
@@ -155,7 +187,11 @@ class MilestonesService {
 
       return await this.getMilestonesByAge(minAge, maxAge);
     } catch (error) {
-      console.error('Erro ao buscar marcos recomendados:', error);
+      logger.error('Erro ao buscar marcos recomendados', error, {
+        service: 'MilestonesService',
+        action: 'getRecommendedMilestones',
+        babyAgeMonths,
+      });
       return [];
     }
   }
@@ -183,7 +219,12 @@ class MilestonesService {
           .eq('id', existing.id);
 
         if (error) {
-          console.error('Erro ao completar marco:', error);
+          logger.error('Erro ao completar marco (update)', error, {
+            service: 'MilestonesService',
+            action: 'completeMilestone',
+            milestoneId,
+            userMilestoneId: existing.id,
+          });
           return false;
         }
       } else {
@@ -199,14 +240,23 @@ class MilestonesService {
           });
 
         if (error) {
-          console.error('Erro ao criar marco completado:', error);
+          logger.error('Erro ao criar marco completado', error, {
+            service: 'MilestonesService',
+            action: 'completeMilestone',
+            milestoneId,
+            userId,
+          });
           return false;
         }
       }
 
       return true;
     } catch (error) {
-      console.error('Erro inesperado ao completar marco:', error);
+      logger.error('Erro inesperado ao completar marco', error, {
+        service: 'MilestonesService',
+        action: 'completeMilestone',
+        milestoneId,
+      });
       return false;
     }
   }
@@ -231,7 +281,12 @@ class MilestonesService {
           .eq('id', existing.id);
 
         if (error) {
-          console.error('Erro ao desmarcar marco:', error);
+          logger.error('Erro ao desmarcar marco', error, {
+            service: 'MilestonesService',
+            action: 'uncompleteMilestone',
+            milestoneId,
+            userMilestoneId: existing.id,
+          });
           return false;
         }
 
@@ -240,7 +295,11 @@ class MilestonesService {
 
       return false;
     } catch (error) {
-      console.error('Erro inesperado ao desmarcar marco:', error);
+      logger.error('Erro inesperado ao desmarcar marco', error, {
+        service: 'MilestonesService',
+        action: 'uncompleteMilestone',
+        milestoneId,
+      });
       return false;
     }
   }
@@ -275,7 +334,11 @@ class MilestonesService {
         return !error;
       }
     } catch (error) {
-      console.error('Erro ao adicionar nota:', error);
+      logger.error('Erro ao adicionar nota ao marco', error, {
+        service: 'MilestonesService',
+        action: 'addMilestoneNote',
+        milestoneId,
+      });
       return false;
     }
   }
@@ -313,7 +376,10 @@ class MilestonesService {
         by_category: byCategory,
       };
     } catch (error) {
-      console.error('Erro ao calcular progresso:', error);
+      logger.error('Erro ao calcular progresso geral', error, {
+        service: 'MilestonesService',
+        action: 'getMilestoneProgress',
+      });
       return this.getEmptyProgress();
     }
   }
@@ -354,7 +420,11 @@ class MilestonesService {
         by_category: byCategory,
       };
     } catch (error) {
-      console.error('Erro ao calcular progresso por idade:', error);
+      logger.error('Erro ao calcular progresso por idade', error, {
+        service: 'MilestonesService',
+        action: 'getMilestoneProgressByAge',
+        babyAgeMonths,
+      });
       return this.getEmptyProgress();
     }
   }
@@ -460,13 +530,21 @@ class MilestonesService {
         .limit(limit);
 
       if (error) {
-        console.error('Erro ao buscar completados recentemente:', error);
+        logger.error('Erro ao buscar marcos completados recentemente', error, {
+          service: 'MilestonesService',
+          action: 'getRecentlyCompleted',
+          limit,
+        });
         return [];
       }
 
       return (data || []) as UserBabyMilestone[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar completados recentemente:', error);
+      logger.error('Erro inesperado ao buscar completados recentemente', error, {
+        service: 'MilestonesService',
+        action: 'getRecentlyCompleted',
+        limit,
+      });
       return [];
     }
   }

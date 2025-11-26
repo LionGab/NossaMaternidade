@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { logger } from '@/utils/logger';
 
 export interface Habit {
   id: string;
@@ -57,13 +58,19 @@ class HabitsService {
         .order('name');
 
       if (error) {
-        console.error('Erro ao buscar hábitos:', error);
+        logger.error('Erro ao buscar hábitos disponíveis', error, {
+          service: 'HabitsService',
+          action: 'getAllHabits',
+        });
         return [];
       }
 
       return (data || []) as Habit[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar hábitos:', error);
+      logger.error('Erro inesperado ao buscar hábitos', error, {
+        service: 'HabitsService',
+        action: 'getAllHabits',
+      });
       return [];
     }
   }
@@ -87,7 +94,11 @@ class HabitsService {
         .order('created_at');
 
       if (error) {
-        console.error('Erro ao buscar hábitos do usuário:', error);
+        logger.error('Erro ao buscar hábitos do usuário', error, {
+          service: 'HabitsService',
+          action: 'getUserHabits',
+          userId,
+        });
         return [];
       }
 
@@ -106,7 +117,10 @@ class HabitsService {
 
       return habitsWithStatus as UserHabit[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar hábitos do usuário:', error);
+      logger.error('Erro inesperado ao buscar hábitos do usuário', error, {
+        service: 'HabitsService',
+        action: 'getUserHabits',
+      });
       return [];
     }
   }
@@ -134,13 +148,22 @@ class HabitsService {
         .single();
 
       if (error) {
-        console.error('Erro ao adicionar hábito:', error);
+        logger.error('Erro ao adicionar hábito ao usuário', error, {
+          service: 'HabitsService',
+          action: 'addHabitToUser',
+          habitId,
+          userId,
+        });
         return null;
       }
 
       return data as UserHabit;
     } catch (error) {
-      console.error('Erro inesperado ao adicionar hábito:', error);
+      logger.error('Erro inesperado ao adicionar hábito', error, {
+        service: 'HabitsService',
+        action: 'addHabitToUser',
+        habitId,
+      });
       return null;
     }
   }
@@ -160,13 +183,22 @@ class HabitsService {
         .eq('user_id', userId);
 
       if (error) {
-        console.error('Erro ao remover hábito:', error);
+        logger.error('Erro ao remover hábito do usuário', error, {
+          service: 'HabitsService',
+          action: 'removeHabitFromUser',
+          userHabitId,
+          userId,
+        });
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Erro inesperado ao remover hábito:', error);
+      logger.error('Erro inesperado ao remover hábito', error, {
+        service: 'HabitsService',
+        action: 'removeHabitFromUser',
+        userHabitId,
+      });
       return false;
     }
   }
@@ -184,7 +216,11 @@ class HabitsService {
       // Verificar se já foi completado hoje
       const alreadyCompleted = await this.isCompletedToday(userHabitId);
       if (alreadyCompleted) {
-        console.log('Hábito já completado hoje');
+        logger.info('Hábito já completado hoje', {
+          service: 'HabitsService',
+          action: 'completeHabit',
+          userHabitId,
+        });
         return true;
       }
 
@@ -197,13 +233,21 @@ class HabitsService {
         });
 
       if (error) {
-        console.error('Erro ao completar hábito:', error);
+        logger.error('Erro ao completar hábito', error, {
+          service: 'HabitsService',
+          action: 'completeHabit',
+          userHabitId,
+        });
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Erro inesperado ao completar hábito:', error);
+      logger.error('Erro inesperado ao completar hábito', error, {
+        service: 'HabitsService',
+        action: 'completeHabit',
+        userHabitId,
+      });
       return false;
     }
   }
@@ -225,13 +269,21 @@ class HabitsService {
         .eq('completed_at', today);
 
       if (error) {
-        console.error('Erro ao desmarcar hábito:', error);
+        logger.error('Erro ao desmarcar hábito', error, {
+          service: 'HabitsService',
+          action: 'uncompleteHabit',
+          userHabitId,
+        });
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Erro inesperado ao desmarcar hábito:', error);
+      logger.error('Erro inesperado ao desmarcar hábito', error, {
+        service: 'HabitsService',
+        action: 'uncompleteHabit',
+        userHabitId,
+      });
       return false;
     }
   }
@@ -249,7 +301,11 @@ class HabitsService {
         return await this.completeHabit(userHabitId);
       }
     } catch (error) {
-      console.error('Erro inesperado ao fazer toggle de hábito:', error);
+      logger.error('Erro inesperado ao fazer toggle de hábito', error, {
+        service: 'HabitsService',
+        action: 'toggleHabitCompletion',
+        userHabitId,
+      });
       return false;
     }
   }
@@ -318,7 +374,11 @@ class HabitsService {
         last_7_days: last7Days,
       };
     } catch (error) {
-      console.error('Erro ao calcular estatísticas:', error);
+      logger.error('Erro ao calcular estatísticas do hábito', error, {
+        service: 'HabitsService',
+        action: 'getHabitStats',
+        userHabitId,
+      });
       return {
         total_completions: 0,
         current_streak: 0,
@@ -443,13 +503,23 @@ class HabitsService {
         .limit(limit);
 
       if (error) {
-        console.error('Erro ao buscar logs:', error);
+        logger.error('Erro ao buscar logs do hábito', error, {
+          service: 'HabitsService',
+          action: 'getHabitLogs',
+          userHabitId,
+          limit,
+        });
         return [];
       }
 
       return (data || []) as HabitLog[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar logs:', error);
+      logger.error('Erro inesperado ao buscar logs do hábito', error, {
+        service: 'HabitsService',
+        action: 'getHabitLogs',
+        userHabitId,
+        limit,
+      });
       return [];
     }
   }
