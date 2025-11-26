@@ -130,6 +130,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
       loop.start();
       return () => loop.stop();
     }
+    return undefined;
   }, [indeterminate]);
 
   // Renderizar indicador linear

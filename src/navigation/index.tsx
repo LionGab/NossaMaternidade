@@ -3,12 +3,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { StackNavigator } from './StackNavigator';
 import { AuthProvider } from '../contexts/AuthContext';
 import { networkMonitor } from '../utils/networkMonitor';
+import { logger } from '../utils/logger';
 
 export const Navigation = () => {
   useEffect(() => {
     // Inicializar network monitor
     networkMonitor.startMonitoring().catch((error) => {
-      console.error('[Navigation] Erro ao inicializar network monitor:', error);
+      logger.error('[Navigation] Erro ao inicializar network monitor', error);
     });
 
     return () => {

@@ -55,7 +55,12 @@ class ChatService {
         .limit(limit);
 
       if (error) {
-        console.error('Erro ao buscar conversas:', error);
+        logger.error('Erro ao buscar conversas', error, {
+          service: 'ChatService',
+          action: 'getConversations',
+          userId,
+          limit,
+        });
         return [];
       }
 
@@ -69,7 +74,10 @@ class ChatService {
 
       return conversationsWithMessages as ChatConversation[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar conversas:', error);
+      logger.error('Erro inesperado ao buscar conversas', error, {
+        service: 'ChatService',
+        action: 'getConversations',
+      });
       return [];
     }
   }
@@ -93,13 +101,20 @@ class ChatService {
         .single();
 
       if (error) {
-        console.error('Erro ao criar conversa:', error);
+        logger.error('Erro ao criar conversa', error, {
+          service: 'ChatService',
+          action: 'createConversation',
+          userId,
+        });
         return null;
       }
 
       return conversation as ChatConversation;
     } catch (error) {
-      console.error('Erro inesperado ao criar conversa:', error);
+      logger.error('Erro inesperado ao criar conversa', error, {
+        service: 'ChatService',
+        action: 'createConversation',
+      });
       return null;
     }
   }
@@ -117,13 +132,22 @@ class ChatService {
         .limit(limit);
 
       if (error) {
-        console.error('Erro ao buscar mensagens:', error);
+        logger.error('Erro ao buscar mensagens', error, {
+          service: 'ChatService',
+          action: 'getMessages',
+          conversationId,
+          limit,
+        });
         return [];
       }
 
       return (data || []) as ChatMessage[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar mensagens:', error);
+      logger.error('Erro inesperado ao buscar mensagens', error, {
+        service: 'ChatService',
+        action: 'getMessages',
+        conversationId,
+      });
       return [];
     }
   }
@@ -165,7 +189,11 @@ class ChatService {
         .single();
 
       if (error) {
-        console.error('Erro ao enviar mensagem:', error);
+        logger.error('Erro ao enviar mensagem', error, {
+          service: 'ChatService',
+          action: 'sendMessage',
+          conversationId: messageData.conversation_id,
+        });
         return null;
       }
 
@@ -177,7 +205,10 @@ class ChatService {
 
       return data as ChatMessage;
     } catch (error) {
-      console.error('Erro inesperado ao enviar mensagem:', error);
+      logger.error('Erro inesperado ao enviar mensagem', error, {
+        service: 'ChatService',
+        action: 'sendMessage',
+      });
       return null;
     }
   }
@@ -334,13 +365,21 @@ class ChatService {
         .eq('id', conversationId);
 
       if (error) {
-        console.error('Erro ao atualizar título:', error);
+        logger.error('Erro ao atualizar título', error, {
+          service: 'ChatService',
+          action: 'updateConversationTitle',
+          conversationId,
+        });
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Erro inesperado ao atualizar título:', error);
+      logger.error('Erro inesperado ao atualizar título', error, {
+        service: 'ChatService',
+        action: 'updateConversationTitle',
+        conversationId,
+      });
       return false;
     }
   }
@@ -356,13 +395,21 @@ class ChatService {
         .eq('id', conversationId);
 
       if (error) {
-        console.error('Erro ao deletar conversa:', error);
+        logger.error('Erro ao deletar conversa', error, {
+          service: 'ChatService',
+          action: 'deleteConversation',
+          conversationId,
+        });
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Erro inesperado ao deletar conversa:', error);
+      logger.error('Erro inesperado ao deletar conversa', error, {
+        service: 'ChatService',
+        action: 'deleteConversation',
+        conversationId,
+      });
       return false;
     }
   }
@@ -378,13 +425,21 @@ class ChatService {
         .eq('id', messageId);
 
       if (error) {
-        console.error('Erro ao deletar mensagem:', error);
+        logger.error('Erro ao deletar mensagem', error, {
+          service: 'ChatService',
+          action: 'deleteMessage',
+          messageId,
+        });
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Erro inesperado ao deletar mensagem:', error);
+      logger.error('Erro inesperado ao deletar mensagem', error, {
+        service: 'ChatService',
+        action: 'deleteMessage',
+        messageId,
+      });
       return false;
     }
   }

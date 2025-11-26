@@ -10,6 +10,9 @@ import {
   openAIMCP,
   anthropicMCP,
   analyticsMCP,
+  designTokensValidationMCP,
+  codeQualityMCP,
+  accessibilityMCP,
   createMCPRequest,
   MCPServer,
 } from '../../mcp/servers';
@@ -18,6 +21,7 @@ import {
   MCPMethod,
   MCPMethodParams,
   MCPResponse,
+  MCPRequest,
   JsonValue,
 } from '../../mcp/types';
 
@@ -81,6 +85,9 @@ export class AgentOrchestrator {
         openAIMCP.initialize().catch(err => logger.warn('[AgentOrchestrator] OpenAI MCP init failed (optional)', err)),
         anthropicMCP.initialize().catch(err => logger.warn('[AgentOrchestrator] Anthropic MCP init failed (optional)', err)),
         analyticsMCP.initialize(),
+        designTokensValidationMCP.initialize(),
+        codeQualityMCP.initialize(),
+        accessibilityMCP.initialize(),
       ]);
 
       // Registrar servidores MCP
@@ -89,6 +96,9 @@ export class AgentOrchestrator {
       this.mcpServers.set('openai', openAIMCP);
       this.mcpServers.set('anthropic', anthropicMCP);
       this.mcpServers.set('analytics', analyticsMCP);
+      this.mcpServers.set('design-validation', designTokensValidationMCP);
+      this.mcpServers.set('code-quality', codeQualityMCP);
+      this.mcpServers.set('accessibility', accessibilityMCP);
 
       this.initialized = true;
       logger.info('[AgentOrchestrator] Initialized successfully');
@@ -212,8 +222,8 @@ export class AgentOrchestrator {
       throw new Error(`MCP Server not found: ${server}`);
     }
 
-    const request = createMCPRequest(method, params as any);
-    return await mcpServer.handleRequest(request as any);
+    const request = createMCPRequest(method, params as MCPMethodParams<T>);
+    return await mcpServer.handleRequest<JsonValue>(request as MCPRequest<Record<string, JsonValue>>);
   }
 
   /**

@@ -35,12 +35,12 @@ module.exports = {
     },
   },
   rules: {
-    // TypeScript
-    '@typescript-eslint/no-unused-vars': ['warn', {
+    // TypeScript - STRICT MODE (Refactoring Quality Phase)
+    '@typescript-eslint/no-unused-vars': ['error', {
       argsIgnorePattern: '^_',
       varsIgnorePattern: '^_',
     }],
-    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-require-imports': 'off',
@@ -100,10 +100,10 @@ module.exports = {
     'react-native-a11y/has-valid-important-for-accessibility': 'warn',
     'react-native-a11y/has-valid-accessibility-descriptors': 'warn',
 
-    // General
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
+    // General - STRICT MODE (Refactoring Quality Phase)
+    'no-console': 'error', // Use logger instead
     'no-debugger': 'error',
-    'prefer-const': 'warn',
+    'prefer-const': 'error',
     'no-var': 'error',
     'no-case-declarations': 'warn', // Will fix gradually
   },

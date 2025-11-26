@@ -4,6 +4,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserProfile } from '../../types/user';
+import { logger } from '../../utils/logger';
 import OnboardingStep1 from './OnboardingStep1';
 import OnboardingStep2 from './OnboardingStep2';
 import OnboardingStep3 from './OnboardingStep3';
@@ -55,7 +56,7 @@ export default function OnboardingFlow() {
       await AsyncStorage.setItem('nath_user', JSON.stringify(formData));
       navigation.navigate('Main' as never);
     } catch (error) {
-      console.error('Erro ao salvar dados do usuário:', error);
+      logger.error('Erro ao salvar dados do usuário', error);
     }
   };
 

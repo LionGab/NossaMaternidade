@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useThemeColors } from '@/theme';
 import { Typography } from '@/theme/tokens';
+import { logger } from '@/utils/logger';
 
 export interface LinkProps extends Omit<PressableProps, 'children' | 'style'> {
   children: React.ReactNode;
@@ -58,10 +59,10 @@ export function Link({
       onPress();
     } else if (href && external) {
       // Para links externos, você pode usar Linking.openURL(href)
-      console.log('Opening external link:', href);
+      logger.debug('Opening external link', { href });
     } else if (href) {
       // Para navegação interna (Expo Router)
-      console.log('Navigating to:', href);
+      logger.debug('Navigating to', { href });
     }
   };
 

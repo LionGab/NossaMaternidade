@@ -13,6 +13,7 @@ import { ArrowLeft, CheckCircle2, Circle } from 'lucide-react-native';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logger } from '../utils/logger';
 
 const TERMS_ACCEPTANCE_KEY = 'terms_accepted_date';
 
@@ -65,7 +66,7 @@ export default function TermsOfServiceScreen() {
         },
       ]);
     } catch (error) {
-      console.error('Erro ao aceitar termos:', error);
+      logger.error('Erro ao aceitar termos', error);
       Alert.alert('Erro', 'Não foi possível salvar sua aceitação. Tente novamente.');
     } finally {
       setLoading(false);

@@ -6,6 +6,7 @@
 import { BaseAgent, AgentConfig, AgentContext } from '../core/BaseAgent';
 import { orchestrator } from '../core/AgentOrchestrator';
 import { MCPResponse } from '../../mcp/types';
+import { logger } from '../../utils/logger';
 
 export interface ContentItem {
   id: string;
@@ -131,10 +132,7 @@ export class ContentRecommendationAgent extends BaseAgent {
 
       return result;
     } catch (error: unknown) {
-      console.error(
-        '[ContentRecommendationAgent] Error processing recommendations:',
-        error
-      );
+      logger.error('[ContentRecommendationAgent] Error processing recommendations', error);
       throw error;
     }
   }
@@ -309,7 +307,7 @@ Use um tom acolhedor e personalizado.
 
       return 'Selecionamos esses conteúdos especialmente para você, considerando sua fase e necessidades.';
     } catch (error) {
-      console.error('[ContentRecommendationAgent] Failed to generate reasoning:', error);
+      logger.error('[ContentRecommendationAgent] Failed to generate reasoning', error);
       return 'Conteúdos personalizados para você.';
     }
   }
@@ -368,19 +366,19 @@ Use um tom acolhedor e personalizado.
       return await orchestrator.callMCP(
         server,
         method as keyof import('../../mcp/types').GoogleAIMCPMethods,
-        params as any
+        params
       );
     } else if (server === 'analytics') {
       return await orchestrator.callMCP(
         server,
         method as keyof import('../../mcp/types').AnalyticsMCPMethods,
-        params as any
+        params
       );
     }
     return await orchestrator.callMCP(
       server,
       method as keyof import('../../mcp/types').AllMCPMethods,
-      params as any
+      params
     );
   }
 }

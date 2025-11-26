@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { logger } from '@/utils/logger';
 
 export type ContentType = 'video' | 'audio' | 'article' | 'reels';
 
@@ -87,7 +88,13 @@ class FeedService {
       const { data, error } = await query;
 
       if (error) {
-        console.error('Erro ao buscar conteúdos:', error);
+        logger.error('Erro ao buscar conteúdos do feed', error, {
+          service: 'FeedService',
+          action: 'getContent',
+          filters,
+          page,
+          limit,
+        });
         return [];
       }
 
@@ -104,7 +111,11 @@ class FeedService {
 
       return (data || []) as ContentItem[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar conteúdos:', error);
+      logger.error('Erro inesperado ao buscar conteúdos', error, {
+        service: 'FeedService',
+        action: 'getContent',
+        filters,
+      });
       return [];
     }
   }
@@ -123,7 +134,11 @@ class FeedService {
         .single();
 
       if (error) {
-        console.error('Erro ao buscar conteúdo:', error);
+        logger.error('Erro ao buscar conteúdo por ID', error, {
+          service: 'FeedService',
+          action: 'getContentById',
+          contentId,
+        });
         return null;
       }
 
@@ -135,7 +150,11 @@ class FeedService {
 
       return data as ContentItem;
     } catch (error) {
-      console.error('Erro inesperado ao buscar conteúdo:', error);
+      logger.error('Erro inesperado ao buscar conteúdo', error, {
+        service: 'FeedService',
+        action: 'getContentById',
+        contentId,
+      });
       return null;
     }
   }
@@ -155,13 +174,21 @@ class FeedService {
         .limit(limit);
 
       if (error) {
-        console.error('Erro ao buscar recomendações:', error);
+        logger.error('Erro ao buscar conteúdos recomendados', error, {
+          service: 'FeedService',
+          action: 'getRecommendedContent',
+          limit,
+        });
         return [];
       }
 
       return (data || []) as ContentItem[];
     } catch (error) {
-      console.error('Erro inesperado ao buscar recomendações:', error);
+      logger.error('Erro inesperado ao buscar recomendações', error, {
+        service: 'FeedService',
+        action: 'getRecommendedContent',
+        limit,
+      });
       return [];
     }
   }
@@ -177,7 +204,10 @@ class FeedService {
         .eq('is_published', true);
 
       if (error) {
-        console.error('Erro ao buscar categorias:', error);
+        logger.error('Erro ao buscar categorias', error, {
+          service: 'FeedService',
+          action: 'getCategories',
+        });
         return [];
       }
 
@@ -185,7 +215,10 @@ class FeedService {
       const categories = [...new Set(data?.map(item => item.category) || [])];
       return categories;
     } catch (error) {
-      console.error('Erro inesperado ao buscar categorias:', error);
+      logger.error('Erro inesperado ao buscar categorias', error, {
+        service: 'FeedService',
+        action: 'getCategories',
+      });
       return [];
     }
   }
@@ -233,7 +266,13 @@ class FeedService {
           .eq('content_id', contentId);
 
         if (error) {
-          console.error('Erro ao atualizar like:', error);
+          logger.error('Erro ao atualizar like', error, {
+            service: 'FeedService',
+            action: 'toggleLike',
+            contentId,
+            userId,
+            newLikeState,
+          });
           return false;
         }
 
@@ -252,7 +291,12 @@ class FeedService {
           });
 
         if (error) {
-          console.error('Erro ao criar like:', error);
+          logger.error('Erro ao criar like', error, {
+            service: 'FeedService',
+            action: 'toggleLike',
+            contentId,
+            userId,
+          });
           return false;
         }
 
@@ -260,7 +304,11 @@ class FeedService {
         return true;
       }
     } catch (error) {
-      console.error('Erro inesperado ao dar like:', error);
+      logger.error('Erro inesperado ao dar like', error, {
+        service: 'FeedService',
+        action: 'toggleLike',
+        contentId,
+      });
       return false;
     }
   }
@@ -285,7 +333,13 @@ class FeedService {
           .eq('content_id', contentId);
 
         if (error) {
-          console.error('Erro ao atualizar save:', error);
+          logger.error('Erro ao atualizar save', error, {
+            service: 'FeedService',
+            action: 'toggleSave',
+            contentId,
+            userId,
+            newSaveState,
+          });
           return false;
         }
 
@@ -300,14 +354,23 @@ class FeedService {
           });
 
         if (error) {
-          console.error('Erro ao criar save:', error);
+          logger.error('Erro ao criar save', error, {
+            service: 'FeedService',
+            action: 'toggleSave',
+            contentId,
+            userId,
+          });
           return false;
         }
 
         return true;
       }
     } catch (error) {
-      console.error('Erro inesperado ao salvar:', error);
+      logger.error('Erro inesperado ao salvar conteúdo', error, {
+        service: 'FeedService',
+        action: 'toggleSave',
+        contentId,
+      });
       return false;
     }
   }
@@ -342,7 +405,11 @@ class FeedService {
         return !error;
       }
     } catch (error) {
-      console.error('Erro inesperado ao marcar como completado:', error);
+      logger.error('Erro inesperado ao marcar como completado', error, {
+        service: 'FeedService',
+        action: 'markAsCompleted',
+        contentId,
+      });
       return false;
     }
   }
@@ -381,7 +448,12 @@ class FeedService {
         return !error;
       }
     } catch (error) {
-      console.error('Erro inesperado ao atualizar progresso:', error);
+      logger.error('Erro inesperado ao atualizar progresso', error, {
+        service: 'FeedService',
+        action: 'updateProgress',
+        contentId,
+        progressSeconds,
+      });
       return false;
     }
   }
@@ -410,7 +482,11 @@ class FeedService {
 
       return true;
     } catch (error) {
-      console.error('Erro ao incrementar views:', error);
+      logger.error('Erro ao incrementar visualizações', error, {
+        service: 'FeedService',
+        action: 'incrementViews',
+        contentId,
+      });
       return false;
     }
   }
@@ -455,7 +531,10 @@ class FeedService {
       if (contentError) return [];
       return (content || []) as ContentItem[];
     } catch (error) {
-      console.error('Erro ao buscar salvos:', error);
+      logger.error('Erro ao buscar conteúdos salvos', error, {
+        service: 'FeedService',
+        action: 'getSavedContent',
+      });
       return [];
     }
   }
@@ -489,7 +568,11 @@ class FeedService {
       if (contentError) return [];
       return (content || []) as ContentItem[];
     } catch (error) {
-      console.error('Erro ao buscar histórico:', error);
+      logger.error('Erro ao buscar histórico de visualizações', error, {
+        service: 'FeedService',
+        action: 'getViewHistory',
+        limit,
+      });
       return [];
     }
   }

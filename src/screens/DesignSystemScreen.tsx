@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Mail, Heart, Star, User } from 'lucide-react-native';
 import { useTheme } from '@/theme';
 import { Spacing } from '@/theme/tokens';
+import { logger } from '@/utils/logger';
 import {
   H1,
   H2,
@@ -273,7 +274,7 @@ export default function DesignSystemScreen() {
                     message: 'Toast com ação',
                     action: {
                       label: 'DESFAZER',
-                      onPress: () => console.log('Ação executada'),
+                      onPress: () => logger.debug('Ação executada'),
                     },
                   })
                 }

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ChatMessage } from '../types/chat';
+import { logger } from './logger';
 
 const CHAT_HISTORY_KEY = '@nossa_maternidade:chat_history';
 const API_KEY_STORAGE = '@nossa_maternidade:gemini_api_key';
@@ -11,7 +12,10 @@ export const storageService = {
       const jsonValue = JSON.stringify(messages);
       await AsyncStorage.setItem(CHAT_HISTORY_KEY, jsonValue);
     } catch (error) {
-      console.error('Error saving messages:', error);
+      logger.error('Error saving messages', error, {
+        service: 'UtilsStorageService',
+        action: 'saveMessages',
+      });
       throw error;
     }
   },
@@ -21,7 +25,10 @@ export const storageService = {
       const jsonValue = await AsyncStorage.getItem(CHAT_HISTORY_KEY);
       return jsonValue != null ? JSON.parse(jsonValue) : [];
     } catch (error) {
-      console.error('Error loading messages:', error);
+      logger.error('Error loading messages', error, {
+        service: 'UtilsStorageService',
+        action: 'loadMessages',
+      });
       return [];
     }
   },
@@ -30,7 +37,10 @@ export const storageService = {
     try {
       await AsyncStorage.removeItem(CHAT_HISTORY_KEY);
     } catch (error) {
-      console.error('Error clearing messages:', error);
+      logger.error('Error clearing messages', error, {
+        service: 'UtilsStorageService',
+        action: 'clearMessages',
+      });
       throw error;
     }
   },
@@ -40,7 +50,10 @@ export const storageService = {
     try {
       await AsyncStorage.setItem(API_KEY_STORAGE, apiKey);
     } catch (error) {
-      console.error('Error saving API key:', error);
+      logger.error('Error saving API key', error, {
+        service: 'UtilsStorageService',
+        action: 'saveApiKey',
+      });
       throw error;
     }
   },
@@ -49,7 +62,10 @@ export const storageService = {
     try {
       return await AsyncStorage.getItem(API_KEY_STORAGE);
     } catch (error) {
-      console.error('Error loading API key:', error);
+      logger.error('Error loading API key', error, {
+        service: 'UtilsStorageService',
+        action: 'loadApiKey',
+      });
       return null;
     }
   },

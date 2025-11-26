@@ -7,6 +7,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColorScheme } from 'react-native';
 import { LightTheme, DarkTheme, ColorTokens } from './tokens';
+import { logger } from '../utils/logger';
 
 // ======================
 // 🎨 TYPES
@@ -133,7 +134,7 @@ export function ThemeProvider({ children, defaultMode = 'system' }: ThemeProvide
         setModeState(stored as ThemeMode);
       }
     } catch (error) {
-      console.error('Failed to load theme preference:', error);
+      logger.error('Failed to load theme preference', error);
     } finally {
       setIsReady(true);
     }
@@ -143,7 +144,7 @@ export function ThemeProvider({ children, defaultMode = 'system' }: ThemeProvide
     try {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, themeMode);
     } catch (error) {
-      console.error('Failed to save theme preference:', error);
+      logger.error('Failed to save theme preference', error);
     }
   };
 

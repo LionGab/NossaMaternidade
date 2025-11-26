@@ -14,15 +14,15 @@ interface OnboardingStepProps {
 }
 
 export default function OnboardingStep2({ step, formData, updateData, nextStep, prevStep }: OnboardingStepProps) {
-  const { isDark, toggleTheme } = useTheme();
+  const { colors, isDark, toggleTheme } = useTheme();
   const TOTAL_STEPS = 8;
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: '#020617' }}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 pt-4 mb-6">
         <TouchableOpacity accessibilityRole="button" onPress={prevStep} className="p-2 -ml-2">
-          <ArrowLeft size={24} color="#FFFFFF" />
+          <ArrowLeft size={24} color={colors.text.primary} />
         </TouchableOpacity>
 
         {/* Progress Dots */}
@@ -32,7 +32,7 @@ export default function OnboardingStep2({ step, formData, updateData, nextStep, 
               key={i}
               className="w-2 h-2 rounded-full"
               style={{
-                backgroundColor: step > i + 1 ? '#60A5FA' : step === i + 1 ? '#60A5FA' : '#4B5563',
+                backgroundColor: step > i + 1 ? colors.primary.main : step === i + 1 ? colors.primary.main : colors.text.disabled,
               }}
             />
           ))}
@@ -42,21 +42,21 @@ export default function OnboardingStep2({ step, formData, updateData, nextStep, 
           onPress={toggleTheme}
           className="w-10 h-10 rounded-full items-center justify-center"
           style={{
-            backgroundColor: '#0B1220',
+            backgroundColor: colors.background.card,
             borderWidth: 1,
-            borderColor: 'rgba(148, 163, 184, 0.24)',
+            borderColor: colors.border.light,
           }}
         >
-          <Sun size={20} color="#FBBF24" />
+          <Sun size={20} color={colors.status.warning} />
         </TouchableOpacity>
       </View>
 
       {/* Content */}
       <View className="flex-1 px-6 justify-center">
-        <Text className="text-2xl font-bold mb-2" style={{ color: '#FFFFFF' }}>
+        <Text className="text-2xl font-bold mb-2" style={{ color: colors.text.primary }}>
           Como você gosta de ser chamada?
         </Text>
-        <Text className="text-base mb-8" style={{ color: '#9CA3AF' }}>
+        <Text className="text-base mb-8" style={{ color: colors.text.tertiary }}>
           Quero que nossa conversa seja íntima, como amigas.
         </Text>
 
@@ -64,13 +64,13 @@ export default function OnboardingStep2({ step, formData, updateData, nextStep, 
           value={formData.name || ''}
           onChangeText={(text) => updateData('name', text)}
           placeholder="Seu nome ou apelido"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.text.tertiary}
           autoFocus
           className="w-full px-4 py-4 rounded-xl border text-base"
           style={{
-            backgroundColor: '#0B1220',
-            borderColor: 'rgba(148, 163, 184, 0.24)',
-            color: '#FFFFFF',
+            backgroundColor: colors.background.card,
+            borderColor: colors.border.light,
+            color: colors.text.primary,
           }}
         />
       </View>
@@ -82,12 +82,12 @@ export default function OnboardingStep2({ step, formData, updateData, nextStep, 
           disabled={!formData.name}
           className="w-full py-4 rounded-xl items-center justify-center"
           style={{
-            backgroundColor: formData.name ? '#3B82F6' : '#1D2843',
+            backgroundColor: formData.name ? colors.primary.main : colors.background.elevated,
             opacity: formData.name ? 1 : 0.5,
           }}
           activeOpacity={0.8}
         >
-          <Text className="text-white font-bold text-base">Continuar</Text>
+          <Text className="text-white font-bold text-base" style={{ color: colors.text.inverse }}>Continuar</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

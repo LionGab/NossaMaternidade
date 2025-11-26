@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import type { Session, User, AuthError } from '@supabase/supabase-js';
+import { logger } from '@/utils/logger';
 
 export interface SignUpData {
   email: string;
@@ -39,7 +40,11 @@ class AuthService {
       });
 
       if (error) {
-        console.error('Erro ao registrar:', error);
+        logger.error('Erro ao registrar usuária', error, {
+          service: 'AuthService',
+          action: 'signUp',
+          email,
+        });
         return { user: null, session: null, error };
       }
 
@@ -49,7 +54,10 @@ class AuthService {
         error: null,
       };
     } catch (error) {
-      console.error('Erro inesperado ao registrar:', error);
+      logger.error('Erro inesperado ao registrar usuária', error, {
+        service: 'AuthService',
+        action: 'signUp',
+      });
       return {
         user: null,
         session: null,
@@ -69,7 +77,11 @@ class AuthService {
       });
 
       if (error) {
-        console.error('Erro ao fazer login:', error);
+        logger.error('Erro ao fazer login', error, {
+          service: 'AuthService',
+          action: 'signIn',
+          email,
+        });
         return { user: null, session: null, error };
       }
 
@@ -79,7 +91,10 @@ class AuthService {
         error: null,
       };
     } catch (error) {
-      console.error('Erro inesperado ao fazer login:', error);
+      logger.error('Erro inesperado ao fazer login', error, {
+        service: 'AuthService',
+        action: 'signIn',
+      });
       return {
         user: null,
         session: null,
@@ -101,13 +116,19 @@ class AuthService {
       });
 
       if (error) {
-        console.error('Erro ao fazer login com Google:', error);
+        logger.error('Erro ao fazer login com Google', error, {
+          service: 'AuthService',
+          action: 'signInWithGoogle',
+        });
         return { error };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Erro inesperado ao fazer login com Google:', error);
+      logger.error('Erro inesperado ao fazer login com Google', error, {
+        service: 'AuthService',
+        action: 'signInWithGoogle',
+      });
       return { error: error as AuthError };
     }
   }
@@ -125,13 +146,19 @@ class AuthService {
       });
 
       if (error) {
-        console.error('Erro ao fazer login com Apple:', error);
+        logger.error('Erro ao fazer login com Apple', error, {
+          service: 'AuthService',
+          action: 'signInWithApple',
+        });
         return { error };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Erro inesperado ao fazer login com Apple:', error);
+      logger.error('Erro inesperado ao fazer login com Apple', error, {
+        service: 'AuthService',
+        action: 'signInWithApple',
+      });
       return { error: error as AuthError };
     }
   }
@@ -149,13 +176,21 @@ class AuthService {
       });
 
       if (error) {
-        console.error('Erro ao enviar magic link:', error);
+        logger.error('Erro ao enviar magic link', error, {
+          service: 'AuthService',
+          action: 'signInWithMagicLink',
+          email,
+        });
         return { error };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Erro inesperado ao enviar magic link:', error);
+      logger.error('Erro inesperado ao enviar magic link', error, {
+        service: 'AuthService',
+        action: 'signInWithMagicLink',
+        email,
+      });
       return { error: error as AuthError };
     }
   }
@@ -168,13 +203,19 @@ class AuthService {
       const { error } = await supabase.auth.signOut();
 
       if (error) {
-        console.error('Erro ao fazer logout:', error);
+        logger.error('Erro ao fazer logout', error, {
+          service: 'AuthService',
+          action: 'signOut',
+        });
         return { error };
       }
 
       return { error: null };
     } catch (error) {
-      console.error('Erro inesperado ao fazer logout:', error);
+      logger.error('Erro inesperado ao fazer logout', error, {
+        service: 'AuthService',
+        action: 'signOut',
+      });
       return { error: error as AuthError };
     }
   }
@@ -187,13 +228,19 @@ class AuthService {
       const { data, error } = await supabase.auth.getSession();
 
       if (error) {
-        console.error('Erro ao obter sessão:', error);
+        logger.error('Erro ao obter sessão atual', error, {
+          service: 'AuthService',
+          action: 'getSession',
+        });
         return null;
       }
 
       return data.session;
     } catch (error) {
-      console.error('Erro inesperado ao obter sessão:', error);
+      logger.error('Erro inesperado ao obter sessão', error, {
+        service: 'AuthService',
+        action: 'getSession',
+      });
       return null;
     }
   }
@@ -206,13 +253,19 @@ class AuthService {
       const { data, error } = await supabase.auth.getUser();
 
       if (error) {
-        console.error('Erro ao obter usuária:', error);
+        logger.error('Erro ao obter usuária atual', error, {
+          service: 'AuthService',
+          action: 'getCurrentUser',
+        });
         return null;
       }
 
       return data.user;
     } catch (error) {
-      console.error('Erro inesperado ao obter usuária:', error);
+      logger.error('Erro inesperado ao obter usuária', error, {
+        service: 'AuthService',
+        action: 'getCurrentUser',
+      });
       return null;
     }
   }
@@ -227,13 +280,21 @@ class AuthService {
       });
 
       if (error) {
-        console.error('Erro ao resetar senha:', error);
+        logger.error('Erro ao resetar senha', error, {
+          service: 'AuthService',
+          action: 'resetPassword',
+          email,
+        });
         return { error };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Erro inesperado ao resetar senha:', error);
+      logger.error('Erro inesperado ao resetar senha', error, {
+        service: 'AuthService',
+        action: 'resetPassword',
+        email,
+      });
       return { error: error as AuthError };
     }
   }
@@ -248,13 +309,19 @@ class AuthService {
       });
 
       if (error) {
-        console.error('Erro ao atualizar senha:', error);
+        logger.error('Erro ao atualizar senha', error, {
+          service: 'AuthService',
+          action: 'updatePassword',
+        });
         return { error };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Erro inesperado ao atualizar senha:', error);
+      logger.error('Erro inesperado ao atualizar senha', error, {
+        service: 'AuthService',
+        action: 'updatePassword',
+      });
       return { error: error as AuthError };
     }
   }
@@ -269,13 +336,20 @@ class AuthService {
       });
 
       if (error) {
-        console.error('Erro ao atualizar email:', error);
+        logger.error('Erro ao atualizar email', error, {
+          service: 'AuthService',
+          action: 'updateEmail',
+          newEmail,
+        });
         return { error };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Erro inesperado ao atualizar email:', error);
+      logger.error('Erro inesperado ao atualizar email', error, {
+        service: 'AuthService',
+        action: 'updateEmail',
+      });
       return { error: error as AuthError };
     }
   }
@@ -285,7 +359,7 @@ class AuthService {
    */
   onAuthStateChange(callback: (event: string, session: Session | null) => void) {
     return supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state changed:', event);
+      logger.debug('Auth state changed', { event, hasSession: !!session });
       callback(event, session);
     });
   }
@@ -309,13 +383,21 @@ class AuthService {
       });
 
       if (error) {
-        console.error('Erro ao reenviar confirmação:', error);
+        logger.error('Erro ao reenviar email de confirmação', error, {
+          service: 'AuthService',
+          action: 'resendConfirmationEmail',
+          email,
+        });
         return { error };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Erro inesperado ao reenviar confirmação:', error);
+      logger.error('Erro inesperado ao reenviar confirmação', error, {
+        service: 'AuthService',
+        action: 'resendConfirmationEmail',
+        email,
+      });
       return { error: error as AuthError };
     }
   }

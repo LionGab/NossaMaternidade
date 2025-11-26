@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import { logger } from './logger';
 
 /**
  * Service for secure storage of sensitive data using expo-secure-store on native
@@ -21,7 +22,11 @@ export const secureStorageService = {
         await SecureStore.setItemAsync(key, value);
       }
     } catch (error) {
-      console.error(`Error saving secure item ${key}:`, error);
+      logger.error('Error saving secure item', error, {
+        service: 'SecureStorageService',
+        action: 'saveItem',
+        key,
+      });
       throw new Error(`Failed to save secure item: ${error}`);
     }
   },
@@ -38,7 +43,11 @@ export const secureStorageService = {
       }
       return await SecureStore.getItemAsync(key);
     } catch (error) {
-      console.error(`Error retrieving secure item ${key}:`, error);
+      logger.error('Error retrieving secure item', error, {
+        service: 'SecureStorageService',
+        action: 'getItem',
+        key,
+      });
       return null;
     }
   },
@@ -55,7 +64,11 @@ export const secureStorageService = {
         await SecureStore.deleteItemAsync(key);
       }
     } catch (error) {
-      console.error(`Error deleting secure item ${key}:`, error);
+      logger.error('Error deleting secure item', error, {
+        service: 'SecureStorageService',
+        action: 'deleteItem',
+        key,
+      });
       throw new Error(`Failed to delete secure item: ${error}`);
     }
   },
@@ -72,7 +85,11 @@ export const secureStorageService = {
         : await SecureStore.getItemAsync(key);
       return value !== null;
     } catch (error) {
-      console.error(`Error checking secure item ${key}:`, error);
+      logger.error('Error checking secure item', error, {
+        service: 'SecureStorageService',
+        action: 'hasItem',
+        key,
+      });
       return false;
     }
   },

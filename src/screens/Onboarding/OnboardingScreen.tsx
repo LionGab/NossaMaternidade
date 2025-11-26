@@ -374,7 +374,7 @@ export default function OnboardingScreen() {
       style={{ ...styles.container, backgroundColor: colors.background.canvas }}
     >
       {/* Progress Bar */}
-      <Box style={styles.progressBarContainer}>
+      <Box style={{ ...styles.progressBarContainer, backgroundColor: `${colors.text.primary}1A` }}>
         <Box
           style={{
             ...styles.progressBar,
@@ -474,7 +474,7 @@ function OptionCard({ option, selected, onPress, multiSelect }: OptionCardProps)
       </Text>
       {multiSelect && selected && (
         <Box style={{ ...styles.checkmark, backgroundColor: colors.primary.main }}>
-          <Text style={styles.checkmarkText}>✓</Text>
+          <Text style={{ ...styles.checkmarkText, color: colors.text.inverse }}>✓</Text>
         </Box>
       )}
     </TouchableOpacity>
@@ -491,7 +491,6 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     height: 4,
-    backgroundColor: 'rgba(0,0,0,0.1)',
   },
   progressBar: {
     height: '100%',
@@ -509,18 +508,22 @@ const styles = StyleSheet.create({
   question: {
     textAlign: 'center',
     marginBottom: Tokens.spacing['3'],
+    fontSize: Tokens.typography.sizes['3xl'],
+    fontWeight: Tokens.typography.weights.bold,
   },
   description: {
     textAlign: 'center',
     marginBottom: Tokens.spacing['6'],
+    fontSize: Tokens.typography.sizes.base,
+    fontWeight: Tokens.typography.weights.medium,
   },
   textInput: {
     width: '100%',
-    height: 56,
+    height: Tokens.touchTargets.large + Tokens.spacing['3'],
     borderWidth: 1,
     borderRadius: Tokens.radius.lg,
     paddingHorizontal: Tokens.spacing['4'],
-    fontSize: 16,
+    fontSize: Tokens.typography.sizes.base,
   },
   optionsContainer: {
     width: '100%',
@@ -535,25 +538,24 @@ const styles = StyleSheet.create({
     minHeight: Tokens.touchTargets.min,
   },
   optionEmoji: {
-    fontSize: 24,
+    fontSize: Tokens.typography.sizes['2xl'],
     marginRight: Tokens.spacing['3'],
   },
   optionLabel: {
     flex: 1,
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: Tokens.typography.sizes.base,
+    fontWeight: Tokens.typography.weights.medium,
   },
   checkmark: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: Tokens.icons.md,
+    height: Tokens.icons.md,
+    borderRadius: Tokens.icons.md / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkmarkText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: Tokens.typography.sizes.sm,
+    fontWeight: Tokens.typography.weights.bold,
   },
   counter: {
     marginTop: Tokens.spacing['2'],
@@ -576,19 +578,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   backButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: Tokens.typography.sizes.base,
+    fontWeight: Tokens.typography.weights.semibold,
   },
   nextButton: {
     flex: 1,
   },
   nextButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: Tokens.typography.sizes.base,
+    fontWeight: Tokens.typography.weights.semibold,
   },
   stepCounter: {
     textAlign: 'center',
     paddingBottom: Tokens.spacing['4'],
-    fontSize: 12,
+    fontSize: Tokens.typography.sizes.xs,
   },
 });

@@ -9,6 +9,7 @@ import { Tokens } from '../theme';
 import type { RootStackParamList } from '../navigation/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SplashScreen from 'expo-splash-screen';
+import { logger } from '../utils/logger';
 
 // Manter splash screen visível enquanto carrega
 SplashScreen.preventAutoHideAsync();
@@ -29,7 +30,7 @@ export default function SplashScreenComponent({ onComplete }: SplashScreenProps)
         const savedUser = await AsyncStorage.getItem('nath_user');
         setHasCompletedOnboarding(!!savedUser);
       } catch (error) {
-        console.warn('Erro ao verificar onboarding:', error);
+        logger.warn('Erro ao verificar onboarding', error);
         setHasCompletedOnboarding(false);
       }
     };

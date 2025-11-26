@@ -39,6 +39,7 @@ import { chatService, ChatMessage, ChatConversation } from '../services/chatServ
 import { profileService } from '../services/profileService';
 import { MessageBubble } from '../components/MessageBubble';
 import { HeroBanner } from '@/components/molecules/HeroBanner';
+import { logger } from '../utils/logger';
 
 const INITIAL_CHAT_GREETING = "Oi, mãe. Tô aqui com você. Como você está se sentindo agora?";
 const AVATAR_URL = "https://i.imgur.com/oB9ewPG.jpg";
@@ -118,7 +119,7 @@ export default function ChatScreen() {
         }
       }
     } catch (error) {
-      console.error('Erro ao inicializar chat:', error);
+      logger.error('Erro ao inicializar chat', error);
       Alert.alert('Erro', 'Não foi possível carregar o chat');
     } finally {
       setLoadingMessages(false);
@@ -151,7 +152,7 @@ export default function ChatScreen() {
         setTimeout(() => flashListRef.current?.scrollToEnd({ animated: true }), 100);
       }
     } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
+      logger.error('Erro ao enviar mensagem', error);
       Alert.alert('Erro', 'Não foi possível enviar a mensagem');
     } finally {
       setLoading(false);
@@ -206,7 +207,7 @@ export default function ChatScreen() {
                   }
                 }
               } catch (error) {
-                console.error('Erro ao limpar histórico:', error);
+                logger.error('Erro ao limpar histórico', error);
                 Alert.alert('Erro', 'Não foi possível limpar o histórico');
               }
             },
@@ -258,7 +259,7 @@ export default function ChatScreen() {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
     } catch (error) {
-      console.error('Error picking image:', error);
+      logger.error('Error picking image', error);
       Alert.alert('Erro', 'Não foi possível selecionar a imagem.');
     }
   };
@@ -304,13 +305,13 @@ export default function ChatScreen() {
 
       {/* Header */}
       <View
-        style={{ backgroundColor: colors.background.card, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: 1, borderBottomColor: colors.border.light, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 }}
+        style={{ backgroundColor: colors.background.card, padding: Tokens.spacing['4'], flexDirection: 'row', alignItems: 'center', gap: Tokens.spacing['3'], borderBottomWidth: 1, borderBottomColor: colors.border.light, shadowColor: colors.text.primary, shadowOffset: { width: 0, height: Tokens.spacing['px'] }, shadowOpacity: 0.05, shadowRadius: Tokens.spacing['0.5'], elevation: 1 }}
         accessible={true}
         accessibilityRole="header"
       >
         <TouchableOpacity
           onPress={() => { triggerHaptic(); navigation.goBack(); }}
-          style={{ backgroundColor: colors.text.primary, padding: 8, borderRadius: 20 }}
+          style={{ backgroundColor: colors.text.primary, padding: Tokens.spacing['2'], borderRadius: Tokens.radius.xl }}
           accessibilityRole="button"
           accessibilityLabel="Voltar"
           accessibilityHint="Retorna para a tela anterior"
@@ -335,7 +336,7 @@ export default function ChatScreen() {
               />
             ) : (
               <View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary.light }}>
-                <Text style={{ color: colors.primary.main, fontSize: 16 }}>💙</Text>
+                <Text style={{ color: colors.primary.main, fontSize: Tokens.typography.sizes.base }}>💙</Text>
               </View>
             )}
           </View>
@@ -343,7 +344,7 @@ export default function ChatScreen() {
         </View>
 
         <View
-          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4 }}
+          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: Tokens.spacing['1'] }}
           accessible={true}
           accessibilityRole="header"
           accessibilityLabel="Chat com NathIA, assistente de inteligência artificial"
@@ -356,7 +357,7 @@ export default function ChatScreen() {
 
         <TouchableOpacity
           onPress={handleClearHistory}
-          style={{ padding: 8, borderRadius: 20 }}
+          style={{ padding: Tokens.spacing['2'], borderRadius: Tokens.radius.xl }}
           accessibilityRole="button"
           accessibilityLabel="Limpar histórico"
           accessibilityHint="Apaga todas as mensagens da conversa atual"
@@ -376,22 +377,22 @@ export default function ChatScreen() {
       {/* AI Mode Toolbar - Premium */}
       <View
         style={{
-          backgroundColor: isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+          backgroundColor: `${colors.background.card}F2`,
           borderBottomWidth: 1,
           borderBottomColor: colors.border.light,
-          paddingHorizontal: 16,
-          paddingVertical: 12,
+          paddingHorizontal: Tokens.spacing['4'],
+          paddingVertical: Tokens.spacing['3'],
           flexDirection: 'row',
           alignItems: 'center',
-          gap: 8,
-          shadowColor: '#000',
+          gap: Tokens.spacing['2'],
+          shadowColor: colors.text.primary,
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.05,
           shadowRadius: 4,
           elevation: 2,
         }}
       >
-        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.text.tertiary, textTransform: 'uppercase', letterSpacing: 0.5, marginRight: 4 }}>
+        <Text style={{ fontSize: Tokens.typography.sizes['2xs'], fontWeight: Tokens.typography.weights.bold, color: colors.text.tertiary, textTransform: 'uppercase', letterSpacing: Tokens.typography.letterSpacing.wide, marginRight: Tokens.spacing['1'] }}>
           Modo:
         </Text>
 
@@ -399,19 +400,19 @@ export default function ChatScreen() {
         <TouchableOpacity
           onPress={() => { setAiMode('fast'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
           style={{
-            paddingHorizontal: 12,
-            paddingVertical: 8,
+            paddingHorizontal: Tokens.spacing['3'],
+            paddingVertical: Tokens.spacing['2'],
             borderRadius: 20,
-            backgroundColor: aiMode === 'fast' ? '#FCD34D' : 'transparent',
+            backgroundColor: aiMode === 'fast' ? colors.status.warning : 'transparent',
             borderWidth: 1,
-            borderColor: aiMode === 'fast' ? '#FCD34D' : colors.border.medium,
+            borderColor: aiMode === 'fast' ? colors.status.warning : colors.border.medium,
           }}
           accessibilityRole="button"
           accessibilityLabel="Modo rápido"
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Zap size={14} color={aiMode === 'fast' ? '#78350F' : colors.text.tertiary} fill={aiMode === 'fast' ? '#78350F' : 'none'} />
-            <Text style={{ fontSize: 11, fontWeight: '700', color: aiMode === 'fast' ? '#78350F' : colors.text.tertiary }}>
+            <Zap size={14} color={aiMode === 'fast' ? colors.text.primary : colors.text.tertiary} fill={aiMode === 'fast' ? colors.text.primary : 'none'} />
+            <Text style={{ fontSize: Tokens.typography.sizes['2xs'], fontWeight: Tokens.typography.weights.bold, color: aiMode === 'fast' ? colors.text.primary : colors.text.tertiary }}>
               Rápido
             </Text>
           </View>
@@ -421,8 +422,8 @@ export default function ChatScreen() {
         <TouchableOpacity
           onPress={() => { setAiMode('balanced'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
           style={{
-            paddingHorizontal: 12,
-            paddingVertical: 8,
+            paddingHorizontal: Tokens.spacing['3'],
+            paddingVertical: Tokens.spacing['2'],
             borderRadius: 20,
             backgroundColor: aiMode === 'balanced' ? colors.primary.main : 'transparent',
             borderWidth: 1,
@@ -432,8 +433,8 @@ export default function ChatScreen() {
           accessibilityLabel="Modo equilibrado"
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Sparkles size={14} color={aiMode === 'balanced' ? '#FFFFFF' : colors.text.tertiary} fill={aiMode === 'balanced' ? '#FFFFFF' : 'none'} />
-            <Text style={{ fontSize: 11, fontWeight: '700', color: aiMode === 'balanced' ? '#FFFFFF' : colors.text.tertiary }}>
+            <Sparkles size={14} color={aiMode === 'balanced' ? colors.text.inverse : colors.text.tertiary} fill={aiMode === 'balanced' ? colors.text.inverse : 'none'} />
+            <Text style={{ fontSize: Tokens.typography.sizes['2xs'], fontWeight: Tokens.typography.weights.bold, color: aiMode === 'balanced' ? colors.text.inverse : colors.text.tertiary }}>
               Equilibrado
             </Text>
           </View>
@@ -443,19 +444,19 @@ export default function ChatScreen() {
         <TouchableOpacity
           onPress={() => { setAiMode('thinking'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
           style={{
-            paddingHorizontal: 12,
-            paddingVertical: 8,
+            paddingHorizontal: Tokens.spacing['3'],
+            paddingVertical: Tokens.spacing['2'],
             borderRadius: 20,
-            backgroundColor: aiMode === 'thinking' ? '#6366F1' : 'transparent',
+            backgroundColor: aiMode === 'thinking' ? colors.raw.accent.purple : 'transparent',
             borderWidth: 1,
-            borderColor: aiMode === 'thinking' ? '#6366F1' : colors.border.medium,
+            borderColor: aiMode === 'thinking' ? colors.raw.accent.purple : colors.border.medium,
           }}
           accessibilityRole="button"
           accessibilityLabel="Modo raciocínio profundo"
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Brain size={14} color={aiMode === 'thinking' ? '#FFFFFF' : colors.text.tertiary} />
-            <Text style={{ fontSize: 11, fontWeight: '700', color: aiMode === 'thinking' ? '#FFFFFF' : colors.text.tertiary }}>
+            <Brain size={14} color={aiMode === 'thinking' ? colors.text.inverse : colors.text.tertiary} />
+            <Text style={{ fontSize: Tokens.typography.sizes['2xs'], fontWeight: Tokens.typography.weights.bold, color: aiMode === 'thinking' ? colors.text.inverse : colors.text.tertiary }}>
               Pensar
             </Text>
           </View>
@@ -465,19 +466,19 @@ export default function ChatScreen() {
         <TouchableOpacity
           onPress={() => { setAiMode('search'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
           style={{
-            paddingHorizontal: 12,
-            paddingVertical: 8,
+            paddingHorizontal: Tokens.spacing['3'],
+            paddingVertical: Tokens.spacing['2'],
             borderRadius: 20,
-            backgroundColor: aiMode === 'search' ? '#10B981' : 'transparent',
+            backgroundColor: aiMode === 'search' ? colors.status.success : 'transparent',
             borderWidth: 1,
-            borderColor: aiMode === 'search' ? '#10B981' : colors.border.medium,
+            borderColor: aiMode === 'search' ? colors.status.success : colors.border.medium,
           }}
           accessibilityRole="button"
           accessibilityLabel="Modo pesquisa web"
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Globe size={14} color={aiMode === 'search' ? '#FFFFFF' : colors.text.tertiary} />
-            <Text style={{ fontSize: 11, fontWeight: '700', color: aiMode === 'search' ? '#FFFFFF' : colors.text.tertiary }}>
+            <Globe size={14} color={aiMode === 'search' ? colors.text.inverse : colors.text.tertiary} />
+            <Text style={{ fontSize: Tokens.typography.sizes['2xs'], fontWeight: Tokens.typography.weights.bold, color: aiMode === 'search' ? colors.text.inverse : colors.text.tertiary }}>
               Buscar
             </Text>
           </View>
@@ -494,7 +495,7 @@ export default function ChatScreen() {
           {messages.length <= 1 && !loading ? (
             /* Empty State */
             <View
-              style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: -48, paddingHorizontal: 24 }}
+              style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: -Tokens.spacing['12'], paddingHorizontal: Tokens.spacing['6'] }}
               accessible={true}
               accessibilityRole="text"
               accessibilityLabel={`Bem-vinda ao chat com NathIA. ${INITIAL_CHAT_GREETING}`}
@@ -515,7 +516,7 @@ export default function ChatScreen() {
                   />
                 ) : (
                   <View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary.light }}>
-                    <Text style={{ color: colors.primary.main, fontSize: 44 }}>💙</Text>
+                    <Text style={{ color: colors.primary.main, fontSize: Tokens.typography.sizes['5xl'] }}>💙</Text>
                   </View>
                 )}
               </View>
@@ -523,7 +524,7 @@ export default function ChatScreen() {
               <Text style={{ fontSize: Tokens.typography.sizes['3xl'], fontWeight: Tokens.typography.weights.bold, color: colors.text.primary, marginBottom: 4, textAlign: 'center' }}>
                 NathIA
               </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: Tokens.spacing['2'], marginBottom: Tokens.spacing['6'] }}>
                 <Sparkles size={14} color={colors.primary.main} />
                 <Text style={{ color: colors.primary.main, fontWeight: Tokens.typography.weights.medium, fontSize: Tokens.typography.sizes.sm, letterSpacing: 1, textTransform: 'uppercase' }}>
                   Suas conversas
@@ -540,7 +541,7 @@ export default function ChatScreen() {
               data={messages}
               renderItem={renderItem}
               keyExtractor={item => item.id}
-              contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
+              contentContainerStyle={{ padding: Tokens.spacing['4'], paddingBottom: 120 }}
               showsVerticalScrollIndicator={false}
               accessible={false}
               ListFooterComponent={
@@ -550,7 +551,7 @@ export default function ChatScreen() {
                     accessible={true}
                     accessibilityLabel="NathIA está digitando"
                   >
-                    <View style={{ backgroundColor: colors.background.card, padding: 16, borderRadius: 16, borderBottomLeftRadius: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1, borderWidth: 1, borderColor: isDark ? colors.border.light : 'transparent' }}>
+                    <View style={{ backgroundColor: colors.background.card, padding: Tokens.spacing['4'], borderRadius: Tokens.radius.xl, borderBottomLeftRadius: Tokens.spacing['1'], shadowColor: colors.text.primary, shadowOffset: { width: 0, height: Tokens.spacing['px'] }, shadowOpacity: 0.05, shadowRadius: Tokens.spacing['0.5'], elevation: 1, borderWidth: 1, borderColor: isDark ? colors.border.light : 'transparent' }}>
                       <ActivityIndicator size="small" color={colors.text.tertiary} />
                     </View>
                   </View>
@@ -561,14 +562,14 @@ export default function ChatScreen() {
         </View>
 
         {/* Input Area - Premium Style */}
-        <View style={{ backgroundColor: colors.background.card, padding: 12, borderTopWidth: 1, borderTopColor: colors.border.light, paddingBottom: 32 }}>
+        <View style={{ backgroundColor: colors.background.card, padding: Tokens.spacing['3'], borderTopWidth: 1, borderTopColor: colors.border.light, paddingBottom: Tokens.spacing['8'] }}>
           {/* Suggestion Chips - Show when not recording/transcribing */}
           {!loading && !isRecording && !isTranscribing && messages.length < 10 && (
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               style={{ marginBottom: 12 }}
-              contentContainerStyle={{ gap: 8, paddingRight: 16 }}
+              contentContainerStyle={{ gap: Tokens.spacing['2'], paddingRight: Tokens.spacing['4'] }}
             >
               {SUGGESTION_CHIPS.map((chip, idx) => (
                 <TouchableOpacity
@@ -577,14 +578,14 @@ export default function ChatScreen() {
                   disabled={loading}
                   style={{
                     backgroundColor: isDark ? colors.background.elevated : colors.primary.light,
-                    paddingHorizontal: 14,
-                    paddingVertical: 8,
+                    paddingHorizontal: Tokens.spacing['3.5'],
+                    paddingVertical: Tokens.spacing['2'],
                     borderRadius: 20,
                     borderWidth: 1,
                     borderColor: isDark ? colors.border.light : `${colors.primary.main}33`,
                     flexDirection: 'row',
                     alignItems: 'center',
-                    gap: 6,
+                    gap: Tokens.spacing['1.5'],
                   }}
                   accessibilityRole="button"
                   accessibilityLabel={`Sugestão: ${chip}`}
@@ -598,28 +599,28 @@ export default function ChatScreen() {
             </ScrollView>
           )}
 
-          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'flex-end' }}>
+          <View style={{ flexDirection: 'row', gap: Tokens.spacing['2'], alignItems: 'flex-end' }}>
             {/* Recording/Transcribing State OR Normal Input */}
             {isRecording ? (
               <TouchableOpacity
                 onPress={handleMicClick}
                 style={{
                   flex: 1,
-                  backgroundColor: '#FEE2E2',
+                  backgroundColor: colors.secondary.light,
                   borderRadius: 20,
-                  paddingHorizontal: 16,
-                  paddingVertical: 14,
+                  paddingHorizontal: Tokens.spacing['4'],
+                  paddingVertical: Tokens.spacing['3.5'],
                   flexDirection: 'row',
                   alignItems: 'center',
-                  gap: 12,
+                  gap: Tokens.spacing['3'],
                   borderWidth: 2,
-                  borderColor: '#EF4444',
+                  borderColor: colors.status.error,
                 }}
                 accessibilityRole="button"
                 accessibilityLabel="Gravando áudio, toque para parar"
               >
-                <AudioLines size={24} color="#EF4444" />
-                <Text style={{ color: '#DC2626', fontSize: Tokens.typography.sizes.sm, fontWeight: Tokens.typography.weights.bold, flex: 1 }}>
+                <AudioLines size={24} color={colors.status.error} />
+                <Text style={{ color: colors.status.error, fontSize: Tokens.typography.sizes.sm, fontWeight: Tokens.typography.weights.bold, flex: 1 }}>
                   Gravando... (Toque para parar)
                 </Text>
               </TouchableOpacity>
@@ -629,11 +630,11 @@ export default function ChatScreen() {
                   flex: 1,
                   backgroundColor: colors.background.elevated,
                   borderRadius: 20,
-                  paddingHorizontal: 16,
-                  paddingVertical: 14,
+                  paddingHorizontal: Tokens.spacing['4'],
+                  paddingVertical: Tokens.spacing['3.5'],
                   flexDirection: 'row',
                   alignItems: 'center',
-                  gap: 12,
+                  gap: Tokens.spacing['3'],
                   borderWidth: 1,
                   borderColor: colors.border.light,
                 }}
@@ -655,8 +656,8 @@ export default function ChatScreen() {
                   style={{
                     flex: 1,
                     color: colors.text.primary,
-                    paddingHorizontal: 16,
-                    paddingVertical: 12,
+                    paddingHorizontal: Tokens.spacing['4'],
+                    paddingVertical: Tokens.spacing['3'],
                     fontSize: Tokens.typography.sizes.sm,
                     maxHeight: 96,
                     textAlignVertical: 'top',
@@ -668,7 +669,7 @@ export default function ChatScreen() {
                 <TouchableOpacity
                   onPress={handleImagePick}
                   style={{
-                    padding: 10,
+                    padding: Tokens.spacing['2.5'],
                     marginRight: 0,
                     borderRadius: 16,
                     backgroundColor: 'transparent',
@@ -682,7 +683,7 @@ export default function ChatScreen() {
                 <TouchableOpacity
                   onPress={handleMicClick}
                   style={{
-                    padding: 10,
+                    padding: Tokens.spacing['2.5'],
                     marginRight: 4,
                     borderRadius: 16,
                     backgroundColor: 'transparent',
@@ -705,7 +706,7 @@ export default function ChatScreen() {
                 borderRadius: 24,
                 alignItems: 'center',
                 justifyContent: 'center',
-                shadowColor: '#000',
+                shadowColor: colors.text.primary,
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.15,
                 shadowRadius: 4,
