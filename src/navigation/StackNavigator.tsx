@@ -13,6 +13,8 @@ import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
 import TermsOfServiceScreen from '../screens/TermsOfServiceScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import AgentsStatusScreen from '../screens/AgentsStatusScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import ContentDetailScreen from '../screens/ContentDetailScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -102,6 +104,14 @@ export const StackNavigator = () => {
         }}
       />
       <Stack.Screen
+        name="ContentDetail"
+        component={ContentDetailScreen}
+        options={{
+          presentation: 'card',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen
         name="PrivacyPolicy"
         component={PrivacyPolicyScreen}
         options={{
@@ -128,6 +138,14 @@ export const StackNavigator = () => {
       <Stack.Screen
         name="AgentsStatus"
         component={AgentsStatusScreen}
+        options={{
+          presentation: 'card',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',

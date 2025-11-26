@@ -26,13 +26,14 @@ import {
   LogOut,
   ChevronRight,
   Cpu,
+  User,
 } from 'lucide-react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens } from '../theme';
 import { useAuth } from '../contexts/AuthContext';
 import { userDataService } from '../services/userDataService';
 import { logger } from '../utils/logger';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 export default function SettingsScreen() {
   const { colors, isDark } = useTheme();
@@ -60,7 +61,8 @@ export default function SettingsScreen() {
               const { data, error } = await userDataService.exportUserData();
 
               if (error || !data) {
-                throw new Error(error?.message || 'Erro ao exportar dados');
+                const errorMsg = typeof error === 'string' ? error : error instanceof Error ? error.message : 'Erro ao exportar dados';
+                throw new Error(errorMsg);
               }
 
               // Converter para JSON string
@@ -140,7 +142,8 @@ export default function SettingsScreen() {
                       const { success, error } = await userDataService.requestAccountDeletion();
 
                       if (!success) {
-                        throw new Error(error?.message || 'Erro ao deletar conta');
+                        const errorMsg = typeof error === 'string' ? error : error instanceof Error ? error.message : 'Erro ao deletar conta';
+                        throw new Error(errorMsg);
                       }
 
                       Alert.alert(
@@ -366,6 +369,15 @@ export default function SettingsScreen() {
 
         {/* Conta */}
         <SectionTitle>Conta</SectionTitle>
+
+        <SettingItem
+          icon={User}
+          title="Editar Perfil"
+          subtitle="Atualizar seus dados pessoais e preferências"
+          onPress={() => {
+            navigation.navigate('Profile' as never);
+          }}
+        />
 
         <SettingItem
           icon={Trash2}

@@ -1,988 +1,291 @@
+/**
+ * HomeScreen - "O Melhor Possível"
+ * Promessa: "Aqui é seguro, aqui você pertence."
+ *
+ * Estrutura:
+ * 1. Saudação personalizada
+ * 2. Hero CTA - Conversar com NathIA
+ * 3. Check-in emocional (5 emojis)
+ * 4. Registro de Hoje (diário de sono)
+ * 5. Hábitos de hoje (max 3 cards)
+ * 6. Mundo Nath pra você (max 3 conteúdos)
+ */
+
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-  useWindowDimensions,
-  RefreshControl,
-  StyleSheet,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { FlatList, RefreshControl, ActivityIndicator, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { CompositeNavigationProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Image } from 'expo-image';
-import {
-  PlayCircle,
-  FileText,
-  Mic,
-  Video,
-  ChevronRight,
-  Sun,
-  Moon,
-  Wind,
-  BedDouble,
-  MessageCircleHeart,
-  ArrowRight,
-  Heart,
-  Baby,
-  TrendingUp,
-  Settings,
-} from 'lucide-react-native';
-import { useTheme, type ThemeColors } from '../theme/ThemeContext';
-import { Tokens } from '../theme/tokens';
-import { profileService } from '../services/profileService';
-import { feedService, ContentItem } from '../services/feedService';
-import { habitsService, UserHabit } from '../services/habitsService';
-import { milestonesService } from '../services/milestonesService';
-import { useHaptics } from '../hooks/useHaptics';
-import type { MainTabParamList, RootStackParamList } from '../navigation/types';
-import { logger } from '../utils/logger';
+import { MessageCircleHeart, Moon, TrendingUp } from 'lucide-react-native';
+import { useTheme } from '@/theme';
+import { Box } from '@/components/primitives/Box';
+import { Text } from '@/components/primitives/Text';
+import { Heading } from '@/components/primitives/Heading';
+import { ScreenLayout } from '@/components/templates/ScreenLayout';
+import { SectionLayout } from '@/components/templates/SectionLayout';
+import { MaternalCard } from '@/components/organisms/MaternalCard';
+import { EmotionalPrompt, type EmotionValue } from '@/components/molecules/EmotionalPrompt';
+import { profileService } from '@/services/profileService';
+import { feedService, type ContentItem } from '@/services/feedService';
+import { habitsService, type UserHabit } from '@/services/habitsService';
+import { checkInService } from '@/services/checkInService';
+import { Spacing } from '@/theme/tokens';
+import { logger } from '@/utils/logger';
+import type { MainTabParamList, RootStackParamList } from '@/navigation/types';
+
+// ======================
+// 🎯 TYPES
+// ======================
 
 type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'Home'>,
   NativeStackNavigationProp<RootStackParamList>
 >;
 
-/* -------------------------------------------------------------------------- */
-/*                                   HEADER                                   */
-/* -------------------------------------------------------------------------- */
+// ======================
+// 🏠 HOME SCREEN
+// ======================
 
-interface HomeHeaderProps {
-  userName: string;
-  avatarUrl?: string;
-  isDark: boolean;
-  colors: ThemeColors;
-  onToggleTheme: () => void;
-  navigation: NavigationProp;
-}
-
-const headerStyles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Tokens.spacing['4'],
-    paddingVertical: Tokens.spacing['3'],
-    borderBottomWidth: 1,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  headerSubtitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  iconButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-  },
-  avatarButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    overflow: 'hidden',
-    borderWidth: 2,
-  },
-  avatarImage: {
-    width: '100%',
-    height: '100%',
-  },
-  avatarPlaceholder: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
-const HomeHeader: React.FC<HomeHeaderProps> = ({
-  userName,
-  avatarUrl,
-  isDark,
-  colors,
-  onToggleTheme,
-  navigation,
-}) => {
-  return (
-    <View style={[headerStyles.headerContainer, { backgroundColor: colors.background.card, borderBottomColor: colors.border.light }]}>
-      <View accessible accessibilityRole="header" style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        <Image
-          source={require('../../assets/logo.png')}
-          style={{ width: 44, height: 44, borderRadius: 10 }}
-          contentFit="cover"
-          transition={200}
-          accessibilityLabel="Logo Nossa Maternidade"
-        />
-        <View style={{ flex: 1 }}>
-          <Text style={[headerStyles.headerTitle, { color: colors.text.primary }]} accessibilityLabel={`Olá, ${userName}`}>
-            Oi, {userName}.
-          </Text>
-          <View style={headerStyles.headerSubtitleRow}>
-            <Text style={[headerStyles.headerSubtitle, { color: colors.primary.main }]} accessibilityLabel="Tô aqui com você">
-              Tô aqui com você 💙
-            </Text>
-          </View>
-        </View>
-      </View>
-      <View style={headerStyles.headerActions}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Settings' as never)}
-          style={[headerStyles.iconButton, { backgroundColor: colors.background.canvas, borderColor: colors.border.light }]}
-          accessibilityRole="button"
-          accessibilityLabel="Configurações"
-        >
-          <Settings size={18} color={colors.text.primary} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={onToggleTheme}
-          style={[headerStyles.iconButton, { backgroundColor: colors.background.canvas, borderColor: colors.border.light }]}
-          accessibilityRole="button"
-          accessibilityLabel={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
-        >
-          {isDark ? (
-            <Sun size={18} color={colors.status.warning} />
-          ) : (
-            <Moon size={18} color={colors.text.primary} />
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[headerStyles.avatarButton, { borderColor: colors.primary.main }]}
-          accessibilityRole="button"
-          accessibilityLabel="Foto de perfil"
-        >
-          {avatarUrl ? (
-            <Image
-              source={{ uri: avatarUrl }}
-              style={headerStyles.avatarImage}
-              contentFit="cover"
-              transition={200}
-            />
-          ) : (
-            <View style={[headerStyles.avatarPlaceholder, { backgroundColor: colors.primary.light }]}>
-              <Text style={{ color: colors.text.primary, fontSize: 18 }}>👤</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
-
-/* -------------------------------------------------------------------------- */
-/*                                  CARDS                                     */
-/* -------------------------------------------------------------------------- */
-
-interface SleepCardProps {
-  colors: ThemeColors;
-  onPress: () => void;
-}
-
-const SleepCard: React.FC<SleepCardProps> = ({ onPress }) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={sleepCardStyles.container}
-    activeOpacity={0.9}
-    accessibilityRole="button"
-    accessibilityLabel="Como você dormiu hoje?"
-  >
-    <Image
-      source={{ uri: 'https://i.imgur.com/JQagI8x.jpg' }}
-      style={StyleSheet.absoluteFill}
-      contentFit="cover"
-      contentPosition="center"
-      transition={200}
-    />
-    <LinearGradient
-      colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0.7)']}
-      style={StyleSheet.absoluteFill}
-    />
-    <View style={sleepCardStyles.content}>
-      <View style={sleepCardStyles.topRow}>
-        <View style={sleepCardStyles.iconContainer}>
-          <BedDouble size={18} color="#FFFFFF" />
-        </View>
-        <View style={sleepCardStyles.badge}>
-          <Text style={sleepCardStyles.badgeText}>MATERNIDADE REAL</Text>
-        </View>
-      </View>
-      <View>
-        <Text style={sleepCardStyles.title}>Como você dormiu hoje?</Text>
-        <View style={sleepCardStyles.ctaRow}>
-          <Text style={sleepCardStyles.ctaText}>Toque para registrar</Text>
-          <ChevronRight size={14} color="#E0F2FE" />
-        </View>
-      </View>
-    </View>
-  </TouchableOpacity>
-);
-
-const sleepCardStyles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: 200,
-    borderRadius: 24,
-    overflow: 'hidden',
-    marginBottom: 16,
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'space-between',
-  },
-  topRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  iconContainer: {
-    width: 36,
-    height: 36,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  badge: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  badgeText: {
-    color: '#FFFFFF',
-    fontSize: 9,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 4,
-  },
-  ctaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  ctaText: {
-    color: '#E0F2FE',
-    fontSize: 12,
-    fontWeight: '500',
-  },
-});
-
-interface BreathingCardProps {
-  colors: ThemeColors;
-  onPress: () => void;
-}
-
-const BreathingCard: React.FC<BreathingCardProps> = ({ colors, onPress }) => (
-  <LinearGradient
-    colors={[...colors.primary.gradient] as [string, string, ...string[]]}
-    style={breathingCardStyles.container}
-  >
-    <View style={breathingCardStyles.iconContainer}>
-      <Wind size={20} color="#FFFFFF" />
-    </View>
-    <Text style={breathingCardStyles.title}>Percebi que você tá mais ansiosa.</Text>
-    <Text style={breathingCardStyles.subtitle}>
-      Quer respirar 1 minuto comigo pra desacelerar?
-    </Text>
-    <TouchableOpacity
-      onPress={onPress}
-      style={breathingCardStyles.button}
-      activeOpacity={0.8}
-      accessibilityRole="button"
-      accessibilityLabel="Começar respiração agora"
-    >
-      <Text style={[breathingCardStyles.buttonText, { color: colors.primary.main }]}>
-        Começar agora
-      </Text>
-      <ArrowRight size={14} color={colors.primary.main} />
-    </TouchableOpacity>
-  </LinearGradient>
-);
-
-const breathingCardStyles = StyleSheet.create({
-  container: {
-    borderRadius: 22,
-    padding: 24,
-    marginBottom: 16,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.9)',
-    marginBottom: 16,
-  },
-  button: {
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    gap: 8,
-  },
-  buttonText: {
-    fontWeight: '700',
-    fontSize: 13,
-  },
-});
-
-interface QuickActionCardProps {
-  icon: React.ReactNode;
-  title: string;
-  subtitle: string;
-  colors: ThemeColors;
-  onPress: () => void;
-  iconBgColor: string;
-}
-
-const QuickActionCard: React.FC<QuickActionCardProps> = ({
-  icon,
-  title,
-  subtitle,
-  colors,
-  onPress,
-  iconBgColor,
-}) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={[
-      quickActionStyles.container,
-      {
-        borderColor: colors.border.light,
-        backgroundColor: colors.background.card,
-      },
-    ]}
-    activeOpacity={0.7}
-    accessibilityRole="button"
-    accessibilityLabel={`${title}. ${subtitle}`}
-  >
-    <View style={[quickActionStyles.iconContainer, { backgroundColor: iconBgColor }]}>
-      {icon}
-    </View>
-    <Text style={[quickActionStyles.title, { color: colors.text.primary }]}>{title}</Text>
-    <Text style={[quickActionStyles.subtitle, { color: colors.text.secondary }]}>
-      {subtitle}
-    </Text>
-  </TouchableOpacity>
-);
-
-const quickActionStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    borderWidth: 1,
-    padding: 16,
-    borderRadius: 16,
-  },
-  iconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  title: {
-    fontWeight: '700',
-    fontSize: 14,
-    marginBottom: 2,
-  },
-  subtitle: {
-    fontSize: 10,
-  },
-});
-
-interface HabitCardProps {
-  habit: UserHabit;
-  index: number;
-  colors: ThemeColors;
-  onPress: () => void;
-}
-
-const HabitCard: React.FC<HabitCardProps> = ({ habit, index, colors, onPress }) => {
-  const habitName = habit.custom_name || habit.habit?.name || 'Hábito';
-  const streak = habit.current_streak || 0;
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[
-        habitCardStyles.container,
-        {
-          borderColor: colors.border.light,
-          backgroundColor: colors.background.card,
-          marginLeft: index > 0 ? 12 : 0,
-        },
-      ]}
-      activeOpacity={0.7}
-      accessibilityRole="button"
-      accessibilityLabel={`Hábito: ${habitName}`}
-    >
-      <View
-        style={[
-          habitCardStyles.iconContainer,
-          { backgroundColor: habit.habit?.color || '#6DA9E4' },
-        ]}
-      >
-        {habit.today_completed ? (
-          <Heart size={16} color="#FFFFFF" fill="#FFFFFF" />
-        ) : (
-          <Heart size={16} color="#FFFFFF" />
-        )}
-      </View>
-      <Text style={[habitCardStyles.title, { color: colors.text.primary }]}>{habitName}</Text>
-      <Text style={[habitCardStyles.subtitle, { color: colors.text.secondary }]}>
-        {habit.today_completed ? '✓ Completado' : `Streak: ${streak}`}
-      </Text>
-    </TouchableOpacity>
-  );
-};
-
-const habitCardStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    borderWidth: 1,
-    padding: 16,
-    borderRadius: 16,
-  },
-  iconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  title: {
-    fontWeight: '700',
-    fontSize: 14,
-    marginBottom: 2,
-  },
-  subtitle: {
-    fontSize: 10,
-  },
-});
-
-interface MilestoneCardProps {
-  progress: number;
-  colors: ThemeColors;
-  onPress: () => void;
-}
-
-const MilestoneCard: React.FC<MilestoneCardProps> = ({ progress, colors, onPress }) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={[
-      milestoneCardStyles.container,
-      {
-        borderColor: colors.border.light,
-        backgroundColor: colors.background.card,
-      },
-    ]}
-    activeOpacity={0.7}
-    accessibilityRole="button"
-    accessibilityLabel={`Marcos do bebê. ${progress}% concluído`}
-  >
-    <View style={milestoneCardStyles.content}>
-      <View style={milestoneCardStyles.leftContent}>
-        <View style={milestoneCardStyles.titleRow}>
-          <Baby size={18} color="#10B981" />
-          <Text style={[milestoneCardStyles.title, { color: colors.text.primary }]}>
-            Marcos do bebê
-          </Text>
-        </View>
-        <Text style={[milestoneCardStyles.subtitle, { color: colors.text.secondary }]}>
-          {progress}% concluído
-        </Text>
-      </View>
-      <View style={milestoneCardStyles.badge}>
-        <TrendingUp size={12} color="#FFFFFF" />
-        <Text style={milestoneCardStyles.badgeText}>{progress}%</Text>
-      </View>
-    </View>
-  </TouchableOpacity>
-);
-
-const milestoneCardStyles = StyleSheet.create({
-  container: {
-    borderWidth: 1,
-    padding: 16,
-    borderRadius: 16,
-    marginTop: 12,
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  leftContent: {
-    flex: 1,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 8,
-  },
-  title: {
-    fontWeight: '700',
-    fontSize: 14,
-  },
-  subtitle: {
-    fontSize: 10,
-  },
-  badge: {
-    backgroundColor: '#10B981',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  badgeText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '700',
-  },
-});
-
-interface ContentCardProps {
-  item: ContentItem;
-  colors: ThemeColors;
-  onPress: () => void;
-}
-
-const ContentCard: React.FC<ContentCardProps> = ({ item, colors, onPress }) => {
-  const getIconForType = (type: string) => {
-    switch (type) {
-      case 'reels':
-        return <Video size={12} color="#FFFFFF" />;
-      case 'audio':
-        return <Mic size={12} color="#FFFFFF" />;
-      case 'video':
-        return <PlayCircle size={12} color="#FFFFFF" />;
-      default:
-        return <FileText size={12} color="#FFFFFF" />;
-    }
-  };
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[
-        contentCardStyles.container,
-        {
-          backgroundColor: colors.background.card,
-          borderColor: colors.border.light,
-        },
-      ]}
-      activeOpacity={0.7}
-      accessibilityRole="button"
-      accessibilityLabel={`${item.title}`}
-    >
-      <View style={[contentCardStyles.imageContainer, { backgroundColor: colors.border.light }]}>
-        <Image
-          source={{ uri: item.thumbnail_url || 'https://via.placeholder.com/200x112' }}
-          style={StyleSheet.absoluteFill}
-          contentFit="cover"
-          transition={200}
-        />
-        <View style={contentCardStyles.typeBadge}>{getIconForType(item.type)}</View>
-        <View style={contentCardStyles.nathBadge}>
-          <Text style={contentCardStyles.nathText}>Nath </Text>
-          <Heart size={8} color="#FFFFFF" fill="#FFFFFF" />
-        </View>
-      </View>
-      <View style={contentCardStyles.textContainer}>
-        <Text
-          style={[contentCardStyles.title, { color: colors.text.primary }]}
-          numberOfLines={2}
-        >
-          {item.title}
-        </Text>
-        <Text style={[contentCardStyles.author, { color: colors.text.secondary }]}>
-          {item.author_name || 'Toque para ver'}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
-};
-
-const contentCardStyles = StyleSheet.create({
-  container: {
-    width: 200,
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-    marginRight: 16,
-  },
-  imageContainer: {
-    height: 112,
-    position: 'relative',
-  },
-  typeBadge: {
-    position: 'absolute',
-    top: 8,
-    left: 8,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    padding: 6,
-    borderRadius: 6,
-  },
-  nathBadge: {
-    position: 'absolute',
-    bottom: 8,
-    right: 8,
-    backgroundColor: 'rgba(236, 72, 153, 0.9)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  nathText: {
-    color: '#FFFFFF',
-    fontSize: 9,
-    fontWeight: '700',
-  },
-  textContainer: {
-    padding: 12,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: '700',
-    marginBottom: 8,
-    lineHeight: 18,
-  },
-  author: {
-    fontSize: 10,
-  },
-});
-
-/* -------------------------------------------------------------------------- */
-/*                                HOME SCREEN                                 */
-/* -------------------------------------------------------------------------- */
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 120,
-  },
-  mainContainer: {
-    paddingHorizontal: Tokens.spacing['4'],
-    paddingTop: Tokens.spacing['4'],
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  sectionBadge: {
-    backgroundColor: '#3B82F6',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  sectionBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '700',
-  },
-  quickActionsRow: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  habitsRow: {
-    flexDirection: 'row',
-  },
-  mundoNathSection: {
-    marginTop: 24,
-  },
-  mundoNathHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  verTudoButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  verTudoText: {
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  contentListContainer: {
-    height: 200,
-  },
-});
-
-const HomeScreen: React.FC = () => {
+export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { colors, isDark, toggleTheme } = useTheme();
-  const { width: _width } = useWindowDimensions();
-  const haptics = useHaptics();
+  const { colors } = useTheme();
+
+  // ======================
+  // 📊 STATE
+  // ======================
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [userName, setUserName] = useState('mãe');
-  const [avatarUrl, setAvatarUrl] = useState<string | undefined>();
-  const [recommendedContent, setRecommendedContent] = useState<ContentItem[]>([]);
+  const [todayEmotion, setTodayEmotion] = useState<EmotionValue | undefined>();
   const [userHabits, setUserHabits] = useState<UserHabit[]>([]);
-  const [milestoneProgress, setMilestoneProgress] = useState(0);
+  const [recommendedContent, setRecommendedContent] = useState<ContentItem[]>([]);
 
-  const handleNavigate = useCallback(
-    (screen: keyof RootStackParamList | keyof MainTabParamList) => {
-      try {
-        haptics.light();
-        navigation.navigate(screen as never);
-      } catch (error) {
-        logger.error(`Erro ao navegar para ${screen}`, error);
-      }
-    },
-    [navigation, haptics]
-  );
+  // ======================
+  // 🔄 DATA FETCHING
+  // ======================
 
-  const loadHomeData = useCallback(async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const [profile, content, habits, progress] = await Promise.all([
-        profileService.getCurrentProfile(),
-        feedService.getRecommendedContent(6),
-        habitsService.getUserHabits(),
-        milestonesService.getMilestoneProgress(),
-      ]);
 
+      // Fetch user profile
+      const profile = await profileService.getCurrentProfile();
       if (profile) {
-        setUserName(profile.full_name?.split(' ')[0] || 'mãe');
-        setAvatarUrl(profile.avatar_url);
+        setUserName(profile.full_name || 'mãe');
       }
-      setRecommendedContent(content || []);
-      setUserHabits((habits || []).slice(0, 2));
-      setMilestoneProgress(progress?.progress_percentage || 0);
+
+      // Fetch habits (max 3)
+      const habits = await habitsService.getUserHabits();
+      if (habits) {
+        setUserHabits(habits.slice(0, 3));
+      }
+
+      // Fetch recommended content (max 3)
+      const content = await feedService.getRecommendedContent(3);
+      if (content) {
+        setRecommendedContent(content);
+      }
+
+      // Load today's emotion from backend
+      const todayEmotionValue = await checkInService.getTodayEmotion();
+      if (todayEmotionValue) {
+        setTodayEmotion(todayEmotionValue);
+      }
     } catch (error) {
-      logger.error('Erro ao carregar dados da home', error);
+      logger.error('Failed to load HomeScreen data', error, { screen: 'HomeScreen' });
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
-    loadHomeData();
-  }, [loadHomeData]);
+    loadData();
+  }, [loadData]);
 
-  const onRefresh = useCallback(() => {
+  const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    haptics.light();
-    loadHomeData();
-  }, [loadHomeData, haptics]);
+    await loadData();
+    setRefreshing(false);
+  }, [loadData]);
 
-  const _renderContentCard = useCallback(
-    ({ item }: { item: ContentItem }) => (
-      <ContentCard
-        item={item}
-        colors={colors}
-        onPress={() => handleNavigate('MundoNath')}
-      />
-    ),
-    [colors, handleNavigate]
+  // ======================
+  // 🎯 HANDLERS
+  // ======================
+
+  const handleEmotionSelect = useCallback(async (emotion: EmotionValue) => {
+    setTodayEmotion(emotion);
+
+    // Send emotion to backend
+    const success = await checkInService.logEmotion(emotion);
+
+    if (success) {
+      logger.info('Emotion logged successfully', { screen: 'HomeScreen', emotion });
+    } else {
+      logger.error('Failed to log emotion', null, { screen: 'HomeScreen', emotion });
+    }
+  }, []);
+
+  const handleHabitToggle = useCallback(async (habitId: string) => {
+    // Optimistic update - toggle UI immediately
+    setUserHabits((prevHabits) =>
+      prevHabits.map((habit) =>
+        habit.id === habitId
+          ? {
+              ...habit,
+              today_completed: !habit.today_completed,
+              current_streak: !habit.today_completed ? (habit.current_streak || 0) + 1 : Math.max((habit.current_streak || 0) - 1, 0),
+            }
+          : habit
+      )
+    );
+
+    // Toggle on backend
+    const success = await habitsService.toggleHabitCompletion(habitId);
+
+    if (success) {
+      logger.info('Habit toggled successfully', { screen: 'HomeScreen', habitId });
+    } else {
+      logger.error('Failed to toggle habit', null, { screen: 'HomeScreen', habitId });
+      // Revert optimistic update on failure
+      await loadData();
+    }
+  }, [loadData]);
+
+  const handleContentOpen = useCallback(
+    (contentId: string) => {
+      navigation.navigate('ContentDetail', { contentId });
+      logger.info('Navigating to content detail', { screen: 'HomeScreen', contentId });
+    },
+    [navigation]
   );
+
+  // ======================
+  // 🎨 RENDER
+  // ======================
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.loadingContainer, { backgroundColor: colors.background.canvas }]}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background.canvas }}>
         <ActivityIndicator size="large" color={colors.primary.main} />
-      </SafeAreaView>
+      </View>
     );
   }
 
-  const hasHabits = userHabits.length > 0;
-  const hasRecommendedContent = recommendedContent.length > 0;
-  const hasMilestones = milestoneProgress > 0;
-
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background.canvas }]}>
-      <HomeHeader
-        userName={userName}
-        avatarUrl={avatarUrl}
-        isDark={isDark}
-        colors={colors}
-        onToggleTheme={toggleTheme}
-        navigation={navigation}
-      />
+    <ScreenLayout
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary.main} />}
+    >
+      {/* Seção 1: Saudação personalizada */}
+      <Box px="4" py="3">
+        <Heading level="h2" color="primary">
+          Oi, {userName} 💙, tô aqui com você.
+        </Heading>
+        <Text color="secondary" size="md" style={{ marginTop: Spacing['1'] }}>
+          Hoje você não está sozinha.
+        </Text>
+      </Box>
 
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={colors.primary.main}
-            colors={[colors.primary.main]}
+      {/* Seção 2: Hero CTA - Conversar com NathIA */}
+      <Box px="4" py="2">
+        <MaternalCard
+          variant="hero"
+          size="xl"
+          emotion="warm"
+          title="Conversar com NathIA"
+          subtitle="Fale comigo, sem julgamentos."
+          icon={<MessageCircleHeart size={40} color="#FFFFFF" />}
+          onPress={() => navigation.navigate('Chat')}
+          accessibilityLabel="Abrir conversa com NathIA - assistente de apoio emocional"
+        />
+      </Box>
+
+      {/* Seção 3: Check-in emocional */}
+      <Box px="4" py="3">
+        <EmotionalPrompt
+          title="Como você tá hoje?"
+          selectedEmotion={todayEmotion}
+          onSelect={handleEmotionSelect}
+        />
+      </Box>
+
+      {/* Seção 4: Registro de Hoje */}
+      <Box px="4" py="2">
+        <MaternalCard
+          variant="insight"
+          size="md"
+          emotion="calm"
+          title="Como você dormiu?"
+          subtitle="Registrar agora"
+          icon={<Moon size={32} color={colors.primary.main} />}
+          onPress={() => {
+            navigation.navigate('Diary');
+            logger.info('Navigating to sleep diary', { screen: 'HomeScreen' });
+          }}
+          accessibilityLabel="Registrar qualidade do sono de hoje"
+        />
+      </Box>
+
+      {/* Seção 5: Hábitos de hoje */}
+      {userHabits.length > 0 && (
+        <SectionLayout title="Hábitos de hoje" containerStyle={{ paddingTop: Spacing['4'] }}>
+          <FlatList
+            horizontal
+            data={userHabits}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: Spacing['4'], gap: Spacing['3'] }}
+            renderItem={({ item }) => (
+              <MaternalCard
+                variant="progress"
+                size="md"
+                title={item.custom_name || item.habit?.name || 'Hábito'}
+                progress={item.today_completed ? 100 : 0}
+                streak={item.current_streak || 0}
+                isCompleted={item.today_completed}
+                onPress={() => handleHabitToggle(item.id)}
+                accessibilityLabel={`Hábito ${item.custom_name || item.habit?.name}, ${
+                  item.current_streak || 0
+                } dias consecutivos`}
+                style={{ width: 200 }}
+              />
+            )}
           />
-        }
-      >
-        <View style={styles.mainContainer}>
-          {/* SECTION: HOJE EU TÔ COM VOCÊ */}
-          <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
-              Hoje eu tô com você
-            </Text>
-            <View style={styles.sectionBadge}>
-              <Wind size={10} color="#FFFFFF" />
-              <Text style={styles.sectionBadgeText}>30s para você</Text>
-            </View>
-          </View>
+        </SectionLayout>
+      )}
 
-          <SleepCard colors={colors} onPress={() => handleNavigate('Diary')} />
+      {/* Seção 6: Mundo Nath pra você */}
+      {recommendedContent.length > 0 && (
+        <SectionLayout
+          title="Mundo Nath pra você"
+          actionLabel="Ver tudo"
+          onActionPress={() => navigation.navigate('MundoNath')}
+          containerStyle={{ paddingTop: Spacing['4'] }}
+        >
+          <FlatList
+            horizontal
+            data={recommendedContent}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: Spacing['4'], gap: Spacing['3'] }}
+            renderItem={({ item }) => (
+              <MaternalCard
+                variant="content"
+                size="md"
+                title={item.title}
+                image={item.thumbnail_url}
+                badge={item.type === 'video' ? 'Novo' : undefined}
+                onPress={() => handleContentOpen(item.id)}
+                accessibilityLabel={`Conteúdo: ${item.title}, tipo ${item.type}`}
+              />
+            )}
+          />
+        </SectionLayout>
+      )}
 
-          <BreathingCard colors={colors} onPress={() => handleNavigate('Ritual')} />
-
-          <View style={styles.quickActionsRow}>
-            <QuickActionCard
-              icon={<MessageCircleHeart size={16} color="#A855F7" strokeWidth={2.5} />}
-              title="Conversar"
-              subtitle="NathIA"
-              colors={colors}
-              onPress={() => handleNavigate('Chat')}
-              iconBgColor={isDark ? 'rgba(168, 85, 247, 0.2)' : '#F3E8FF'}
-            />
-            <View style={{ width: 12 }} />
-            <QuickActionCard
-              icon={<Heart size={16} color="#EC4899" strokeWidth={2.5} />}
-              title="Comunidade"
-              subtitle="Mães Valentes"
-              colors={colors}
-              onPress={() => handleNavigate('MaesValentes')}
-              iconBgColor={isDark ? 'rgba(236, 72, 153, 0.2)' : '#FCE7F3'}
-            />
-          </View>
-
-          {hasHabits && (
-            <View style={styles.habitsRow}>
-              {userHabits.map((habit, index) => (
-                <HabitCard
-                  key={habit.id}
-                  habit={habit}
-                  index={index}
-                  colors={colors}
-                  onPress={() => handleNavigate('Habitos')}
-                />
-              ))}
-            </View>
-          )}
-
-          {hasMilestones && (
-            <MilestoneCard
-              progress={milestoneProgress}
-              colors={colors}
-              onPress={() => {}}
-            />
-          )}
-
-          {/* SECTION: MUNDO NATH */}
-          {hasRecommendedContent && (
-            <View style={styles.mundoNathSection}>
-              <View style={styles.mundoNathHeader}>
-                <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
-                  Mundo Nath
-                </Text>
-                <TouchableOpacity accessibilityRole="button"
-                  onPress={() => handleNavigate('MundoNath')}
-                  style={styles.verTudoButton}
-                >
-                  <Text style={[styles.verTudoText, { color: colors.primary.main }]}>
-                    Ver tudo
-                  </Text>
-                  <ChevronRight size={14} color={colors.primary.main} />
-                </TouchableOpacity>
-              </View>
-
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.contentListContainer}
-              >
-                {recommendedContent.map((item) => (
-                  <ContentCard
-                    key={item.id}
-                    item={item}
-                    colors={colors}
-                    onPress={() => handleNavigate('MundoNath')}
-                  />
-                ))}
-              </ScrollView>
-            </View>
-          )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      {/* Espaçamento final */}
+      <Box style={{ height: Spacing['6'] }} />
+    </ScreenLayout>
   );
-};
-
-export default HomeScreen;
+}

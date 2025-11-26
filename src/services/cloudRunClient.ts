@@ -45,11 +45,10 @@ export interface CloudRunResponse<T = unknown> {
   statusCode?: number;
 }
 
-export interface ChatRequest {
+export interface ChatRequest extends Record<string, unknown> {
   message: string;
   history?: Array<{ role: string; parts: Array<{ text: string }> }>;
   systemInstruction?: string;
-  [key: string]: unknown;
 }
 
 export interface ChatResponse {
@@ -58,12 +57,11 @@ export interface ChatResponse {
   tokensUsed?: number;
 }
 
-export interface AudioRequest {
+export interface AudioRequest extends Record<string, unknown> {
   audioBase64: string;
   mimeType: string;
   systemInstruction?: string;
   prompt?: string;
-  [key: string]: unknown;
 }
 
 export interface AudioResponse {
@@ -71,10 +69,9 @@ export interface AudioResponse {
   transcription?: string;
 }
 
-export interface AnalyzeDiaryRequest {
+export interface AnalyzeDiaryRequest extends Record<string, unknown> {
   entry: string;
   systemInstruction?: string;
-  [key: string]: unknown;
 }
 
 export interface AnalyzeDiaryResponse {
@@ -129,7 +126,7 @@ class CloudRunClient {
    */
   async post<T = unknown>(
     endpoint: string,
-    body: Record<string, unknown> | { [key: string]: unknown },
+    body: Record<string, unknown>,
     options?: RequestInit
   ): Promise<CloudRunResponse<T>> {
     try {
@@ -235,16 +232,14 @@ class CloudRunClient {
    * Send chat message to AI
    */
   async sendChatMessage(request: ChatRequest): Promise<CloudRunResponse<ChatResponse>> {
-    // ChatRequest já tem index signature [key: string]: unknown, então é compatível com Record<string, unknown>
-    return this.post<ChatResponse>('/api/chat', request as Record<string, unknown>);
+    return this.post<ChatResponse>('/api/chat', request);
   }
 
   /**
    * Send audio for transcription and AI response
    */
   async sendAudio(request: AudioRequest): Promise<CloudRunResponse<AudioResponse>> {
-    // AudioRequest já tem index signature [key: string]: unknown, então é compatível com Record<string, unknown>
-    return this.post<AudioResponse>('/api/audio', request as Record<string, unknown>);
+    return this.post<AudioResponse>('/api/audio', request);
   }
 
   /**
@@ -253,8 +248,7 @@ class CloudRunClient {
   async analyzeDiary(
     request: AnalyzeDiaryRequest
   ): Promise<CloudRunResponse<AnalyzeDiaryResponse>> {
-    // AnalyzeDiaryRequest já tem index signature [key: string]: unknown, então é compatível com Record<string, unknown>
-    return this.post<AnalyzeDiaryResponse>('/api/analyze-diary', request as Record<string, unknown>);
+    return this.post<AnalyzeDiaryResponse>('/api/analyze-diary', request);
   }
 
   /**

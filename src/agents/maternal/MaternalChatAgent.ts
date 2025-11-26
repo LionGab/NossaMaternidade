@@ -8,6 +8,9 @@ import { orchestrator } from '../core/AgentOrchestrator';
 import { MCPResponse } from '../../mcp/types';
 import { sessionPersistence } from '../../services/sessionPersistence';
 import { sessionManager } from '../../services/sessionManager';
+import { MedicalModerationService, CrisisDetectionService } from '../../ai/moderation';
+import type { CrisisDetectionResult } from '../../ai/moderation';
+import { selectLlmProfile, profileToMcpServer, getFallbackOrder } from '../helpers/llmRouter';
 import { logger } from '../../utils/logger';
 
 export interface ChatMessageMetadata {
@@ -180,47 +183,139 @@ export class MaternalChatAgent extends BaseAgent {
       }));
 
     try {
-      // Chamar Google AI MCP para processar a mensagem
-      const response = await this.callMCP('googleai', 'chat.send', {
-        message,
-        context,
-        history,
-      });
+      // 1. DETECÇÃO DE CRISE: Analisar mensagem antes de rotear
+      let crisisResult: CrisisDetectionResult | null = null;
+      try {
+        crisisResult = await CrisisDetectionService.detectCrisis(message, true);
 
-      if (!response.success || !response.data) {
-        throw new Error('Failed to get AI response');
+        if (crisisResult.level !== 'none') {
+          logger.warn('[MaternalChatAgent] Crisis detected in user message', {
+            level: crisisResult.level,
+            types: crisisResult.types,
+            confidence: crisisResult.confidence,
+            shouldUseCrisisSafeModel: crisisResult.shouldUseCrisisSafeModel,
+          });
+        }
+      } catch (error) {
+        logger.error('[MaternalChatAgent] Crisis detection failed, continuing without it', error);
       }
 
-      // Criar mensagem de resposta
+      // 2. ROTEAMENTO INTELIGENTE: Escolher melhor modelo baseado na mensagem
+      let llmProfile = selectLlmProfile(message, {
+        emotion: context?.emotion as string | undefined,
+        lifeStage: context?.lifeStage as string | undefined,
+        messageLength: message.length,
+        conversationDepth: this.currentSession.messages.length,
+      });
+
+      // Override para CRISIS_SAFE se crise detectada
+      if (crisisResult && crisisResult.shouldUseCrisisSafeModel) {
+        llmProfile = 'CRISIS_SAFE';
+        logger.info('[MaternalChatAgent] Overriding to CRISIS_SAFE model due to crisis detection');
+      }
+
+      const primaryServer = profileToMcpServer(llmProfile);
+      const fallbackServers = getFallbackOrder(llmProfile);
+
+      logger.info('[MaternalChatAgent] Roteamento selecionado', {
+        profile: llmProfile,
+        primaryServer,
+        fallbackServers,
+        crisisOverride: crisisResult?.shouldUseCrisisSafeModel || false,
+      });
+
+      // 3. EXECUTAR COM FALLBACK: Tentar primary, depois fallbacks
+      let response: MCPResponse | null = null;
+      let usedServer = '';
+
+      for (const server of fallbackServers) {
+        try {
+          logger.debug(`[MaternalChatAgent] Tentando servidor: ${server}`);
+
+          response = await this.callMCP(server, 'chat.send', {
+            message,
+            context,
+            history,
+          });
+
+          if (response.success && response.data) {
+            usedServer = server;
+            logger.info(`[MaternalChatAgent] Sucesso com servidor: ${server}`);
+            break;
+          }
+        } catch (error) {
+          logger.warn(`[MaternalChatAgent] Falha em ${server}, tentando próximo`, error);
+          continue;
+        }
+      }
+
+      if (!response || !response.success || !response.data) {
+        throw new Error('Todos os providers falharam');
+      }
+
+      // 4. MODERAÇÃO MÉDICA: Sempre moderar resposta antes de enviar
       const responseData = response.data as GoogleAIChatResponse;
+      const rawMessage = responseData.message;
+
+      const moderationApplied = MedicalModerationService.applyModeration(
+        rawMessage,
+        message
+      );
+
+      // Usar texto moderado (pode incluir disclaimers ou ser bloqueado)
+      const finalText = moderationApplied.moderatedResponse;
+      const moderationResult = moderationApplied.result;
+
+      // 5. Criar mensagem de resposta
       const assistantMessage: ChatMessage = {
         id: `msg_${Date.now()}`,
         role: 'assistant',
-        content: responseData.message,
+        content: finalText,
         timestamp: Date.now(),
         metadata: {
-          model: 'gemini-2.0-flash-exp',
+          model: usedServer,
           responseTime: Date.now() - userMessage.timestamp,
+          llmProfile,
+          moderation: {
+            severity: moderationResult.severity,
+            categories: moderationResult.categories,
+            shouldBlock: moderationResult.shouldBlock,
+            hasDisclaimer: !!moderationResult.disclaimer,
+          },
+          crisis: crisisResult
+            ? {
+                level: crisisResult.level,
+                types: crisisResult.types,
+                confidence: crisisResult.confidence,
+                urgentResources: crisisResult.urgentResources,
+              }
+            : undefined,
         },
       };
 
       // Adicionar à sessão
       this.addMessageToSession(assistantMessage);
 
-      // Sessão já é persistida automaticamente no addMessageToSession
-
       // Analisar emoção da mensagem do usuário (em background)
       this.analyzeUserEmotion(message).catch((error) => {
         logger.error('[MaternalChatAgent] Failed to analyze emotion', error);
       });
 
-      // Track message exchange
+      // Track message exchange com info de moderação e crise
       await this.callMCP('analytics', 'event.track', {
         name: 'chat_message_exchanged',
         properties: {
           sessionId: this.currentSession.id,
           messageLength: message.length,
           responseLength: assistantMessage.content.length,
+          llmProfile,
+          provider: usedServer,
+          moderationSeverity: moderationResult.severity,
+          moderationCategories: moderationResult.categories.join(','),
+          moderationBlocked: moderationResult.shouldBlock,
+          crisisLevel: crisisResult?.level || 'none',
+          crisisTypes: crisisResult?.types.join(',') || '',
+          crisisConfidence: crisisResult?.confidence || 0,
         } as AnalyticsEventProperties,
       });
 
@@ -455,23 +550,26 @@ export class MaternalChatAgent extends BaseAgent {
     params: Record<string, unknown>
   ): Promise<MCPResponse> {
     // Cast method to proper type based on the server
+    // Usar Record<string, JsonValue> para compatibilidade com tipos MCP
+    const typedParams = params as Record<string, import('../../mcp/types').JsonValue>;
+    
     if (server === 'googleai') {
       return await orchestrator.callMCP(
         server,
         method as keyof import('../../mcp/types').GoogleAIMCPMethods,
-        params as any
+        typedParams
       );
     } else if (server === 'analytics') {
       return await orchestrator.callMCP(
         server,
         method as keyof import('../../mcp/types').AnalyticsMCPMethods,
-        params as any
+        typedParams
       );
     }
     return await orchestrator.callMCP(
       server,
       method as keyof import('../../mcp/types').AllMCPMethods,
-      params as any
+      typedParams
     );
   }
 }

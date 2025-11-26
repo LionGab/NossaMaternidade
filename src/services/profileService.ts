@@ -146,7 +146,8 @@ class ProfileService {
       return { success: true };
     } catch (error) {
       console.error('Erro inesperado ao atualizar perfil:', error);
-      return { success: false, error };
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      return { success: false, error: errorMsg };
     }
   }
 
@@ -195,7 +196,8 @@ class ProfileService {
       return { url: publicUrl };
     } catch (error) {
       console.error('Erro inesperado ao fazer upload de avatar:', error);
-      return { url: null, error };
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      return { url: null, error: errorMsg };
     }
   }
 
@@ -234,7 +236,8 @@ class ProfileService {
       return { success: true };
     } catch (error) {
       console.error('Erro inesperado ao deletar avatar:', error);
-      return { success: false, error };
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      return { success: false, error: errorMsg };
     }
   }
 
@@ -315,7 +318,13 @@ class ProfileService {
   async deleteAccount(): Promise<ServiceResponse> {
     // Importar dinamicamente para evitar circular dependency
     const { userDataService } = await import('./userDataService');
-    return await userDataService.requestAccountDeletion();
+    const result = await userDataService.requestAccountDeletion();
+
+    // Normalizar o tipo de erro para ServiceResponse
+    return {
+      success: result.success,
+      error: result.error instanceof Error ? result.error.message : result.error ?? undefined
+    };
   }
 }
 

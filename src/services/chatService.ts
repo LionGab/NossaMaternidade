@@ -16,7 +16,7 @@ export interface ChatMessage {
   conversation_id: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   created_at: string;
 }
 
@@ -230,7 +230,7 @@ class ChatService {
   }
 
   /**
-   * Obter resposta da IA (integração real com Gemini via Cloud Run)
+   * Obter resposta da IA (integração real com Gemini via Supabase Edge Functions)
    */
   private async getAIResponse(history: ChatMessage[], userMessage: string): Promise<string> {
     try {
@@ -243,7 +243,7 @@ class ChatService {
           text: msg.content,
         }));
 
-      // Call Gemini via Cloud Run backend
+      // Call Gemini via Supabase Edge Function
       const response = await geminiService.sendMessage(userMessage, geminiHistory);
 
       if (response.error) {

@@ -86,7 +86,7 @@ class SessionManager {
       }
 
       // 3. Escutar mudanças de autenticação
-      this.authSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
+      const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
         logger.info(`[SessionManager] Auth state changed: ${event}`, {
           sessionId: session?.user?.id,
         });
@@ -113,6 +113,10 @@ class SessionManager {
 
         this.notifyListeners();
       });
+
+      this.authSubscription = {
+        unsubscribe: authListener.subscription.unsubscribe
+      };
 
       this.initialized = true;
       this.notifyListeners();

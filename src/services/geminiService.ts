@@ -1,7 +1,6 @@
 import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './supabase';
-import cloudRunClient from './cloudRunClient';
 
 const SYSTEM_INSTRUCTION_BASE = `
   Você é a MãesValente, a assistente virtual de IA da influenciadora Nathália Valente, dentro do app "Nossa Maternidade".
@@ -108,22 +107,32 @@ class GeminiService {
         Tarefa: Transcrever e responder a um áudio da usuária.
       `;
 
-      // Use cloudRunClient instead of direct fetch
-      const response = await cloudRunClient.sendAudio({
-        audioBase64: base64Audio,
-        mimeType,
-        systemInstruction,
-        prompt: "Por favor, ouça meu áudio e me responda."
+      // Call Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('audio-ai', {
+        body: {
+          audioBase64: base64Audio,
+          mimeType,
+          systemInstruction,
+          prompt: "Por favor, ouça meu áudio e me responda."
+        },
       });
 
-      if (!response.success || !response.data) {
+      if (error) {
+        console.error('[geminiService] Supabase function error:', error);
         return {
           text: '',
-          error: response.error || 'Erro ao processar áudio.'
+          error: 'Erro ao processar áudio.'
         };
       }
 
-      return { text: response.data.text };
+      if (!data || !data.text) {
+        return {
+          text: '',
+          error: 'Resposta inválida do servidor.',
+        };
+      }
+
+      return { text: data.text };
 
     } catch (error) {
       console.error('Error sending audio to backend:', error);
@@ -146,20 +155,30 @@ class GeminiService {
         - NÃO dê conselhos não solicitados
       `;
 
-      // Use cloudRunClient instead of direct fetch
-      const response = await cloudRunClient.analyzeDiary({
-        entry,
-        systemInstruction
+      // Call Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('analyze-diary', {
+        body: {
+          entry,
+          systemInstruction
+        },
       });
 
-      if (!response.success || !response.data) {
+      if (error) {
+        console.error('[geminiService] Supabase function error:', error);
         return {
           text: '',
-          error: response.error || 'Erro ao analisar entrada do diário.'
+          error: 'Erro ao analisar entrada do diário.'
         };
       }
 
-      return { text: response.data.text };
+      if (!data || !data.text) {
+        return {
+          text: '',
+          error: 'Resposta inválida do servidor.',
+        };
+      }
+
+      return { text: data.text };
 
     } catch (error) {
       console.error('Error analyzing diary entry:', error);

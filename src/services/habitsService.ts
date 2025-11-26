@@ -237,6 +237,24 @@ class HabitsService {
   }
 
   /**
+   * Toggle hábito (completar se não completado, desmarcar se já completado)
+   */
+  async toggleHabitCompletion(userHabitId: string): Promise<boolean> {
+    try {
+      const isCompleted = await this.isCompletedToday(userHabitId);
+
+      if (isCompleted) {
+        return await this.uncompleteHabit(userHabitId);
+      } else {
+        return await this.completeHabit(userHabitId);
+      }
+    } catch (error) {
+      console.error('Erro inesperado ao fazer toggle de hábito:', error);
+      return false;
+    }
+  }
+
+  /**
    * Verificar se hábito foi completado hoje
    */
   async isCompletedToday(userHabitId: string): Promise<boolean> {

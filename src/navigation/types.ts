@@ -7,10 +7,12 @@ export type RootStackParamList = {
   Main: NavigatorScreenParams<MainTabParamList>;
   Ritual: undefined;
   Diary: undefined;
+  ContentDetail: { contentId: string }; // 🆕 Tela de detalhes de conteúdo (Week 1)
   PrivacyPolicy: undefined;
   TermsOfService: undefined;
   Settings: undefined;
   AgentsStatus: undefined; // 🆕 Tela de status dos agentes IA
+  Profile: undefined;
 };
 
 /**

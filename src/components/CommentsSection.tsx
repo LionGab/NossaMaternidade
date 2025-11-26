@@ -3,7 +3,7 @@
  * Seção de comentários com suporte a tema
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,7 @@ import { CommentItem } from './CommentItem';
 import { Comment } from '../types/comments';
 import { Ionicons } from '@expo/vector-icons';
 import { useHaptics } from '../hooks/useHaptics';
+import { logger } from '../utils/logger';
 
 interface CommentsSectionProps {
   comments: Comment[];
@@ -43,13 +44,13 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
 
   const handleLike = (commentId: string) => {
     // Implementar lógica de like
-    console.log('Like comment:', commentId);
+    logger.debug('[CommentsSection] Like comment', { commentId });
   };
 
   const handleReply = (commentId: string) => {
     haptics.light();
     // Implementar lógica de reply
-    console.log('Reply to comment:', commentId);
+    logger.debug('[CommentsSection] Reply to comment', { commentId });
   };
 
   const handleSendComment = () => {

@@ -524,3 +524,49 @@ CREATE POLICY "Posts da comunidade são públicos"
 CREATE POLICY "Usuárias podem fazer upload em posts"
   ON storage.objects FOR INSERT
   WITH CHECK (bucket_id = 'community' AND auth.role() = 'authenticated');
+
+-- ============================================
+-- TABELA: check_in_logs
+-- Registro diário de check-in emocional
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.check_in_logs (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+
+  -- Emoção registrada (5 opções fixas do EmotionalPrompt)
+  emotion TEXT NOT NULL CHECK (emotion IN ('bem', 'triste', 'ansiosa', 'cansada', 'calma')),
+
+  -- Notas opcionais da usuária
+  notes TEXT,
+
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- RLS Policies para check-in logs
+ALTER TABLE public.check_in_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Usuárias veem seus próprios check-ins"
+  ON public.check_in_logs FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Usuárias podem criar check-ins"
+  ON public.check_in_logs FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Usuárias podem atualizar seus check-ins"
+  ON public.check_in_logs FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Usuárias podem deletar seus check-ins"
+  ON public.check_in_logs FOR DELETE
+  USING (auth.uid() = user_id);
+
+-- Índices para performance
+CREATE INDEX idx_check_in_logs_user_id ON public.check_in_logs(user_id);
+CREATE INDEX idx_check_in_logs_created_at ON public.check_in_logs(user_id, created_at DESC);
+CREATE INDEX idx_check_in_logs_emotion ON public.check_in_logs(emotion);
+
+-- Trigger para atualizar updated_at
+CREATE TRIGGER update_check_in_logs_updated_at BEFORE UPDATE ON public.check_in_logs
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

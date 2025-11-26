@@ -14,6 +14,7 @@
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import { logger } from '../utils/logger';
 
 export const secureStorage = {
   /**
@@ -26,7 +27,7 @@ export const secureStorage = {
       }
       return await SecureStore.getItemAsync(key);
     } catch (error) {
-      console.error(`Erro ao ler do SecureStore (${key}):`, error);
+      logger.error(`[SecureStorage] Erro ao ler do SecureStore (${key})`, error);
       return null;
     }
   },
@@ -42,7 +43,7 @@ export const secureStorage = {
         await SecureStore.setItemAsync(key, value);
       }
     } catch (error) {
-      console.error(`Erro ao salvar no SecureStore (${key}):`, error);
+      logger.error(`[SecureStorage] Erro ao salvar no SecureStore (${key})`, error);
       throw error;
     }
   },
@@ -58,7 +59,7 @@ export const secureStorage = {
         await SecureStore.deleteItemAsync(key);
       }
     } catch (error) {
-      console.error(`Erro ao remover do SecureStore (${key}):`, error);
+      logger.error(`[SecureStorage] Erro ao remover do SecureStore (${key})`, error);
       // Não lançar erro, apenas logar (pode não existir)
     }
   },
@@ -72,7 +73,7 @@ export const secureStorage = {
 export async function migrateTokensToSecureStore(): Promise<void> {
   // Pular migração no web já que usamos AsyncStorage tanto para armazenamento antigo quanto novo
   if (Platform.OS === 'web') {
-    console.log('Web platform detectada - pulando migração SecureStore');
+    logger.debug('[SecureStorage] Web platform detectada - pulando migração SecureStore');
     return;
   }
 
@@ -90,7 +91,7 @@ export async function migrateTokensToSecureStore(): Promise<void> {
         await secureStorage.setItem(key, value);
         // Remover do AsyncStorage após migração bem-sucedida
         await AsyncStorage.removeItem(key);
-        console.log(`✅ Token migrado para SecureStore: ${key}`);
+        logger.debug(`[SecureStorage] Token migrado para SecureStore: ${key}`);
       }
     }
 
@@ -105,11 +106,11 @@ export async function migrateTokensToSecureStore(): Promise<void> {
       if (value) {
         await secureStorage.setItem(key, value);
         await AsyncStorage.removeItem(key);
-        console.log(`✅ Token migrado para SecureStore: ${key}`);
+        logger.debug(`[SecureStorage] Token migrado para SecureStore: ${key}`);
       }
     }
   } catch (error) {
-    console.error('Erro ao migrar tokens para SecureStore:', error);
+    logger.error('[SecureStorage] Erro ao migrar tokens para SecureStore', error);
     // Não lançar erro - a migração não é crítica
   }
 }

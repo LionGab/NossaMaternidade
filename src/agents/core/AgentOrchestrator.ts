@@ -7,6 +7,8 @@ import { BaseAgent, AgentContext } from './BaseAgent';
 import {
   supabaseMCP,
   googleAIMCP,
+  openAIMCP,
+  anthropicMCP,
   analyticsMCP,
   createMCPRequest,
   MCPServer,
@@ -71,15 +73,21 @@ export class AgentOrchestrator {
       logger.debug('[AgentOrchestrator] Initializing...');
 
       // Inicializar servidores MCP
+      // OpenAI e Anthropic podem falhar se API keys não estiverem configuradas
+      // Isso é esperado e não deve bloquear a inicialização
       await Promise.all([
         supabaseMCP.initialize(),
         googleAIMCP.initialize(),
+        openAIMCP.initialize().catch(err => logger.warn('[AgentOrchestrator] OpenAI MCP init failed (optional)', err)),
+        anthropicMCP.initialize().catch(err => logger.warn('[AgentOrchestrator] Anthropic MCP init failed (optional)', err)),
         analyticsMCP.initialize(),
       ]);
 
       // Registrar servidores MCP
       this.mcpServers.set('supabase', supabaseMCP);
       this.mcpServers.set('googleai', googleAIMCP);
+      this.mcpServers.set('openai', openAIMCP);
+      this.mcpServers.set('anthropic', anthropicMCP);
       this.mcpServers.set('analytics', analyticsMCP);
 
       this.initialized = true;
@@ -204,8 +212,8 @@ export class AgentOrchestrator {
       throw new Error(`MCP Server not found: ${server}`);
     }
 
-    const request = createMCPRequest(method, params as Record<string, JsonValue>);
-    return await mcpServer.handleRequest(request);
+    const request = createMCPRequest(method, params as any);
+    return await mcpServer.handleRequest(request as any);
   }
 
   /**
@@ -230,6 +238,8 @@ export class AgentOrchestrator {
     await Promise.all([
       supabaseMCP.shutdown(),
       googleAIMCP.shutdown(),
+      openAIMCP.shutdown(),
+      anthropicMCP.shutdown(),
       analyticsMCP.shutdown(),
     ]);
 

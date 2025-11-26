@@ -5,6 +5,8 @@
 
 export { SupabaseMCPServer, supabaseMCP } from './SupabaseMCPServer';
 export { GoogleAIMCPServer, googleAIMCP } from './GoogleAIMCPServer';
+export { OpenAIMCPServer, openAIMCP } from './OpenAIMCPServer';
+export { AnthropicMCPServer, anthropicMCP } from './AnthropicMCPServer';
 export { AnalyticsMCPServer, analyticsMCP } from './AnalyticsMCPServer';
 
 // Re-export types
