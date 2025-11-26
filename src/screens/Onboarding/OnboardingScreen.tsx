@@ -177,7 +177,7 @@ export default function OnboardingScreen() {
         // Navigate to main app (Home)
         navigation.reset({
           index: 0,
-          routes: [{ name: 'MainTabs' }],
+          routes: [{ name: 'Main' }],
         });
       }
     } catch (error) {
@@ -208,14 +208,12 @@ export default function OnboardingScreen() {
               Seu apelido, nome carinhoso, ou como você preferir 💙
             </Text>
             <TextInput
-              style={[
-                styles.textInput,
-                {
-                  backgroundColor: colors.background.card,
-                  color: colors.text.primary,
-                  borderColor: colors.border.default,
-                },
-              ]}
+              style={{
+                ...styles.textInput,
+                backgroundColor: colors.background.card,
+                color: colors.text.primary,
+                borderColor: colors.border.light,
+              }}
               placeholder="Digite seu nome..."
               placeholderTextColor={colors.text.tertiary}
               value={displayName}
@@ -270,7 +268,7 @@ export default function OnboardingScreen() {
                 />
               ))}
             </Box>
-            <Text style={[styles.counter, { color: colors.text.secondary }]}>
+            <Text style={{ ...styles.counter, color: colors.text.secondary }}>
               {mainGoals.length}/3 selecionados
             </Text>
           </Box>
@@ -373,18 +371,16 @@ export default function OnboardingScreen() {
 
   return (
     <Box
-      style={[styles.container, { backgroundColor: colors.background.canvas }]}
+      style={{ ...styles.container, backgroundColor: colors.background.canvas }}
     >
       {/* Progress Bar */}
       <Box style={styles.progressBarContainer}>
         <Box
-          style={[
-            styles.progressBar,
-            {
-              width: `${(currentStep / 7) * 100}%`,
-              backgroundColor: colors.primary.main,
-            },
-          ]}
+          style={{
+            ...styles.progressBar,
+            width: `${(currentStep / 7) * 100}%`,
+            backgroundColor: colors.primary.main,
+          }}
         />
       </Box>
 
@@ -400,36 +396,35 @@ export default function OnboardingScreen() {
       <Box style={styles.navigationContainer}>
         {currentStep > 1 && (
           <TouchableOpacity
-            style={[
-              styles.navButton,
-              styles.backButton,
-              { backgroundColor: colors.background.card, borderColor: colors.border.default },
-            ]}
+            style={{
+              ...styles.navButton,
+              ...styles.backButton,
+              backgroundColor: colors.background.card,
+              borderColor: colors.border.light,
+            }}
             onPress={handleBack}
           >
-            <Text style={[styles.backButtonText, { color: colors.text.primary }]}>
+            <Text style={{ ...styles.backButtonText, color: colors.text.primary }}>
               Voltar
             </Text>
           </TouchableOpacity>
         )}
 
         <TouchableOpacity
-          style={[
-            styles.navButton,
-            styles.nextButton,
-            {
-              backgroundColor: canProceed() ? colors.primary.main : colors.surface.disabled,
-              flex: currentStep === 1 ? 1 : undefined,
-            },
-          ]}
+          style={{
+            ...styles.navButton,
+            ...styles.nextButton,
+            backgroundColor: canProceed() ? colors.primary.main : colors.background.input,
+            flex: currentStep === 1 ? 1 : undefined,
+          }}
           onPress={handleNext}
           disabled={!canProceed() || loading}
         >
           <Text
-            style={[
-              styles.nextButtonText,
-              { color: canProceed() ? colors.text.inverse : colors.text.disabled },
-            ]}
+            style={{
+              ...styles.nextButtonText,
+              color: canProceed() ? colors.text.inverse : colors.text.disabled,
+            }}
           >
             {loading ? 'Salvando...' : currentStep === 7 ? 'Começar!' : 'Próximo'}
           </Text>
@@ -437,7 +432,7 @@ export default function OnboardingScreen() {
       </Box>
 
       {/* Step Counter */}
-      <Text style={[styles.stepCounter, { color: colors.text.tertiary }]}>
+      <Text style={{ ...styles.stepCounter, color: colors.text.tertiary }}>
         {currentStep} de 7
       </Text>
     </Box>
@@ -460,27 +455,25 @@ function OptionCard({ option, selected, onPress, multiSelect }: OptionCardProps)
 
   return (
     <TouchableOpacity
-      style={[
-        styles.optionCard,
-        {
-          backgroundColor: selected ? colors.primary.surface : colors.background.card,
-          borderColor: selected ? colors.primary.main : colors.border.default,
-        },
-      ]}
+      style={{
+        ...styles.optionCard,
+        backgroundColor: selected ? colors.background.elevated : colors.background.card,
+        borderColor: selected ? colors.primary.main : colors.border.light,
+      }}
       onPress={onPress}
       activeOpacity={0.7}
     >
       <Text style={styles.optionEmoji}>{option.emoji}</Text>
       <Text
-        style={[
-          styles.optionLabel,
-          { color: selected ? colors.primary.main : colors.text.primary },
-        ]}
+        style={{
+          ...styles.optionLabel,
+          color: selected ? colors.primary.main : colors.text.primary,
+        }}
       >
         {option.label}
       </Text>
       {multiSelect && selected && (
-        <Box style={[styles.checkmark, { backgroundColor: colors.primary.main }]}>
+        <Box style={{ ...styles.checkmark, backgroundColor: colors.primary.main }}>
           <Text style={styles.checkmarkText}>✓</Text>
         </Box>
       )}

@@ -73,7 +73,8 @@ export default function HomeScreen() {
       // Fetch user profile
       const profile = await profileService.getCurrentProfile();
       if (profile) {
-        setUserName(profile.full_name || 'mãe');
+        // Prioriza display_name (do onboarding) sobre full_name
+        setUserName(profile.display_name || profile.full_name || 'mãe');
       }
 
       // Fetch habits (max 3)
