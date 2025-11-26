@@ -1,6 +1,6 @@
 /**
- * Supabase Edge Function: chat-ai
- * Processa mensagens de chat usando Gemini 2.0 Flash
+ * Supabase Edge Function: audio-ai
+ * Processa áudio usando Gemini 2.0 Flash (transcrição + resposta)
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -14,13 +14,11 @@ const corsHeaders = {
 
 const GEMINI_MODEL = Deno.env.get('GEMINI_MODEL') || 'gemini-2.5-flash';
 
-interface ChatRequest {
-  message: string;
-  history?: Array<{
-    role: string;
-    parts: Array<{ text: string }>;
-  }>;
+interface AudioRequest {
+  audioBase64: string;
+  mimeType: string;
   systemInstruction?: string;
+  prompt?: string;
 }
 
 serve(async (req) => {
@@ -43,11 +41,11 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { message, history = [], systemInstruction }: ChatRequest = await req.json();
+    const { audioBase64, mimeType, systemInstruction, prompt }: AudioRequest = await req.json();
 
-    if (!message) {
+    if (!audioBase64 || !mimeType) {
       return new Response(
-        JSON.stringify({ error: 'Message is required' }),
+        JSON.stringify({ error: 'audioBase64 and mimeType are required' }),
         {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -62,25 +60,27 @@ serve(async (req) => {
       systemInstruction: systemInstruction || 'Você é uma assistente maternal empática.',
     });
 
-    // Iniciar chat com histórico
-    const chat = model.startChat({
-      history: history,
-      generationConfig: {
-        maxOutputTokens: 1024,
-        temperature: 0.9,
-        topP: 0.95,
+    // Preparar partes do conteúdo (áudio + prompt)
+    const parts = [
+      {
+        inlineData: {
+          data: audioBase64,
+          mimeType,
+        },
       },
-    });
+      {
+        text: prompt || 'Por favor, ouça meu áudio e me responda.',
+      },
+    ];
 
-    // Enviar mensagem
-    const result = await chat.sendMessage(message);
+    // Gerar conteúdo (formato correto: passar parts diretamente)
+    const result = await model.generateContent(parts);
     const response = await result.response;
     const text = response.text();
 
-    console.log('[chat-ai] Success:', {
-      messageLength: message.length,
+    console.log('[audio-ai] Success:', {
+      mimeType,
       responseLength: text.length,
-      historySize: history.length,
     });
 
     return new Response(
@@ -94,7 +94,7 @@ serve(async (req) => {
       }
     );
   } catch (error: any) {
-    console.error('[chat-ai] Error:', error);
+    console.error('[audio-ai] Error:', error);
     return new Response(
       JSON.stringify({
         error: error.message || 'Internal server error',
@@ -107,3 +107,4 @@ serve(async (req) => {
     );
   }
 });
+

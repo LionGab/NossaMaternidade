@@ -1,6 +1,6 @@
 /**
- * Supabase Edge Function: chat-ai
- * Processa mensagens de chat usando Gemini 2.0 Flash
+ * Supabase Edge Function: analyze-diary
+ * Analisa entradas de diário maternal usando Gemini 2.0 Flash
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -14,12 +14,8 @@ const corsHeaders = {
 
 const GEMINI_MODEL = Deno.env.get('GEMINI_MODEL') || 'gemini-2.5-flash';
 
-interface ChatRequest {
-  message: string;
-  history?: Array<{
-    role: string;
-    parts: Array<{ text: string }>;
-  }>;
+interface AnalyzeDiaryRequest {
+  entry: string;
   systemInstruction?: string;
 }
 
@@ -43,11 +39,11 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { message, history = [], systemInstruction }: ChatRequest = await req.json();
+    const { entry, systemInstruction }: AnalyzeDiaryRequest = await req.json();
 
-    if (!message) {
+    if (!entry) {
       return new Response(
-        JSON.stringify({ error: 'Message is required' }),
+        JSON.stringify({ error: 'Entry is required' }),
         {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -60,27 +56,22 @@ serve(async (req) => {
     const model = genAI.getGenerativeModel({
       model: GEMINI_MODEL,
       systemInstruction: systemInstruction || 'Você é uma assistente maternal empática.',
-    });
-
-    // Iniciar chat com histórico
-    const chat = model.startChat({
-      history: history,
       generationConfig: {
-        maxOutputTokens: 1024,
-        temperature: 0.9,
+        maxOutputTokens: 512,
+        temperature: 0.8,
         topP: 0.95,
       },
     });
 
-    // Enviar mensagem
-    const result = await chat.sendMessage(message);
+    // Analisar entrada do diário
+    const result = await model.generateContent([{ text: entry }]);
+
     const response = await result.response;
     const text = response.text();
 
-    console.log('[chat-ai] Success:', {
-      messageLength: message.length,
+    console.log('[analyze-diary] Success:', {
+      entryLength: entry.length,
       responseLength: text.length,
-      historySize: history.length,
     });
 
     return new Response(
@@ -94,7 +85,7 @@ serve(async (req) => {
       }
     );
   } catch (error: any) {
-    console.error('[chat-ai] Error:', error);
+    console.error('[analyze-diary] Error:', error);
     return new Response(
       JSON.stringify({
         error: error.message || 'Internal server error',
@@ -107,3 +98,4 @@ serve(async (req) => {
     );
   }
 });
+

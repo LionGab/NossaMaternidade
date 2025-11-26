@@ -29,8 +29,8 @@ Write-Host "🔗 Verificando link ao projeto..." -ForegroundColor Yellow
 $linkStatus = supabase status 2>&1
 if ($linkStatus -match "not linked") {
     Write-Host "⚠️  Projeto não linkado!" -ForegroundColor Yellow
-    Write-Host "Linkando ao projeto bbcwitnbnosyfpfjtzkr..." -ForegroundColor Yellow
-    supabase link --project-ref bbcwitnbnosyfpfjtzkr
+    Write-Host "Linkando ao projeto mnszbkeuerjcevjvdqme..." -ForegroundColor Yellow
+    supabase link --project-ref mnszbkeuerjcevjvdqme
     if ($LASTEXITCODE -ne 0) {
         Write-Host "❌ Falha ao linkar projeto!" -ForegroundColor Red
         exit 1
@@ -67,7 +67,7 @@ Write-Host ""
 
 if ($Function -eq "all") {
     # Deploy todas as funções
-    $functions = @("chat-ai")
+    $functions = @("chat-ai", "audio-ai", "analyze-diary")
 
     foreach ($fn in $functions) {
         Write-Host "Deploying $fn..." -ForegroundColor Cyan
@@ -127,13 +127,13 @@ Write-Host "📝 Próximos passos:" -ForegroundColor Yellow
 Write-Host "1. Teste no app: npm run ios ou npm run android" -ForegroundColor White
 Write-Host "2. Ver logs: supabase functions logs chat-ai --follow" -ForegroundColor White
 Write-Host "3. Testar via curl:" -ForegroundColor White
-Write-Host '   curl -X POST https://bbcwitnbnosyfpfjtzkr.supabase.co/functions/v1/chat-ai \' -ForegroundColor Gray
+Write-Host '   curl -X POST https://mnszbkeuerjcevjvdqme.supabase.co/functions/v1/chat-ai \' -ForegroundColor Gray
 Write-Host '   -H "Authorization: Bearer YOUR_ANON_KEY" \' -ForegroundColor Gray
 Write-Host '   -H "Content-Type: application/json" \' -ForegroundColor Gray
 Write-Host '   -d ''{"message":"teste"}''' -ForegroundColor Gray
 Write-Host ""
 Write-Host "🎯 URL da função:" -ForegroundColor Yellow
-Write-Host "https://bbcwitnbnosyfpfjtzkr.supabase.co/functions/v1/chat-ai" -ForegroundColor Cyan
+Write-Host "https://mnszbkeuerjcevjvdqme.supabase.co/functions/v1/chat-ai" -ForegroundColor Cyan
 Write-Host ""
 
 # Exemplos de uso do script

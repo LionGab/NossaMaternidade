@@ -42,6 +42,7 @@
     "temp_import",
     "Lilia-App",
     "backend",
+    "NossaMaternidadeMelhor/**",
     "**/__tests__/**",
     "**/*.test.ts",
     "**/*.test.tsx",

@@ -11,9 +11,17 @@ echo "🚀 Deploying Supabase Edge Functions..."
 if [ -z "$1" ]; then
   echo "📦 Deploying all functions..."
 
-  # Deploy chat-ai
-  echo "Deploying chat-ai..."
-  supabase functions deploy chat-ai --no-verify-jwt
+  # Deploy todas as funções
+  for fn in chat-ai audio-ai analyze-diary; do
+    echo "Deploying $fn..."
+    supabase functions deploy $fn --no-verify-jwt
+    if [ $? -eq 0 ]; then
+      echo "✅ $fn deployed!"
+    else
+      echo "❌ Failed to deploy $fn"
+      exit 1
+    fi
+  done
 
   echo "✅ All functions deployed!"
 else
