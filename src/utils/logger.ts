@@ -4,9 +4,11 @@
  *
  * Em produção, apenas warn e error são exibidos.
  * Em desenvolvimento, todos os níveis são exibidos.
+ *
+ * Integração com Sentry para monitoramento de erros em produção.
  */
 
-/* eslint-disable no-console */
+import * as Sentry from '@sentry/react-native';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -28,14 +30,51 @@ class Logger {
   }
 
   /**
+   * Retorna emoji para cada nível de log
+   */
+  private getEmojiForLevel(level: LogLevel): string {
+    switch (level) {
+      case 'debug':
+        return '🔍';
+      case 'info':
+        return 'ℹ️';
+      case 'warn':
+        return '⚠️';
+      case 'error':
+        return '❌';
+      default:
+        return '📝';
+    }
+  }
+
+  /**
    * Formata mensagem de log com contexto
    */
   private formatMessage(level: LogLevel, message: string, context?: LogContext): string {
+    const emoji = this.getEmojiForLevel(level);
     const timestamp = new Date().toISOString();
     const sessionPart = this.currentSessionId ? `[Session: ${this.currentSessionId}]` : '';
     const contextPart = context ? JSON.stringify(context) : '';
 
-    return `[${timestamp}] ${sessionPart} [${level.toUpperCase()}] ${message} ${contextPart}`.trim();
+    return `${emoji} [${timestamp}] ${sessionPart} [${level.toUpperCase()}] ${message} ${contextPart}`.trim();
+  }
+
+  /**
+   * Remove dados sensíveis do contexto antes de enviar para Sentry
+   */
+  private sanitizeContext(context?: LogContext): LogContext {
+    if (!context) return {};
+
+    const sanitized = { ...context };
+    const sensitiveKeys = ['password', 'token', 'apiKey', 'secret', 'credential'];
+
+    Object.keys(sanitized).forEach(key => {
+      if (sensitiveKeys.some(sensitive => key.toLowerCase().includes(sensitive))) {
+        sanitized[key] = '[REDACTED]';
+      }
+    });
+
+    return sanitized;
   }
 
   /**
@@ -43,6 +82,7 @@ class Logger {
    */
   debug(message: string, context?: LogContext): void {
     if (!this.isDev) return;
+    // eslint-disable-next-line no-console
     console.debug(this.formatMessage('debug', message, context));
   }
 
@@ -51,7 +91,17 @@ class Logger {
    */
   info(message: string, context?: LogContext): void {
     if (!this.isDev) return;
+    // eslint-disable-next-line no-console
     console.info(this.formatMessage('info', message, context));
+
+    // Em produção, adiciona breadcrumb no Sentry
+    if (!this.isDev) {
+      Sentry.addBreadcrumb({
+        message,
+        level: 'info',
+        data: this.sanitizeContext(context),
+      });
+    }
   }
 
   /**
@@ -68,7 +118,14 @@ class Logger {
         } : error,
       } : {}),
     };
+    // eslint-disable-next-line no-console
     console.warn(this.formatMessage('warn', message, warnContext));
+
+    // Enviar warning para Sentry
+    Sentry.captureMessage(message, {
+      level: 'warning',
+      extra: this.sanitizeContext(warnContext),
+    });
   }
 
   /**
@@ -84,12 +141,33 @@ class Logger {
       } : error,
     };
 
+    // eslint-disable-next-line no-console
     console.error(this.formatMessage('error', message, errorContext));
 
-    // Em produção, aqui poderia enviar para serviço de tracking (Sentry, etc)
-    if (!__DEV__ && error instanceof Error) {
-      // TODO: Integrar com serviço de error tracking
+    // Enviar erro para Sentry
+    if (error instanceof Error) {
+      Sentry.captureException(error, {
+        extra: {
+          message,
+          ...this.sanitizeContext(context),
+        },
+      });
+    } else {
+      Sentry.captureMessage(message, {
+        level: 'error',
+        extra: {
+          error,
+          ...this.sanitizeContext(context),
+        },
+      });
     }
+  }
+
+  /**
+   * Log de exceção não tratada (alias para error)
+   */
+  exception(error: Error, context?: LogContext): void {
+    this.error('Unhandled exception', error, context);
   }
 
   /**
