@@ -66,11 +66,11 @@ const SIZE_CONFIG: Record<MaternalCardSize, { height: number; padding: keyof typ
 // ======================
 
 const EMOTION_GRADIENTS: Record<MaternalCardEmotion, readonly string[]> = {
-  calm: ['#4285F4', '#5E97F6'],      // Azul maternal (primary)
-  warm: ['#FF8FA3', '#FFAAC1'],      // Rosa coral (acolhedor)
-  energetic: ['#FFB74D', '#FFC266'],  // Laranja vibrante
-  peaceful: ['#81C784', '#A5D6A7'],   // Verde calmo
-  safe: ['#64B5F6', '#90CAF9'],       // Azul céu (segurança)
+  calm: ['#0B1220', '#1D2843'],      // Azul noite suave (dark mode) - REDESIGN: era azul saturado neon
+  warm: ['#FFE2EC', '#FFC4D9'],      // Rosa leitoso, milky pink - REDESIGN: era rosa coral saturado
+  energetic: ['#FFD4A3', '#FFAB70'], // Laranja pastel - REDESIGN: mais suave
+  peaceful: ['#B4E7CE', '#8ED7B5'],  // Verde menta suave - REDESIGN: card de sono
+  safe: ['#A5D6FF', '#7CB8FF'],      // Azul céu suave - REDESIGN: menos saturado
 };
 
 // ======================
@@ -158,7 +158,9 @@ function MaternalCardComponent({
             height: sizeConfig.height,
             borderRadius: Radius['2xl'],
             backgroundColor: colors.background.card,
-            ...Shadows.md,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 255, 255, 0.06)',  // REDESIGN: borda sutil, não neon
+            ...Shadows.sm,  // REDESIGN: shadow mais suave (era md)
           },
           style,
         ])}

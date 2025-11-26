@@ -178,21 +178,21 @@ export default function HomeScreen() {
     <ScreenLayout
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary.main} />}
     >
-      {/* Seção 1: Saudação personalizada */}
-      <Box px="4" py="3">
+      {/* Seção 1: Saudação personalizada - REDESIGN: mais respiro */}
+      <Box px="4" pt="6" pb="4">
         <Heading level="h2" color="primary">
-          Oi, {userName} 💙, tô aqui com você.
+          Oi, {userName} 💙
         </Heading>
-        <Text color="secondary" size="md" style={{ marginTop: Spacing['1'] }}>
-          Hoje você não está sozinha.
+        <Text color="secondary" size="md" style={{ marginTop: Spacing['2'] }}>
+          Tô aqui com você. Hoje você não está sozinha.
         </Text>
       </Box>
 
-      {/* Seção 2: Hero CTA - Conversar com NathIA */}
+      {/* Seção 2: Hero CTA - Conversar com NathIA - REDESIGN: reduzir tamanho */}
       <Box px="4" py="2">
         <MaternalCard
           variant="hero"
-          size="xl"
+          size="lg"
           emotion="warm"
           title="Conversar com NathIA"
           subtitle="Fale comigo, sem julgamentos."
@@ -202,8 +202,8 @@ export default function HomeScreen() {
         />
       </Box>
 
-      {/* Seção 3: Check-in emocional */}
-      <Box px="4" py="3">
+      {/* Seção 3: Check-in emocional - REDESIGN: mais destaque vertical */}
+      <Box px="4" py="4">
         <EmotionalPrompt
           title="Como você tá hoje?"
           selectedEmotion={todayEmotion}
@@ -211,15 +211,15 @@ export default function HomeScreen() {
         />
       </Box>
 
-      {/* Seção 4: Registro de Hoje */}
+      {/* Seção 4: Registro de Hoje - REDESIGN: verde menta suave, ícone menos gritante */}
       <Box px="4" py="2">
         <MaternalCard
           variant="insight"
           size="md"
-          emotion="calm"
+          emotion="peaceful"
           title="Como você dormiu?"
           subtitle="Registrar agora"
-          icon={<Moon size={32} color={colors.primary.main} />}
+          icon={<Moon size={28} color={colors.text.secondary} />}
           onPress={() => {
             navigation.navigate('Diary');
             logger.info('Navigating to sleep diary', { screen: 'HomeScreen' });
@@ -228,9 +228,9 @@ export default function HomeScreen() {
         />
       </Box>
 
-      {/* Seção 5: Hábitos de hoje */}
+      {/* Seção 5: Hábitos de hoje - REDESIGN: menos espaço (complemento, não concorrência) */}
       {userHabits.length > 0 && (
-        <SectionLayout title="Hábitos de hoje" containerStyle={{ paddingTop: Spacing['4'] }}>
+        <SectionLayout title="Hábitos de hoje" containerStyle={{ paddingTop: Spacing['3'] }}>
           <FlatList
             horizontal
             data={userHabits}

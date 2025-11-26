@@ -88,17 +88,29 @@ export function EmotionalPrompt({
                 paddingHorizontal: Spacing['1'],
               }}
             >
-              {/* Emoji */}
-              <Text
+              {/* Emoji com fundo oval ao selecionar - REDESIGN maternal */}
+              <Box
                 style={{
-                  fontSize: 32,
-                  lineHeight: 40,
-                  opacity: isSelected ? 1 : 0.6,
-                  transform: [{ scale: isSelected ? 1.1 : 1 }],
+                  width: 56,
+                  height: 56,
+                  borderRadius: 28,
+                  backgroundColor: isSelected
+                    ? 'rgba(109, 169, 228, 0.15)'  // Azul suave maternal ao selecionar
+                    : 'transparent',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
               >
-                {emotion.emoji}
-              </Text>
+                <Text
+                  style={{
+                    fontSize: 44,           // REDESIGN: 32 → 44pt (TouchTargets.min)
+                    lineHeight: 52,
+                    opacity: isSelected ? 1 : 0.75,  // REDESIGN: menos apagado (0.6 → 0.75)
+                  }}
+                >
+                  {emotion.emoji}
+                </Text>
+              </Box>
 
               {/* Label */}
               <Text
@@ -109,19 +121,6 @@ export function EmotionalPrompt({
               >
                 {emotion.label}
               </Text>
-
-              {/* Indicador de seleção (barra embaixo) */}
-              {isSelected && (
-                <Box
-                  style={{
-                    width: 24,
-                    height: 3,
-                    backgroundColor: colors.primary.main,
-                    borderRadius: 2,
-                    marginTop: Spacing['1'],
-                  }}
-                />
-              )}
             </TouchableOpacity>
           );
         })}
