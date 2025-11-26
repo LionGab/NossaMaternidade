@@ -4,7 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { FlashList } from '@shopify/flash-list';
 import { useTheme } from '../theme/ThemeContext';
-import { Users, Heart, MessageSquare, Crown, TrendingUp, Clock } from 'lucide-react-native';
+import { Users, Heart, MessageSquare, Crown, TrendingUp, Clock, Sparkles, MessagesSquare } from 'lucide-react-native';
+import { HeroBanner } from '@/components/molecules/HeroBanner';
 
 export default function CommunityScreen() {
   const { colors, isDark } = useTheme();
@@ -52,57 +53,85 @@ export default function CommunityScreen() {
         accessible={false}
         ListHeaderComponent={() => (
           <>
-            {/* Header */}
-            <View
-              style={{ padding: 16, backgroundColor: colors.background.card, borderBottomWidth: 1, borderBottomColor: colors.border.light }}
-              accessible={true}
-              accessibilityRole="header"
+            {/* Hero Banner Header - MãesValentes - Estilo Premium */}
+            <HeroBanner
+              imageUrl="https://i.imgur.com/U5ttbqK.png"
+              height={340}
+              overlay={{ type: 'gradient', direction: 'bottom', opacity: 0.75 }}
+              accessibilityLabel="Banner da comunidade MãesValentes - Mãe ajuda mãe. Você não está sozinha"
             >
-              <Text
-                style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}
-                accessibilityRole="header"
-                accessibilityLabel="MãesValentes"
-              >
-                MãesValentes
-              </Text>
-              <Text
-                style={{ fontSize: 14, color: colors.text.secondary, marginTop: 4 }}
-                accessibilityLabel="Sua rede de apoio maternal"
-              >
-                Sua rede de apoio maternal
-              </Text>
-            </View>
+              <View style={{ alignItems: 'flex-start', justifyContent: 'flex-end', flex: 1 }}>
+                {/* Badge Comunidade Oficial */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                    paddingHorizontal: 12,
+                    paddingVertical: 6,
+                    borderRadius: 20,
+                    marginBottom: 16,
+                    borderWidth: 1,
+                    borderColor: 'rgba(255, 255, 255, 0.4)',
+                  }}
+                >
+                  <Text style={{ fontSize: 12, color: '#FFFFFF', fontWeight: '700', marginRight: 4 }}>
+                    ✨
+                  </Text>
+                  <Text style={{ fontSize: 11, color: '#FFFFFF', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    COMUNIDADE OFICIAL
+                  </Text>
+                </View>
 
-            {/* Stats Cards */}
+                {/* Título */}
+                <Text
+                  style={{ fontSize: 36, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 8, letterSpacing: -0.5 }}
+                  accessibilityRole="header"
+                  accessibilityLabel="Mães Valentes"
+                >
+                  Mães Valentes
+                </Text>
+
+                {/* Subtítulo */}
+                <Text
+                  style={{ fontSize: 16, color: '#FFFFFF', opacity: 0.95, lineHeight: 22 }}
+                  accessibilityLabel="Mãe ajuda mãe. Você não está sozinha"
+                >
+                  Mãe ajuda mãe. Você não está sozinha. 💛
+                </Text>
+              </View>
+            </HeroBanner>
+
+            {/* Stats Cards - Estatísticas da Comunidade */}
             <View style={{ flexDirection: 'row', padding: 16, gap: 12 }}>
               <View
                 style={{ flex: 1, backgroundColor: colors.background.card, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border.light }}
                 accessible={true}
-                accessibilityLabel="Estatística: 1.200 mães ativas na comunidade"
+                accessibilityLabel="Estatística: 1.200 mães conectadas na comunidade"
                 accessibilityRole="text"
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <Users size={20} color={colors.primary.main} />
+                  <Heart size={20} color="#FF6B9D" fill="#FF6B9D" />
                   <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}>1.2k</Text>
                 </View>
-                <Text style={{ fontSize: 12, color: colors.text.secondary }}>Mães ativas</Text>
+                <Text style={{ fontSize: 12, color: colors.text.secondary }}>Mães conectadas</Text>
               </View>
 
               <View
                 style={{ flex: 1, backgroundColor: colors.background.card, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border.light }}
                 accessible={true}
-                accessibilityLabel="Estatística: 3.500 conversas na comunidade"
+                accessibilityLabel="Estatística: 3.500 trocas de apoio na comunidade"
                 accessibilityRole="text"
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <MessageSquare size={20} color={colors.primary.main} />
+                  <MessagesSquare size={20} color={colors.primary.main} />
                   <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}>3.5k</Text>
                 </View>
-                <Text style={{ fontSize: 12, color: colors.text.secondary }}>Conversas</Text>
+                <Text style={{ fontSize: 12, color: colors.text.secondary }}>Trocas de apoio</Text>
               </View>
             </View>
 
-            {/* Angel of the Day */}
+            {/* Mãe Inspiração do Dia */}
             <View
               style={{
                 margin: 16,
@@ -114,15 +143,15 @@ export default function CommunityScreen() {
                 borderColor: colors.border.light,
               }}
               accessible={true}
-              accessibilityLabel="Anjo do Dia: Paula Santos, mãe de 2, São Paulo. Ajudou 12 mães esta semana com apoio emocional e dicas práticas"
+              accessibilityLabel="Mãe Inspiração: Paula Santos, mãe de 2, São Paulo. Ajudou 12 mães esta semana com apoio emocional e dicas práticas"
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <Crown size={20} color={colors.raw.warning[500]} />
+                <Sparkles size={20} color="#FFD700" fill="#FFD700" />
                 <Text
                   style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
                   accessibilityRole="header"
                 >
-                  Anjo do Dia
+                  Mãe Inspiração do Dia
                 </Text>
               </View>
 
@@ -166,19 +195,19 @@ export default function CommunityScreen() {
               </View>
             </View>
 
-            {/* Trending Topics */}
+            {/* Assuntos do Momento */}
             <View style={{ paddingHorizontal: 16, marginBottom: 12 }}>
               <View
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}
                 accessible={true}
                 accessibilityRole="header"
               >
-                <TrendingUp size={18} color={colors.text.primary} />
+                <TrendingUp size={18} color="#FF6B9D" />
                 <Text
                   style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
-                  accessibilityLabel="Tópicos em Alta"
+                  accessibilityLabel="Assuntos do Momento"
                 >
-                  Tópicos em Alta
+                  Assuntos do Momento
                 </Text>
               </View>
               <View style={{ height: 40, marginLeft: -16 }}>
@@ -213,19 +242,19 @@ export default function CommunityScreen() {
               </View>
             </View>
 
-            {/* Community Discussions Header */}
+            {/* Últimas Conversas Header */}
             <View
               style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 }}
               accessible={true}
               accessibilityRole="header"
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Clock size={18} color={colors.text.primary} />
+                <MessagesSquare size={18} color={colors.primary.main} />
                 <Text
                   style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
-                  accessibilityLabel="Conversas Recentes"
+                  accessibilityLabel="Últimas Conversas"
                 >
-                  Conversas Recentes
+                  Últimas Conversas
                 </Text>
               </View>
             </View>

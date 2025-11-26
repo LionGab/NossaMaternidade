@@ -8,22 +8,52 @@ import {
   Platform,
   ActivityIndicator,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Image } from 'expo-image';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { ArrowLeft, Sparkles, Trash2, Send, Loader2 } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  Sparkles,
+  Trash2,
+  Send,
+  Loader2,
+  Zap,
+  Brain,
+  Globe,
+  Mic,
+  Square,
+  AudioLines,
+  MessageCircle,
+  ImagePlus,
+  X
+} from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
+import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens } from '../theme';
 import { chatService, ChatMessage, ChatConversation } from '../services/chatService';
 import { profileService } from '../services/profileService';
 import { MessageBubble } from '../components/MessageBubble';
+import { HeroBanner } from '@/components/molecules/HeroBanner';
 
 const INITIAL_CHAT_GREETING = "Oi, mãe. Tô aqui com você. Como você está se sentindo agora?";
 const AVATAR_URL = "https://i.imgur.com/oB9ewPG.jpg";
+
+// Suggestion Chips for Quick Responses
+const SUGGESTION_CHIPS = [
+  "Meu bebê não dorme 😴",
+  "Dica de alimentação 🍎",
+  "Estou exausta 😔",
+  "O que fazer com cólica? 🍼",
+  "Ideia de brincadeira 🧸",
+  "Como voltar ao trabalho? 💼"
+];
+
+type AIMode = 'fast' | 'balanced' | 'thinking' | 'search';
 
 export default function ChatScreen() {
   const navigation = useNavigation();
@@ -37,6 +67,12 @@ export default function ChatScreen() {
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const flashListRef = useRef<FlashListRef<ChatMessage>>(null);
+
+  // AI Mode & Recording States
+  const [aiMode, setAiMode] = useState<AIMode>('balanced');
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Load messages on mount
   useEffect(() => {
@@ -179,7 +215,53 @@ export default function ChatScreen() {
       );
     };
 
-  const quickChips = ["Estou sobrecarregada", "Medo de não ser boa mãe", "Briguei com meu parceiro"];
+  // Placeholder for audio recording (future implementation)
+  const handleMicClick = () => {
+    if (isRecording) {
+      setIsRecording(false);
+      setIsTranscribing(true);
+      // Simulate transcription
+      setTimeout(() => {
+        setInput(prev => prev + (prev ? ' ' : '') + 'Texto transcrito do áudio...');
+        setIsTranscribing(false);
+      }, 2000);
+    } else {
+      setIsRecording(true);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+  };
+
+  // Image Picker Handler (Web Reference: Multimodal Input)
+  const handleImagePick = async () => {
+    try {
+      // Request permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permissão necessária',
+          'Precisamos de permissão para acessar suas fotos.'
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8, // Optimize for mobile upload
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setSelectedImage(result.assets[0].uri);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Erro', 'Não foi possível selecionar a imagem.');
+    }
+  };
 
   const renderItem = ({ item }: { item: ChatMessage }) => (
     <MessageBubble
@@ -261,29 +343,15 @@ export default function ChatScreen() {
         </View>
 
         <View
-          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}
+          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4 }}
           accessible={true}
           accessibilityRole="header"
           accessibilityLabel="Chat com NathIA, assistente de inteligência artificial"
         >
-          <Image
-            source={require('../../assets/logo.png')}
-            style={{ width: 36, height: 36, borderRadius: 8 }}
-            contentFit="cover"
-            transition={200}
-            accessibilityLabel="Logo Nossa Maternidade"
-          />
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: Tokens.typography.sizes['3xs'], fontWeight: Tokens.typography.weights.bold, color: colors.primary.main, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 2 }}>
-              Nossa Maternidade
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <Text style={{ fontWeight: Tokens.typography.weights.bold, fontSize: Tokens.typography.sizes.lg, color: colors.text.primary }}>
-                NathIA
-              </Text>
-              <Sparkles size={12} color={colors.primary.main} />
-            </View>
-          </View>
+          <Text style={{ fontWeight: Tokens.typography.weights.bold, fontSize: Tokens.typography.sizes.lg, color: colors.text.primary }}>
+            NathIA
+          </Text>
+          <Sparkles size={12} color={colors.primary.main} />
         </View>
 
         <TouchableOpacity
@@ -294,6 +362,125 @@ export default function ChatScreen() {
           accessibilityHint="Apaga todas as mensagens da conversa atual"
         >
           <Trash2 size={18} color={colors.text.tertiary} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Hero Banner - NathIA */}
+      <HeroBanner
+        imageUrl="https://i.imgur.com/t3EFCQT.png"
+        height={200}
+        overlay={{ type: 'gradient', direction: 'bottom', opacity: isDark ? 0.65 : 0.5 }}
+        accessibilityLabel="Banner da NathIA, assistente de inteligência artificial maternal"
+      />
+
+      {/* AI Mode Toolbar - Premium */}
+      <View
+        style={{
+          backgroundColor: isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border.light,
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 4,
+          elevation: 2,
+        }}
+      >
+        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.text.tertiary, textTransform: 'uppercase', letterSpacing: 0.5, marginRight: 4 }}>
+          Modo:
+        </Text>
+
+        {/* Fast Mode */}
+        <TouchableOpacity
+          onPress={() => { setAiMode('fast'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+          style={{
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderRadius: 20,
+            backgroundColor: aiMode === 'fast' ? '#FCD34D' : 'transparent',
+            borderWidth: 1,
+            borderColor: aiMode === 'fast' ? '#FCD34D' : colors.border.medium,
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Modo rápido"
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Zap size={14} color={aiMode === 'fast' ? '#78350F' : colors.text.tertiary} fill={aiMode === 'fast' ? '#78350F' : 'none'} />
+            <Text style={{ fontSize: 11, fontWeight: '700', color: aiMode === 'fast' ? '#78350F' : colors.text.tertiary }}>
+              Rápido
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Balanced Mode */}
+        <TouchableOpacity
+          onPress={() => { setAiMode('balanced'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+          style={{
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderRadius: 20,
+            backgroundColor: aiMode === 'balanced' ? colors.primary.main : 'transparent',
+            borderWidth: 1,
+            borderColor: aiMode === 'balanced' ? colors.primary.main : colors.border.medium,
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Modo equilibrado"
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Sparkles size={14} color={aiMode === 'balanced' ? '#FFFFFF' : colors.text.tertiary} fill={aiMode === 'balanced' ? '#FFFFFF' : 'none'} />
+            <Text style={{ fontSize: 11, fontWeight: '700', color: aiMode === 'balanced' ? '#FFFFFF' : colors.text.tertiary }}>
+              Equilibrado
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Thinking Mode */}
+        <TouchableOpacity
+          onPress={() => { setAiMode('thinking'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+          style={{
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderRadius: 20,
+            backgroundColor: aiMode === 'thinking' ? '#6366F1' : 'transparent',
+            borderWidth: 1,
+            borderColor: aiMode === 'thinking' ? '#6366F1' : colors.border.medium,
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Modo raciocínio profundo"
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Brain size={14} color={aiMode === 'thinking' ? '#FFFFFF' : colors.text.tertiary} />
+            <Text style={{ fontSize: 11, fontWeight: '700', color: aiMode === 'thinking' ? '#FFFFFF' : colors.text.tertiary }}>
+              Pensar
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Search Mode */}
+        <TouchableOpacity
+          onPress={() => { setAiMode('search'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+          style={{
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderRadius: 20,
+            backgroundColor: aiMode === 'search' ? '#10B981' : 'transparent',
+            borderWidth: 1,
+            borderColor: aiMode === 'search' ? '#10B981' : colors.border.medium,
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Modo pesquisa web"
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Globe size={14} color={aiMode === 'search' ? '#FFFFFF' : colors.text.tertiary} />
+            <Text style={{ fontSize: 11, fontWeight: '700', color: aiMode === 'search' ? '#FFFFFF' : colors.text.tertiary }}>
+              Buscar
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -373,81 +560,166 @@ export default function ChatScreen() {
           )}
         </View>
 
-        {/* Input Area */}
+        {/* Input Area - Premium Style */}
         <View style={{ backgroundColor: colors.background.card, padding: 12, borderTopWidth: 1, borderTopColor: colors.border.light, paddingBottom: 32 }}>
-          {!loading && messages.length < 5 && (
-            <View style={{ flexDirection: 'row', marginBottom: 12, height: 40 }}>
-              <FlashList
-                horizontal
-                data={quickChips}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(_, i) => i.toString()}
-                accessible={false}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    onPress={() => { setInput(item); handleSend(item); }}
-                    style={{ backgroundColor: isDark ? colors.background.elevated : colors.primary.light, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, borderWidth: 1, borderColor: isDark ? colors.border.light : `${colors.primary.main}33`, marginRight: 8 }}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Sugestão rápida: ${item}`}
-                    accessibilityHint="Toque para enviar esta mensagem"
-                  >
-                    <Text style={{ color: colors.primary.main, fontSize: Tokens.typography.sizes.xs, fontWeight: Tokens.typography.weights.medium }}>
-                      {item}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
+          {/* Suggestion Chips - Show when not recording/transcribing */}
+          {!loading && !isRecording && !isTranscribing && messages.length < 10 && (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{ marginBottom: 12 }}
+              contentContainerStyle={{ gap: 8, paddingRight: 16 }}
+            >
+              {SUGGESTION_CHIPS.map((chip, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); handleSend(chip); }}
+                  disabled={loading}
+                  style={{
+                    backgroundColor: isDark ? colors.background.elevated : colors.primary.light,
+                    paddingHorizontal: 14,
+                    paddingVertical: 8,
+                    borderRadius: 20,
+                    borderWidth: 1,
+                    borderColor: isDark ? colors.border.light : `${colors.primary.main}33`,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Sugestão: ${chip}`}
+                >
+                  <MessageCircle size={12} color={colors.primary.main} opacity={0.7} />
+                  <Text style={{ color: colors.primary.main, fontSize: Tokens.typography.sizes.xs, fontWeight: Tokens.typography.weights.bold }}>
+                    {chip}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           )}
 
           <View style={{ flexDirection: 'row', gap: 8, alignItems: 'flex-end' }}>
-            <TextInput
-              value={input}
-              onChangeText={setInput}
-              placeholder="Conta pra mim..."
-              placeholderTextColor={colors.text.tertiary}
-              multiline
-              maxLength={500}
-              style={{
-                flex: 1,
-                backgroundColor: isDark ? colors.background.canvas : colors.background.input,
-                color: colors.text.primary,
-                borderRadius: 16,
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-                fontSize: Tokens.typography.sizes.sm,
-                maxHeight: 96,
-                textAlignVertical: 'top',
-                borderWidth: 1,
-                borderColor: colors.border.light
-              }}
-              accessibilityLabel="Campo de mensagem"
-              accessibilityHint="Digite sua mensagem para NathIA"
-            />
+            {/* Recording/Transcribing State OR Normal Input */}
+            {isRecording ? (
+              <TouchableOpacity
+                onPress={handleMicClick}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#FEE2E2',
+                  borderRadius: 20,
+                  paddingHorizontal: 16,
+                  paddingVertical: 14,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 12,
+                  borderWidth: 2,
+                  borderColor: '#EF4444',
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Gravando áudio, toque para parar"
+              >
+                <AudioLines size={24} color="#EF4444" />
+                <Text style={{ color: '#DC2626', fontSize: Tokens.typography.sizes.sm, fontWeight: Tokens.typography.weights.bold, flex: 1 }}>
+                  Gravando... (Toque para parar)
+                </Text>
+              </TouchableOpacity>
+            ) : isTranscribing ? (
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: colors.background.elevated,
+                  borderRadius: 20,
+                  paddingHorizontal: 16,
+                  paddingVertical: 14,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 12,
+                  borderWidth: 1,
+                  borderColor: colors.border.light,
+                }}
+              >
+                <Loader2 size={20} color={colors.primary.main} className="animate-spin" />
+                <Text style={{ color: colors.text.secondary, fontSize: Tokens.typography.sizes.sm, fontWeight: Tokens.typography.weights.medium }}>
+                  Transcrevendo áudio...
+                </Text>
+              </View>
+            ) : (
+              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: isDark ? colors.background.canvas : colors.background.input, borderRadius: 20, borderWidth: 1, borderColor: colors.border.light }}>
+                <TextInput
+                  value={input}
+                  onChangeText={setInput}
+                  placeholder="Conta pra mim..."
+                  placeholderTextColor={colors.text.tertiary}
+                  multiline
+                  maxLength={500}
+                  style={{
+                    flex: 1,
+                    color: colors.text.primary,
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                    fontSize: Tokens.typography.sizes.sm,
+                    maxHeight: 96,
+                    textAlignVertical: 'top',
+                  }}
+                  accessibilityLabel="Campo de mensagem"
+                  accessibilityHint="Digite sua mensagem para NathIA"
+                />
+                {/* Image Picker Button Inside Input */}
+                <TouchableOpacity
+                  onPress={handleImagePick}
+                  style={{
+                    padding: 10,
+                    marginRight: 0,
+                    borderRadius: 16,
+                    backgroundColor: 'transparent',
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Adicionar imagem"
+                >
+                  <ImagePlus size={22} color={colors.text.tertiary} />
+                </TouchableOpacity>
+                {/* Mic Button Inside Input */}
+                <TouchableOpacity
+                  onPress={handleMicClick}
+                  style={{
+                    padding: 10,
+                    marginRight: 4,
+                    borderRadius: 16,
+                    backgroundColor: 'transparent',
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Gravar áudio"
+                >
+                  <Mic size={22} color={colors.text.tertiary} />
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* Send Button */}
             <TouchableOpacity
               onPress={() => handleSend()}
-              disabled={!input.trim() || loading}
+              disabled={(!input.trim() && !isRecording) || loading || isTranscribing}
               style={{
-                padding: 12,
-                borderRadius: 20,
+                width: 48,
+                height: 48,
+                borderRadius: 24,
                 alignItems: 'center',
                 justifyContent: 'center',
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
+                shadowOpacity: 0.15,
                 shadowRadius: 4,
                 elevation: 4,
-                backgroundColor: !input.trim() || loading ? colors.text.disabled : colors.primary.main,
+                backgroundColor: (input.trim() && !isRecording && !isTranscribing) ? colors.primary.main : colors.text.disabled,
               }}
               accessibilityRole="button"
               accessibilityLabel={loading ? "Enviando mensagem" : "Enviar mensagem"}
-              accessibilityHint="Envia sua mensagem para NathIA"
-              accessibilityState={{ disabled: !input.trim() || loading }}
+              accessibilityState={{ disabled: (!input.trim() && !isRecording) || loading || isTranscribing }}
             >
               {loading ? (
-                <Loader2 size={20} color={colors.text.inverse} />
+                <Loader2 size={22} color={colors.text.inverse} />
               ) : (
-                <Send size={20} color={colors.text.inverse} />
+                <Send size={22} color={colors.text.inverse} />
               )}
             </TouchableOpacity>
           </View>

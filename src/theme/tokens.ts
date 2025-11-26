@@ -18,32 +18,32 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
  * Baseado em Material Design 3 + Nossa identidade maternal
  */
 export const ColorTokens = {
-  // Primary - Azul premium maternal (baseado no Google Blue otimizado)
+  // Primary - Ocean Blue System (baseado no web reference)
   primary: {
-    50: '#F0F7FF',
-    100: '#E0EFFF',
-    200: '#BAD4FF',
-    300: '#7CACFF',
-    400: '#4285F4',   // Google Blue (main)
-    500: '#0D5FFF',   // Brand principal
-    600: '#0047E6',
-    700: '#0036B8',
-    800: '#002D96',
-    900: '#002979',
+    50: '#F0F8FF',    // Lightest sky
+    100: '#E6F0FA',   // Sky (web reference) - backgrounds light
+    200: '#BAD4FF',   // Light blue
+    300: '#7CACFF',   // Mid blue
+    400: '#004E9A',   // Ocean Blue (main) - web reference
+    500: '#00427D',   // Mid ocean
+    600: '#003768',   // Dark ocean
+    700: '#002C54',   // Navy
+    800: '#002244',   // Deep Navy (hover) - web reference
+    900: '#001A36',   // Darkest navy
   },
 
-  // Secondary - Rosa maternal suave
+  // Secondary - Coral System (baseado no web reference)
   secondary: {
-    50: '#FFF0F6',
-    100: '#FFE0EC',
-    200: '#FFC2D9',
-    300: '#FF94BA',
-    400: '#FF8FA3',   // Rosa coral (legacy)
-    500: '#FF2576',   // Brand secondary
-    600: '#E60A5B',
-    700: '#C10048',
-    800: '#A0003D',
-    900: '#840036',
+    50: '#FEF2F2',    // Very light coral
+    100: '#FEE2E2',   // Light coral
+    200: '#FECACA',   // Soft coral
+    300: '#FCA5A5',   // Mid coral
+    400: '#D93025',   // Coral (main) - web reference
+    500: '#B91C1C',   // Deep coral
+    600: '#991B1B',   // Dark coral
+    700: '#7F1D1D',   // Darker coral
+    800: '#6B1818',   // Almost dark
+    900: '#5A1313',   // Darkest coral
   },
 
   // Neutral - Escala de cinzas moderna
@@ -125,7 +125,23 @@ export const ColorTokens = {
     orange: '#FB923C',
     pink: '#EC4899',
     green: '#10B981',
-    blue: '#4285F4',
+    blue: '#60A5FA',       // Light ocean (for dark mode accents)
+    ocean: '#004E9A',      // Ocean blue (primary reference)
+    sunshine: '#F59E0B',   // Amber/Warning - web reference
+  },
+
+  // Mint System (web reference - success/positive accent)
+  mint: {
+    50: '#F0FDFA',
+    100: '#CCFBF1',
+    200: '#99F6E4',
+    300: '#5EEAD4',
+    400: '#236B62',   // Mint (main) - web reference
+    500: '#0F5247',   // Deep mint
+    600: '#0D4B3F',
+    700: '#0B4037',
+    800: '#09362F',
+    900: '#072D27',
   },
 } as const;
 
@@ -133,73 +149,74 @@ export const ColorTokens = {
  * Semantic color mappings para Light Mode
  */
 export const LightTheme = {
-  // Backgrounds
+  // Backgrounds - Cloud/Snow system (web reference)
   background: {
-    canvas: '#F8F9FA',        // Fundo principal (warm white)
-    card: '#FFFFFF',          // Cards e superfícies
-    elevated: '#FFFFFF',      // Superfícies elevadas
-    input: '#FFFFFF',         // Inputs
+    canvas: '#F1F5F9',        // Cloud (web reference) - fundo principal
+    card: '#FFFFFF',          // Snow - cards e superfícies
+    elevated: '#FFFFFF',      // Snow - superfícies elevadas
+    input: '#FFFFFF',         // Snow - inputs
     overlay: 'rgba(0, 0, 0, 0.5)',
     gradient: {
-      primary: ['#E0EFFF', '#FFFFFF'],
-      soft: ['#FFF0F6', '#F0F7FF'],
-      warm: ['#FFFFFF', '#F8F9FA'],
+      primary: ['#E6F0FA', '#FFFFFF'],   // Sky → Snow
+      soft: ['#FEF2F2', '#F0F8FF'],       // Light coral → Lightest sky
+      warm: ['#FFFFFF', '#F1F5F9'],       // Snow → Cloud
     },
   },
 
-  // Text
+  // Text - Charcoal/Slate/Silver system (web reference)
   text: {
-    primary: '#5D4E4B',       // Cinza-marrom principal
-    secondary: '#525252',     // Cinza médio
-    tertiary: '#737373',      // Cinza claro
-    disabled: '#A3A3A3',      // Desabilitado
+    primary: '#0F172A',       // Charcoal (web reference) - alto contraste
+    secondary: '#334155',     // Slate (web reference)
+    tertiary: '#64748B',      // Silver (web reference)
+    disabled: '#94A3B8',      // Lighter silver
     placeholder: '#9CA3AF',   // Placeholder text
     inverse: '#FFFFFF',       // Texto em fundos escuros
-    link: '#0D5FFF',          // Links
-    success: '#059669',
-    warning: '#D97706',
-    error: '#DC2626',
+    link: '#004E9A',          // Ocean blue (web reference)
+    success: '#236B62',       // Mint (web reference)
+    warning: '#F59E0B',       // Sunshine (web reference)
+    error: '#D93025',         // Coral (web reference)
     info: '#2563EB',
   },
 
   // Borders
   border: {
     light: 'rgba(0, 0, 0, 0.08)',
-    medium: 'rgba(0, 0, 0, 0.12)',
+    medium: '#CBD5E1',        // Visible border (web reference)
     dark: 'rgba(0, 0, 0, 0.16)',
-    focus: '#0D5FFF',
-    error: '#EF4444',
-    success: '#10B981',
+    focus: '#004E9A',         // Ocean blue
+    error: '#D93025',         // Coral
+    success: '#236B62',       // Mint
   },
 
-  // Primary/Secondary mapped
+  // Primary - Ocean Blue (web reference)
   primary: {
-    main: ColorTokens.primary[400],    // #4285F4
-    light: ColorTokens.primary[100],   // #E0EFFF
-    dark: ColorTokens.primary[700],    // #0036B8
-    gradient: ['#367FFF', '#0D5FFF', '#0047E6'],
+    main: ColorTokens.primary[400],    // #004E9A Ocean Blue
+    light: ColorTokens.primary[100],   // #E6F0FA Sky
+    dark: ColorTokens.primary[800],    // #002244 Deep Navy
+    gradient: ['#004E9A', '#00427D', '#003768'],  // Ocean gradient
   },
 
+  // Secondary - Coral (web reference)
   secondary: {
-    main: ColorTokens.secondary[400],  // #FF8FA3
-    light: ColorTokens.secondary[100], // #FFE0EC
-    dark: ColorTokens.secondary[700],  // #C10048
-    gradient: ['#FF94BA', '#FF2576', '#E60A5B'],
+    main: ColorTokens.secondary[400],  // #D93025 Coral
+    light: ColorTokens.secondary[100], // #FEE2E2 Light coral
+    dark: ColorTokens.secondary[600],  // #991B1B Dark coral
+    gradient: ['#D93025', '#B91C1C', '#991B1B'],  // Coral gradient
   },
 
-  // Status colors for components
+  // Status colors - aligned with web reference
   status: {
-    success: ColorTokens.success[500],
-    warning: ColorTokens.warning[600],
-    error: ColorTokens.error[600],
-    info: ColorTokens.info[600],
+    success: ColorTokens.mint[400],    // #236B62 Mint
+    warning: ColorTokens.warning[500], // #F59E0B Sunshine
+    error: ColorTokens.secondary[400], // #D93025 Coral
+    info: ColorTokens.info[600],       // #2563EB
   },
-  
+
   // Gradients
   gradients: {
-    success: ['#34D399', '#10B981', '#059669'],
-    warning: ['#FBBf24', '#F59E0B', '#D97706'],
-    error: ['#F87171', '#EF4444', '#DC2626'],
+    success: ['#5EEAD4', '#236B62', '#0F5247'],  // Mint gradient
+    warning: ['#FCD34D', '#F59E0B', '#D97706'],  // Sunshine gradient
+    error: ['#FCA5A5', '#D93025', '#B91C1C'],    // Coral gradient
     info: ['#60A5FA', '#3B82F6', '#2563EB'],
   },
 };
@@ -208,74 +225,75 @@ export const LightTheme = {
  * Semantic color mappings para Dark Mode (Ocean Dark Theme)
  */
 export const DarkTheme = {
-  // Backgrounds - Ocean Dark inspired
+  // Backgrounds - Slate system (web reference)
   background: {
-    canvas: '#020617',        // Preto azulado profundo
-    card: '#0B1220',          // Superfície card
-    elevated: '#1D2843',      // Superfície elevada (pause)
-    input: '#FFFFFF',         // Input background (branco mesmo no dark mode)
+    canvas: '#020617',        // Blue-black (web reference) - fundo principal
+    card: '#1E293B',          // Slate (web reference) - superfície card
+    elevated: '#334155',      // Mid-slate (web reference) - superfície elevada
+    input: '#334155',         // Mid-slate (web reference) - input background
     overlay: 'rgba(0, 0, 0, 0.7)',
     gradient: {
-      primary: ['#0B1220', '#020617'],
-      soft: ['#1D2843', '#0B1220'],
-      ocean: ['#020617', '#0B1220', '#1D2843'],
+      primary: ['#1E293B', '#020617'],   // Slate → Blue-black
+      soft: ['#334155', '#1E293B'],       // Mid-slate → Slate
+      ocean: ['#020617', '#1E293B', '#334155'],  // Blue-black → Slate → Mid-slate
     },
   },
 
-  // Text
+  // Text - Off-white/Light grey system (web reference)
   text: {
-    primary: '#F9FAFB',       // Branco suave
-    secondary: '#D1D5DB',     // Cinza claro
-    tertiary: '#9CA3AF',      // Cinza médio
-    disabled: '#6B7280',      // Desabilitado
-    placeholder: '#9CA3AF',   // Placeholder text (melhor contraste WCAG AA)
-    inverse: '#171717',       // Texto em fundos claros
-    link: '#60A5FA',          // Link azul claro
-    success: '#34D399',
-    warning: '#FBBF24',
-    error: '#F87171',
-    info: '#60A5FA',
+    primary: '#F8FAFC',       // Off-white (web reference)
+    secondary: '#CBD5E1',     // Light grey (web reference)
+    tertiary: '#94A3B8',      // Mid grey (web reference)
+    disabled: '#64748B',      // Silver (web reference)
+    placeholder: '#94A3B8',   // Mid grey
+    inverse: '#0F172A',       // Charcoal (web reference)
+    link: '#60A5FA',          // Light ocean (web reference)
+    success: '#4ADE80',       // Light mint
+    warning: '#FCD34D',       // Light sunshine
+    error: '#F87171',         // Light coral
+    info: '#60A5FA',          // Light ocean
   },
 
-  // Borders
+  // Borders - (web reference)
   border: {
     light: 'rgba(148, 163, 184, 0.1)',
-    medium: 'rgba(148, 163, 184, 0.2)',
+    medium: '#475569',        // Mid-slate border (web reference)
     dark: 'rgba(148, 163, 184, 0.3)',
-    focus: '#60A5FA',
-    error: '#F87171',
-    success: '#34D399',
+    focus: '#60A5FA',         // Light ocean
+    error: '#F87171',         // Light coral
+    success: '#4ADE80',       // Light mint
   },
 
-  // Primary/Secondary mapped
+  // Primary - Light Ocean (web reference dark mode)
   primary: {
-    main: '#3B82F6',       // nath-dark-hero (azul para dark mode)
-    light: ColorTokens.primary[300],   // #7CACFF
-    dark: ColorTokens.primary[600],    // #0047E6
-    gradient: ['#367FFF', '#0D5FFF', '#0047E6'],
+    main: '#60A5FA',          // Light ocean (web reference dark mode)
+    light: '#93C5FD',         // Lighter blue
+    dark: '#1E40AF',          // Deep blue
+    gradient: ['#60A5FA', '#3B82F6', '#2563EB'],  // Light ocean gradient
   },
 
+  // Secondary - Light Coral (web reference dark mode)
   secondary: {
-    main: ColorTokens.secondary[400],  // #FF8FA3
-    light: ColorTokens.secondary[300], // #FF94BA
-    dark: ColorTokens.secondary[600],  // #E60A5B
-    gradient: ['#FF94BA', '#FF2576', '#E60A5B'],
+    main: '#F87171',          // Light coral
+    light: '#FCA5A5',         // Lighter coral
+    dark: '#DC2626',          // Mid coral
+    gradient: ['#F87171', '#EF4444', '#DC2626'],  // Light coral gradient
   },
 
-  // Status colors for components
+  // Status colors - lighter for dark mode
   status: {
-    success: ColorTokens.success[400],
-    warning: ColorTokens.warning[400],
-    error: ColorTokens.error[400],
-    info: ColorTokens.info[400],
+    success: '#4ADE80',       // Light mint
+    warning: '#FCD34D',       // Light sunshine
+    error: '#F87171',         // Light coral
+    info: '#60A5FA',          // Light ocean
   },
 
-  // Gradients
+  // Gradients - brighter for dark mode
   gradients: {
-    success: ['#34D399', '#10B981', '#059669'],
-    warning: ['#FBBf24', '#F59E0B', '#D97706'],
-    error: ['#F87171', '#EF4444', '#DC2626'],
-    info: ['#60A5FA', '#3B82F6', '#2563EB'],
+    success: ['#86EFAC', '#4ADE80', '#22C55E'],  // Light mint gradient
+    warning: ['#FDE68A', '#FCD34D', '#FBBF24'],  // Light sunshine gradient
+    error: ['#FCA5A5', '#F87171', '#EF4444'],    // Light coral gradient
+    info: ['#93C5FD', '#60A5FA', '#3B82F6'],     // Light ocean gradient
   },
 };
 
@@ -414,6 +432,11 @@ export const Radius = {
   '2.5xl': 22,
   '3xl': 24,
   full: 9999,
+
+  // Aliases from web reference
+  pill: 9999,     // Fully rounded (pill buttons) - rounded-full
+  card: 20,       // Card corners - rounded-card (same as 2xl)
+  input: 12,      // Input fields - rounded-input (same as lg)
 } as const;
 
 // ======================
@@ -456,6 +479,26 @@ export const Shadows = {
   xl: createShadow({ width: 0, height: 8 }, 0.12, 16, 8),
   '2xl': createShadow({ width: 0, height: 12 }, 0.15, 24, 12),
   inner: createShadow({ width: 0, height: -2 }, 0.06, 3, -1),
+
+  // Premium shadow with Ocean Blue tint (web reference: shadow-premium)
+  premium: Platform.OS === 'web'
+    ? { boxShadow: '0 10px 30px -5px rgba(0, 78, 154, 0.4)' }
+    : {
+        shadowColor: '#004E9A',  // Ocean blue
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.4,
+        shadowRadius: 20,
+        elevation: 12,
+      },
+
+  // Card shadow (web reference: shadow-card)
+  card: createShadow({ width: 0, height: 4 }, 0.1, 6, 4),
+
+  // Card hover shadow (web reference: shadow-card-hover)
+  cardHover: createShadow({ width: 0, height: 10 }, 0.15, 15, 8),
+
+  // Soft shadow (web reference: shadow-soft)
+  soft: createShadow({ width: 0, height: 2 }, 0.05, 8, 2),
 } as const;
 
 // ======================

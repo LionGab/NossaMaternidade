@@ -24,13 +24,13 @@ import HabitsScreen from '../screens/HabitsScreen';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens } from '../theme';
 
-// Icons
+// Icons - Premium Design
 import {
   Home,
-  Users,
-  Brain,
-  BookOpen,
-  Heart,
+  UsersRound,
+  Sparkles,
+  Clapperboard,
+  CheckCircle2,
 } from 'lucide-react-native';
 
 // Haptics
@@ -78,17 +78,18 @@ export const TabNavigator = () => {
         tabBarHideOnKeyboard: true,
       }}
     >
-      {/* 🏠 Tab 1: Home */}
+      {/* 🏠 Tab 1: Home - Premium Icon */}
       <Tab.Screen
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: 'Início',
           tabBarIcon: ({ color, focused }) => (
             <Home
-              size={focused ? 26 : 24}
+              size={focused ? 28 : 24}
               color={color}
               strokeWidth={focused ? 2.5 : 2}
+              fill={focused ? color : 'none'}
             />
           ),
         }}
@@ -97,17 +98,18 @@ export const TabNavigator = () => {
         }}
       />
 
-      {/* 👥 Tab 2: MãesValentes (Comunidade) */}
+      {/* 👥 Tab 2: MãesValentes - Premium Icon (UsersRound) */}
       <Tab.Screen
         name="MaesValentes"
         component={CommunityScreen}
         options={{
-          tabBarLabel: 'Comunidade',
+          tabBarLabel: 'MãesValente',
           tabBarIcon: ({ color, focused }) => (
-            <Users
-              size={focused ? 26 : 24}
+            <UsersRound
+              size={focused ? 28 : 24}
               color={color}
               strokeWidth={focused ? 2.5 : 2}
+              fill={focused ? color : 'none'}
             />
           ),
         }}
@@ -116,17 +118,18 @@ export const TabNavigator = () => {
         }}
       />
 
-      {/* 💬 Tab 3: Chat (NathIA) */}
+      {/* 💬 Tab 3: Chat (NathIA) - Premium Icon (Sparkles com Fill Mágico) */}
       <Tab.Screen
         name="Chat"
         component={ChatScreen}
         options={{
           tabBarLabel: 'NathIA',
           tabBarIcon: ({ color, focused }) => (
-            <Brain
-              size={focused ? 26 : 24}
+            <Sparkles
+              size={focused ? 28 : 24}
               color={color}
               strokeWidth={focused ? 2.5 : 2}
+              fill={focused ? color : 'none'}
             />
           ),
         }}
@@ -135,17 +138,18 @@ export const TabNavigator = () => {
         }}
       />
 
-      {/* 📚 Tab 4: MundoNath (Conteúdo) */}
+      {/* 📚 Tab 4: MundoNath (Conteúdo) - Premium Icon (Clapperboard) */}
       <Tab.Screen
         name="MundoNath"
         component={MundoNathScreen}
         options={{
           tabBarLabel: 'MundoNath',
           tabBarIcon: ({ color, focused }) => (
-            <BookOpen
-              size={focused ? 26 : 24}
+            <Clapperboard
+              size={focused ? 28 : 24}
               color={color}
               strokeWidth={focused ? 2.5 : 2}
+              fill={focused ? color : 'none'}
             />
           ),
         }}
@@ -154,17 +158,18 @@ export const TabNavigator = () => {
         }}
       />
 
-      {/* 📊 Tab 5: Hábitos (Bem-estar) */}
+      {/* 📊 Tab 5: Hábitos (Bem-estar) - Premium Icon (CheckCircle2) */}
       <Tab.Screen
         name="Habitos"
         component={HabitsScreen}
         options={{
           tabBarLabel: 'Hábitos',
           tabBarIcon: ({ color, focused }) => (
-            <Heart
-              size={focused ? 26 : 24}
+            <CheckCircle2
+              size={focused ? 28 : 24}
               color={color}
               strokeWidth={focused ? 2.5 : 2}
+              fill={focused ? color : 'none'}
             />
           ),
         }}

@@ -28,12 +28,15 @@ import {
   MessageCircleHeart,
   ArrowRight,
   Flame,
+  Star,
 } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { MOCK_POSTS } from '../constants/data';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { useHaptics } from '../hooks/useHaptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { MainTabParamList, RootStackParamList } from '../navigation/types';
+import { HeroBanner } from '@/components/molecules/HeroBanner';
 
 type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'MundoNath'>,
@@ -286,14 +289,42 @@ export default function MundoNathScreen() {
             </View>
           </View>
 
+          {/* Premium Glass Theme Button */}
           <TouchableOpacity
             onPress={toggleTheme}
-            style={[styles.themeButton, { backgroundColor: colors.background.card }]}
+            style={[
+              styles.themeButton,
+              {
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+                borderWidth: 1,
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+                shadowColor: isDark ? '#60A5FA' : '#F59E0B',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+                elevation: 3,
+              },
+            ]}
             accessibilityRole="button"
             accessibilityLabel={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
           >
-            {isDark ? <Sun size={20} color="#F59E0B" /> : <Moon size={20} color="#6B7280" />}
+            {isDark ? (
+              <Sun size={22} color="#FCD34D" strokeWidth={2.5} />
+            ) : (
+              <Moon size={22} color="#60A5FA" strokeWidth={2.5} fill="#60A5FA" />
+            )}
           </TouchableOpacity>
+        </View>
+
+        {/* Hero Banner - Mundo Nath */}
+        <View style={{ paddingHorizontal: 24, marginBottom: 24 }}>
+          <HeroBanner
+            imageUrl="https://i.imgur.com/5TMe7xW.png"
+            height={200}
+            overlay={{ type: 'gradient', direction: 'bottom', opacity: 0.4 }}
+            borderRadius="3xl"
+            accessibilityLabel="Banner do Mundo Nath com conteúdo exclusivo"
+          />
         </View>
 
         {/* Hoje eu tô com você Section */}

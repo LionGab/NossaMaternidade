@@ -8,6 +8,7 @@ export interface UserProfile {
   id: string;
   email?: string;
   full_name?: string;
+  display_name?: string; // Nome/apelido do onboarding rápido
   avatar_url?: string;
   phone?: string;
 
@@ -17,6 +18,14 @@ export interface UserProfile {
   baby_birth_date?: string;
   baby_name?: string;
   baby_gender?: 'male' | 'female' | 'unknown' | 'prefer_not_say';
+
+  // Dados do onboarding rápido (5-7 perguntas)
+  life_stage_generic?: 'pregnant' | 'has_children' | 'trying' | 'caregiver' | 'self_care';
+  main_goals?: string[];
+  baseline_emotion?: 'bem' | 'triste' | 'ansiosa' | 'cansada' | 'calma';
+  first_focus?: 'emotional_care' | 'organization' | 'reduce_fatigue' | 'community' | 'content';
+  preferred_language_tone?: 'friendly' | 'direct' | 'mentor';
+  notification_opt_in?: boolean;
 
   // Preferências
   emotions?: string[];

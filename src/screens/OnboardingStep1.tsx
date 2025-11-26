@@ -1,85 +1,198 @@
+/**
+ * OnboardingStep1 - Boas-vindas Premium
+ * Design System: Ocean Blue + Coral (Web Reference)
+ * Mobile-first: iOS/Android optimized
+ */
+
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ProgressIndicator, Button, Avatar } from '../components';
-import { Colors } from '../theme';
-import { useHaptics } from '../hooks/useHaptics';
-import { Ionicons } from '@expo/vector-icons';
-import { nathAvatar } from '../assets/images';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '@/theme';
+import { Tokens } from '@/theme/tokens';
+import { Box } from '@/components/primitives/Box';
+import { Text } from '@/components/primitives/Text';
+import { Heading } from '@/components/primitives/Heading';
+import { HapticButton } from '@/components/primitives/HapticButton';
+import { Heart } from 'lucide-react-native';
 
 interface OnboardingStep1Props {
   onNext: () => void;
 }
 
 export default function OnboardingStep1({ onNext }: OnboardingStep1Props) {
-  const haptics = useHaptics();
-
-  const handleNext = () => {
-    haptics.light();
-    onNext();
-  };
+  const { colors, isDark } = useTheme();
 
   return (
     <SafeAreaView
-      className="flex-1"
-      style={{ backgroundColor: Colors.background.dark }}
+      style={[styles.container, { backgroundColor: colors.background.canvas }]}
+      edges={['top', 'bottom']}
     >
-      {/* Header */}
-      <View className="px-6 pt-4 pb-8">
-        <View className="flex-row items-center justify-between mb-4">
-          <View className="flex-1" />
-          <ProgressIndicator currentStep={1} totalSteps={8} className="flex-1 mx-4" />
-          <Avatar
-            size={40}
-            source={nathAvatar}
-            onPress={() => {
-              // Toggle theme ou abrir menu
-            }}
-          />
+      {/* Background Gradient */}
+      <LinearGradient
+        colors={
+          isDark
+            ? ['#020617', '#1E293B', '#334155'] as [string, string, ...string[]]
+            : ['#F0F8FF', '#E6F0FA', '#FFFFFF'] as [string, string, ...string[]]
+        }
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Progress Indicator */}
+      <Box px="6" pt="4">
+        <View style={styles.progressContainer}>
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((step) => (
+            <View
+              key={step}
+              style={[
+                styles.progressDot,
+                {
+                  backgroundColor: step === 1 ? colors.primary.main : colors.border.light,
+                  width: step === 1 ? 24 : 8,
+                },
+              ]}
+            />
+          ))}
         </View>
-      </View>
+      </Box>
 
       {/* Content */}
-      <View className="flex-1 items-center justify-center px-8">
-        {/* Illustration */}
-        <View className="w-64 h-64 rounded-full mb-8 items-center justify-center bg-warm/20">
-          <Text className="text-8xl">🤱</Text>
+      <Box style={styles.content}>
+        {/* Illustration Circle - Reduzido */}
+        <View
+          style={[
+            styles.illustrationCircle,
+            {
+              backgroundColor: isDark
+                ? 'rgba(96, 165, 250, 0.1)'
+                : 'rgba(0, 78, 154, 0.05)',
+              borderColor: colors.primary.main,
+            },
+          ]}
+        >
+          <Text style={styles.emoji}>🤱</Text>
         </View>
 
-        {/* Title */}
-        <Text
-          className="text-3xl font-bold text-center mb-4"
-          style={{ color: Colors.text.primary }}
+        {/* Title - Tamanho reduzido */}
+        <Heading
+          level="h2"
+          style={{
+            fontSize: Tokens.typography.sizes['3xl'], // 28pt (was 36pt)
+            marginBottom: Tokens.spacing['3'],
+            textAlign: 'center',
+            letterSpacing: Tokens.typography.letterSpacing.tight,
+          }}
         >
-          Oi, que bom que você chegou.
-        </Text>
+          Oi, que bom que você chegou 💙
+        </Heading>
 
-        {/* Quote */}
+        {/* Quote - Ocean Blue */}
         <Text
-          className="text-lg italic text-center mb-4"
-          style={{ color: Colors.primary.main }}
+          size="md"
+          style={{
+            color: colors.primary.main,
+            fontStyle: 'italic',
+            marginBottom: Tokens.spacing['3'],
+            textAlign: 'center',
+            fontWeight: '600',
+          }}
         >
           "Aqui, você não precisa fingir que está tudo bem."
         </Text>
 
         {/* Description */}
         <Text
-          className="text-base text-center mb-8 leading-6"
-          style={{ color: Colors.text.secondary }}
+          size="sm"
+          color="secondary"
+          style={{
+            marginBottom: Tokens.spacing['6'],
+            textAlign: 'center',
+            lineHeight: Tokens.typography.lineHeights.md,
+            paddingHorizontal: Tokens.spacing['6'],
+          }}
         >
-          Eu sou a MãesValentes. Quero criar um espaço seguro para você. Vamos
-          conversar rapidinho?
+          Eu sou a <Text weight="bold" style={{ color: colors.text.primary }}>NathIA</Text>.{'\n'}
+          Quero criar um espaço seguro para você.{'\n'}
+          Vamos conversar rapidinho?
         </Text>
+      </Box>
 
-        {/* Button */}
-        <Button
-          title="Começar agora"
-          onPress={handleNext}
-          fullWidth
-          className="mt-4"
-        />
-      </View>
+      {/* Bottom CTA - Premium Button (Web Reference) */}
+      <Box px="6" pb="6" style={{ paddingBottom: Tokens.spacing['8'] }}>
+        <HapticButton
+          variant="primary"
+          size="lg"
+          onPress={onNext}
+          style={{
+            borderRadius: Tokens.radius.input, // 12px rounded
+            paddingVertical: Tokens.spacing['4'],
+            ...Tokens.shadows.premium, // Ocean blue shadow
+          }}
+        >
+          <View style={styles.buttonContent}>
+            <Heart size={20} color="#FFFFFF" fill="#FFFFFF" />
+            <Text
+              size="lg"
+              weight="bold"
+              style={{ color: '#FFFFFF', marginLeft: Tokens.spacing['2'] }}
+            >
+              Começar agora
+            </Text>
+          </View>
+        </HapticButton>
+
+        {/* Subtext */}
+        <Text
+          size="xs"
+          color="tertiary"
+          style={{
+            marginTop: Tokens.spacing['3'],
+            textAlign: 'center',
+          }}
+        >
+          São apenas 8 perguntas rápidas. Leva menos de 2 minutos.
+        </Text>
+      </Box>
     </SafeAreaView>
   );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  progressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    height: 8,
+  },
+  progressDot: {
+    height: 8,
+    borderRadius: 4,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Tokens.spacing['6'],
+  },
+  illustrationCircle: {
+    width: 140, // Reduzido de 200
+    height: 140,
+    borderRadius: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Tokens.spacing['6'], // Reduzido de 8
+    borderWidth: 2,
+  },
+  emoji: {
+    fontSize: 56, // Reduzido de 80
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
