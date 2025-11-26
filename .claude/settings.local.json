@@ -1,37 +1,22 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mkdir:*)",
-      "Bash(npm install:*)",
-      "Bash(node -e:*)",
-      "WebSearch",
-      "WebFetch(domain:github.com)",
-      "Bash(GITHUB_PERSONAL_ACCESS_TOKEN=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 npx:*)",
-      "Bash(export GITHUB_PERSONAL_ACCESS_TOKEN=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)",
-      "Bash(npx -y @modelcontextprotocol/server-github)",
-      "Bash(npx:*)",
-      "Bash(timeout 10s npx:*)",
       "Bash(cat:*)",
-      "Bash(npm run type-check:*)",
-      "Bash(npm cache clean:*)",
-      "Bash(git add:*)",
-      "Bash(netstat:*)",
-      "Bash(taskkill /F /PID 30600)",
-      "Bash(taskkill //F //PID 30600)",
-      "Bash(gh issue list:*)",
-      "Bash(GITHUB_PERSONAL_ACCESS_TOKEN=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 gh issue list --repo LionGab/NossaMaternidadeMelhor)",
-      "Bash(test:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nfix: substituir cores hardcoded por Design System tokens\n\n- Converte type aliases (UserStage, UserEmotion, etc.) em enums para runtime\n- Substitui cores hardcoded (#FFFFFF, #4285F4, etc.) por tokens do Design System\n- Corrige OnboardingFlowNew.tsx: usa colors.raw.neutral[0], colors.raw.success, colors.raw.warning\n- Corrige LoginScreenNew.tsx: usa colors.text.primary, colors.background.canvas, colors.raw.primary[400]\n- Garante consistência visual entre light/dark mode\n\nResolve TypeError: Cannot convert undefined or null to object\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(claude mcp:*)",
-      "Bash(tree:*)",
-      "Bash(npm run validate:env:*)",
-      "Bash(eas:*)"
-    ]
+      "Bash(npx -y supabase-mcp-server)",
+      "mcp__brave-search__brave_web_search",
+      "Bash(npx:*)",
+      "Bash(npm run type-check:*)"
+    ],
+    "deny": [],
+    "ask": [],
+    "defaultMode": "bypassPermissions"
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "supabase"
+    "supabase",
+    "brave-search",
+    "github",
+    "filesystem",
+    "sequential-thinking"
   ]
 }
