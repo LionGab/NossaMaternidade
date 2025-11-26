@@ -12,12 +12,16 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { FlatList, RefreshControl, ActivityIndicator, View } from 'react-native';
+import { FlatList, RefreshControl, ActivityIndicator, View, ImageBackground, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { CompositeNavigationProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { MessageCircleHeart, Moon, TrendingUp } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { MessageCircleHeart, Moon, TrendingUp, Sparkles } from 'lucide-react-native';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const HERO_HOME_HEIGHT = 200;
 import { useTheme } from '@/theme';
 import { Box } from '@/components/primitives/Box';
 import { Text } from '@/components/primitives/Text';
@@ -178,25 +182,48 @@ export default function HomeScreen() {
     <ScreenLayout
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary.main} />}
     >
-      {/* Seção 1: Saudação personalizada - REDESIGN: mais respiro */}
-      <Box px="4" pt="6" pb="4">
-        <Heading level="h2" color="primary">
-          Oi, {userName} 💙
-        </Heading>
-        <Text color="secondary" size="md" style={{ marginTop: Spacing['2'] }}>
-          Tô aqui com você. Hoje você não está sozinha.
-        </Text>
-      </Box>
+      {/* Seção 1: Hero Banner Principal - Welcome */}
+      <View
+        style={homeHeroStyles.heroContainer}
+        accessible={true}
+        accessibilityRole="header"
+        accessibilityLabel={`Bem-vinda, ${userName}. Aqui é seguro, aqui você pertence.`}
+      >
+        <ImageBackground
+          source={{ uri: 'https://i.imgur.com/lfX5QdI.jpg' }}
+          style={homeHeroStyles.heroImage}
+          imageStyle={homeHeroStyles.heroImageStyle}
+        >
+          <LinearGradient
+            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.65)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={homeHeroStyles.heroGradient}
+          >
+            {/* Badge Nossa Maternidade */}
+            <View style={homeHeroStyles.heroBadge}>
+              <Sparkles size={12} color="#FFD700" />
+              <Text style={homeHeroStyles.heroBadgeText}>NOSSA MATERNIDADE</Text>
+            </View>
 
-      {/* Seção 2: Hero CTA - Conversar com NathIA - REDESIGN: reduzir tamanho */}
+            <Text style={homeHeroStyles.heroTitle}>Oi, {userName} 💙</Text>
+            <Text style={homeHeroStyles.heroSubtitle}>
+              Aqui é seguro, aqui você pertence.
+            </Text>
+          </LinearGradient>
+        </ImageBackground>
+      </View>
+
+      {/* Seção 2: Hero CTA - Conversar com NathIA - REDESIGN: imagem hero imersiva */}
       <Box px="4" py="2">
         <MaternalCard
           variant="hero"
-          size="lg"
+          size="xl"
           emotion="warm"
+          heroImage="https://i.imgur.com/t3EFCQT.png"
           title="Conversar com NathIA"
           subtitle="Fale comigo, sem julgamentos."
-          icon={<MessageCircleHeart size={40} color="#FFFFFF" />}
+          icon={<MessageCircleHeart size={32} color="#FFFFFF" />}
           onPress={() => navigation.navigate('Chat')}
           accessibilityLabel="Abrir conversa com NathIA - assistente de apoio emocional"
         />
@@ -290,3 +317,63 @@ export default function HomeScreen() {
     </ScreenLayout>
   );
 }
+
+// ======================
+// 🎨 HOME HERO STYLES
+// ======================
+
+const homeHeroStyles = StyleSheet.create({
+  heroContainer: {
+    width: SCREEN_WIDTH,
+    height: HERO_HOME_HEIGHT,
+    marginBottom: 16,
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+  },
+  heroImageStyle: {
+    resizeMode: 'cover',
+  },
+  heroGradient: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingBottom: 20,
+  },
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(255, 143, 163, 0.9)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginBottom: 10,
+  },
+  heroBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  heroTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  heroSubtitle: {
+    fontSize: 15,
+    color: 'rgba(255, 255, 255, 0.95)',
+    textAlign: 'center',
+    marginTop: 6,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+});

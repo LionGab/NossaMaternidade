@@ -6,11 +6,14 @@ import {
   TouchableOpacity,
   Linking,
   StyleSheet,
+  ImageBackground,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Image } from 'expo-image';
 import { ScrollView as HorizontalScrollView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { CompositeNavigationProp } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -29,6 +32,9 @@ import {
   ArrowRight,
   Flame,
 } from 'lucide-react-native';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const HERO_HEIGHT = 220;
 import { MOCK_POSTS } from '../constants/data';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { useHaptics } from '../hooks/useHaptics';
@@ -51,6 +57,7 @@ interface QuickActionCardProps {
   icon: React.ComponentType<{ size?: number; color?: string }>;
   iconColor: string;
   bgColor: string;
+  heroImage?: string;
   badge?: { text: string; bg: string; textColor: string };
   actionColor: string;
   onPress: () => void;
@@ -65,12 +72,57 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
   icon: Icon,
   iconColor,
   bgColor,
+  heroImage,
   badge,
   actionColor,
   onPress,
   colors,
   isDark,
 }) => {
+  // Se tiver heroImage, renderiza com ImageBackground
+  if (heroImage) {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        style={styles.quickActionCardHero}
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={`${title}. ${description}`}
+        accessibilityHint={`Toque para ${action.toLowerCase()}`}
+      >
+        <ImageBackground
+          source={{ uri: heroImage }}
+          style={styles.quickActionHeroImage}
+          imageStyle={styles.quickActionHeroImageStyle}
+        >
+          <LinearGradient
+            colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.quickActionHeroGradient}
+          >
+            <View style={styles.quickActionHeader}>
+              <View style={[styles.quickActionIconContainer, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                <Icon size={24} color="#FFFFFF" />
+              </View>
+              {badge && (
+                <View style={[styles.quickActionBadge, { backgroundColor: badge.bg }]}>
+                  <Text style={[styles.quickActionBadgeText, { color: badge.textColor }]}>{badge.text}</Text>
+                </View>
+              )}
+            </View>
+            <Text style={[styles.quickActionTitle, { color: '#FFFFFF' }]}>{title}</Text>
+            <Text style={[styles.quickActionDescription, { color: 'rgba(255,255,255,0.85)' }]}>{description}</Text>
+            <View style={styles.quickActionFooter}>
+              <Text style={[styles.quickActionButton, { color: '#FFFFFF' }]}>{action}</Text>
+              <ArrowRight size={16} color="#FFFFFF" />
+            </View>
+          </LinearGradient>
+        </ImageBackground>
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -213,6 +265,7 @@ export default function MundoNathScreen() {
         icon: MessageCircleHeart,
         iconColor: '#4285F4',
         bgColor: isDark ? colors.background.canvas : '#E8F0FE',
+        heroImage: 'https://i.imgur.com/8x26k60.jpg',
         badge: { text: 'Online agora', bg: '#D1FAE5', textColor: '#047857' },
         actionColor: colors.primary.main,
         onPress: () => {
@@ -229,6 +282,7 @@ export default function MundoNathScreen() {
         icon: Wind,
         iconColor: '#9333EA',
         bgColor: isDark ? colors.background.canvas : '#F3E8FF',
+        heroImage: 'https://i.imgur.com/t3EFCQT.png',
         badge: { text: '3 min', bg: '#F3E8FF', textColor: '#7E22CE' },
         actionColor: '#9333EA',
         onPress: () => {
@@ -267,33 +321,47 @@ export default function MundoNathScreen() {
       <StatusBar style={isDark ? 'light' : 'dark'} />
 
       <ScrollView className="flex-1" contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <Image
-              source={{ uri: AVATAR_URL }}
-              style={styles.headerAvatar}
-              contentFit="cover"
-              transition={200}
-              accessibilityLabel="Avatar Mundo Nath"
-            />
-            <View>
-              <View style={styles.greetingRow}>
-                <Text style={[styles.greeting, { color: colors.text.secondary }]}>{getGreeting()},</Text>
-                <Sparkles size={14} color="#FF8FA3" />
-              </View>
-              <Text style={[styles.userName, { color: colors.text.primary }]}>{userName}</Text>
-            </View>
-          </View>
-
-          <TouchableOpacity
-            onPress={toggleTheme}
-            style={[styles.themeButton, { backgroundColor: colors.background.card }]}
-            accessibilityRole="button"
-            accessibilityLabel={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
+        {/* Hero Banner - Mundo Nath */}
+        <View
+          style={heroStyles.heroContainer}
+          accessible={true}
+          accessibilityRole="header"
+          accessibilityLabel="Mundo Nath - Conteúdo exclusivo para você"
+        >
+          <ImageBackground
+            source={{ uri: 'https://i.imgur.com/5TMe7xW.png' }}
+            style={heroStyles.heroImage}
+            imageStyle={heroStyles.heroImageStyle}
           >
-            {isDark ? <Sun size={20} color="#F59E0B" /> : <Moon size={20} color="#6B7280" />}
-          </TouchableOpacity>
+            <LinearGradient
+              colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.7)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={heroStyles.heroGradient}
+            >
+              {/* Theme Toggle no canto superior direito */}
+              <TouchableOpacity
+                onPress={toggleTheme}
+                style={heroStyles.heroThemeButton}
+                accessibilityRole="button"
+                accessibilityLabel={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
+              >
+                {isDark ? <Sun size={20} color="#F59E0B" /> : <Moon size={20} color="#FFFFFF" />}
+              </TouchableOpacity>
+
+              {/* Badge Exclusivo */}
+              <View style={heroStyles.heroBadge}>
+                <Sparkles size={12} color="#FFD700" />
+                <Text style={heroStyles.heroBadgeText}>EXCLUSIVO</Text>
+              </View>
+
+              {/* Título e subtítulo */}
+              <Text style={heroStyles.heroTitle}>Mundo Nath</Text>
+              <Text style={heroStyles.heroSubtitle}>
+                {getGreeting()}, {userName}!
+              </Text>
+            </LinearGradient>
+          </ImageBackground>
         </View>
 
         {/* Hoje eu tô com você Section */}
@@ -339,39 +407,40 @@ export default function MundoNathScreen() {
           </HorizontalScrollView>
         </View>
 
-        {/* Waitlist Banner */}
+        {/* Waitlist Banner - Com imagem hero */}
         <View style={styles.section}>
-          <View
-            style={[
-              styles.waitlistBanner,
-              {
-                backgroundColor: isDark ? colors.background.card : '#5D4E4B',
-              },
-            ]}
+          <ImageBackground
+            source={{ uri: 'https://i.imgur.com/krpimRy.jpg' }}
+            style={styles.waitlistBanner}
+            imageStyle={styles.waitlistImageStyle}
           >
-            <View style={styles.waitlistDecoration1} />
-            <View style={styles.waitlistDecoration2} />
-
-            <View style={styles.waitlistHeader}>
-              <Flame size={20} color="#FF8FA3" />
-              <Text style={styles.waitlistLabel}>Em breve</Text>
-            </View>
-
-            <Text style={styles.waitlistTitle}>Comunidade MãesValente</Text>
-            <Text style={styles.waitlistDescription}>
-              Um espaço seguro para trocar experiências com outras mães que te entendem de verdade.
-            </Text>
-
-            <TouchableOpacity
-              style={styles.waitlistButton}
-              onPress={handleWaitlistPress}
-              accessibilityRole="button"
-              accessibilityLabel="Entrar na lista de espera"
+            <LinearGradient
+              colors={['rgba(93, 78, 75, 0.7)', 'rgba(93, 78, 75, 0.95)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={styles.waitlistGradient}
             >
-              <Text style={styles.waitlistButtonText}>Entrar na lista de espera</Text>
-              <ArrowRight size={16} color="#5D4E4B" />
-            </TouchableOpacity>
-          </View>
+              <View style={styles.waitlistHeader}>
+                <Flame size={20} color="#FF8FA3" />
+                <Text style={styles.waitlistLabel}>Em breve</Text>
+              </View>
+
+              <Text style={styles.waitlistTitle}>Comunidade MãesValentes</Text>
+              <Text style={styles.waitlistDescription}>
+                Um espaço seguro para trocar experiências com outras mães que te entendem de verdade.
+              </Text>
+
+              <TouchableOpacity
+                style={styles.waitlistButton}
+                onPress={handleWaitlistPress}
+                accessibilityRole="button"
+                accessibilityLabel="Entrar na lista de espera"
+              >
+                <Text style={styles.waitlistButtonText}>Entrar na lista de espera</Text>
+                <ArrowRight size={16} color="#5D4E4B" />
+              </TouchableOpacity>
+            </LinearGradient>
+          </ImageBackground>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -474,6 +543,31 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
     borderWidth: 1,
+  },
+  quickActionCardHero: {
+    marginRight: 16,
+    width: 288,
+    borderRadius: 24,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  quickActionHeroImage: {
+    width: '100%',
+    minHeight: 200,
+  },
+  quickActionHeroImageStyle: {
+    borderRadius: 24,
+    resizeMode: 'cover',
+  },
+  quickActionHeroGradient: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'flex-end',
+    minHeight: 200,
   },
   quickActionHeader: {
     flexDirection: 'row',
@@ -589,31 +683,17 @@ const styles = StyleSheet.create({
   },
   waitlistBanner: {
     borderRadius: 24,
-    padding: 24,
-    position: 'relative',
     overflow: 'hidden',
+    minHeight: 220,
   },
-  waitlistDecoration1: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 128,
-    height: 128,
-    backgroundColor: 'rgba(255, 143, 163, 0.2)',
-    borderRadius: 64,
-    marginRight: -40,
-    marginTop: -40,
+  waitlistImageStyle: {
+    borderRadius: 24,
+    resizeMode: 'cover',
   },
-  waitlistDecoration2: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    width: 96,
-    height: 96,
-    backgroundColor: 'rgba(66, 133, 244, 0.2)',
-    borderRadius: 48,
-    marginLeft: -40,
-    marginBottom: -40,
+  waitlistGradient: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'center',
   },
   waitlistHeader: {
     flexDirection: 'row',
@@ -653,5 +733,74 @@ const styles = StyleSheet.create({
   waitlistButtonText: {
     color: '#5D4E4B',
     fontWeight: 'bold',
+  },
+});
+
+// ======================
+// 🎨 HERO STYLES
+// ======================
+
+const heroStyles = StyleSheet.create({
+  heroContainer: {
+    width: SCREEN_WIDTH,
+    height: HERO_HEIGHT,
+    marginBottom: 16,
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+  },
+  heroImageStyle: {
+    resizeMode: 'cover',
+  },
+  heroGradient: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    position: 'relative',
+  },
+  heroThemeButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    padding: 10,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(255, 143, 163, 0.9)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginBottom: 12,
+  },
+  heroBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  heroTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  heroSubtitle: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.95)',
+    textAlign: 'center',
+    marginTop: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
 });

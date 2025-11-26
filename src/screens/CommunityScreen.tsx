@@ -1,10 +1,14 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, ImageBackground, StyleSheet, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { FlashList } from '@shopify/flash-list';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../theme/ThemeContext';
-import { Users, Heart, MessageSquare, Crown, TrendingUp, Clock } from 'lucide-react-native';
+import { Users, Heart, MessageSquare, Crown, TrendingUp, Clock, Sparkles } from 'lucide-react-native';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const HERO_HEIGHT = 240;
 
 export default function CommunityScreen() {
   const { colors, isDark } = useTheme();
@@ -52,25 +56,37 @@ export default function CommunityScreen() {
         accessible={false}
         ListHeaderComponent={() => (
           <>
-            {/* Header */}
+            {/* Hero Banner - Mães Valentes */}
             <View
-              style={{ padding: 16, backgroundColor: colors.background.card, borderBottomWidth: 1, borderBottomColor: colors.border.light }}
+              style={heroStyles.heroContainer}
               accessible={true}
               accessibilityRole="header"
+              accessibilityLabel="Comunidade Mães Valentes - Mãe ajuda mãe. Você não está sozinha."
             >
-              <Text
-                style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}
-                accessibilityRole="header"
-                accessibilityLabel="MãesValentes"
+              <ImageBackground
+                source={{ uri: 'https://i.imgur.com/CN1eAvo.jpg' }}
+                style={heroStyles.heroImage}
+                imageStyle={heroStyles.heroImageStyle}
               >
-                MãesValentes
-              </Text>
-              <Text
-                style={{ fontSize: 14, color: colors.text.secondary, marginTop: 4 }}
-                accessibilityLabel="Sua rede de apoio maternal"
-              >
-                Sua rede de apoio maternal
-              </Text>
+                <LinearGradient
+                  colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  style={heroStyles.heroGradient}
+                >
+                  {/* Badge Comunidade Oficial */}
+                  <View style={heroStyles.heroBadge}>
+                    <Sparkles size={12} color="#FFD700" />
+                    <Text style={heroStyles.heroBadgeText}>COMUNIDADE OFICIAL</Text>
+                  </View>
+
+                  {/* Título e subtítulo */}
+                  <Text style={heroStyles.heroTitle}>Mães Valentes</Text>
+                  <Text style={heroStyles.heroSubtitle}>
+                    Mãe ajuda mãe. Você não está sozinha.
+                  </Text>
+                </LinearGradient>
+              </ImageBackground>
             </View>
 
             {/* Stats Cards */}
@@ -102,69 +118,67 @@ export default function CommunityScreen() {
               </View>
             </View>
 
-            {/* Angel of the Day */}
-            <View
-              style={{
-                margin: 16,
-                marginTop: 0,
-                padding: 16,
-                backgroundColor: colors.background.card,
-                borderRadius: 16,
-                borderWidth: 1,
-                borderColor: colors.border.light,
-              }}
+            {/* Angel of the Day - Com imagem hero */}
+            <ImageBackground
+              source={{ uri: 'https://i.imgur.com/RvWax7i.jpg' }}
+              style={heroStyles.angelContainer}
+              imageStyle={heroStyles.angelImageStyle}
               accessible={true}
               accessibilityLabel="Anjo do Dia: Paula Santos, mãe de 2, São Paulo. Ajudou 12 mães esta semana com apoio emocional e dicas práticas"
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <Crown size={20} color={colors.raw.warning[500]} />
-                <Text
-                  style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
-                  accessibilityRole="header"
-                >
-                  Anjo do Dia
-                </Text>
-              </View>
+              <LinearGradient
+                colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0.75)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={heroStyles.angelGradient}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                  <Crown size={20} color="#FFD700" />
+                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#FFFFFF' }} accessibilityRole="header">
+                    Anjo do Dia
+                  </Text>
+                </View>
 
-              <View style={{ flexDirection: 'row', gap: 12 }}>
-                <Image
-                  source={{ uri: 'https://i.pravatar.cc/150?img=5' }}
-                  style={{ width: 60, height: 60, borderRadius: 30 }}
-                  contentFit="cover"
-                  transition={200}
-                  accessible={true}
-                  accessibilityLabel="Foto de Paula Santos"
-                />
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.primary }}>
-                    Paula Santos
-                  </Text>
-                  <Text style={{ fontSize: 12, color: colors.text.secondary, marginTop: 2 }}>
-                    Mãe de 2 • São Paulo
-                  </Text>
-                  <Text style={{ fontSize: 12, color: colors.text.tertiary, marginTop: 4, lineHeight: 16 }}>
-                    "Ajudou 12 mães esta semana com apoio emocional e dicas práticas"
-                  </Text>
-                  <TouchableOpacity
-                    style={{
-                      marginTop: 8,
-                      paddingVertical: 6,
-                      paddingHorizontal: 12,
-                      backgroundColor: colors.primary.main,
-                      borderRadius: 8,
-                      alignSelf: 'flex-start',
-                    }}
-                    accessibilityRole="button"
-                    accessibilityLabel="Conectar com Paula Santos"
-                    accessibilityHint="Envia solicitação de conexão para Paula Santos"
-                  >
-                    <Text style={{ color: colors.text.inverse, fontSize: 12, fontWeight: '600' }}>
-                      Conectar
+                <View style={{ flexDirection: 'row', gap: 12 }}>
+                  <Image
+                    source={{ uri: 'https://i.pravatar.cc/150?img=5' }}
+                    style={{ width: 60, height: 60, borderRadius: 30, borderWidth: 2, borderColor: 'rgba(255,255,255,0.5)' }}
+                    contentFit="cover"
+                    transition={200}
+                    accessible={true}
+                    accessibilityLabel="Foto de Paula Santos"
+                  />
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 16, fontWeight: '600', color: '#FFFFFF' }}>
+                      Paula Santos
                     </Text>
+                    <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
+                      Mãe de 2 • São Paulo
+                    </Text>
+                    <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 4, lineHeight: 16 }}>
+                      "Ajudou 12 mães esta semana"
+                    </Text>
+                    <TouchableOpacity
+                      style={{
+                        marginTop: 8,
+                        paddingVertical: 6,
+                        paddingHorizontal: 12,
+                        backgroundColor: '#FFFFFF',
+                        borderRadius: 8,
+                        alignSelf: 'flex-start',
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel="Conectar com Paula Santos"
+                      accessibilityHint="Envia solicitação de conexão para Paula Santos"
+                    >
+                      <Text style={{ color: colors.primary.main, fontSize: 12, fontWeight: '600' }}>
+                        Conectar
+                      </Text>
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
+              </LinearGradient>
+            </ImageBackground>
 
             {/* Trending Topics */}
             <View style={{ paddingHorizontal: 16, marginBottom: 12 }}>
@@ -308,3 +322,80 @@ export default function CommunityScreen() {
     </SafeAreaView>
   );
 }
+
+// ======================
+// 🎨 HERO STYLES
+// ======================
+
+const heroStyles = StyleSheet.create({
+  heroContainer: {
+    width: SCREEN_WIDTH,
+    height: HERO_HEIGHT,
+    marginBottom: 8,
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+  },
+  heroImageStyle: {
+    resizeMode: 'cover',
+  },
+  heroGradient: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+  },
+  heroBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(255, 143, 163, 0.9)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginBottom: 12,
+  },
+  heroBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  heroTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  heroSubtitle: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.95)',
+    textAlign: 'center',
+    marginTop: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  // Angel of the Day styles
+  angelContainer: {
+    margin: 16,
+    marginTop: 0,
+    borderRadius: 16,
+    overflow: 'hidden',
+    minHeight: 160,
+  },
+  angelImageStyle: {
+    borderRadius: 16,
+    resizeMode: 'cover',
+  },
+  angelGradient: {
+    flex: 1,
+    padding: 16,
+    justifyContent: 'center',
+  },
+});

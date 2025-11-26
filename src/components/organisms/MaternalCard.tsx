@@ -36,6 +36,7 @@ export interface MaternalCardProps {
   subtitle?: string;
   icon?: React.ReactNode;
   image?: string;
+  heroImage?: string;                  // hero variant: background image URL
   size?: MaternalCardSize;
   onPress?: () => void;
 
@@ -83,6 +84,7 @@ function MaternalCardComponent({
   subtitle,
   icon,
   image,
+  heroImage,
   badge,
   emotion = 'calm',
   progress,
@@ -103,6 +105,62 @@ function MaternalCardComponent({
   const renderHero = () => {
     const gradient = EMOTION_GRADIENTS[emotion];
 
+    // Se tiver heroImage, renderiza com ImageBackground
+    if (heroImage) {
+      return (
+        <HapticButton
+          variant="primary"
+          size="lg"
+          onPress={onPress}
+          accessibilityLabel={accessibilityLabel}
+          style={StyleSheet.flatten([
+            {
+              height: sizeConfig.height,
+              borderRadius: Radius['3xl'],
+              overflow: 'hidden',
+              ...Shadows.lg,
+            },
+            style,
+          ])}
+        >
+          <ImageBackground
+            source={{ uri: heroImage }}
+            style={{ flex: 1 }}
+            imageStyle={{
+              borderRadius: Radius['3xl'],
+              resizeMode: 'cover',
+            }}
+          >
+            {/* Overlay gradient for text readability */}
+            <LinearGradient
+              colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.6)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={{
+                flex: 1,
+                padding: Spacing[sizeConfig.padding],
+                justifyContent: 'flex-end',
+                alignItems: 'flex-start',
+              }}
+            >
+              {icon && <Box style={{ marginBottom: Spacing['2'] }}>{icon}</Box>}
+
+              <Heading level="h3" color="inverse" align="left">
+                {title}
+              </Heading>
+
+              {subtitle && (
+                <Text color="inverse" align="left" style={{ marginTop: Spacing['1'], opacity: 0.95 }}>
+                  {subtitle}
+                </Text>
+              )}
+            </LinearGradient>
+          </ImageBackground>
+        </HapticButton>
+      );
+    }
+
+    // Sem heroImage, usa gradiente padrão
     return (
       <HapticButton
         variant="primary"
