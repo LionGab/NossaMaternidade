@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { FlashList } from '@shopify/flash-list';
 import { useTheme } from '../theme/ThemeContext';
-import { Users, Heart, MessageSquare, Crown, TrendingUp, Clock, Sparkles, MessagesSquare } from 'lucide-react-native';
+import { Heart, MessageSquare, TrendingUp, Sparkles, MessagesSquare } from 'lucide-react-native';
 import { HeroBanner } from '@/components/molecules/HeroBanner';
 
 export default function CommunityScreen() {
@@ -66,26 +66,26 @@ export default function CommunityScreen() {
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                    backgroundColor: colors.background.overlay,
                     paddingHorizontal: 12,
                     paddingVertical: 6,
                     borderRadius: 20,
                     marginBottom: 16,
                     borderWidth: 1,
-                    borderColor: 'rgba(255, 255, 255, 0.4)',
+                    borderColor: `${colors.raw.neutral[0]}40`,
                   }}
                 >
-                  <Text style={{ fontSize: 12, color: '#FFFFFF', fontWeight: '700', marginRight: 4 }}>
+                  <Text style={{ fontSize: 12, color: colors.text.inverse, fontWeight: '700', marginRight: 4 }}>
                     ✨
                   </Text>
-                  <Text style={{ fontSize: 11, color: '#FFFFFF', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  <Text style={{ fontSize: 11, color: colors.text.inverse, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                     COMUNIDADE OFICIAL
                   </Text>
                 </View>
 
                 {/* Título */}
                 <Text
-                  style={{ fontSize: 36, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 8, letterSpacing: -0.5 }}
+                  style={{ fontSize: 36, fontWeight: 'bold', color: colors.text.inverse, marginBottom: 8, letterSpacing: -0.5 }}
                   accessibilityRole="header"
                   accessibilityLabel="Mães Valentes"
                 >
@@ -94,7 +94,7 @@ export default function CommunityScreen() {
 
                 {/* Subtítulo */}
                 <Text
-                  style={{ fontSize: 16, color: '#FFFFFF', opacity: 0.95, lineHeight: 22 }}
+                  style={{ fontSize: 16, color: colors.text.inverse, opacity: 0.95, lineHeight: 22 }}
                   accessibilityLabel="Mãe ajuda mãe. Você não está sozinha"
                 >
                   Mãe ajuda mãe. Você não está sozinha. 💛
@@ -111,7 +111,7 @@ export default function CommunityScreen() {
                 accessibilityRole="text"
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <Heart size={20} color="#FF6B9D" fill="#FF6B9D" />
+                  <Heart size={20} color={colors.primary.main} fill={colors.primary.main} />
                   <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}>1.2k</Text>
                 </View>
                 <Text style={{ fontSize: 12, color: colors.text.secondary }}>Mães conectadas</Text>
@@ -146,7 +146,7 @@ export default function CommunityScreen() {
               accessibilityLabel="Mãe Inspiração: Paula Santos, mãe de 2, São Paulo. Ajudou 12 mães esta semana com apoio emocional e dicas práticas"
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <Sparkles size={20} color="#FFD700" fill="#FFD700" />
+                <Sparkles size={20} color={colors.status.warning} fill={colors.status.warning} />
                 <Text
                   style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
                   accessibilityRole="header"
@@ -202,7 +202,7 @@ export default function CommunityScreen() {
                 accessible={true}
                 accessibilityRole="header"
               >
-                <TrendingUp size={18} color="#FF6B9D" />
+                <TrendingUp size={18} color={colors.primary.main} />
                 <Text
                   style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
                   accessibilityLabel="Assuntos do Momento"

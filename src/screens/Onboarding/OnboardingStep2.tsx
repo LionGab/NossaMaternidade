@@ -87,7 +87,7 @@ export default function OnboardingStep2({ step, formData, updateData, nextStep, 
           }}
           activeOpacity={0.8}
         >
-          <Text className="text-white font-bold text-base" style={{ color: colors.text.inverse }}>Continuar</Text>
+          <Text style={{ color: colors.text.inverse, fontWeight: '700', fontSize: 16 }}>Continuar</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

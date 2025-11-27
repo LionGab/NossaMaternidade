@@ -118,7 +118,7 @@ export default function ContentDetailScreen() {
           <Box
             style={{
               flex: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+              backgroundColor: colors.background.overlay,
               justifyContent: 'space-between',
               paddingTop: Spacing['6'],
             }}
@@ -138,13 +138,13 @@ export default function ContentDetailScreen() {
                 size="sm"
                 onPress={() => navigation.goBack()}
                 style={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                  backgroundColor: colors.background.overlay,
                   borderRadius: Radius.full,
                   padding: Spacing['2'],
                 }}
                 accessibilityLabel="Voltar para tela anterior"
               >
-                <ArrowLeft size={24} color="#FFFFFF" />
+                <ArrowLeft size={24} color={colors.raw.neutral[0]} />
               </HapticButton>
 
               {/* Ações */}
@@ -154,13 +154,13 @@ export default function ContentDetailScreen() {
                   size="sm"
                   onPress={handleLike}
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                    backgroundColor: colors.background.overlay,
                     borderRadius: Radius.full,
                     padding: Spacing['2'],
                   }}
                   accessibilityLabel={isLiked ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                 >
-                  <Heart size={24} color={isLiked ? '#EF4444' : '#FFFFFF'} fill={isLiked ? '#EF4444' : 'none'} />
+                  <Heart size={24} color={isLiked ? colors.status.error : colors.raw.neutral[0]} fill={isLiked ? colors.status.error : 'none'} />
                 </HapticButton>
 
                 <HapticButton
@@ -168,13 +168,13 @@ export default function ContentDetailScreen() {
                   size="sm"
                   onPress={handleShare}
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                    backgroundColor: colors.background.overlay,
                     borderRadius: Radius.full,
                     padding: Spacing['2'],
                   }}
                   accessibilityLabel="Compartilhar conteúdo"
                 >
-                  <Share2 size={24} color="#FFFFFF" />
+                  <Share2 size={24} color={colors.raw.neutral[0]} />
                 </HapticButton>
               </Box>
             </Box>
@@ -196,7 +196,7 @@ export default function ContentDetailScreen() {
                   }}
                   accessibilityLabel={content.type === 'video' ? 'Reproduzir vídeo' : 'Reproduzir áudio'}
                 >
-                  <Play size={40} color="#FFFFFF" />
+                  <Play size={40} color={colors.raw.neutral[0]} />
                 </HapticButton>
               </Box>
             )}
@@ -207,7 +207,7 @@ export default function ContentDetailScreen() {
                 alignSelf: 'flex-start',
                 marginLeft: Spacing['4'],
                 marginBottom: Spacing['4'],
-                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                backgroundColor: colors.background.overlay,
                 paddingHorizontal: Spacing['3'],
                 paddingVertical: Spacing['2'],
                 borderRadius: Radius.lg,

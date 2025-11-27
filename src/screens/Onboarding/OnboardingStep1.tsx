@@ -83,7 +83,7 @@ export default function OnboardingStep1({ nextStep }: OnboardingStepProps) {
           style={{ backgroundColor: colors.primary.main }}
           activeOpacity={0.8}
         >
-          <Text className="text-white font-bold text-base">Começar agora</Text>
+          <Text style={{ color: colors.text.inverse, fontWeight: '700', fontSize: 16 }}>Começar agora</Text>
           <ArrowRight size={20} color={colors.text.inverse} />
         </TouchableOpacity>
       </View>

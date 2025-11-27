@@ -80,7 +80,11 @@ export const Switch: React.FC<SwitchProps> = ({
   });
 
   return (
-    <Pressable accessibilityRole="button"
+    <Pressable
+      accessibilityRole="switch"
+      accessibilityState={{ checked, disabled }}
+      accessibilityLabel={label || 'Interruptor'}
+      accessibilityHint={description || `Toque para ${checked ? 'desativar' : 'ativar'}`}
       onPress={handlePress}
       disabled={disabled}
       style={[
@@ -111,8 +115,8 @@ export const Switch: React.FC<SwitchProps> = ({
               width: thumbSize,
               height: thumbSize,
               borderRadius: thumbSize / 2,
-              backgroundColor: '#FFFFFF',
-              shadowColor: '#000',
+              backgroundColor: colors.raw.neutral[0],
+              shadowColor: colors.text.primary,
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.2,
               shadowRadius: 2,

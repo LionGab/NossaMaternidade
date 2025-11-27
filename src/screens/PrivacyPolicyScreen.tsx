@@ -47,7 +47,7 @@ export default function PrivacyPolicyScreen() {
         <TouchableOpacity
           onPress={handleGoBack}
           style={{
-            backgroundColor: isDark ? colors.background.elevated : '#F3F4F6',
+            backgroundColor: colors.background.elevated,
             padding: 8,
             borderRadius: 20,
             marginRight: 12,

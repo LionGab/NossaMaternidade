@@ -99,7 +99,7 @@ export default function TermsOfServiceScreen() {
         <TouchableOpacity
           onPress={handleGoBack}
           style={{
-            backgroundColor: isDark ? colors.background.elevated : '#F3F4F6',
+            backgroundColor: colors.background.elevated,
             padding: 8,
             borderRadius: 20,
             marginRight: 12,
@@ -225,11 +225,11 @@ export default function TermsOfServiceScreen() {
         <Section title="5. Isenção Médica (IMPORTANTE)" colors={colors}>
           <View
             style={{
-              backgroundColor: isDark ? '#4B1818' : '#FEE2E2',
+              backgroundColor: colors.raw.error[100],
               padding: 16,
               borderRadius: 12,
               borderLeftWidth: 4,
-              borderLeftColor: '#EF4444',
+              borderLeftColor: colors.status.error,
               marginBottom: 12,
             }}
           >
@@ -448,7 +448,7 @@ export default function TermsOfServiceScreen() {
               disabled={!accepted || loading}
               style={{
                 backgroundColor:
-                  !accepted || loading ? '#D1D5DB' : colors.primary.main,
+                  !accepted || loading ? colors.text.disabled : colors.primary.main,
                 paddingVertical: 14,
                 paddingHorizontal: 24,
                 borderRadius: 12,
@@ -460,7 +460,7 @@ export default function TermsOfServiceScreen() {
             >
               <Text
                 style={{
-                  color: '#FFFFFF',
+                  color: colors.text.inverse,
                   fontSize: 16,
                   fontWeight: '600',
                 }}

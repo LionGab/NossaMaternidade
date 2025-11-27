@@ -307,7 +307,7 @@ export default function AgentsStatusScreen() {
                           marginLeft: 8,
                         }}
                       >
-                        <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>
+                        <Text style={{ fontSize: 12, fontWeight: '700', color: colors.raw.neutral[0] }}>
                           {item.badge}
                         </Text>
                       </View>

@@ -5,12 +5,11 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
-import { ArrowLeft, Sparkles, Send, Layout, Calendar, BookHeart, Shield } from 'lucide-react-native';
+import { ArrowLeft, Sparkles, Layout, Calendar, BookHeart, Shield } from 'lucide-react-native';
 import { geminiService } from '../services/geminiService';
 import { useTheme } from '../theme/ThemeContext';
 import { Button } from '../components';
@@ -18,7 +17,7 @@ import { logger } from '../utils/logger';
 
 export default function DiaryScreen() {
   const navigation = useNavigation();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const [entry, setEntry] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
@@ -52,7 +51,7 @@ export default function DiaryScreen() {
       <View
         className="w-10 h-10 rounded-full items-center justify-center"
         style={{
-          backgroundColor: isDark ? '#1D2843' : '#F3F4F6',
+          backgroundColor: colors.background.elevated,
         }}
       >
         {icon}
@@ -71,7 +70,7 @@ export default function DiaryScreen() {
   return (
     <SafeAreaView
       className="flex-1"
-      style={{ backgroundColor: isDark ? '#020617' : '#F8F9FA' }}
+      style={{ backgroundColor: colors.background.canvas }}
       accessible={true}
       accessibilityLabel="Tela do Diário MãesValente"
     >
@@ -79,7 +78,7 @@ export default function DiaryScreen() {
       <View
         className="px-4 py-4 flex-row items-center justify-between border-b"
         style={{
-          backgroundColor: isDark ? '#0B1220' : '#FFFFFF',
+          backgroundColor: colors.background.card,
           borderBottomColor: colors.border.light,
         }}
       >
@@ -91,7 +90,7 @@ export default function DiaryScreen() {
           accessibilityLabel="Voltar"
           accessibilityHint="Retorna para a tela anterior"
         >
-          <ArrowLeft size={20} color={isDark ? '#000000' : '#FFFFFF'} />
+          <ArrowLeft size={20} color={colors.text.inverse} />
         </TouchableOpacity>
 
         <View className="items-center" accessible={true} accessibilityRole="header" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -154,7 +153,7 @@ export default function DiaryScreen() {
               numberOfLines={10}
               className="w-full p-4 rounded-2xl border text-base"
               style={{
-                backgroundColor: isDark ? '#0B1220' : '#FFFFFF',
+                backgroundColor: colors.background.input,
                 borderColor: colors.border.light,
                 color: colors.text.primary,
                 minHeight: 256,
@@ -195,7 +194,7 @@ export default function DiaryScreen() {
             {/* NathIA Response */}
             <View className="flex-row gap-4 mb-8">
               <View
-                style={{ width: 32, height: 32, borderRadius: 16, overflow: 'hidden', borderWidth: 1.5, borderColor: '#FFFFFF', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 2, elevation: 2 }}
+                style={{ width: 32, height: 32, borderRadius: 16, overflow: 'hidden', borderWidth: 1.5, borderColor: colors.background.card, shadowColor: colors.text.primary, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 2, elevation: 2 }}
                 accessible={true}
                 accessibilityLabel="Avatar da NathIA"
               >
@@ -210,7 +209,7 @@ export default function DiaryScreen() {
               <View
                 className="flex-1 p-5 rounded-2xl rounded-tl-none relative"
                 style={{
-                  backgroundColor: isDark ? '#0B1220' : '#E8F0FE',
+                  backgroundColor: colors.primary.light,
                 }}
                 accessible={true}
                 accessibilityLabel={`Resposta da NathIA: ${response}`}
@@ -262,7 +261,7 @@ export default function DiaryScreen() {
         <View
           className="p-6 border-t"
           style={{
-            backgroundColor: isDark ? '#0B1220' : '#FFFFFF',
+            backgroundColor: colors.background.card,
             borderTopColor: colors.border.light,
           }}
         >

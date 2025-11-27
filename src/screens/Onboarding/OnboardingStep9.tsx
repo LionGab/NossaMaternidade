@@ -86,7 +86,7 @@ export default function OnboardingStep9({ formData, updateData, onFinish }: Onbo
         style={{ backgroundColor: colors.primary.main }}
         activeOpacity={0.8}
       >
-        <Text className="text-white font-bold text-base" style={{ color: colors.text.inverse }}>Entrar na minha casa</Text>
+        <Text style={{ color: colors.text.inverse, fontWeight: '700', fontSize: 16 }}>Entrar na minha casa</Text>
         <Shield size={20} color={colors.text.inverse} />
       </TouchableOpacity>
 

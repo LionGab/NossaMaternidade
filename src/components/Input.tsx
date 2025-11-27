@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { TextInput, View, Text, TextInputProps, ViewStyle, TextStyle, Animated } from 'react-native';
+import { TextInput, View, Text, TextInputProps, ViewStyle, TextStyle } from 'react-native';
 import { useThemeColors } from '@/theme';
 import { Spacing, Radius, Typography, ColorTokens } from '@/theme/tokens';
 
@@ -81,6 +81,9 @@ export const Input: React.FC<InputProps> = ({
         <TextInput
           {...props}
           editable={!disabled}
+          accessibilityLabel={props.accessibilityLabel || label || props.placeholder}
+          accessibilityHint={props.accessibilityHint || (error ? `Erro: ${error}` : helperText)}
+          accessibilityState={{ disabled }}
           onFocus={(e) => {
             setIsFocused(true);
             props.onFocus?.(e);
@@ -93,7 +96,7 @@ export const Input: React.FC<InputProps> = ({
           style={[
             {
               flex: 1,
-              color: colors.text.inverse, // Texto sempre preto no input (fundo branco)
+              color: ColorTokens.neutral[900], // Texto sempre escuro no input (fundo claro)
               fontSize: Typography.sizes.base,
               fontFamily: Typography.fonts.body,
             },

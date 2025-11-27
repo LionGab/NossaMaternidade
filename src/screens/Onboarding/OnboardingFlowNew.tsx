@@ -237,7 +237,7 @@ export default function OnboardingFlow() {
                   accessibilityHint="Inicia o processo de onboarding"
                 >
                   <ArrowRight size={20} color={colors.text.inverse} />
-                  <Text className="text-white font-bold text-base">Começar com a Nath</Text>
+                  <Text style={{ color: colors.text.inverse, fontWeight: '700', fontSize: 16 }}>Começar com a Nath</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -305,7 +305,7 @@ export default function OnboardingFlow() {
               accessibilityHint={formData.name ? "Avança para a próxima etapa" : "Preencha seu nome para continuar"}
               accessibilityState={{ disabled: !formData.name }}
             >
-              <Text className="text-white font-bold text-center">Continuar</Text>
+              <Text style={{ color: colors.text.inverse, fontWeight: '700', textAlign: 'center' }}>Continuar</Text>
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
@@ -431,7 +431,7 @@ export default function OnboardingFlow() {
                   accessibilityHint={`Diminui em 1 ${isPregnant ? 'semana' : 'mês'}`}
                   disabled={sliderValue <= 1}
                 >
-                  <Text className="text-white text-2xl font-bold">-</Text>
+                  <Text style={{ color: colors.text.inverse, fontSize: 24, fontWeight: '700' }}>-</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
@@ -445,7 +445,7 @@ export default function OnboardingFlow() {
                   accessibilityHint={`Aumenta em 1 ${isPregnant ? 'semana' : 'mês'}`}
                   disabled={sliderValue >= maxVal}
                 >
-                  <Text className="text-white text-2xl font-bold">+</Text>
+                  <Text style={{ color: colors.text.inverse, fontSize: 24, fontWeight: '700' }}>+</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -463,7 +463,7 @@ export default function OnboardingFlow() {
             accessibilityLabel="Confirmar"
             accessibilityHint="Confirma o valor e avança para a próxima etapa"
           >
-            <Text className="text-white font-bold text-center">Confirmar</Text>
+            <Text style={{ color: colors.text.inverse, fontWeight: '700', textAlign: 'center' }}>Confirmar</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -917,7 +917,7 @@ export default function OnboardingFlow() {
             accessibilityHint={canProceed ? "Finaliza o onboarding e entra no app" : "É necessário aceitar os termos para continuar"}
             accessibilityState={{ disabled: !canProceed }}
           >
-            <Text className="text-white font-bold text-base">Entrar na minha casa</Text>
+            <Text style={{ color: colors.text.inverse, fontWeight: '700', fontSize: 16 }}>Entrar na minha casa</Text>
             <Shield size={18} color={colors.text.inverse} />
           </TouchableOpacity>
 
