@@ -42,6 +42,8 @@
     "validate:env": "node scripts/validate-env.js",
     "test:connection": "node scripts/test-connection.js",
     "validate:design": "node scripts/validate-design-tokens.js",
+    "design:refactor": "ts-node scripts/design-refactor.ts",
+    "design:validate": "ts-node scripts/design-refactor.ts --validate",
     "validate": "npm run type-check && npm run validate:design && npm run validate:env || echo '⚠️  validate:env falhou (arquivo .env pode não existir)' && npm run lint || echo '⚠️  lint falhou'",
     "precommit": "npm run validate:design && npm run type-check && npm run lint",
     "prepare": "husky"

@@ -10,9 +10,10 @@ import { Heading } from '@/components/primitives/Heading';
 import { HapticButton } from '@/components/primitives/HapticButton';
 import { Text } from '@/components/primitives/Text';
 import { Spacing } from '@/theme/tokens';
+import { TYPOGRAPHY } from '@/design-system';
 
 export interface SectionLayoutProps {
-  title: string;
+  title: string | React.ReactNode;
   children: React.ReactNode;
   actionLabel?: string;
   onActionPress?: () => void;
@@ -44,9 +45,41 @@ export function SectionLayout({
           marginBottom: Spacing['3'],
         }}
       >
-        <Heading level={headingLevel} color="primary">
-          {title}
-        </Heading>
+        {typeof title === 'string' ? (
+          <Heading 
+            level={headingLevel} 
+            color="primary"
+            style={{ 
+              fontSize: headingLevel === 'h2' ? TYPOGRAPHY.h3.fontSize : 
+                       headingLevel === 'h3' ? TYPOGRAPHY.h4.fontSize :
+                       headingLevel === 'h4' ? TYPOGRAPHY.h5.fontSize :
+                       TYPOGRAPHY.h6.fontSize,
+              fontWeight: headingLevel === 'h2' ? TYPOGRAPHY.h3.fontWeight : 
+                         headingLevel === 'h3' ? TYPOGRAPHY.h4.fontWeight :
+                         headingLevel === 'h4' ? TYPOGRAPHY.h5.fontWeight :
+                         TYPOGRAPHY.h6.fontWeight,
+            }}
+          >
+            {title}
+          </Heading>
+        ) : (
+          <Heading 
+            level={headingLevel} 
+            color="primary"
+            style={{ 
+              fontSize: headingLevel === 'h2' ? TYPOGRAPHY.h3.fontSize : 
+                       headingLevel === 'h3' ? TYPOGRAPHY.h4.fontSize :
+                       headingLevel === 'h4' ? TYPOGRAPHY.h5.fontSize :
+                       TYPOGRAPHY.h6.fontSize,
+              fontWeight: headingLevel === 'h2' ? TYPOGRAPHY.h3.fontWeight : 
+                         headingLevel === 'h3' ? TYPOGRAPHY.h4.fontWeight :
+                         headingLevel === 'h4' ? TYPOGRAPHY.h5.fontWeight :
+                         TYPOGRAPHY.h6.fontWeight,
+            }}
+          >
+            {title}
+          </Heading>
+        )}
 
         {actionLabel && onActionPress && (
           <HapticButton
