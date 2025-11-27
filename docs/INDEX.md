@@ -91,6 +91,19 @@ Este índice organiza toda a documentação disponível para facilitar sua naveg
 
 ---
 
+### 🎨 iOS Infinite Canvas App (New Project)
+
+| Documento | Descrição | Tamanho | Tempo |
+|-----------|-----------|---------|-------|
+| **[ios-infinite-canvas/README.md](ios-infinite-canvas/README.md)** | Architecture blueprint and strategic analysis | 23KB | 45 min |
+| **[ios-infinite-canvas/IMPLEMENTATION_GUIDE.md](ios-infinite-canvas/IMPLEMENTATION_GUIDE.md)** | Production-ready Swift code examples | 40KB | 90 min |
+| **[ios-infinite-canvas/ROADMAP.md](ios-infinite-canvas/ROADMAP.md)** | MVP to V4.0 product roadmap | 11KB | 30 min |
+| **[ios-infinite-canvas/AI_FEATURES.md](ios-infinite-canvas/AI_FEATURES.md)** | AI features, collaboration, and platform expansion | 23KB | 45 min |
+
+**Tech Stack:** Swift, SwiftUI, UIKit, Metal, PencilKit, SwiftData
+
+---
+
 ### 🤝 Contribuindo
 
 | Documento | Descrição | Tamanho | Tempo |
