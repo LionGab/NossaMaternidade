@@ -34,8 +34,8 @@
       }
     },
     "maestro": {
-      "command": "maestro",
-      "args": ["mcp"],
+      "command": "python",
+      "args": ["-m", "maestro_mcp"],
       "description": "UI testing framework for Mobile and Web - controls emulators, interacts with apps, writes and debugs UI tests"
     }
   }
