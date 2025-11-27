@@ -32,6 +32,11 @@
         "UPSTASH_EMAIL": "seu-email",
         "UPSTASH_PASSWORD": "sua-senha"
       }
+    },
+    "maestro": {
+      "command": "maestro",
+      "args": ["mcp"],
+      "description": "UI testing framework for Mobile and Web - controls emulators, interacts with apps, writes and debugs UI tests"
     }
   }
 }
