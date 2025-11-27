@@ -1,0 +1,63 @@
+name: 🎨 Design Validation
+
+on:
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - 'src/**/*.ts'
+      - 'src/**/*.tsx'
+      - 'src/theme/**/*'
+  push:
+    branches: [main, dev]
+    paths:
+      - 'src/**/*.ts'
+      - 'src/**/*.tsx'
+      - 'src/theme/**/*'
+
+jobs:
+  validate-design:
+    name: Validate Design Tokens
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🎨 Validate design tokens
+        run: npm run validate:design
+
+      - name: ✅ TypeScript type checking
+        run: npm run type-check
+
+      - name: 🔍 ESLint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: 📊 Generate design report
+        if: failure()
+        run: |
+          echo "## 🔴 Design Validation Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Design tokens validation encontrou violações." >> $GITHUB_STEP_SUMMARY
+          echo "Por favor, corrija as violações antes de fazer merge." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Como corrigir:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Execute \`npm run validate:design\` localmente" >> $GITHUB_STEP_SUMMARY
+          echo "2. Substitua cores hardcoded por design tokens" >> $GITHUB_STEP_SUMMARY
+          echo "3. Use \`useThemeColors()\` hook para acessar cores do tema" >> $GITHUB_STEP_SUMMARY
+
+      - name: ✅ Design validation passed
+        if: success()
+        run: |
+          echo "## ✅ Design Validation Passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Todos os design tokens estão sendo usados corretamente!" >> $GITHUB_STEP_SUMMARY

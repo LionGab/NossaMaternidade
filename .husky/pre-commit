@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🎨 Validando design tokens..."
+npm run validate:design
+
+echo "✅ TypeScript type checking..."
+npm run type-check
