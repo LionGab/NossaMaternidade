@@ -145,6 +145,10 @@ async function getViolations(filePath) {
     let responseReceived = false;
     const timeout = setTimeout(() => {
       if (!responseReceived) {
+        // Bug 1 Fix: Fechar stdin antes de matar o processo no timeout também
+        if (child.stdin && !child.stdin.destroyed) {
+          child.stdin.end();
+        }
         child.kill();
         reject(new Error('Timeout ao obter violations'));
       }
@@ -162,6 +166,11 @@ async function getViolations(filePath) {
             if (response.id === request.id) {
               responseReceived = true;
               clearTimeout(timeout);
+              
+              // Bug 1 Fix: Fechar stdin antes de matar o processo
+              if (child.stdin && !child.stdin.destroyed) {
+                child.stdin.end();
+              }
               child.kill();
 
               if (response.error) {
@@ -207,20 +216,62 @@ function applyFixes(filePath, violations, options) {
   const fixes = [];
   let totalFixes = 0;
 
-  // Determinar quais fixes aplicar baseado em confidence
+  // Bug 2 Fix: Usar violations detectadas pelo MCP para determinar fixes
+  // Criar um mapa de violations para facilitar busca
+  const violationMap = new Map();
+  violations.forEach(v => {
+    const key = v.value || v.pattern || v.type;
+    if (key) {
+      violationMap.set(key, v);
+    }
+  });
+
+  // Determinar quais fixes aplicar baseado em confidence E violations
   const fixesToApply = [];
   
   if (options.confidence === 'high' || options.confidence === 'all') {
     Object.entries(HIGH_CONFIDENCE_FIXES).forEach(([key, fix]) => {
-      fixesToApply.push({ ...fix, key });
+      // Aplicar fix se houver violation correspondente OU se for modo 'all'
+      if (options.confidence === 'all' || violationMap.has(key) || 
+          violations.some(v => v.value === key || v.pattern?.includes(key))) {
+        fixesToApply.push({ ...fix, key });
+      }
     });
   }
 
   if (options.confidence === 'medium' || options.confidence === 'all') {
     Object.entries(MEDIUM_CONFIDENCE_FIXES).forEach(([key, fix]) => {
-      fixesToApply.push({ ...fix, key });
+      // Aplicar fix se houver violation correspondente OU se for modo 'all'
+      if (options.confidence === 'all' || violationMap.has(key) || 
+          violations.some(v => v.value === key || v.pattern?.includes(key))) {
+        fixesToApply.push({ ...fix, key });
+      }
     });
   }
+
+  // Aplicar fixes baseados em violations específicas
+  violations.forEach(violation => {
+    // Tentar encontrar fix correspondente para a violation
+    const violationValue = violation.value || violation.pattern || '';
+    
+    // Buscar em HIGH_CONFIDENCE_FIXES
+    Object.entries(HIGH_CONFIDENCE_FIXES).forEach(([key, fix]) => {
+      if (violationValue.includes(key) || key.includes(violationValue)) {
+        if (!fixesToApply.find(f => f.key === key)) {
+          fixesToApply.push({ ...fix, key });
+        }
+      }
+    });
+
+    // Buscar em MEDIUM_CONFIDENCE_FIXES
+    Object.entries(MEDIUM_CONFIDENCE_FIXES).forEach(([key, fix]) => {
+      if (violationValue.includes(key) || key.includes(violationValue)) {
+        if (!fixesToApply.find(f => f.key === key)) {
+          fixesToApply.push({ ...fix, key });
+        }
+      }
+    });
+  });
 
   // Aplicar fixes
   fixesToApply.forEach(fix => {
@@ -239,15 +290,40 @@ function applyFixes(filePath, violations, options) {
     });
   });
 
-  // Adicionar import de Tokens se necessário
+  // Bug 3 Fix: Adicionar import de Tokens mesmo quando não há imports existentes
   if (content.includes('Tokens.') && !content.includes("from '@/theme/tokens'") && !content.includes("from '../../theme/tokens'")) {
     const importLine = "import { Tokens } from '@/theme/tokens';";
     // Tentar adicionar após outros imports
     const importMatch = content.match(/(import\s+.*?from\s+['"].*?['"];?\s*\n)+/);
     if (importMatch) {
+      // Caso 1: Há imports existentes - adicionar após eles
       content = content.replace(importMatch[0], importMatch[0] + importLine + '\n');
       fixes.push({
-        pattern: 'missing import',
+        pattern: 'missing Tokens import',
+        replacement: importLine,
+        matches: 1,
+        confidence: 0.95,
+      });
+      totalFixes++;
+    } else {
+      // Caso 2: Não há imports - adicionar no início do arquivo
+      // Encontrar a primeira linha não-vazia ou comentário
+      const lines = content.split('\n');
+      let insertIndex = 0;
+      
+      // Pular comentários no início
+      for (let i = 0; i < lines.length; i++) {
+        const trimmed = lines[i].trim();
+        if (trimmed && !trimmed.startsWith('//') && !trimmed.startsWith('/*') && !trimmed.startsWith('*')) {
+          insertIndex = i;
+          break;
+        }
+      }
+      
+      lines.splice(insertIndex, 0, importLine);
+      content = lines.join('\n');
+      fixes.push({
+        pattern: 'missing Tokens import (no existing imports)',
         replacement: importLine,
         matches: 1,
         confidence: 0.95,
@@ -256,14 +332,38 @@ function applyFixes(filePath, violations, options) {
     }
   }
 
-  // Adicionar import de useThemeColors se necessário
+  // Bug 3 Fix: Adicionar import de useThemeColors mesmo quando não há imports existentes
   if (content.includes('colors.') && !content.includes('useThemeColors') && !content.includes("from '@/hooks/useTheme'")) {
     const importLine = "import { useThemeColors } from '@/hooks/useTheme';";
     const importMatch = content.match(/(import\s+.*?from\s+['"].*?['"];?\s*\n)+/);
     if (importMatch) {
+      // Caso 1: Há imports existentes - adicionar após eles
       content = content.replace(importMatch[0], importMatch[0] + importLine + '\n');
       fixes.push({
         pattern: 'missing useThemeColors import',
+        replacement: importLine,
+        matches: 1,
+        confidence: 0.95,
+      });
+      totalFixes++;
+    } else {
+      // Caso 2: Não há imports - adicionar no início do arquivo
+      const lines = content.split('\n');
+      let insertIndex = 0;
+      
+      // Pular comentários no início
+      for (let i = 0; i < lines.length; i++) {
+        const trimmed = lines[i].trim();
+        if (trimmed && !trimmed.startsWith('//') && !trimmed.startsWith('/*') && !trimmed.startsWith('*')) {
+          insertIndex = i;
+          break;
+        }
+      }
+      
+      lines.splice(insertIndex, 0, importLine);
+      content = lines.join('\n');
+      fixes.push({
+        pattern: 'missing useThemeColors import (no existing imports)',
         replacement: importLine,
         matches: 1,
         confidence: 0.95,
@@ -428,4 +528,3 @@ async function main() {
 }
 
 main();
-
