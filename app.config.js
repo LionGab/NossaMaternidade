@@ -12,7 +12,7 @@ module.exports = {
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/icon.png',
-    userInterfaceStyle: 'light',
+    userInterfaceStyle: 'automatic', // Segue preferência do sistema (iOS/Android)
     scheme: 'nossamaternidade',
     owner: 'liongab',
     primaryColor: '#0D5FFF',
@@ -55,10 +55,21 @@ module.exports = {
       config: {
         usesNonExemptEncryption: false,
       },
+      // Privacy Manifest (iOS 17+)
+      privacyManifests: {
+        NSPrivacyAccessedAPITypes: [
+          {
+            NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
+            NSPrivacyAccessedAPITypeReasons: ['CA92.1'], // App Functionality
+          },
+        ],
+      },
     },
     android: {
       package: 'com.nossamaternidade.app',
       versionCode: 1,
+      targetSdkVersion: 34, // Android 14
+      compileSdkVersion: 34,
       icon: './assets/icon.png',
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
