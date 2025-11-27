@@ -358,6 +358,75 @@ Test: getTodayEmotion() deve retornar emotion de hoje."
 - ✅ Test services first (IA, Supabase, etc)
 - ✅ Mock Supabase (não use DB real em testes)
 
+### Design System Validation Protocol ⚠️ CRÍTICO
+
+**SEMPRE que modificar componentes, telas ou estilos:**
+
+1. ✅ Use APENAS `@/theme/tokens` (NUNCA `@/design-system` - sistema legado)
+2. ✅ Use `useThemeColors()` para cores theme-aware (suporta dark mode)
+3. ✅ Valide contraste WCAG AAA (7:1 mínimo para text, 4.5:1 para large text)
+4. ✅ Touch targets >= 44pt (iOS) / 48dp (Android)
+5. ✅ Rode `@design-tokens validate FILE` antes de commit
+6. ✅ Rode `@accessibility audit.screen FILE` para telas completas
+7. ✅ Teste dark mode (use `isDark` do `useTheme()` hook)
+
+**MCPs de Validação Disponíveis:**
+```bash
+# Validação de design tokens
+@design-tokens validate src/screens/HomeScreen.tsx
+
+# Análise de qualidade de código
+@code-quality analyze.design src/components/Button.tsx
+
+# Auditoria de acessibilidade WCAG AAA
+@accessibility audit.screen src/screens/ChatScreen.tsx
+
+# Otimização mobile (FlatList, memo, images)
+@mobile-optimization check.flatlist src/screens/FeedScreen.tsx
+
+# Validação de prompts de IA
+@prompt-testing validate.all promptPath=src/ai/prompts/nathia.system.md
+
+# Migração de sistema legado (futuro)
+@design-migration analyze src/components/primitives/Button.tsx
+```
+
+**Auto-fix Engine:**
+```bash
+# Preview de correções (dry-run)
+node scripts/cursor-auto-fix.js --file=src/screens/HomeScreen.tsx --dry-run
+
+# Aplicar correções de alta confiança (95%+)
+node scripts/cursor-auto-fix.js --file=src/screens/HomeScreen.tsx --confidence=high
+
+# Batch mode (todos os arquivos)
+node scripts/cursor-auto-fix.js --mode=batch --confidence=high
+```
+
+**Padrões Corretos:**
+```typescript
+// ❌ EVITE: Sistema legado + hardcoded values
+import { COLORS, SPACING } from '@/design-system';
+backgroundColor: '#FFFFFF'
+padding: 16
+
+// ✅ CORRETO: Tokens modernos + theme-aware
+import { Tokens } from '@/theme/tokens';
+import { useThemeColors } from '@/theme';
+
+const colors = useThemeColors();
+backgroundColor: colors.background.card  // Suporta dark mode
+padding: Tokens.spacing['4']            // 16px
+```
+
+**Violations Críticas:**
+- ⛔ Contraste < 7:1 (WCAG AAA text)
+- ⛔ Touch targets < 44pt
+- ⛔ Hardcoded colors (#FFFFFF, rgba(0,0,0,0.1), 'white')
+- ⛔ Uso de `@/design-system` imports
+- ⛔ Missing accessibility labels (accessibilityLabel, accessibilityRole)
+- ⛔ Dark mode não testado
+
 ---
 
 ## PROMPTS RÁPIDOS DE USO (Copiar/Colar)

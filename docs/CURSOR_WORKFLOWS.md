@@ -127,6 +127,131 @@ node scripts/cursor-auto-fix.js --file=src/screens/HomeScreen.tsx --confidence=h
 
 ---
 
+## Workflow 4: Design System Validation
+
+### Quando Usar
+
+Use este workflow ao:
+- Criar ou modificar componentes UI
+- Refatorar estilos ou layouts
+- Migrar de sistema legado (`@/design-system`) para tokens modernos (`@/theme/tokens`)
+- Validar conformidade WCAG AAA
+- Garantir suporte consistente a dark mode
+
+### Passo a Passo
+
+1. **Claude Code: Design Agent para Análise Profunda**
+   ```
+   @design-agent Analise o componente Button.tsx em src/components/primitives/
+   Valide: 1) Uso de design tokens, 2) Acessibilidade WCAG AAA,
+   3) Dark mode, 4) Consistência com Design System
+   ```
+
+2. **Cursor: Implementação com MCPs**
+   - Implementa correções sugeridas pelo design-agent
+   - Valida em tempo real com `@design-tokens` e `@accessibility`
+
+3. **Auto-fix para Valores Hardcoded**
+   ```bash
+   node scripts/cursor-auto-fix.js --file=src/components/primitives/Button.tsx --confidence=high
+   ```
+
+4. **Validação Final**
+   - Type-check: `npm run type-check`
+   - Teste dark mode manual
+   - Commit com descrição detalhada
+
+### Exemplo Completo
+
+```bash
+# 1. Claude Code analisa com design-agent
+claude -p "@design-agent Analise Button.tsx para conformidade com Design System"
+
+# 2. Cursor implementa correções
+# (via chat com sugestões do design-agent)
+
+# 3. Auto-validation com MCPs
+@design-tokens validate src/components/primitives/Button.tsx
+@accessibility audit.screen src/components/primitives/Button.tsx
+
+# 4. Auto-fix valores hardcoded
+node scripts/cursor-auto-fix.js --file=src/components/primitives/Button.tsx --dry-run
+node scripts/cursor-auto-fix.js --file=src/components/primitives/Button.tsx --confidence=high
+
+# 5. Validação TypeScript
+npm run type-check
+
+# 6. Commit
+git add src/components/primitives/Button.tsx
+git commit -m "refactor(ui): migra Button para useTheme() + tokens modernos (WCAG AAA)"
+```
+
+### Design System Validation Checklist
+
+Antes de commitar componentes/telas, verificar:
+
+- [ ] ✅ Usa `@/theme/tokens` (NUNCA `@/design-system`)
+- [ ] ✅ Usa `useThemeColors()` para cores (suporta dark mode)
+- [ ] ✅ Contraste WCAG AAA: 7:1 para texto normal, 4.5:1 para texto grande
+- [ ] ✅ Touch targets >= 44pt (iOS) / 48dp (Android)
+- [ ] ✅ Accessibility labels (`accessibilityLabel`, `accessibilityRole`, `accessibilityHint`)
+- [ ] ✅ Testado em light mode e dark mode
+- [ ] ✅ Sem valores hardcoded (`#FFFFFF`, `padding: 16`, `fontSize: 14`)
+- [ ] ✅ TypeScript sem erros (`npm run type-check`)
+- [ ] ✅ MCPs validados sem violations críticas
+
+### Uso do Claude Code Design Agent
+
+O design-agent é um agente especializado do Claude Code (definido em `.claude/agents/design-agent.md`) com expertise em:
+
+- **Mobile-First Design**: iOS Human Interface Guidelines + Material Design 3
+- **Design System da Nossa Maternidade**: Paleta, tokens, componentes
+- **Arquitetura de Componentes**: Padrões existentes, Atomic Design
+- **Acessibilidade WCAG AAA**: Contrast ratios, touch targets, screen readers
+- **Platform-Specific**: SafeArea, haptics, gestures, App Store compliance
+
+**Como Invocar:**
+
+```bash
+# Revisão de componente existente
+claude -p "@design-agent Revise MaternalCard.tsx e identifique violations de design system e acessibilidade"
+
+# Criação de novo componente
+claude -p "@design-agent Crie EmotionalPrompt.tsx com 5 emojis interativos, WCAG AAA, dark mode, usando apenas primitives"
+
+# Análise de consistência em múltiplos arquivos
+claude -p "@design-agent Analise consistência visual entre HomeScreen, ChatScreen e ProfileScreen"
+
+# Documentação de padrões
+claude -p "@design-agent Documente padrões de uso do MaternalCard com exemplos de cada variant"
+```
+
+### Integração Claude Code + Cursor
+
+**Workflow Ideal:**
+
+1. **Claude Code (5%)**: Análise profunda, planejamento, design agent
+   - Plan mode para refatorações complexas
+   - Design agent para validação de componentes
+   - Criação de PRs e documentação
+
+2. **Cursor (95%)**: Implementação rápida, MCPs, auto-fix
+   - Desenvolvimento diário com MCPs em tempo real
+   - Auto-fix de violations de alta confiança
+   - Refatorações individuais com validação
+
+**Exemplo de Divisão:**
+
+```
+Task: Migrar 10 componentes para design tokens modernos
+
+1. Claude Code (Plan): Analisa 10 componentes, cria checklist priorizada
+2. Cursor: Refatora componentes 1-10 com MCPs + auto-fix
+3. Claude Code (Review): Valida consistência entre componentes, cria PR
+```
+
+---
+
 ## Comandos MCPs
 
 ### Design Tokens
