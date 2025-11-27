@@ -65,12 +65,21 @@ const SIZE_CONFIG: Record<MaternalCardSize, { height: number; padding: keyof typ
 // 🎨 EMOTION MAPPINGS
 // ======================
 
-const EMOTION_GRADIENTS: Record<MaternalCardEmotion, readonly string[]> = {
-  calm: ['#004E9A', '#002244'],      // Ocean → Deep Navy (web reference) - professional, trustworthy
-  warm: ['#FFE2EC', '#FFC4D9'],      // Rosa leitoso, milky pink - MANTER para acolhimento maternal
-  energetic: ['#F59E0B', '#FB923C'], // Sunshine → Orange (web reference) - mais vibrante
-  peaceful: ['#236B62', '#0D4B3F'],  // Mint → Deep Mint (web reference) - calmo, natureza
-  safe: ['#60A5FA', '#3B82F6'],      // Light Ocean (web reference dark mode) - confiável, suave
+/**
+ * Helper para criar gradients baseados em tokens do design system
+ * Usa tokens quando disponível, fallback para cores específicas quando necessário
+ */
+const getEmotionGradients = (colors: ReturnType<typeof useThemeColors>): Record<MaternalCardEmotion, readonly string[]> => {
+  // Fallback seguro para cor laranja (accent.orange)
+  const orangeColor = colors.raw?.accent?.orange || '#FB923C'; // Fallback direto do ColorTokens
+  
+  return {
+    calm: [colors.primary.main, colors.primary.dark],      // Ocean → Deep Navy - professional, trustworthy
+    warm: [colors.secondary.light, '#FFC4D9'],              // Rosa leitoso - acolhimento maternal (TODO: adicionar token)
+    energetic: [colors.status.warning, orangeColor],        // Sunshine → Orange - vibrante
+    peaceful: [colors.status.success, '#0D4B3F'],          // Mint → Deep Mint - calmo, natureza (TODO: adicionar token)
+    safe: [colors.primary.main, colors.primary.light],     // Light Ocean - confiável, suave (dark mode aware)
+  };
 };
 
 // ======================
@@ -95,13 +104,14 @@ function MaternalCardComponent({
 }: MaternalCardProps) {
   const colors = useThemeColors();
   const sizeConfig = SIZE_CONFIG[size];
+  const emotionGradients = getEmotionGradients(colors);
 
   // ======================
   // 🎯 VARIANT RENDERERS
   // ======================
 
   const renderHero = () => {
-    const gradient = EMOTION_GRADIENTS[emotion];
+    const gradient = emotionGradients[emotion];
 
     return (
       <HapticButton
@@ -159,8 +169,8 @@ function MaternalCardComponent({
             borderRadius: Radius['2xl'],
             backgroundColor: colors.background.card,
             borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.06)',  // REDESIGN: borda sutil, não neon
-            ...Shadows.sm,  // REDESIGN: shadow mais suave (era md)
+            borderColor: colors.border.light,  // Usar token de borda
+            ...Shadows.sm,  // Shadow suave
           },
           style,
         ])}
@@ -308,7 +318,7 @@ function MaternalCardComponent({
             <Box
               style={{
                 flex: 1,
-                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                backgroundColor: colors.background.overlay,
                 padding: Spacing[sizeConfig.padding],
                 justifyContent: 'flex-end',
               }}

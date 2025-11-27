@@ -13,7 +13,7 @@
  */
 
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, Animated, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, Animated, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Heart, Sparkles, BellRing } from 'lucide-react-native';
@@ -130,9 +130,8 @@ export default function OnboardingScreen() {
           useNativeDriver: true,
         }).start();
       });
-    } else {
-      handleFinish();
     }
+    // Note: Step 7 now calls handleFinish directly via onPress
   };
 
   const handleBack = () => {
@@ -186,6 +185,7 @@ export default function OnboardingScreen() {
   };
 
   const handleFinish = async () => {
+    logger.info('[OnboardingScreen] handleFinish called', { currentStep });
     try {
       setLoading(true);
 
@@ -207,9 +207,53 @@ export default function OnboardingScreen() {
           index: 0,
           routes: [{ name: 'Main' }],
         });
+      } else {
+        // Se falhou ao salvar, oferece opção de continuar mesmo assim
+        Alert.alert(
+          'Atenção',
+          'Não foi possível salvar seus dados no momento. Você pode continuar usando o app e tentar salvar depois.',
+          [
+            {
+              text: 'Tentar novamente',
+              style: 'cancel',
+              onPress: () => handleFinish(),
+            },
+            {
+              text: 'Continuar mesmo assim',
+              onPress: () => {
+                // Navega mesmo sem salvar (modo offline)
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Main' }],
+                });
+              },
+            },
+          ]
+        );
       }
     } catch (error) {
       logger.error('Failed to complete onboarding', error, { screen: 'OnboardingScreen' });
+      Alert.alert(
+        'Erro',
+        'Ocorreu um erro ao finalizar o onboarding. Tente novamente.',
+        [
+          {
+            text: 'Tentar novamente',
+            onPress: () => handleFinish(),
+          },
+          {
+            text: 'Continuar mesmo assim',
+            style: 'cancel',
+            onPress: () => {
+              // Navega mesmo com erro (modo offline)
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Main' }],
+              });
+            },
+          },
+        ]
+      );
     } finally {
       setLoading(false);
     }
@@ -457,10 +501,21 @@ export default function OnboardingScreen() {
           <HapticButton
             variant="primary"
             size="lg"
-            onPress={handleNext}
+            onPress={() => {
+              logger.info('[OnboardingScreen] Button pressed', { currentStep, canProceed: canProceed() });
+              if (currentStep === 7) {
+                logger.info('[OnboardingScreen] Calling handleFinish');
+                handleFinish();
+              } else {
+                logger.info('[OnboardingScreen] Calling handleNext');
+                handleNext();
+              }
+            }}
             disabled={!canProceed() || loading}
             loading={loading}
             fullWidth={currentStep === 1}
+            accessibilityLabel={currentStep === 7 ? 'Finalizar onboarding e começar a usar o app' : 'Próximo passo'}
+            accessibilityHint={currentStep === 7 ? 'Salva seus dados e navega para a tela principal' : 'Avança para o próximo passo do onboarding'}
           >
             {loading ? 'Salvando...' : currentStep === 7 ? 'Começar!' : 'Próximo'}
           </HapticButton>
@@ -499,6 +554,11 @@ function OptionCard({ option, selected, onPress, multiSelect }: OptionCardProps)
 
   return (
     <TouchableOpacity
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={option.label}
+      accessibilityHint={selected ? 'Selecionado. Toque para desmarcar' : 'Toque para selecionar'}
+      accessibilityState={{ selected }}
       style={{
         ...styles.optionCard,
         backgroundColor: selected ? colors.primary.main : colors.background.card,

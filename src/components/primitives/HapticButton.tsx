@@ -11,17 +11,19 @@
 
 import React, { useCallback } from 'react';
 import {
-  TouchableOpacity,
+  Pressable,
   Text,
   StyleSheet,
   ActivityIndicator,
   ViewStyle,
   TextStyle,
   View,
+  Platform,
 } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { Tokens } from '../../theme';
 import { HapticPatterns, triggerHaptic } from '../../theme/haptics';
+import { logger } from '../../utils/logger';
 
 export type HapticButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
 export type HapticButtonSize = 'sm' | 'md' | 'lg';
@@ -73,16 +75,26 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
   accessibilityLabel,
   accessibilityHint,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   const handlePress = useCallback(() => {
-    if (disabled || loading) return;
+    if (disabled || loading) {
+      logger.debug('[HapticButton] Press blocked', { disabled, loading });
+      return;
+    }
+
+    logger.debug('[HapticButton] Press triggered', { onPress: !!onPress });
 
     if (!disableHaptic) {
       triggerHaptic(HapticPatterns.buttonPress);
     }
 
-    onPress?.();
+    if (onPress) {
+      logger.debug('[HapticButton] Calling onPress');
+      onPress();
+    } else {
+      logger.warn('[HapticButton] onPress is undefined');
+    }
   }, [disabled, loading, disableHaptic, onPress]);
 
   // Estilos baseados na variante
@@ -190,17 +202,20 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
   const variantStyles = getVariantStyles();
   const sizeStyles = getSizeStyles();
 
+  // Use Pressable for better web compatibility
+  const Component = Platform.OS === 'web' ? Pressable : Pressable;
+
   return (
-    <TouchableOpacity
+    <Component
       onPress={handlePress}
       disabled={disabled || loading}
-      activeOpacity={0.7}
-      style={[
+      style={({ pressed }) => [
         styles.container,
         sizeStyles.container,
         variantStyles.container,
         fullWidth && styles.fullWidth,
         style,
+        pressed && Platform.OS !== 'web' && { opacity: 0.7 },
       ]}
       accessible={true}
       accessibilityRole="button"
@@ -239,7 +254,7 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
           {rightIcon && <View style={styles.rightIcon}>{rightIcon}</View>}
         </View>
       )}
-    </TouchableOpacity>
+    </Component>
   );
 };
 
