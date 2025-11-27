@@ -46,6 +46,14 @@
     "accessibility": {
       "command": "node",
       "args": ["C:/Users/Usuario/Documents/NossaMaternidade/src/mcp/runners/accessibility-runner.js"]
+    },
+    "mobile-optimization": {
+      "command": "node",
+      "args": ["C:/Users/Usuario/Documents/NossaMaternidade/src/mcp/runners/mobile-optimization-runner.js"]
+    },
+    "prompt-testing": {
+      "command": "node",
+      "args": ["C:/Users/Usuario/Documents/NossaMaternidade/src/mcp/runners/prompt-testing-runner.js"]
     }
   }
 }

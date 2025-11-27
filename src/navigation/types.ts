@@ -13,6 +13,7 @@ export type RootStackParamList = {
   Settings: undefined;
   AgentsStatus: undefined; // 🆕 Tela de status dos agentes IA
   Profile: undefined;
+  DesignSystem: undefined; // 🎨 Tela de teste do Design System
 };
 
 /**

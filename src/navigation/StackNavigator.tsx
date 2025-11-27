@@ -14,6 +14,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import AgentsStatusScreen from '../screens/AgentsStatusScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import ContentDetailScreen from '../screens/ContentDetailScreen';
+import DesignSystemScreen from '../screens/DesignSystemScreen';
 import { onboardingService } from '../services/onboardingService';
 import { logger } from '../utils/logger';
 
@@ -160,6 +161,14 @@ export const StackNavigator = () => {
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}
+        options={{
+          presentation: 'card',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen
+        name="DesignSystem"
+        component={DesignSystemScreen}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',

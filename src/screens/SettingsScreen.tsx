@@ -21,12 +21,12 @@ import {
   Download,
   Trash2,
   Shield,
-  Lock,
   FileText,
   LogOut,
   ChevronRight,
   Cpu,
   User,
+  Palette,
 } from 'lucide-react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens } from '../theme';
@@ -357,6 +357,15 @@ export default function SettingsScreen() {
 
         {/* Sistema / Debug */}
         <SectionTitle>Sistema</SectionTitle>
+
+        <SettingItem
+          icon={Palette}
+          title="Design System"
+          subtitle="Visualizar componentes e tokens de design"
+          onPress={() => {
+            navigation.navigate('DesignSystem' as never);
+          }}
+        />
 
         <SettingItem
           icon={Cpu}

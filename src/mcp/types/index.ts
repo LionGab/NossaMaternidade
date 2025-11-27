@@ -148,13 +148,35 @@ export interface AccessibilityMCPMethods {
   'a11y.audit.screen': { screenPath: string };
 }
 
+// Tipos específicos para Mobile Optimization MCP
+export interface MobileOptimizationMCPMethods {
+  'mobile.check.flatlist': { filePath: string };
+  'mobile.check.memo': { filePath: string };
+  'mobile.check.images': { filePath: string };
+  'mobile.analyze.bundle': { filePath: string };
+  'mobile.check.queries': { filePath: string };
+  'mobile.analyze.all': { filePath?: string };
+}
+
+// Tipos específicos para Prompt Testing MCP
+export interface PromptTestingMCPMethods {
+  'prompt.validate.safety': { promptPath: string };
+  'prompt.validate.clarity': { promptPath: string };
+  'prompt.test.tokens': { promptPath: string; provider?: 'gemini' | 'openai' | 'anthropic' };
+  'prompt.test.crisis': { promptPath: string };
+  'prompt.validate.fallback': { promptPath: string };
+  'prompt.validate.all': { promptPath: string; provider?: 'gemini' | 'openai' | 'anthropic' };
+}
+
 // Union de todos os methods
 export type AllMCPMethods = SupabaseMCPMethods &
   GoogleAIMCPMethods &
   AnalyticsMCPMethods &
   DesignTokensValidationMCPMethods &
   CodeQualityMCPMethods &
-  AccessibilityMCPMethods;
+  AccessibilityMCPMethods &
+  MobileOptimizationMCPMethods &
+  PromptTestingMCPMethods;
 
 // Union type de todos os métodos
 export type MCPMethod = keyof AllMCPMethods;

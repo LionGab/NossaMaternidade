@@ -198,3 +198,87 @@ Jest configured with:
 - `ts-jest` preset
 - Coverage threshold: 40% minimum
 - Path alias `@/*` supported
+
+## Cursor.AI Workflows
+
+Cursor.AI is the primary development tool (95% of development time) with custom MCPs for validation and auto-fix.
+
+### MCPs Available
+
+**Custom MCPs (5):**
+1. `design-tokens` - Validates design token usage
+2. `code-quality` - Analyzes code quality and hardcoded values
+3. `accessibility` - WCAG AAA compliance checks
+4. `mobile-optimization` - React Native best practices
+5. `prompt-testing` - Validates AI prompts for safety and clarity
+
+**Native MCPs (6):**
+- `supabase`, `puppeteer`, `chrome-devtools`, `filesystem`, `git`, `brave-search`
+
+### Using MCPs in Cursor
+
+```bash
+# Design tokens validation
+@design-tokens validate src/components/Checkbox.tsx
+
+# Code quality analysis
+@code-quality analyze.design src/screens/HomeScreen.tsx
+
+# Accessibility audit
+@accessibility audit.screen src/screens/HomeScreen.tsx
+
+# Mobile optimization check
+@mobile-optimization check.flatlist src/screens/HomeScreen.tsx
+
+# Prompt testing
+@prompt-testing validate.all promptPath=src/mcp/servers/OpenAIMCPServer.ts
+```
+
+### Auto-fix Engine
+
+Automatically fixes violations with high confidence (95%+):
+
+```bash
+# Dry-run (preview changes)
+node scripts/cursor-auto-fix.js --file=src/components/Checkbox.tsx --dry-run
+
+# Apply high-confidence fixes
+node scripts/cursor-auto-fix.js --file=src/components/Checkbox.tsx --confidence=high
+
+# Batch mode (all files)
+node scripts/cursor-auto-fix.js --mode=batch --confidence=high
+```
+
+### Workflow Division
+
+| Task | Tool | Usage |
+|------|------|-------|
+| Daily development | Cursor | 70% |
+| Individual refactoring | Cursor | 15% |
+| Auto-fix violations | Cursor | 10% |
+| Complex planning | Claude Code | 3% |
+| PRs and documentation | Claude Code | 2% |
+
+**Total: Cursor 95% | Claude Code 5%**
+
+### Troubleshooting
+
+**MCP not appearing in Cursor:**
+1. Check `mcp.json` syntax: `cat mcp.json | jq .`
+2. Test runner manually
+3. Reload Cursor: `Cmd/Ctrl+Shift+P` → "Reload Window"
+4. Check logs: `%APPDATA%\Cursor\logs` (Windows)
+
+**Auto-fix not working:**
+1. Check confidence level: `--dry-run --verbose`
+2. Test manually: `--confidence=medium --force`
+
+**CI/CD failing:**
+1. Run locally: `node scripts/mcp-validate-all.js --mcp=design-tokens`
+2. Test MCPs: `node scripts/mcp-health-check.js`
+
+### Documentation
+
+- [CURSOR_WORKFLOWS.md](docs/CURSOR_WORKFLOWS.md) - Complete workflow guide
+- [MCP Health Check](scripts/mcp-health-check.js) - Validate all MCPs
+- [MCP Validate All](scripts/mcp-validate-all.js) - CI/CD validation script

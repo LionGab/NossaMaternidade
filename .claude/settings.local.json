@@ -22,7 +22,8 @@
       "Bash(npm run lint)",
       "Bash(npm test:*)",
       "Bash(find:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "WebFetch(domain:www.youtube.com)"
     ],
     "deny": [],
     "ask": [],

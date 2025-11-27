@@ -24,7 +24,7 @@ require('ts-node').register({
   transpileOnly: true
 });
 
-const { DesignTokensValidationMCPServer } = require('../servers/DesignTokensValidationMCPServer');
+const { DesignTokensValidationMCPServer } = require('../../../scripts/mcp-servers/DesignTokensValidationMCPServer');
 
 // Criar instância do servidor
 const server = new DesignTokensValidationMCPServer();

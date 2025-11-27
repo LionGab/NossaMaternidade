@@ -28,6 +28,18 @@ const MCP_RUNNERS = [
     path: path.join(__dirname, '../src/mcp/runners/accessibility-runner.js'),
     testMethod: 'a11y.audit.screen',
     testParams: { screenPath: 'src/screens/HomeScreen.tsx' }
+  },
+  {
+    name: 'mobile-optimization',
+    path: path.join(__dirname, '../src/mcp/runners/mobile-optimization-runner.js'),
+    testMethod: 'mobile.check.flatlist',
+    testParams: { filePath: 'src/screens/HomeScreen.tsx' }
+  },
+  {
+    name: 'prompt-testing',
+    path: path.join(__dirname, '../src/mcp/runners/prompt-testing-runner.js'),
+    testMethod: 'prompt.validate.safety',
+    testParams: { promptPath: 'src/mcp/servers/OpenAIMCPServer.ts' }
   }
 ];
 

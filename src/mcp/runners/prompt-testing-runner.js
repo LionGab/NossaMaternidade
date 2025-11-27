@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * Code Quality MCP Runner
+ * Prompt Testing MCP Runner
  *
- * Node.js stdio wrapper para CodeQualityMCPServer
+ * Node.js stdio wrapper para PromptTestingMCPServer
  * Permite integração com Cursor via Model Context Protocol
  */
 
@@ -24,16 +24,16 @@ require('ts-node').register({
   transpileOnly: true
 });
 
-const { CodeQualityMCPServer } = require('../../../scripts/mcp-servers/CodeQualityMCPServer');
+const { PromptTestingMCPServer } = require('../../../scripts/mcp-servers/PromptTestingMCPServer');
 
 // Criar instância do servidor
-const server = new CodeQualityMCPServer();
+const server = new PromptTestingMCPServer();
 
 // Inicializar servidor
 (async () => {
   try {
     await server.initialize();
-    console.error('[code-quality-runner] Servidor inicializado com sucesso');
+    console.error('[prompt-testing-runner] Servidor inicializado com sucesso');
 
     // Processar requests do stdin (MCP stdio protocol)
     let buffer = '';
@@ -51,15 +51,15 @@ const server = new CodeQualityMCPServer();
 
         try {
           const request = JSON.parse(line);
-          console.error(`[code-quality-runner] Request recebido: ${request.method}`);
+          console.error(`[prompt-testing-runner] Request recebido: ${request.method}`);
 
           const response = await server.handleRequest(request);
 
           // Enviar response para stdout (JSON + newline)
           process.stdout.write(JSON.stringify(response) + '\n');
-          console.error(`[code-quality-runner] Response enviada`);
+          console.error(`[prompt-testing-runner] Response enviada`);
         } catch (error) {
-          console.error('[code-quality-runner] Erro ao processar request:', error);
+          console.error('[prompt-testing-runner] Erro ao processar request:', error);
 
           // Enviar erro como response
           const errorResponse = {
@@ -77,38 +77,39 @@ const server = new CodeQualityMCPServer();
     });
 
     process.stdin.on('end', async () => {
-      console.error('[code-quality-runner] stdin closed, shutting down...');
+      console.error('[prompt-testing-runner] stdin closed, shutting down...');
       await server.shutdown();
       process.exit(0);
     });
 
     // Handlers de erro
     process.on('SIGINT', async () => {
-      console.error('[code-quality-runner] SIGINT recebido, shutting down...');
+      console.error('[prompt-testing-runner] SIGINT recebido, shutting down...');
       await server.shutdown();
       process.exit(0);
     });
 
     process.on('SIGTERM', async () => {
-      console.error('[code-quality-runner] SIGTERM recebido, shutting down...');
+      console.error('[prompt-testing-runner] SIGTERM recebido, shutting down...');
       await server.shutdown();
       process.exit(0);
     });
 
     process.on('uncaughtException', async (error) => {
-      console.error('[code-quality-runner] Uncaught exception:', error);
+      console.error('[prompt-testing-runner] Uncaught exception:', error);
       await server.shutdown();
       process.exit(1);
     });
 
     process.on('unhandledRejection', async (reason, promise) => {
-      console.error('[code-quality-runner] Unhandled rejection at:', promise, 'reason:', reason);
+      console.error('[prompt-testing-runner] Unhandled rejection at:', promise, 'reason:', reason);
       await server.shutdown();
       process.exit(1);
     });
 
   } catch (error) {
-    console.error('[code-quality-runner] Falha ao inicializar servidor:', error);
+    console.error('[prompt-testing-runner] Falha ao inicializar servidor:', error);
     process.exit(1);
   }
 })();
+

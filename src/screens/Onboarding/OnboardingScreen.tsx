@@ -13,7 +13,7 @@
  */
 
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, Animated, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Heart, Sparkles, BellRing } from 'lucide-react-native';
@@ -21,6 +21,7 @@ import { useTheme } from '@/theme';
 import { Box } from '@/components/primitives/Box';
 import { Text } from '@/components/primitives/Text';
 import { Heading } from '@/components/primitives/Heading';
+import { HapticButton } from '@/components/primitives/HapticButton';
 import { Tokens } from '@/theme/tokens';
 import { onboardingService, type OnboardingData } from '@/services/onboardingService';
 import { logger } from '@/utils/logger';
@@ -55,6 +56,7 @@ export default function OnboardingScreen() {
 
   const [currentStep, setCurrentStep] = useState<OnboardingStep>(1);
   const [loading, setLoading] = useState(false);
+  const fadeAnim = React.useRef(new Animated.Value(1)).current;
 
   // Form data
   const [displayName, setDisplayName] = useState('');
@@ -114,7 +116,20 @@ export default function OnboardingScreen() {
 
   const handleNext = () => {
     if (currentStep < 7) {
-      setCurrentStep((prev) => (prev + 1) as OnboardingStep);
+      // Animate fade out
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        setCurrentStep((prev) => (prev + 1) as OnboardingStep);
+        // Animate fade in
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      });
     } else {
       handleFinish();
     }
@@ -122,7 +137,20 @@ export default function OnboardingScreen() {
 
   const handleBack = () => {
     if (currentStep > 1) {
-      setCurrentStep((prev) => (prev - 1) as OnboardingStep);
+      // Animate fade out
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
+        setCurrentStep((prev) => (prev - 1) as OnboardingStep);
+        // Animate fade in
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      });
     }
   };
 
@@ -195,83 +223,101 @@ export default function OnboardingScreen() {
     switch (currentStep) {
       case 1:
         return (
-          <Box style={styles.stepContainer}>
-            <Heart
-              size={48}
-              color={colors.primary.main}
-              style={{ marginBottom: Tokens.spacing['4'] }}
-            />
-            <Heading level="h2" style={styles.question}>
-              Como você quer que eu te chame aqui dentro?
-            </Heading>
-            <Text style={styles.description}>
-              Seu apelido, nome carinhoso, ou como você preferir 💙
-            </Text>
-            <TextInput
-              style={{
-                ...styles.textInput,
-                backgroundColor: colors.background.card,
-                color: colors.text.primary,
-                borderColor: colors.border.light,
-              }}
-              placeholder="Digite seu nome..."
-              placeholderTextColor={colors.text.tertiary}
-              value={displayName}
-              onChangeText={setDisplayName}
-              autoFocus
-              maxLength={50}
-            />
-          </Box>
+          <Animated.View style={{ opacity: fadeAnim, width: '100%' }}>
+            <Box style={styles.stepContainer}>
+              <Box mb="6" align="center">
+                <Heart
+                  size={56}
+                  color={colors.primary.main}
+                />
+              </Box>
+              <Heading level="h2" align="center" style={styles.question}>
+                Como você quer que eu te chame aqui dentro?
+              </Heading>
+              <Text 
+                variant="body" 
+                color="secondary" 
+                align="center" 
+                style={styles.description}
+              >
+                Seu apelido, nome carinhoso, ou como você preferir 💙
+              </Text>
+              <Box mt="6" width="100%">
+                <TextInput
+                  style={{
+                    ...styles.textInput,
+                    backgroundColor: colors.background.card,
+                    color: colors.text.primary,
+                    borderColor: colors.border.light,
+                  }}
+                  placeholder="Digite seu nome..."
+                  placeholderTextColor={colors.text.tertiary}
+                  value={displayName}
+                  onChangeText={setDisplayName}
+                  autoFocus
+                  maxLength={50}
+                  accessible={true}
+                  accessibilityRole="none"
+                  accessibilityLabel="Campo de nome"
+                  accessibilityHint="Digite como você quer ser chamada"
+                />
+              </Box>
+            </Box>
+          </Animated.View>
         );
 
       case 2:
         return (
-          <Box style={styles.stepContainer}>
-            <Sparkles
-              size={48}
-              color={colors.primary.main}
-              style={{ marginBottom: Tokens.spacing['4'] }}
-            />
-            <Heading level="h2" style={styles.question}>
-              Em qual dessas fases você se sente hoje?
-            </Heading>
-            <Box style={styles.optionsContainer}>
-              {lifeStageOptions.map((option) => (
-                <OptionCard
-                  key={option.value}
-                  option={option}
-                  selected={lifeStage === option.value}
-                  onPress={() => setLifeStage(option.value)}
-                />
-              ))}
+          <Animated.View style={{ opacity: fadeAnim, width: '100%' }}>
+            <Box style={styles.stepContainer}>
+              <Box mb="6" align="center">
+                <Sparkles size={56} color={colors.primary.main} />
+              </Box>
+              <Heading level="h2" align="center" style={styles.question}>
+                Em qual dessas fases você se sente hoje?
+              </Heading>
+              <Box style={styles.optionsContainer} mt="6">
+                {lifeStageOptions.map((option) => (
+                  <OptionCard
+                    key={option.value}
+                    option={option}
+                    selected={lifeStage === option.value}
+                    onPress={() => setLifeStage(option.value)}
+                  />
+                ))}
+              </Box>
             </Box>
-          </Box>
+          </Animated.View>
         );
 
       case 3:
         return (
-          <Box style={styles.stepContainer}>
-            <Heading level="h2" style={styles.question}>
-              O que te trouxe pro Nossa Maternidade hoje?
-            </Heading>
-            <Text style={styles.description}>
-              Escolha até 3 opções que mais fazem sentido pra você
-            </Text>
-            <Box style={styles.optionsContainer}>
-              {mainGoalsOptions.map((option) => (
-                <OptionCard
-                  key={option.value}
-                  option={option}
-                  selected={mainGoals.includes(option.value)}
-                  onPress={() => toggleGoal(option.value)}
-                  multiSelect
-                />
-              ))}
+          <Animated.View style={{ opacity: fadeAnim, width: '100%' }}>
+            <Box style={styles.stepContainer}>
+              <Heading level="h2" align="center" style={styles.question}>
+                O que te trouxe pro Nossa Maternidade hoje?
+              </Heading>
+              <Text variant="body" color="secondary" align="center" style={styles.description}>
+                Escolha até 3 opções que mais fazem sentido pra você
+              </Text>
+              <Box style={styles.optionsContainer} mt="6">
+                {mainGoalsOptions.map((option) => (
+                  <OptionCard
+                    key={option.value}
+                    option={option}
+                    selected={mainGoals.includes(option.value)}
+                    onPress={() => toggleGoal(option.value)}
+                    multiSelect
+                  />
+                ))}
+              </Box>
+              <Box mt="4" align="center">
+                <Text variant="small" color="secondary">
+                  {mainGoals.length}/3 selecionados
+                </Text>
+              </Box>
             </Box>
-            <Text style={{ ...styles.counter, color: colors.text.secondary }}>
-              {mainGoals.length}/3 selecionados
-            </Text>
-          </Box>
+          </Animated.View>
         );
 
       case 4:
@@ -393,48 +439,46 @@ export default function OnboardingScreen() {
       </ScrollView>
 
       {/* Navigation Buttons */}
-      <Box style={styles.navigationContainer}>
+      <Box px="4" pb="4" direction="row">
         {currentStep > 1 && (
-          <TouchableOpacity
-            style={{
-              ...styles.navButton,
-              ...styles.backButton,
-              backgroundColor: colors.background.card,
-              borderColor: colors.border.light,
-            }}
-            onPress={handleBack}
-          >
-            <Text style={{ ...styles.backButtonText, color: colors.text.primary }}>
+          <Box mr="3">
+            <HapticButton
+              variant="outline"
+              size="lg"
+              onPress={handleBack}
+              style={{ minWidth: 100 }}
+            >
               Voltar
-            </Text>
-          </TouchableOpacity>
+            </HapticButton>
+          </Box>
         )}
 
-        <TouchableOpacity
-          style={{
-            ...styles.navButton,
-            ...styles.nextButton,
-            backgroundColor: canProceed() ? colors.primary.main : colors.background.input,
-            flex: currentStep === 1 ? 1 : undefined,
-          }}
-          onPress={handleNext}
-          disabled={!canProceed() || loading}
-        >
-          <Text
-            style={{
-              ...styles.nextButtonText,
-              color: canProceed() ? colors.text.inverse : colors.text.disabled,
-            }}
+        <Box style={{ flex: currentStep === 1 ? 1 : undefined }}>
+          <HapticButton
+            variant="primary"
+            size="lg"
+            onPress={handleNext}
+            disabled={!canProceed() || loading}
+            loading={loading}
+            fullWidth={currentStep === 1}
           >
             {loading ? 'Salvando...' : currentStep === 7 ? 'Começar!' : 'Próximo'}
-          </Text>
-        </TouchableOpacity>
+          </HapticButton>
+        </Box>
       </Box>
 
       {/* Step Counter */}
-      <Text style={{ ...styles.stepCounter, color: colors.text.tertiary }}>
-        {currentStep} de 7
-      </Text>
+      <Box 
+        pb="4" 
+        align="center"
+        accessibilityRole="text"
+        accessibilityLabel={`Passo ${currentStep} de 7`}
+        accessibilityHint="Indicador de progresso do onboarding"
+      >
+        <Text variant="small" color="tertiary" align="center">
+          {currentStep} de 7
+        </Text>
+      </Box>
     </Box>
   );
 }
@@ -457,24 +501,54 @@ function OptionCard({ option, selected, onPress, multiSelect }: OptionCardProps)
     <TouchableOpacity
       style={{
         ...styles.optionCard,
-        backgroundColor: selected ? colors.background.elevated : colors.background.card,
+        backgroundColor: selected ? colors.primary.main : colors.background.card,
         borderColor: selected ? colors.primary.main : colors.border.light,
+        borderWidth: 2,
+        borderRadius: Tokens.radius.lg,
+        padding: Tokens.spacing['4'],
+        minHeight: Tokens.touchTargets.large,
+        flexDirection: 'row',
+        alignItems: 'center',
       }}
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <Text style={styles.optionEmoji}>{option.emoji}</Text>
-      <Text
-        style={{
-          ...styles.optionLabel,
-          color: selected ? colors.primary.main : colors.text.primary,
+      <Text 
+        style={{ 
+          fontSize: Tokens.typography.sizes['2xl'], 
+          marginRight: Tokens.spacing['3'] 
         }}
+      >
+        {option.emoji}
+      </Text>
+      <Text
+        variant="body"
+        color={selected ? 'inverse' : 'primary'}
+        weight="medium"
+        style={{ flex: 1 }}
       >
         {option.label}
       </Text>
       {multiSelect && selected && (
-        <Box style={{ ...styles.checkmark, backgroundColor: colors.primary.main }}>
-          <Text style={{ ...styles.checkmarkText, color: colors.text.inverse }}>✓</Text>
+        <Box
+          style={{
+            width: Tokens.icons.md,
+            height: Tokens.icons.md,
+            borderRadius: Tokens.icons.md / 2,
+            backgroundColor: colors.text.inverse,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text 
+            style={{ 
+              fontSize: Tokens.typography.sizes.sm,
+              color: colors.primary.main,
+              fontWeight: Tokens.typography.weights.bold,
+            }}
+          >
+            ✓
+          </Text>
         </Box>
       )}
     </TouchableOpacity>
@@ -504,18 +578,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: Tokens.spacing['4'],
   },
   question: {
-    textAlign: 'center',
-    marginBottom: Tokens.spacing['3'],
-    fontSize: Tokens.typography.sizes['3xl'],
-    fontWeight: Tokens.typography.weights.bold,
+    marginBottom: Tokens.spacing['4'],
+    paddingHorizontal: Tokens.spacing['2'],
   },
   description: {
-    textAlign: 'center',
     marginBottom: Tokens.spacing['6'],
-    fontSize: Tokens.typography.sizes.base,
-    fontWeight: Tokens.typography.weights.medium,
+    paddingHorizontal: Tokens.spacing['4'],
   },
   textInput: {
     width: '100%',
@@ -530,67 +602,6 @@ const styles = StyleSheet.create({
     gap: Tokens.spacing['3'],
   },
   optionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: Tokens.spacing['4'],
-    borderRadius: Tokens.radius.lg,
-    borderWidth: 2,
-    minHeight: Tokens.touchTargets.min,
-  },
-  optionEmoji: {
-    fontSize: Tokens.typography.sizes['2xl'],
-    marginRight: Tokens.spacing['3'],
-  },
-  optionLabel: {
-    flex: 1,
-    fontSize: Tokens.typography.sizes.base,
-    fontWeight: Tokens.typography.weights.medium,
-  },
-  checkmark: {
-    width: Tokens.icons.md,
-    height: Tokens.icons.md,
-    borderRadius: Tokens.icons.md / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkmarkText: {
-    fontSize: Tokens.typography.sizes.sm,
-    fontWeight: Tokens.typography.weights.bold,
-  },
-  counter: {
-    marginTop: Tokens.spacing['2'],
-    textAlign: 'center',
-    fontSize: 14,
-  },
-  navigationContainer: {
-    flexDirection: 'row',
-    padding: Tokens.spacing['4'],
-    gap: Tokens.spacing['3'],
-  },
-  navButton: {
-    height: 56,
-    borderRadius: Tokens.radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Tokens.spacing['6'],
-  },
-  backButton: {
-    borderWidth: 1,
-  },
-  backButtonText: {
-    fontSize: Tokens.typography.sizes.base,
-    fontWeight: Tokens.typography.weights.semibold,
-  },
-  nextButton: {
-    flex: 1,
-  },
-  nextButtonText: {
-    fontSize: Tokens.typography.sizes.base,
-    fontWeight: Tokens.typography.weights.semibold,
-  },
-  stepCounter: {
-    textAlign: 'center',
-    paddingBottom: Tokens.spacing['4'],
-    fontSize: Tokens.typography.sizes.xs,
+    minHeight: Tokens.touchTargets.large,
   },
 });

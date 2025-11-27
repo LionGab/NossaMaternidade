@@ -10,12 +10,11 @@ import {
   openAIMCP,
   anthropicMCP,
   analyticsMCP,
-  designTokensValidationMCP,
-  codeQualityMCP,
-  accessibilityMCP,
   createMCPRequest,
   MCPServer,
 } from '../../mcp/servers';
+// Servidores MCP que usam Node.js (fs, path) não são importados no mobile
+// designTokensValidationMCP, codeQualityMCP, accessibilityMCP devem ser usados apenas em scripts/Edge Functions
 import { logger } from '../../utils/logger';
 import {
   MCPMethod,
@@ -76,29 +75,25 @@ export class AgentOrchestrator {
     try {
       logger.debug('[AgentOrchestrator] Initializing...');
 
-      // Inicializar servidores MCP
+      // Inicializar servidores MCP compatíveis com React Native
       // OpenAI e Anthropic podem falhar se API keys não estiverem configuradas
       // Isso é esperado e não deve bloquear a inicialização
+      // NOTA: Servidores que usam Node.js (fs, path) não são inicializados aqui
+      // (designTokensValidationMCP, codeQualityMCP, accessibilityMCP devem ser usados apenas em scripts/Edge Functions)
       await Promise.all([
         supabaseMCP.initialize(),
         googleAIMCP.initialize(),
         openAIMCP.initialize().catch(err => logger.warn('[AgentOrchestrator] OpenAI MCP init failed (optional)', err)),
         anthropicMCP.initialize().catch(err => logger.warn('[AgentOrchestrator] Anthropic MCP init failed (optional)', err)),
         analyticsMCP.initialize(),
-        designTokensValidationMCP.initialize(),
-        codeQualityMCP.initialize(),
-        accessibilityMCP.initialize(),
       ]);
 
-      // Registrar servidores MCP
+      // Registrar servidores MCP compatíveis com React Native
       this.mcpServers.set('supabase', supabaseMCP);
       this.mcpServers.set('googleai', googleAIMCP);
       this.mcpServers.set('openai', openAIMCP);
       this.mcpServers.set('anthropic', anthropicMCP);
       this.mcpServers.set('analytics', analyticsMCP);
-      this.mcpServers.set('design-validation', designTokensValidationMCP);
-      this.mcpServers.set('code-quality', codeQualityMCP);
-      this.mcpServers.set('accessibility', accessibilityMCP);
 
       this.initialized = true;
       logger.info('[AgentOrchestrator] Initialized successfully');

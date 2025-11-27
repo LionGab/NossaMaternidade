@@ -24,7 +24,7 @@ require('ts-node').register({
   transpileOnly: true
 });
 
-const { AccessibilityMCPServer } = require('../servers/AccessibilityMCPServer');
+const { AccessibilityMCPServer } = require('../../../scripts/mcp-servers/AccessibilityMCPServer');
 
 // Criar instância do servidor
 const server = new AccessibilityMCPServer();

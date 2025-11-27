@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * Code Quality MCP Runner
+ * Mobile Optimization MCP Runner
  *
- * Node.js stdio wrapper para CodeQualityMCPServer
+ * Node.js stdio wrapper para MobileOptimizationMCPServer
  * Permite integração com Cursor via Model Context Protocol
  */
 
@@ -24,16 +24,16 @@ require('ts-node').register({
   transpileOnly: true
 });
 
-const { CodeQualityMCPServer } = require('../../../scripts/mcp-servers/CodeQualityMCPServer');
+const { MobileOptimizationMCPServer } = require('../../../scripts/mcp-servers/MobileOptimizationMCPServer');
 
 // Criar instância do servidor
-const server = new CodeQualityMCPServer();
+const server = new MobileOptimizationMCPServer();
 
 // Inicializar servidor
 (async () => {
   try {
     await server.initialize();
-    console.error('[code-quality-runner] Servidor inicializado com sucesso');
+    console.error('[mobile-optimization-runner] Servidor inicializado com sucesso');
 
     // Processar requests do stdin (MCP stdio protocol)
     let buffer = '';
@@ -51,15 +51,15 @@ const server = new CodeQualityMCPServer();
 
         try {
           const request = JSON.parse(line);
-          console.error(`[code-quality-runner] Request recebido: ${request.method}`);
+          console.error(`[mobile-optimization-runner] Request recebido: ${request.method}`);
 
           const response = await server.handleRequest(request);
 
           // Enviar response para stdout (JSON + newline)
           process.stdout.write(JSON.stringify(response) + '\n');
-          console.error(`[code-quality-runner] Response enviada`);
+          console.error(`[mobile-optimization-runner] Response enviada`);
         } catch (error) {
-          console.error('[code-quality-runner] Erro ao processar request:', error);
+          console.error('[mobile-optimization-runner] Erro ao processar request:', error);
 
           // Enviar erro como response
           const errorResponse = {
@@ -77,38 +77,39 @@ const server = new CodeQualityMCPServer();
     });
 
     process.stdin.on('end', async () => {
-      console.error('[code-quality-runner] stdin closed, shutting down...');
+      console.error('[mobile-optimization-runner] stdin closed, shutting down...');
       await server.shutdown();
       process.exit(0);
     });
 
     // Handlers de erro
     process.on('SIGINT', async () => {
-      console.error('[code-quality-runner] SIGINT recebido, shutting down...');
+      console.error('[mobile-optimization-runner] SIGINT recebido, shutting down...');
       await server.shutdown();
       process.exit(0);
     });
 
     process.on('SIGTERM', async () => {
-      console.error('[code-quality-runner] SIGTERM recebido, shutting down...');
+      console.error('[mobile-optimization-runner] SIGTERM recebido, shutting down...');
       await server.shutdown();
       process.exit(0);
     });
 
     process.on('uncaughtException', async (error) => {
-      console.error('[code-quality-runner] Uncaught exception:', error);
+      console.error('[mobile-optimization-runner] Uncaught exception:', error);
       await server.shutdown();
       process.exit(1);
     });
 
     process.on('unhandledRejection', async (reason, promise) => {
-      console.error('[code-quality-runner] Unhandled rejection at:', promise, 'reason:', reason);
+      console.error('[mobile-optimization-runner] Unhandled rejection at:', promise, 'reason:', reason);
       await server.shutdown();
       process.exit(1);
     });
 
   } catch (error) {
-    console.error('[code-quality-runner] Falha ao inicializar servidor:', error);
+    console.error('[mobile-optimization-runner] Falha ao inicializar servidor:', error);
     process.exit(1);
   }
 })();
+

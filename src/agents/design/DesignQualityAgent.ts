@@ -4,18 +4,21 @@
  */
 
 import { BaseAgent, AgentProcessOptions } from '../core/BaseAgent';
-import {
-  designTokensValidationMCP,
-  codeQualityMCP,
-  accessibilityMCP,
-  createMCPRequest,
-  MCPResponse,
-  type ValidationResult,
-  type DesignViolation,
-  type DesignAnalysis,
-  type A11yAuditResult,
-  type RefactorSuggestion,
-} from '../../mcp/servers';
+import { createMCPRequest, MCPResponse } from '../../mcp/servers';
+// Importar diretamente dos arquivos (não do index.ts) porque estes servidores usam Node.js
+// e não devem ser importados no app mobile
+import { designTokensValidationMCP } from '../../mcp/servers/DesignTokensValidationMCPServer';
+import { codeQualityMCP } from '../../mcp/servers/CodeQualityMCPServer';
+import { accessibilityMCP } from '../../mcp/servers/AccessibilityMCPServer';
+import type {
+  ValidationResult,
+  DesignViolation,
+} from '../../mcp/servers/DesignTokensValidationMCPServer';
+import type {
+  DesignAnalysis,
+  RefactorSuggestion,
+} from '../../mcp/servers/CodeQualityMCPServer';
+import type { A11yAuditResult } from '../../mcp/servers/AccessibilityMCPServer';
 import { logger } from '../../utils/logger';
 
 export interface DesignValidationInput {
