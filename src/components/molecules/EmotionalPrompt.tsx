@@ -4,10 +4,10 @@
  */
 
 import React from 'react';
-import { TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { Box } from '@/components/primitives/Box';
 import { Text } from '@/components/primitives/Text';
-import { Spacing, TouchTargets } from '@/theme/tokens';
+import { Tokens } from '@/theme/tokens';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useThemeColors } from '@/theme';
 
@@ -54,7 +54,7 @@ export function EmotionalPrompt({
           size="md"
           color="secondary"
           weight="medium"
-          style={{ marginBottom: Spacing['3'] }}
+          style={{ marginBottom: Tokens.spacing['3'] }}
         >
           {title}
         </Text>
@@ -66,7 +66,7 @@ export function EmotionalPrompt({
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          gap: Spacing['2'],
+          gap: Tokens.spacing['2'],
         }}
       >
         {DEFAULT_EMOTIONS.map((emotion) => {
@@ -82,20 +82,20 @@ export function EmotionalPrompt({
               style={{
                 alignItems: 'center',
                 justifyContent: 'center',
-                minWidth: TouchTargets.min,
-                minHeight: TouchTargets.min,
-                paddingVertical: Spacing['2'],
-                paddingHorizontal: Spacing['1'],
+                minWidth: Tokens.touchTargets.min,
+                minHeight: Tokens.touchTargets.min,
+                paddingVertical: Tokens.spacing['2'],
+                paddingHorizontal: Tokens.spacing['1'],
               }}
             >
               {/* Emoji com fundo oval ao selecionar - REDESIGN maternal */}
               <Box
                 style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: 28,
+                  width: Tokens.touchTargets.large, // 56
+                  height: Tokens.touchTargets.large, // 56
+                  borderRadius: Tokens.radius.full, // circle
                   backgroundColor: isSelected
-                    ? 'rgba(109, 169, 228, 0.15)'  // Azul suave maternal ao selecionar
+                    ? `${colors.primary.main}1F`  // Rosa maternal com 12% opacity (1F hex = ~0.12)
                     : 'transparent',
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -103,9 +103,9 @@ export function EmotionalPrompt({
               >
                 <Text
                   style={{
-                    fontSize: 44,           // REDESIGN: 32 → 44pt (TouchTargets.min)
-                    lineHeight: 52,
-                    opacity: isSelected ? 1 : 0.75,  // REDESIGN: menos apagado (0.6 → 0.75)
+                    fontSize: Tokens.touchTargets.min, // 44pt (WCAG AAA compliant)
+                    lineHeight: Tokens.touchTargets.min + 8, // 52
+                    opacity: isSelected ? 1 : 0.75,
                   }}
                 >
                   {emotion.emoji}
@@ -117,7 +117,7 @@ export function EmotionalPrompt({
                 size="xs"
                 color={isSelected ? 'primary' : 'tertiary'}
                 weight={isSelected ? 'semibold' : 'regular'}
-                style={{ marginTop: Spacing['1'], textAlign: 'center' }}
+                style={{ marginTop: Tokens.spacing['1'], textAlign: 'center' }}
               >
                 {emotion.label}
               </Text>

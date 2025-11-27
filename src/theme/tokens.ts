@@ -18,32 +18,32 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
  * Baseado em Material Design 3 + Nossa identidade maternal
  */
 export const ColorTokens = {
-  // Primary - Ocean Blue System (baseado no web reference)
+  // Primary - Rosa Maternal Quente (Flo-inspired + Nathália)
   primary: {
-    50: '#F0F8FF',    // Lightest sky
-    100: '#E6F0FA',   // Sky (web reference) - backgrounds light
-    200: '#BAD4FF',   // Light blue
-    300: '#7CACFF',   // Mid blue
-    400: '#004E9A',   // Ocean Blue (main) - web reference
-    500: '#00427D',   // Mid ocean
-    600: '#003768',   // Dark ocean
-    700: '#002C54',   // Navy
-    800: '#002244',   // Deep Navy (hover) - web reference
-    900: '#001A36',   // Darkest navy
+    50: '#FFF1F3',    // Lightest pink
+    100: '#FFE4E9',   // Very light pink
+    200: '#FFCCD7',   // Soft pink
+    300: '#FFA8BC',   // Light coral pink
+    400: '#FF7A96',   // Rosa Nathália MAIN ⭐ (acolhimento, maternidade)
+    500: '#FF6583',   // Mid pink
+    600: '#EC5975',   // Pink maternal (warm)
+    700: '#D94560',   // Deep pink (tom Nathália)
+    800: '#B93A50',   // Darker pink
+    900: '#8B2D3E',   // Darkest pink
   },
 
-  // Secondary - Coral System (baseado no web reference)
+  // Secondary - Roxo Espiritual (Flo-style)
   secondary: {
-    50: '#FEF2F2',    // Very light coral
-    100: '#FEE2E2',   // Light coral
-    200: '#FECACA',   // Soft coral
-    300: '#FCA5A5',   // Mid coral
-    400: '#D93025',   // Coral (main) - web reference
-    500: '#B91C1C',   // Deep coral
-    600: '#991B1B',   // Dark coral
-    700: '#7F1D1D',   // Darker coral
-    800: '#6B1818',   // Almost dark
-    900: '#5A1313',   // Darkest coral
+    50: '#F5F3FF',    // Lightest purple
+    100: '#EDE9FE',   // Very light purple
+    200: '#DDD6FE',   // Soft purple
+    300: '#C4B5FD',   // Light purple
+    400: '#A78BFA',   // Roxo Flo-like MAIN ⭐ (serenidade, espiritualidade)
+    500: '#8B5CF6',   // Mid purple
+    600: '#7C3AED',   // Deep purple
+    700: '#6D28D9',   // Darker purple
+    800: '#5B21B6',   // Almost dark
+    900: '#4C1D95',   // Darkest purple
   },
 
   // Neutral - Escala de cinzas moderna
@@ -126,8 +126,11 @@ export const ColorTokens = {
     pink: '#EC4899',
     green: '#10B981',
     blue: '#60A5FA',       // Light ocean (for dark mode accents)
-    ocean: '#004E9A',      // Ocean blue (primary reference)
+    ocean: '#004E9A',      // Ocean blue (rebaixado de primary → accent)
+    oceanDark: '#002244',  // Deep navy (hover state)
+    coral: '#D93025',      // Coral (antigo secondary)
     sunshine: '#F59E0B',   // Amber/Warning - web reference
+    gold: '#FFA500',       // Gold (lifestyle Nathália)
   },
 
   // Mint System (web reference - success/positive accent)
@@ -157,9 +160,9 @@ export const LightTheme = {
     input: '#FFFFFF',         // Snow - inputs
     overlay: 'rgba(0, 0, 0, 0.5)',
     gradient: {
-      primary: ['#E6F0FA', '#FFFFFF'],   // Sky → Snow
-      soft: ['#FEF2F2', '#F0F8FF'],       // Light coral → Lightest sky
-      warm: ['#FFFFFF', '#F1F5F9'],       // Snow → Cloud
+      primary: ['#FFE4E9', '#FFFFFF'],   // Light pink → Snow ⭐ ATUALIZADO
+      soft: ['#FFF1F3', '#F5F3FF'],      // Lightest pink → Lightest purple ⭐ ATUALIZADO
+      warm: ['#FFFFFF', '#F1F5F9'],      // Snow → Cloud
     },
   },
 
@@ -171,10 +174,10 @@ export const LightTheme = {
     disabled: '#94A3B8',      // Lighter silver
     placeholder: '#9CA3AF',   // Placeholder text
     inverse: '#FFFFFF',       // Texto em fundos escuros
-    link: '#004E9A',          // Ocean blue (web reference)
+    link: '#FF7A96',          // Rosa Nathália (primary) ⭐ ATUALIZADO
     success: '#236B62',       // Mint (web reference)
     warning: '#F59E0B',       // Sunshine (web reference)
-    error: '#D93025',         // Coral (web reference)
+    error: '#EF4444',         // Error red ⭐ ATUALIZADO (não mais coral)
     info: '#2563EB',
   },
 
@@ -183,32 +186,32 @@ export const LightTheme = {
     light: 'rgba(0, 0, 0, 0.08)',
     medium: '#CBD5E1',        // Visible border (web reference)
     dark: 'rgba(0, 0, 0, 0.16)',
-    focus: '#004E9A',         // Ocean blue
-    error: '#D93025',         // Coral
+    focus: '#FF7A96',         // Rosa Nathália (primary) ⭐ ATUALIZADO
+    error: '#EF4444',         // Error red ⭐ ATUALIZADO
     success: '#236B62',       // Mint
   },
 
-  // Primary - Ocean Blue (web reference)
+  // Primary - Rosa Maternal ⭐ ATUALIZADO
   primary: {
-    main: ColorTokens.primary[400],    // #004E9A Ocean Blue
-    light: ColorTokens.primary[100],   // #E6F0FA Sky
-    dark: ColorTokens.primary[800],    // #002244 Deep Navy
-    gradient: ['#004E9A', '#00427D', '#003768'],  // Ocean gradient
+    main: ColorTokens.primary[400],    // #FF7A96 Rosa Nathália
+    light: ColorTokens.primary[100],   // #FFE4E9 Very light pink
+    dark: ColorTokens.primary[800],    // #B93A50 Darker pink
+    gradient: ['#FF7A96', '#FF6583', '#EC5975'],  // Rosa gradient
   },
 
-  // Secondary - Coral (web reference)
+  // Secondary - Roxo Espiritual ⭐ ATUALIZADO
   secondary: {
-    main: ColorTokens.secondary[400],  // #D93025 Coral
-    light: ColorTokens.secondary[100], // #FEE2E2 Light coral
-    dark: ColorTokens.secondary[600],  // #991B1B Dark coral
-    gradient: ['#D93025', '#B91C1C', '#991B1B'],  // Coral gradient
+    main: ColorTokens.secondary[400],  // #A78BFA Roxo Flo-like
+    light: ColorTokens.secondary[100], // #EDE9FE Very light purple
+    dark: ColorTokens.secondary[600],  // #7C3AED Deep purple
+    gradient: ['#A78BFA', '#8B5CF6', '#7C3AED'],  // Roxo gradient
   },
 
   // Status colors - aligned with web reference
   status: {
     success: ColorTokens.mint[400],    // #236B62 Mint
     warning: ColorTokens.warning[500], // #F59E0B Sunshine
-    error: ColorTokens.secondary[400], // #D93025 Coral
+    error: ColorTokens.error[500],     // #EF4444 Error red ⭐ ATUALIZADO
     info: ColorTokens.info[600],       // #2563EB
   },
 
@@ -216,13 +219,15 @@ export const LightTheme = {
   gradients: {
     success: ['#5EEAD4', '#236B62', '#0F5247'],  // Mint gradient
     warning: ['#FCD34D', '#F59E0B', '#D97706'],  // Sunshine gradient
-    error: ['#FCA5A5', '#D93025', '#B91C1C'],    // Coral gradient
+    error: ['#FCA5A5', '#EF4444', '#DC2626'],    // Error gradient ⭐ ATUALIZADO
     info: ['#60A5FA', '#3B82F6', '#2563EB'],
+    maternal: ['#FF7A96', '#FF6583', '#EC5975'], // ⭐ NOVO: Maternal gradient
+    spiritual: ['#A78BFA', '#8B5CF6', '#7C3AED'], // ⭐ NOVO: Spiritual gradient
   },
 };
 
 /**
- * Semantic color mappings para Dark Mode (Ocean Dark Theme)
+ * Semantic color mappings para Dark Mode (Maternal Dark Theme) ⭐ ATUALIZADO
  */
 export const DarkTheme = {
   // Backgrounds - Slate system (web reference)
@@ -235,7 +240,7 @@ export const DarkTheme = {
     gradient: {
       primary: ['#1E293B', '#020617'],   // Slate → Blue-black
       soft: ['#334155', '#1E293B'],       // Mid-slate → Slate
-      ocean: ['#020617', '#1E293B', '#334155'],  // Blue-black → Slate → Mid-slate
+      maternal: ['#2D1B1F', '#1E293B', '#334155'],  // ⭐ NOVO: Warm dark gradient
     },
   },
 
@@ -247,10 +252,10 @@ export const DarkTheme = {
     disabled: '#64748B',      // Silver (web reference)
     placeholder: '#94A3B8',   // Mid grey
     inverse: '#0F172A',       // Charcoal (web reference)
-    link: '#60A5FA',          // Light ocean (web reference)
+    link: '#FFA8BC',          // Light pink ⭐ ATUALIZADO (não mais ocean)
     success: '#4ADE80',       // Light mint
     warning: '#FCD34D',       // Light sunshine
-    error: '#F87171',         // Light coral
+    error: '#F87171',         // Light red ⭐ ATUALIZADO
     info: '#60A5FA',          // Light ocean
   },
 
@@ -259,32 +264,32 @@ export const DarkTheme = {
     light: 'rgba(148, 163, 184, 0.1)',
     medium: '#475569',        // Mid-slate border (web reference)
     dark: 'rgba(148, 163, 184, 0.3)',
-    focus: '#60A5FA',         // Light ocean
-    error: '#F87171',         // Light coral
+    focus: '#FFA8BC',         // Light pink ⭐ ATUALIZADO
+    error: '#F87171',         // Light red
     success: '#4ADE80',       // Light mint
   },
 
-  // Primary - Light Ocean (web reference dark mode)
+  // Primary - Light Pink ⭐ ATUALIZADO (não mais ocean)
   primary: {
-    main: '#60A5FA',          // Light ocean (web reference dark mode)
-    light: '#93C5FD',         // Lighter blue
-    dark: '#1E40AF',          // Deep blue
-    gradient: ['#60A5FA', '#3B82F6', '#2563EB'],  // Light ocean gradient
+    main: '#FFA8BC',          // Light coral pink (dark mode friendly)
+    light: '#FFCCD7',         // Lighter pink
+    dark: '#EC5975',          // Mid pink
+    gradient: ['#FFA8BC', '#FF7A96', '#FF6583'],  // Light pink gradient
   },
 
-  // Secondary - Light Coral (web reference dark mode)
+  // Secondary - Light Purple ⭐ ATUALIZADO (não mais coral)
   secondary: {
-    main: '#F87171',          // Light coral
-    light: '#FCA5A5',         // Lighter coral
-    dark: '#DC2626',          // Mid coral
-    gradient: ['#F87171', '#EF4444', '#DC2626'],  // Light coral gradient
+    main: '#C4B5FD',          // Light purple (dark mode friendly)
+    light: '#DDD6FE',         // Lighter purple
+    dark: '#A78BFA',          // Mid purple
+    gradient: ['#C4B5FD', '#A78BFA', '#8B5CF6'],  // Light purple gradient
   },
 
   // Status colors - lighter for dark mode
   status: {
     success: '#4ADE80',       // Light mint
     warning: '#FCD34D',       // Light sunshine
-    error: '#F87171',         // Light coral
+    error: '#F87171',         // Light red ⭐ ATUALIZADO
     info: '#60A5FA',          // Light ocean
   },
 
@@ -292,8 +297,10 @@ export const DarkTheme = {
   gradients: {
     success: ['#86EFAC', '#4ADE80', '#22C55E'],  // Light mint gradient
     warning: ['#FDE68A', '#FCD34D', '#FBBF24'],  // Light sunshine gradient
-    error: ['#FCA5A5', '#F87171', '#EF4444'],    // Light coral gradient
+    error: ['#FCA5A5', '#F87171', '#EF4444'],    // Light red gradient ⭐ ATUALIZADO
     info: ['#93C5FD', '#60A5FA', '#3B82F6'],     // Light ocean gradient
+    maternal: ['#FFA8BC', '#FF7A96', '#FF6583'], // ⭐ NOVO: Maternal gradient
+    spiritual: ['#C4B5FD', '#A78BFA', '#8B5CF6'], // ⭐ NOVO: Spiritual gradient
   },
 };
 
@@ -385,6 +392,202 @@ export const Typography = {
     bold: '700' as const,
     extrabold: '800' as const,
   },
+} as const;
+
+// ======================
+// 📝 SEMANTIC TEXT STYLES (Flo-inspired + Material Design 3)
+// ======================
+
+/**
+ * Semantic Text Styles - Use these instead of raw Typography.sizes
+ *
+ * Inspirado em:
+ * - Flo app (period tracker)
+ * - Material Design 3 (Google)
+ * - Apple Human Interface Guidelines
+ *
+ * @example
+ * // ❌ ANTES (hardcoded, inconsistente)
+ * <Text style={{ fontSize: 28, fontWeight: '700', lineHeight: 36 }}>
+ *   Olá, mãe!
+ * </Text>
+ *
+ * // ✅ DEPOIS (semântico, consistente)
+ * import { TextStyles } from '@/theme/tokens';
+ * <Text style={TextStyles.displayMedium}>
+ *   Olá, mãe!
+ * </Text>
+ */
+export const TextStyles = {
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // DISPLAYS (Títulos de página, hero headlines)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  displayLarge: {
+    fontSize: Typography.sizes['4xl'],      // 32
+    fontWeight: Typography.weights.bold,    // 700
+    lineHeight: Typography.lineHeights['4xl'], // 40
+    letterSpacing: -0.25,
+  } as const,
+
+  displayMedium: {
+    fontSize: Typography.sizes['3xl'],      // 28
+    fontWeight: Typography.weights.bold,    // 700
+    lineHeight: Typography.lineHeights['3xl'], // 36
+    letterSpacing: 0,
+  } as const,
+
+  displaySmall: {
+    fontSize: Typography.sizes['2xl'],      // 24
+    fontWeight: Typography.weights.semibold, // 600
+    lineHeight: Typography.lineHeights['2xl'], // 32
+    letterSpacing: 0,
+  } as const,
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // TITLES (Card headers, section titles)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  titleLarge: {
+    fontSize: Typography.sizes.xl,          // 20
+    fontWeight: Typography.weights.semibold, // 600
+    lineHeight: Typography.lineHeights.xl,  // 28
+    letterSpacing: 0,
+  } as const,
+
+  titleMedium: {
+    fontSize: Typography.sizes.lg,          // 18
+    fontWeight: Typography.weights.medium,  // 500
+    lineHeight: Typography.lineHeights.lg,  // 26
+    letterSpacing: 0.15,
+  } as const,
+
+  titleSmall: {
+    fontSize: Typography.sizes.md,          // 16
+    fontWeight: Typography.weights.medium,  // 500
+    lineHeight: Typography.lineHeights.md,  // 24
+    letterSpacing: 0.1,
+  } as const,
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // BODY TEXT (Paragraph text, descriptions)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  bodyLarge: {
+    fontSize: Typography.sizes.md,          // 16
+    fontWeight: Typography.weights.regular, // 400
+    lineHeight: Typography.lineHeights.md,  // 24
+    letterSpacing: 0.5,
+  } as const,
+
+  bodyMedium: {
+    fontSize: Typography.sizes.sm,          // 14
+    fontWeight: Typography.weights.regular, // 400
+    lineHeight: Typography.lineHeights.sm,  // 20
+    letterSpacing: 0.25,
+  } as const,
+
+  bodySmall: {
+    fontSize: Typography.sizes.xs,          // 12
+    fontWeight: Typography.weights.regular, // 400
+    lineHeight: Typography.lineHeights.xs,  // 18
+    letterSpacing: 0.4,
+  } as const,
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // LABELS (Buttons, chips, form labels, captions)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  labelLarge: {
+    fontSize: Typography.sizes.sm,          // 14
+    fontWeight: Typography.weights.semibold, // 600
+    lineHeight: Typography.lineHeights.sm,  // 20
+    letterSpacing: 0.1,
+    textTransform: 'none' as const,
+  } as const,
+
+  labelMedium: {
+    fontSize: Typography.sizes.xs,          // 12
+    fontWeight: Typography.weights.semibold, // 600
+    lineHeight: Typography.lineHeights.xs,  // 18
+    letterSpacing: 0.5,
+    textTransform: 'none' as const,
+  } as const,
+
+  labelSmall: {
+    fontSize: 11,                            // 11
+    fontWeight: Typography.weights.medium,  // 500
+    lineHeight: 16,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase' as const,    // Flo usa uppercase em tiny labels
+  } as const,
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ALIASES (Para uso comum, backwards compatibility)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  h1: {
+    fontSize: Typography.sizes['5xl'],      // 40
+    fontWeight: Typography.weights.extrabold, // 800
+    lineHeight: Typography.lineHeights['5xl'], // 44
+    letterSpacing: -1,
+  } as const,
+
+  h2: {
+    fontSize: Typography.sizes['4xl'],       // 32
+    fontWeight: Typography.weights.bold,     // 700
+    lineHeight: Typography.lineHeights['4xl'], // 40
+    letterSpacing: -0.5,
+  } as const,
+
+  h3: {
+    fontSize: Typography.sizes['3xl'],       // 28
+    fontWeight: Typography.weights.bold,     // 700
+    lineHeight: Typography.lineHeights['3xl'], // 36
+    letterSpacing: 0,
+  } as const,
+
+  h4: {
+    fontSize: Typography.sizes['2xl'],       // 24
+    fontWeight: Typography.weights.semibold, // 600
+    lineHeight: Typography.lineHeights['2xl'], // 32
+  } as const,
+
+  h5: {
+    fontSize: Typography.sizes.lg,           // 18
+    fontWeight: Typography.weights.semibold, // 600
+    lineHeight: Typography.lineHeights.lg,   // 26
+  } as const,
+
+  h6: {
+    fontSize: Typography.sizes.base,         // 16
+    fontWeight: Typography.weights.semibold, // 600
+    lineHeight: Typography.lineHeights.md,   // 24
+  } as const,
+
+  body: {
+    fontSize: Typography.sizes.base,         // 16
+    fontWeight: Typography.weights.regular,  // 400
+    lineHeight: Typography.lineHeights.md,   // 24
+  } as const,
+
+  caption: {
+    fontSize: Typography.sizes.xs,           // 12
+    fontWeight: Typography.weights.medium,   // 500
+    lineHeight: Typography.lineHeights.xs,   // 18
+  } as const,
+
+  button: {
+    fontSize: Typography.sizes.base,         // 16
+    fontWeight: Typography.weights.semibold, // 600
+    lineHeight: Typography.lineHeights.md,   // 24
+  } as const,
+
+  buttonSmall: {
+    fontSize: Typography.sizes.sm,           // 14
+    fontWeight: Typography.weights.semibold, // 600
+    lineHeight: Typography.lineHeights.sm,   // 20
+  } as const,
 } as const;
 
 // ======================
@@ -578,6 +781,44 @@ export const Breakpoints = {
 } as const;
 
 // ======================
+// 😊 EMOJI SIZES
+// ======================
+
+export const EmojiSizes = {
+  xs: 20,
+  sm: 28,
+  md: 32,
+  lg: 44,  // Recommendation: WCAG AAA touch target minimum
+  xl: 56,
+} as const;
+
+// ======================
+// 💧 OPACITY VALUES
+// ======================
+
+export const Opacity = {
+  disabled: 0.5,
+  hover: 0.75,
+  selected: 0.9,
+  overlay: 0.12,  // For background overlays (1F in hex)
+  full: 1,
+} as const;
+
+// ======================
+// 🌈 EMOTION GRADIENTS (Flo-inspired)
+// ======================
+
+export const EmotionGradients = {
+  calm: [ColorTokens.primary[400], ColorTokens.primary[100]], // Rosa maternal (main → light)
+  warm: [ColorTokens.primary[300], '#FFC4D9'], // Light pink → Warm pink
+  energetic: [ColorTokens.warning[400], ColorTokens.warning[500]], // Yellow → Orange
+  peaceful: [ColorTokens.success[400], ColorTokens.success[500]], // Green → Mint
+  safe: [ColorTokens.primary[400], ColorTokens.secondary[400]], // Rosa → Roxo (main → main)
+  spiritual: [ColorTokens.secondary[400], ColorTokens.secondary[600]], // Roxo gradient
+  joyful: [ColorTokens.primary[300], ColorTokens.warning[400]], // Pink → Yellow
+} as const;
+
+// ======================
 // 📱 SAFE AREAS
 // ======================
 
@@ -608,12 +849,17 @@ export const Tokens = {
   light: LightTheme,
   dark: DarkTheme,
   typography: Typography,
+  textStyles: TextStyles,  // ⭐ NOVO: Semantic text styles (Flo-inspired)
   spacing: Spacing,
   radius: Radius,
   shadows: Shadows,
   animations: Animations,
   touchTargets: TouchTargets,
   icons: IconSizes,
+  iconSizes: IconSizes, // Alias for compatibility
+  emojiSizes: EmojiSizes, // ⭐ NOVO: Emoji sizes
+  opacity: Opacity, // ⭐ NOVO: Opacity values
+  emotionGradients: EmotionGradients, // ⭐ NOVO: Emotion gradients (Flo-inspired)
   zIndex: ZIndex,
   breakpoints: Breakpoints,
   safeArea: SafeArea,

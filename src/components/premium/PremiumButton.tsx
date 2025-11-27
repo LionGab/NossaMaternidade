@@ -288,7 +288,9 @@ export const PremiumButton: React.FC<PremiumButtonProps> = ({
           style={fullWidth && styles.fullWidth}
         >
           <LinearGradient
-            colors={[...COLORS.primary.gradient] as readonly [string, string, ...string[]]}
+            colors={COLORS.primary.gradient.length >= 2 
+              ? ([COLORS.primary.gradient[0], COLORS.primary.gradient[1]] as readonly [string, string])
+              : [COLORS.primary.main, COLORS.primary.dark]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={[

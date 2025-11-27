@@ -171,7 +171,7 @@ class MedicalModerationService {
         severity,
       });
 
-      const blockedMessage = this.generateSafeResponse(flags, context?.userMessage);
+      const blockedMessage = this.generateSafeResponse(flags);
 
       return {
         approved: false,

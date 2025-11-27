@@ -11,8 +11,8 @@ import {
   MCPResponse,
   createMCPResponse,
   JsonValue,
-} from '../types';
-import { logger } from '../../utils/logger';
+} from '../../src/mcp/types';
+import { logger } from '../../src/utils/logger';
 
 export interface ContrastRatio {
   foreground: string;

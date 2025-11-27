@@ -35,13 +35,7 @@ export default function OnboardingFlow() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
-  // Responsividade: atualizar dimensões quando a tela rotacionar
-  useEffect(() => {
-    const subscription = Dimensions.addEventListener('change', ({ window }) => {
-      setScreenDimensions(window);
-    });
-    return () => subscription?.remove();
-  }, []);
+  // Responsividade: useWindowDimensions já atualiza automaticamente quando a tela rotaciona
 
   const isSmallScreen = width < 375;
   const isXL = width >= 768;

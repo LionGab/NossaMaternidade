@@ -17,7 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { CompositeNavigationProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { MessageCircleHeart, Moon, TrendingUp, Heart, Sparkles, Star } from 'lucide-react-native';
+import { MessageCircleHeart, Moon, Heart } from 'lucide-react-native';
 import { useTheme } from '@/theme';
 import { Box } from '@/components/primitives/Box';
 import { Text } from '@/components/primitives/Text';
@@ -33,7 +33,6 @@ import { feedService, type ContentItem } from '@/services/feedService';
 import { habitsService, type UserHabit } from '@/services/habitsService';
 import { checkInService } from '@/services/checkInService';
 import { Spacing, Typography } from '@/theme/tokens';
-import { TYPOGRAPHY, SPACING } from '@/design-system';
 import { logger } from '@/utils/logger';
 import type { MainTabParamList, RootStackParamList } from '@/navigation/types';
 
@@ -231,17 +230,17 @@ export default function HomeScreen() {
           borderRadius="3xl"
           accessibilityLabel="Imagem de boas-vindas do Nossa Maternidade"
         >
-          <Heading level="h3" color="inverse" weight="bold" style={{ fontSize: TYPOGRAPHY.h3.fontSize }}>
+          <Heading level="h3" color="inverse" weight="bold" style={{ fontSize: Typography.sizes['3xl'] }}>
             {getTimeBasedGreeting()}, {userName}{' '}
-            <Text style={{ fontSize: TYPOGRAPHY.h3.fontSize * 0.7 }}>💙</Text>
+            <Text style={{ fontSize: Typography.sizes['3xl'] * 0.7 }}>💙</Text>
           </Heading>
           <Text 
             color="inverse" 
             size="md" 
             style={{ 
               marginTop: Spacing['2'], 
-              fontSize: TYPOGRAPHY.body.fontSize, 
-              lineHeight: TYPOGRAPHY.body.lineHeight * TYPOGRAPHY.body.fontSize,
+              fontSize: Typography.sizes.md, 
+              lineHeight: Typography.lineHeights.md * Typography.sizes.md,
             }} 
             weight="medium"
           >
@@ -278,7 +277,7 @@ export default function HomeScreen() {
         <SectionLayout
           title={
             <>
-              <Text style={{ fontSize: TYPOGRAPHY.h4.fontSize * 0.7 }}>⭐</Text>
+              <Text style={{ fontSize: Typography.sizes.xl * 0.7 }}>⭐</Text>
               {' '}Destaques
             </>
           }
@@ -318,7 +317,7 @@ export default function HomeScreen() {
         >
           <Box direction="row" align="center" mb="2">
             <Heart size={20} color={colors.status.error} fill={colors.status.error} />
-            <Heading level="h5" style={{ marginLeft: Spacing['2'], fontSize: TYPOGRAPHY.h5.fontSize, fontWeight: TYPOGRAPHY.h5.fontWeight }}>
+            <Heading level="h5" style={{ marginLeft: Spacing['2'], fontSize: Typography.sizes.lg, fontWeight: Typography.weights.medium }}>
               Dica do Dia
             </Heading>
           </Box>
@@ -326,12 +325,12 @@ export default function HomeScreen() {
             size="md" 
             color="secondary" 
             style={{ 
-              fontSize: TYPOGRAPHY.body.fontSize, 
-              lineHeight: TYPOGRAPHY.body.lineHeight * TYPOGRAPHY.body.fontSize,
+              fontSize: Typography.sizes.md, 
+              lineHeight: Typography.lineHeights.md * Typography.sizes.md,
             }}
           >
             {dailyTip.text}{' '}
-            <Text style={{ fontSize: TYPOGRAPHY.body.fontSize * 0.75 }}>{dailyTip.emoji}</Text>
+            <Text style={{ fontSize: Typography.sizes.md * 0.75 }}>{dailyTip.emoji}</Text>
           </Text>
         </Box>
       </Box>

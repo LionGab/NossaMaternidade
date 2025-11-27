@@ -267,7 +267,9 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
 
   const content = variant === 'gradient' ? (
     <LinearGradient
-      colors={gradientColors as readonly [string, string, ...string[]]}
+      colors={gradientColors.length >= 2 
+        ? ([gradientColors[0], gradientColors[1]] as readonly [string, string])
+        : [COLORS.primary.main, COLORS.primary.dark]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[styles.gradientContainer, getPaddingStyle()]}

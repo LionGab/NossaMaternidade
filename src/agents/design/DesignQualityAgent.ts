@@ -5,20 +5,41 @@
 
 import { BaseAgent, AgentProcessOptions } from '../core/BaseAgent';
 import { createMCPRequest, MCPResponse } from '../../mcp/servers';
-// Importar diretamente dos arquivos (não do index.ts) porque estes servidores usam Node.js
-// e não devem ser importados no app mobile
-import { designTokensValidationMCP } from '../../mcp/servers/DesignTokensValidationMCPServer';
-import { codeQualityMCP } from '../../mcp/servers/CodeQualityMCPServer';
-import { accessibilityMCP } from '../../mcp/servers/AccessibilityMCPServer';
-import type {
-  ValidationResult,
-  DesignViolation,
-} from '../../mcp/servers/DesignTokensValidationMCPServer';
-import type {
-  DesignAnalysis,
-  RefactorSuggestion,
-} from '../../mcp/servers/CodeQualityMCPServer';
-import type { A11yAuditResult } from '../../mcp/servers/AccessibilityMCPServer';
+// MCP Servers de desenvolvimento estão em scripts/mcp-servers e não devem ser usados no app mobile
+// TODO: Criar versões mobile-friendly ou usar apenas em scripts de build
+// import { designTokensValidationMCP } from '../../scripts/mcp-servers/DesignTokensValidationMCPServer';
+// import { codeQualityMCP } from '../../scripts/mcp-servers/CodeQualityMCPServer';
+// import { accessibilityMCP } from '../../scripts/mcp-servers/AccessibilityMCPServer';
+
+// Tipos temporários até migração completa
+export interface ValidationResult {
+  violations: DesignViolation[];
+}
+
+export interface DesignViolation {
+  type: string;
+  severity: 'critical' | 'warning' | 'info';
+  line?: number;
+  content?: string;
+  message: string;
+}
+
+export interface DesignAnalysis {
+  score: number;
+  issues: unknown[];
+}
+
+export interface RefactorSuggestion {
+  type: string;
+  description: string;
+  code?: string;
+}
+
+export interface A11yAuditResult {
+  issues: Record<string, number>;
+  score: number;
+}
+
 import { logger } from '../../utils/logger';
 
 export interface DesignValidationInput {
@@ -138,18 +159,19 @@ export class DesignQualityAgent extends BaseAgent<DesignValidationInput, DesignV
   }
 
   protected async callMCP(server: string, method: string, params: Record<string, unknown>): Promise<MCPResponse> {
-    const request = createMCPRequest(method as any, params as any);
-
-    switch (server) {
-      case 'design-validation':
-        return await designTokensValidationMCP.handleRequest(request);
-      case 'code-quality':
-        return await codeQualityMCP.handleRequest(request);
-      case 'accessibility':
-        return await accessibilityMCP.handleRequest(request);
-      default:
-        throw new Error(`Unknown MCP server: ${server}`);
-    }
+    // MCP Servers de desenvolvimento não disponíveis no app mobile
+    // Retornar resposta vazia por enquanto
+    logger.warn('[DesignQualityAgent] MCP servers não disponíveis no app mobile', { server, method });
+    return {
+      id: `mcp-${Date.now()}`,
+      success: false,
+      error: { 
+        code: 'MCP_NOT_AVAILABLE',
+        message: 'MCP servers de desenvolvimento não disponíveis no app mobile' 
+      },
+      data: null,
+      timestamp: Date.now(),
+    };
   }
 
   private async validateDesignTokens(input: DesignValidationInput): Promise<ValidationResult> {

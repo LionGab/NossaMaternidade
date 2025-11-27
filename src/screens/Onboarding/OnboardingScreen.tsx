@@ -22,6 +22,7 @@ import { Box } from '@/components/primitives/Box';
 import { Text } from '@/components/primitives/Text';
 import { Heading } from '@/components/primitives/Heading';
 import { HapticButton } from '@/components/primitives/HapticButton';
+import { ProgressBar } from '@/components/primitives/ProgressBar';
 import { Tokens } from '@/theme/tokens';
 import { onboardingService, type OnboardingData } from '@/services/onboardingService';
 import { logger } from '@/utils/logger';
@@ -463,14 +464,14 @@ export default function OnboardingScreen() {
     <Box
       style={{ ...styles.container, backgroundColor: colors.background.canvas }}
     >
-      {/* Progress Bar */}
-      <Box style={{ ...styles.progressBarContainer, backgroundColor: `${colors.text.primary}1A` }}>
-        <Box
-          style={{
-            ...styles.progressBar,
-            width: `${(currentStep / 7) * 100}%`,
-            backgroundColor: colors.primary.main,
-          }}
+      {/* Progress Bar (Flo-style - animado) */}
+      <Box px="4" pt="3" pb="2">
+        <ProgressBar
+          current={currentStep}
+          total={7}
+          color={colors.primary.main}
+          height={4}
+          animated
         />
       </Box>
 

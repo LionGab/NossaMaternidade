@@ -16,6 +16,8 @@ import { Habit, HabitCategory } from '../types/habits';
 import { useHaptics } from '../hooks/useHaptics';
 import { DEFAULT_HABITS, HABIT_CATEGORIES } from '../data/habits';
 import { useAsyncStorage } from '../hooks/useStorage';
+import { Tokens } from '../theme/tokens';
+import { HabitsBarChart } from '../components/charts/HabitsBarChart';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HABIT_STORAGE_KEY = '@nossa_maternidade:habits';
@@ -30,23 +32,22 @@ const createStyles = (colors: ThemeColors) => ({
     flexDirection: 'row' as const,
     justifyContent: 'space-between' as const,
     alignItems: 'center' as const,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: Tokens.spacing['5'], // 20
+    paddingVertical: Tokens.spacing['4'], // 16
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: '700' as const,
+    ...Tokens.textStyles.displayMedium, // 28/700/36
     color: colors.text.primary,
-    marginBottom: 4,
+    marginBottom: Tokens.spacing['1'], // 4
   },
   headerSubtitle: {
-    fontSize: 14,
+    ...Tokens.textStyles.bodyMedium, // 14/400/20
     color: colors.text.secondary,
   },
   addButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: Tokens.touchTargets.min, // 44
+    height: Tokens.touchTargets.min, // 44
+    borderRadius: Tokens.radius.full, // 9999 (circle)
     backgroundColor: colors.background.card,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
@@ -55,88 +56,85 @@ const createStyles = (colors: ThemeColors) => ({
   },
   statsCard: {
     backgroundColor: colors.background.card,
-    marginHorizontal: 20,
-    marginBottom: 20,
-    borderRadius: 20,
-    padding: 20,
+    marginHorizontal: Tokens.spacing['5'], // 20
+    marginBottom: Tokens.spacing['5'], // 20
+    borderRadius: Tokens.radius.card, // 20
+    padding: Tokens.spacing['5'], // 20
     borderWidth: 1,
     borderColor: colors.border.light,
   },
   statsTitle: {
-    fontSize: 16,
-    fontWeight: '600' as const,
+    ...Tokens.textStyles.titleSmall, // 16/500/24
     color: colors.text.secondary,
-    marginBottom: 16,
+    marginBottom: Tokens.spacing['4'], // 16
     textTransform: 'uppercase' as const,
     letterSpacing: 0.5,
   },
   statsGrid: {
     flexDirection: 'row' as const,
     justifyContent: 'space-around' as const,
-    marginBottom: 20,
+    marginBottom: Tokens.spacing['5'], // 20
   },
   statBox: {
     alignItems: 'center' as const,
   },
   statValue: {
-    fontSize: 32,
-    fontWeight: '700' as const,
+    ...Tokens.textStyles.displayLarge, // 32/700/40
     color: colors.text.primary,
-    marginBottom: 4,
+    marginBottom: Tokens.spacing['1'], // 4
   },
   statLabel: {
-    fontSize: 12,
+    ...Tokens.textStyles.labelMedium, // 12/600/18
     color: colors.text.secondary,
     textTransform: 'uppercase' as const,
     letterSpacing: 0.5,
   },
   progressBarContainer: {
-    height: 8,
+    height: Tokens.spacing['2'], // 8
     backgroundColor: colors.background.elevated,
-    borderRadius: 4,
+    borderRadius: Tokens.radius.sm, // 4
     overflow: 'hidden' as const,
   },
   progressBar: {
-    height: 8,
-    borderRadius: 4,
+    height: Tokens.spacing['2'], // 8
+    borderRadius: Tokens.radius.sm, // 4
     backgroundColor: colors.primary.main,
   },
   categoriesContainer: {
-    marginBottom: 20,
+    marginBottom: Tokens.spacing['5'], // 20
   },
   categoriesContent: {
-    paddingHorizontal: 20,
-    gap: 8,
+    paddingHorizontal: Tokens.spacing['5'], // 20
+    gap: Tokens.spacing['2'], // 8
   },
   categoryChip: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
+    paddingHorizontal: Tokens.spacing['4'], // 16
+    paddingVertical: Tokens.spacing['2.5'], // 10
+    borderRadius: Tokens.radius.card, // 20
     backgroundColor: colors.background.card,
     borderWidth: 1,
     borderColor: colors.border.light,
-    gap: 6,
+    gap: Tokens.spacing['1.5'], // 6
   },
   categoryText: {
-    fontSize: 14,
-    fontWeight: '600' as const,
+    ...Tokens.textStyles.labelLarge, // 14/600/20
     color: colors.text.secondary,
   },
   habitsList: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    gap: 12,
+    paddingHorizontal: Tokens.spacing['5'], // 20
+    paddingBottom: Tokens.spacing['5'], // 20
+    gap: Tokens.spacing['3'], // 12
   },
   habitCard: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     backgroundColor: colors.background.card,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: Tokens.radius.xl, // 16
+    padding: Tokens.spacing['4'], // 16
     borderWidth: 2,
-    gap: 16,
+    gap: Tokens.spacing['4'], // 16
     position: 'relative' as const,
     overflow: 'hidden' as const,
   },
@@ -151,9 +149,9 @@ const createStyles = (colors: ThemeColors) => ({
     bottom: 0,
   },
   habitIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
+    width: Tokens.touchTargets.large, // 56
+    height: Tokens.touchTargets.large, // 56
+    borderRadius: Tokens.radius.xl, // 16
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
@@ -161,28 +159,27 @@ const createStyles = (colors: ThemeColors) => ({
     flex: 1,
   },
   habitTitle: {
-    fontSize: 16,
-    fontWeight: '700' as const,
+    ...Tokens.textStyles.titleSmall, // 16/500/24
+    fontWeight: Tokens.typography.weights.bold, // 700
     color: colors.text.primary,
-    marginBottom: 4,
+    marginBottom: Tokens.spacing['1'], // 4
   },
   habitDescription: {
-    fontSize: 13,
+    fontSize: Tokens.typography.sizes.sm, // 14 (closest to 13)
     color: colors.text.secondary,
-    marginBottom: 8,
+    marginBottom: Tokens.spacing['2'], // 8
   },
   habitStats: {
     flexDirection: 'row' as const,
-    gap: 16,
+    gap: Tokens.spacing['4'], // 16
   },
   statItem: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    gap: 4,
+    gap: Tokens.spacing['1'], // 4
   },
   statText: {
-    fontSize: 12,
-    fontWeight: '600' as const,
+    ...Tokens.textStyles.labelMedium, // 12/600/18
     color: colors.text.secondary,
   },
   checkboxContainer: {
@@ -190,9 +187,9 @@ const createStyles = (colors: ThemeColors) => ({
     justifyContent: 'center' as const,
   },
   checkbox: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: Tokens.iconSizes.xl, // 32
+    height: Tokens.iconSizes.xl, // 32
+    borderRadius: Tokens.radius.full, // 9999 (circle)
     borderWidth: 2,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
@@ -201,17 +198,16 @@ const createStyles = (colors: ThemeColors) => ({
     flex: 1,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
-    paddingHorizontal: 40,
+    paddingHorizontal: Tokens.spacing['10'], // 40
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: '700' as const,
+    ...Tokens.textStyles.titleLarge, // 20/600/28
     color: colors.text.primary,
-    marginTop: 16,
-    marginBottom: 8,
+    marginTop: Tokens.spacing['4'], // 16
+    marginBottom: Tokens.spacing['2'], // 8
   },
   emptyText: {
-    fontSize: 15,
+    fontSize: Tokens.typography.sizes.base, // 16 (closest to 15)
     color: colors.text.secondary,
     textAlign: 'center' as const,
   },
@@ -439,6 +435,11 @@ export default function HabitsScreen() {
     filteredHabits.length > 0 ? (completedCount / filteredHabits.length) * 100 : 0;
   const currentStreak = Math.max(...activeHabits.map((h) => h.streak ?? 0), 0);
 
+  // Dados para o gráfico semanal (últimos 7 dias)
+  // TODO: Substituir por dados reais quando integrar com HabitsAnalysisAgent
+  const weeklyData = [3, 4, 2, 5, 4, 3, completedCount]; // Mock data + hoje
+  const weeklyLabels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
   const handleToggleHabit = useCallback(
     (habitId: string) => {
       const isCompleted = completedToday[habitId];
@@ -546,6 +547,18 @@ export default function HabitsScreen() {
         completionRate={completionRate}
         colors={colors}
       />
+
+      {/* Weekly Habits Chart */}
+      <View
+        style={{
+          marginHorizontal: Tokens.spacing['5'],
+          marginBottom: Tokens.spacing['5'],
+        }}
+        accessible={true}
+        accessibilityLabel="Gráfico de hábitos completados nos últimos 7 dias"
+      >
+        <HabitsBarChart data={weeklyData} labels={weeklyLabels} />
+      </View>
 
       {/* Categories */}
       <ScrollView

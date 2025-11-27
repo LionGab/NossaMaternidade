@@ -1,14 +1,37 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, ActivityIndicator, ScrollView, Alert } from 'react-native';
+/**
+ * LoginScreenNew - Tela de Login Robusta e Moderna
+ * 
+ * Design System completo com:
+ * - Validação visual em tempo real
+ * - Animações suaves
+ * - Feedback háptico
+ * - Dark mode completo
+ * - Acessibilidade WCAG AAA
+ * 
+ * @version 2.0.0
+ * @date 2025-11-27
+ */
+
+import React, { useState, useRef } from 'react';
+import { View, ScrollView, Alert, Animated, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
-import { Eye, EyeOff, ChevronLeft, Sun, Moon, Apple } from 'lucide-react-native';
+import { Eye, EyeOff, ChevronLeft, Sun, Moon, Apple, Mail, Lock } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../theme/ThemeContext';
-import { Tokens } from '../theme';
+import { Spacing, Radius } from '../theme/tokens';
+import { Box } from '../components/primitives/Box';
+import { Text } from '../components/primitives/Text';
+import { Heading } from '../components/primitives/Heading';
+import { HapticButton } from '../components/primitives/HapticButton';
+import { Input } from '../components/Input';
+import { Button } from '../components/primitives/Button';
 import type { RootStackParamList } from '../navigation/types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { authService } from '../services/authService';
+import { profileService } from '../services/profileService';
+import { useHaptics } from '../hooks/useHaptics';
+import { isValidEmail } from '../utils/validation';
 import { logger } from '../utils/logger';
 
 interface LoginScreenProps {
@@ -19,37 +42,202 @@ interface LoginScreenProps {
 export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { isDark, toggleTheme, colors } = useTheme();
+  const haptics = useHaptics();
+  
+  // Form state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Validation state
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
+  
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(20)).current;
+  const errorShakeAnim = useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    // Entrance animation
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const shakeError = () => {
+    Animated.sequence([
+      Animated.timing(errorShakeAnim, {
+        toValue: 10,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(errorShakeAnim, {
+        toValue: -10,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(errorShakeAnim, {
+        toValue: 10,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(errorShakeAnim, {
+        toValue: 0,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const validateEmail = (value: string): string | null => {
+    if (!value.trim()) {
+      return 'E-mail é obrigatório';
+    }
+    if (!isValidEmail(value)) {
+      return 'Digite um e-mail válido';
+    }
+    return null;
+  };
+
+  const validatePassword = (value: string): string | null => {
+    if (!value.trim()) {
+      return 'Senha é obrigatória';
+    }
+    if (value.length < 6) {
+      return 'Senha deve ter pelo menos 6 caracteres';
+    }
+    return null;
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    if (emailTouched) {
+      const error = validateEmail(value);
+      setEmailError(error);
+      if (error) {
+        haptics.light();
+      }
+    }
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    if (passwordTouched) {
+      const error = validatePassword(value);
+      setPasswordError(error);
+      if (error) {
+        haptics.light();
+      }
+    }
+  };
+
+  const handleEmailBlur = () => {
+    setEmailTouched(true);
+    const error = validateEmail(email);
+    setEmailError(error);
+    if (error) {
+      shakeError();
+      haptics.error();
+    }
+  };
+
+  const handlePasswordBlur = () => {
+    setPasswordTouched(true);
+    const error = validatePassword(password);
+    setPasswordError(error);
+    if (error) {
+      shakeError();
+      haptics.error();
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const emailErr = validateEmail(email);
+    const passwordErr = validatePassword(password);
+    
+    setEmailError(emailErr);
+    setPasswordError(passwordErr);
+    setEmailTouched(true);
+    setPasswordTouched(true);
+    
+    if (emailErr || passwordErr) {
+      shakeError();
+      haptics.error();
+      return false;
+    }
+    
+    return true;
+  };
 
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert('Atenção', 'Por favor, preencha e-mail e senha');
+    if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
+    haptics.light();
+    
     try {
-      // Simula delay de rede
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      logger.info('[LoginScreen] Tentando fazer login', { email });
       
-      // Verificar se usuário já completou onboarding
-      const savedUser = await AsyncStorage.getItem('nath_user');
-      
-      if (onLogin) {
-        onLogin();
-      } else if (savedUser) {
-        // Se já completou onboarding, vai direto para Main
-        navigation.navigate('Main' as never);
-      } else {
-        // Se não completou, vai para Onboarding
-        navigation.navigate('Onboarding' as never);
+      const { user, session, error } = await authService.signIn({
+        email: email.trim(),
+        password,
+      });
+
+      if (error) {
+        logger.error('[LoginScreen] Erro no login', error);
+        haptics.error();
+        shakeError();
+        
+        // Mensagens de erro mais amigáveis
+        let errorMessage = 'Não foi possível fazer login. Tente novamente.';
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'E-mail ou senha incorretos. Verifique e tente novamente.';
+          setPasswordError('Senha incorreta');
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'Por favor, confirme seu e-mail antes de fazer login.';
+          setEmailError('E-mail não confirmado');
+        }
+        
+        Alert.alert('Erro no login', errorMessage);
+        return;
+      }
+
+      if (user && session) {
+        logger.info('[LoginScreen] Login realizado com sucesso', { userId: user.id });
+        haptics.success();
+        
+        // Verificar se usuário já completou onboarding
+        const profile = await profileService.getCurrentProfile();
+        
+        if (onLogin) {
+          onLogin();
+        } else if (profile?.onboarding_completed) {
+          navigation.navigate('Main' as never);
+        } else {
+          navigation.navigate('Onboarding' as never);
+        }
       }
     } catch (error) {
-      logger.error('Erro no login', error);
-      Alert.alert('Erro', 'Não foi possível fazer login. Tente novamente.');
+      logger.error('[LoginScreen] Erro inesperado no login', error);
+      haptics.error();
+      shakeError();
+      Alert.alert('Erro', 'Ocorreu um erro inesperado. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -57,39 +245,88 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
 
   const handleSocialLogin = async (provider: 'apple' | 'google') => {
     setIsLoading(true);
+    haptics.light();
+    
     try {
-      // Simula delay de rede
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      logger.info(`[LoginScreen] Tentando login com ${provider}`);
       
-      // Verificar se usuário já completou onboarding
-      const savedUser = await AsyncStorage.getItem('nath_user');
+      const result = provider === 'apple' 
+        ? await authService.signInWithApple()
+        : await authService.signInWithGoogle();
 
-      if (savedUser) {
-        navigation.navigate('Main' as never);
-      } else {
-        navigation.navigate('Onboarding' as never);
+      if (result.error) {
+        logger.error(`[LoginScreen] Erro no login ${provider}`, result.error);
+        haptics.error();
+        Alert.alert(
+          'Erro no login', 
+          `Não foi possível fazer login com ${provider === 'apple' ? 'Apple' : 'Google'}. Tente novamente.`
+        );
+        return;
       }
+
+      // OAuth redireciona para callback, então não navegamos aqui
+      // O callback será tratado pelo AuthContext
+      haptics.success();
+      logger.info(`[LoginScreen] Redirecionando para ${provider} OAuth`);
     } catch (error) {
-      logger.error(`Erro no login ${provider}`, error);
-      Alert.alert('Erro', `Não foi possível fazer login com ${provider === 'apple' ? 'Apple' : 'Google'}. Tente novamente.`);
+      logger.error(`[LoginScreen] Erro inesperado no login ${provider}`, error);
+      haptics.error();
+      Alert.alert('Erro', `Ocorreu um erro ao fazer login com ${provider === 'apple' ? 'Apple' : 'Google'}.`);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleForgotPassword = () => {
-    Alert.alert(
-      'Recuperar senha',
-      'Funcionalidade em desenvolvimento. Em breve você poderá recuperar sua senha por e-mail.',
-      [{ text: 'OK' }]
-    );
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      Alert.alert(
+        'E-mail necessário',
+        'Por favor, digite seu e-mail no campo acima para recuperar sua senha.'
+      );
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      Alert.alert('E-mail inválido', 'Por favor, digite um e-mail válido.');
+      return;
+    }
+
+    haptics.light();
+    
+    try {
+      logger.info('[LoginScreen] Solicitando recuperação de senha', { email });
+      
+      const { error } = await authService.resetPassword(email.trim());
+      
+      if (error) {
+        logger.error('[LoginScreen] Erro ao resetar senha', error);
+        haptics.error();
+        Alert.alert(
+          'Erro',
+          'Não foi possível enviar o e-mail de recuperação. Verifique seu e-mail e tente novamente.'
+        );
+        return;
+      }
+
+      haptics.success();
+      Alert.alert(
+        'E-mail enviado!',
+        'Enviamos um link de recuperação para seu e-mail. Verifique sua caixa de entrada.'
+      );
+    } catch (error) {
+      logger.error('[LoginScreen] Erro inesperado ao resetar senha', error);
+      haptics.error();
+      Alert.alert('Erro', 'Ocorreu um erro ao solicitar recuperação de senha.');
+    }
   };
 
   const handleSignUp = () => {
+    haptics.light();
     navigation.navigate('Onboarding');
   };
 
   const handleBack = () => {
+    haptics.light();
     if (onBack) {
       onBack();
     } else {
@@ -97,268 +334,343 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
     }
   };
 
+  const animatedStyle = {
+    opacity: fadeAnim,
+    transform: [{ translateY: slideAnim }],
+  };
+
+  const errorShakeStyle = {
+    transform: [{ translateX: errorShakeAnim }],
+  };
+
   return (
     <SafeAreaView 
       style={{ flex: 1, backgroundColor: colors.background.canvas }}
       edges={['top']}
     >
-      <ScrollView
+      <KeyboardAvoidingView
         style={{ flex: 1 }}
-        contentContainerStyle={{ flexGrow: 1, padding: 24, paddingBottom: 40 }}
-        showsVerticalScrollIndicator={false}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
-        {/* Top Navigation */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-          <TouchableOpacity
-            onPress={handleBack}
-            style={{
-              padding: 8,
-              borderRadius: 20,
-              backgroundColor: colors.text.primary
-            }}
-            activeOpacity={0.9}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel="Voltar"
-            accessibilityHint="Retorna para a tela anterior"
-          >
-            <ChevronLeft size={20} color={colors.background.canvas} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={toggleTheme}
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 20,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: colors.background.card,
-              borderWidth: 1,
-              borderColor: colors.border.light
-            }}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel={isDark ? "Alternar para modo claro" : "Alternar para modo escuro"}
-            accessibilityHint="Muda o tema entre claro e escuro"
-          >
-            {isDark ? <Sun size={20} color={colors.text.primary} /> : <Moon size={20} color={colors.text.primary} />}
-          </TouchableOpacity>
-        </View>
-
-        {/* Header */}
-        <View style={{ alignItems: 'center', marginBottom: 32 }}>
-          <View
-            style={{
-              width: 96,
-              height: 96,
-              borderRadius: 48,
-              overflow: 'hidden',
-              marginBottom: 16,
-              backgroundColor: isDark ? colors.background.card : colors.primary.light,
-              borderWidth: 4,
-              borderColor: isDark ? colors.border.dark : colors.background.card,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              elevation: 8
-            }}
-          >
-            <Image
-              source={{ uri: 'https://i.imgur.com/GDYdiuy.jpg' }}
-              style={{ width: '100%', height: '100%' }}
-              contentFit="cover"
-            />
-          </View>
-          <Text style={{ fontSize: Tokens.typography.sizes['2xl'], fontWeight: Tokens.typography.weights.bold, textAlign: 'center', marginBottom: 4, color: colors.text.primary }}>
-            Bem-vinda de volta
-          </Text>
-          <Text style={{ fontSize: Tokens.typography.sizes.sm, textAlign: 'center', color: colors.text.secondary }}>
-            Entre para acessar seu espaço seguro.
-          </Text>
-        </View>
-
-        {/* Email Input */}
-        <View style={{ marginBottom: 16 }}>
-          <Text style={{ fontSize: Tokens.typography.sizes.xs, fontWeight: Tokens.typography.weights.bold, marginBottom: 4, marginLeft: 4, textTransform: 'uppercase', letterSpacing: 1, color: colors.text.secondary }}>
-            E-mail
-          </Text>
-          <TextInput
-            placeholder="exemplo@email.com"
-            placeholderTextColor={colors.text.tertiary}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-            accessible={true}
-            accessibilityLabel="Campo de e-mail"
-            accessibilityHint="Digite seu endereço de e-mail"
-            style={{
-              width: '100%',
-              paddingHorizontal: 16,
-              paddingVertical: 16,
-              borderRadius: 12,
-              fontSize: Tokens.typography.sizes.sm,
-              backgroundColor: colors.background.card,
-              borderWidth: 1,
-              borderColor: colors.border.light,
-              color: colors.text.primary
-            }}
-          />
-        </View>
-
-        {/* Password Input */}
-        <View style={{ marginBottom: 8 }}>
-          <Text style={{ fontSize: Tokens.typography.sizes.xs, fontWeight: Tokens.typography.weights.bold, marginBottom: 4, marginLeft: 4, textTransform: 'uppercase', letterSpacing: 1, color: colors.text.secondary }}>
-            Senha
-          </Text>
-          <View style={{ position: 'relative' }}>
-            <TextInput
-              placeholder="••••••••"
-              placeholderTextColor={colors.text.tertiary}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-              autoComplete="password"
-              accessible={true}
-              accessibilityLabel="Campo de senha"
-              accessibilityHint="Digite sua senha"
-              style={{
-                width: '100%',
-                paddingHorizontal: 16,
-                paddingVertical: 16,
-                paddingRight: 48,
-                borderRadius: 12,
-                fontSize: Tokens.typography.sizes.sm,
-                backgroundColor: colors.background.card,
-                borderWidth: 1,
-                borderColor: colors.border.light,
-                color: colors.text.primary
-              }}
-            />
-            <TouchableOpacity
-              onPress={() => setShowPassword(!showPassword)}
-              style={{ position: 'absolute', right: 12, top: 16, padding: 4 }}
-              accessible={true}
-              accessibilityRole="button"
-              accessibilityLabel={showPassword ? "Ocultar senha" : "Mostrar senha"}
-              accessibilityHint="Alterna a visibilidade da senha"
-            >
-              {showPassword ? (
-                <EyeOff size={18} color={colors.text.tertiary} />
-              ) : (
-                <Eye size={18} color={colors.text.tertiary} />
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={{ alignItems: 'flex-end', marginBottom: 24 }}>
-          <TouchableOpacity accessibilityRole="button" onPress={handleForgotPassword}>
-            <Text style={{ fontSize: Tokens.typography.sizes.xs, fontWeight: Tokens.typography.weights.bold, color: colors.primary.main }}>
-              Esqueceu a senha?
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Login Button */}
-        <TouchableOpacity
-          onPress={handleLogin}
-          disabled={isLoading}
-          style={{
-            width: '100%',
-            paddingVertical: 16,
-            borderRadius: 12,
-            marginBottom: 24,
-            backgroundColor: colors.primary.main,
-            opacity: isLoading ? 0.7 : 1
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ 
+            flexGrow: 1, 
+            padding: Spacing['6'], 
+            paddingBottom: Spacing['10'] 
           }}
-          activeOpacity={0.9}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel="Entrar"
-          accessibilityHint="Faz login com e-mail e senha"
-          accessibilityState={{ disabled: isLoading }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          {isLoading ? (
-            <ActivityIndicator color={colors.text.inverse} />
-          ) : (
-            <Text style={{ color: colors.text.inverse, fontWeight: 'bold', textAlign: 'center' }}>Entrar</Text>
-          )}
-        </TouchableOpacity>
+          <Animated.View style={animatedStyle}>
+            {/* Top Navigation */}
+            <Box direction="row" justify="space-between" align="center" mb="8">
+              <HapticButton
+                variant="ghost"
+                size="sm"
+                onPress={handleBack}
+                accessibilityLabel="Voltar"
+                accessibilityHint="Retorna para a tela anterior"
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: Radius.full,
+                  backgroundColor: colors.background.card,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  shadowColor: colors.text.primary,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: isDark ? 0.3 : 0.1,
+                  shadowRadius: 4,
+                  elevation: 2,
+                }}
+              >
+                <ChevronLeft size={22} color={colors.text.primary} />
+              </HapticButton>
 
-        {/* Divider */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-          <View style={{ height: 1, flex: 1, backgroundColor: colors.border.light }} />
-          <Text style={{ fontSize: Tokens.typography.sizes['3xs'], fontWeight: Tokens.typography.weights.bold, textTransform: 'uppercase', letterSpacing: 2, color: colors.text.tertiary }}>
-            Ou continue com
-          </Text>
-          <View style={{ height: 1, flex: 1, backgroundColor: colors.border.light }} />
-        </View>
+              <HapticButton
+                variant="ghost"
+                size="sm"
+                onPress={toggleTheme}
+                accessibilityLabel={isDark ? "Alternar para modo claro" : "Alternar para modo escuro"}
+                accessibilityHint="Muda o tema entre claro e escuro"
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: Radius.full,
+                  backgroundColor: colors.background.card,
+                  borderWidth: 1,
+                  borderColor: colors.border.light,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  shadowColor: colors.text.primary,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: isDark ? 0.3 : 0.1,
+                  shadowRadius: 4,
+                  elevation: 2,
+                }}
+              >
+                {isDark ? (
+                  <Sun size={20} color={colors.text.primary} />
+                ) : (
+                  <Moon size={20} color={colors.text.primary} />
+                )}
+              </HapticButton>
+            </Box>
 
-        {/* Social Login */}
-        <View style={{ marginBottom: 24 }}>
-          <TouchableOpacity accessibilityRole="button"
-            onPress={() => handleSocialLogin('apple')}
-            disabled={isLoading}
-            style={{
-              width: '100%',
-              paddingVertical: 16,
-              borderRadius: 12,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              marginBottom: 12,
-              backgroundColor: colors.background.card,
-              borderWidth: 1,
-              borderColor: colors.border.light,
-              opacity: isLoading ? 0.7 : 1
-            }}
-            activeOpacity={0.9}
-          >
-            <Apple size={20} color={colors.text.primary} />
-            <Text style={{ fontWeight: '600', color: colors.text.primary }}>
-              Continuar com Apple
-            </Text>
-          </TouchableOpacity>
+            {/* Header */}
+            <Box align="center" mb="10">
+              <View
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: 50,
+                  overflow: 'hidden',
+                  marginBottom: Spacing['4'],
+                  backgroundColor: isDark ? colors.background.card : colors.primary.light,
+                  borderWidth: 4,
+                  borderColor: isDark ? colors.border.dark : colors.background.card,
+                  shadowColor: isDark ? colors.background.canvas : colors.primary.main,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: isDark ? 0.3 : 0.2,
+                  shadowRadius: 12,
+                  elevation: 8,
+                }}
+              >
+                <Image
+                  source={{ uri: 'https://i.imgur.com/GDYdiuy.jpg' }}
+                  style={{ width: '100%', height: '100%' }}
+                  contentFit="cover"
+                  transition={200}
+                />
+              </View>
+              
+              <Box mb="1" align="center">
+                <Heading 
+                  level="h3" 
+                  weight="bold" 
+                  align="center"
+                >
+                  Bem-vinda de volta
+                </Heading>
+              </Box>
+              
+              <Text 
+                size="sm" 
+                align="center" 
+                color="secondary"
+                style={{ maxWidth: '80%' }}
+              >
+                Entre para acessar seu espaço seguro.
+              </Text>
+            </Box>
 
-          <TouchableOpacity accessibilityRole="button"
-            onPress={() => handleSocialLogin('google')}
-            disabled={isLoading}
-            style={{
-              width: '100%',
-              paddingVertical: 16,
-              borderRadius: 12,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              backgroundColor: colors.background.card,
-              borderWidth: 1,
-              borderColor: colors.border.light,
-              opacity: isLoading ? 0.7 : 1
-            }}
-            activeOpacity={0.9}
-          >
-            <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: colors.raw.primary[400] }} />
-            <Text style={{ fontWeight: '600', color: colors.text.primary }}>
-              Continuar com Google
-            </Text>
-          </TouchableOpacity>
-        </View>
+            {/* Form */}
+            <Animated.View style={errorShakeStyle}>
+              {/* Email Input */}
+              <Input
+                label="E-MAIL"
+                placeholder="exemplo@email.com"
+                value={email}
+                onChangeText={handleEmailChange}
+                onBlur={handleEmailBlur}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect={false}
+                textContentType="emailAddress"
+                leftIcon={<Mail size={18} color={emailError ? colors.status.error : colors.text.tertiary} />}
+                error={emailError || undefined}
+                disabled={isLoading}
+                containerStyle={{ marginBottom: Spacing['4'] }}
+                accessibilityLabel="Campo de e-mail"
+                accessibilityHint="Digite seu endereço de e-mail"
+              />
 
-        <TouchableOpacity accessibilityRole="button" onPress={handleSignUp}>
-          <Text style={{ textAlign: 'center', fontSize: Tokens.typography.sizes.xs, color: colors.text.tertiary }}>
-            Ainda não tem conta?{' '}
-            <Text style={{ fontWeight: Tokens.typography.weights.bold, color: colors.secondary.main }}>
-              Criar agora
-            </Text>
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+              {/* Password Input */}
+              <Input
+                label="SENHA"
+                placeholder="••••••••"
+                value={password}
+                onChangeText={handlePasswordChange}
+                onBlur={handlePasswordBlur}
+                secureTextEntry={!showPassword}
+                autoComplete="password"
+                autoCapitalize="none"
+                autoCorrect={false}
+                textContentType="password"
+                leftIcon={<Lock size={18} color={passwordError ? colors.status.error : colors.text.tertiary} />}
+                rightIcon={
+                  <HapticButton
+                    variant="ghost"
+                    size="sm"
+                    onPress={() => {
+                      setShowPassword(!showPassword);
+                      haptics.light();
+                    }}
+                    accessibilityLabel={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                    accessibilityHint="Alterna a visibilidade da senha"
+                    style={{ padding: 4 }}
+                  >
+                    {showPassword ? (
+                      <EyeOff size={18} color={colors.text.tertiary} />
+                    ) : (
+                      <Eye size={18} color={colors.text.tertiary} />
+                    )}
+                  </HapticButton>
+                }
+                error={passwordError || undefined}
+                disabled={isLoading}
+                containerStyle={{ marginBottom: Spacing['2'] }}
+                accessibilityLabel="Campo de senha"
+                accessibilityHint="Digite sua senha"
+              />
+            </Animated.View>
+
+            {/* Forgot Password Link */}
+            <Box align="flex-end" mb="6">
+              <HapticButton
+                variant="ghost"
+                size="sm"
+                onPress={handleForgotPassword}
+                accessibilityLabel="Esqueceu a senha"
+                accessibilityHint="Abre diálogo para recuperar senha"
+              >
+                <Text 
+                  size="xs" 
+                  weight="semibold" 
+                  color="link"
+                  style={{ textDecorationLine: 'underline' }}
+                >
+                  Esqueceu a senha?
+                </Text>
+              </HapticButton>
+            </Box>
+
+            {/* Login Button */}
+            <Button
+              title={isLoading ? "Entrando..." : "Entrar"}
+              onPress={handleLogin}
+              variant="primary"
+              size="lg"
+              loading={isLoading}
+              disabled={isLoading}
+              fullWidth
+              style={{ marginBottom: Spacing['6'] }}
+              accessibilityLabel="Entrar"
+              accessibilityHint="Faz login com e-mail e senha"
+            />
+
+            {/* Divider */}
+            <Box direction="row" align="center" mb="6">
+              <View style={{ 
+                height: 1, 
+                flex: 1, 
+                backgroundColor: colors.border.light 
+              }} />
+              <Text 
+                size="xs" 
+                weight="semibold" 
+                color="tertiary"
+                style={{ 
+                  textTransform: 'uppercase', 
+                  letterSpacing: 2,
+                  marginHorizontal: Spacing['4'],
+                }}
+              >
+                Ou continue com
+              </Text>
+              <View style={{ 
+                height: 1, 
+                flex: 1, 
+                backgroundColor: colors.border.light 
+              }} />
+            </Box>
+
+            {/* Social Login */}
+            <Box mb="6">
+              <HapticButton
+                variant="outline"
+                size="lg"
+                onPress={() => handleSocialLogin('apple')}
+                disabled={isLoading}
+                style={{
+                  width: '100%',
+                  marginBottom: Spacing['3'],
+                  backgroundColor: colors.background.card,
+                  borderColor: colors.border.light,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingVertical: Spacing['4'],
+                  borderRadius: Radius.lg,
+                }}
+                accessibilityLabel="Continuar com Apple"
+                accessibilityHint="Faz login usando sua conta Apple"
+              >
+                <Apple size={20} color={colors.text.primary} style={{ marginRight: Spacing['2'] }} />
+                <Text size="md" weight="semibold" color="primary">
+                  Continuar com Apple
+                </Text>
+              </HapticButton>
+
+              <HapticButton
+                variant="outline"
+                size="lg"
+                onPress={() => handleSocialLogin('google')}
+                disabled={isLoading}
+                style={{
+                  width: '100%',
+                  backgroundColor: colors.background.card,
+                  borderColor: colors.border.light,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingVertical: Spacing['4'],
+                  borderRadius: Radius.lg,
+                }}
+                accessibilityLabel="Continuar com Google"
+                accessibilityHint="Faz login usando sua conta Google"
+              >
+                <View style={{ 
+                  width: 20, 
+                  height: 20, 
+                  borderRadius: 10, 
+                  backgroundColor: colors.primary.main,
+                  marginRight: Spacing['2'],
+                }} />
+                <Text size="md" weight="semibold" color="primary">
+                  Continuar com Google
+                </Text>
+              </HapticButton>
+            </Box>
+
+            {/* Sign Up Link */}
+            <Box align="center">
+              <HapticButton
+                variant="ghost"
+                size="sm"
+                onPress={handleSignUp}
+                accessibilityLabel="Criar conta"
+                accessibilityHint="Navega para tela de cadastro"
+              >
+                <Text size="xs" color="tertiary" align="center">
+                  Ainda não tem conta?{' '}
+                  <Text 
+                    size="xs" 
+                    weight="bold" 
+                    color="link"
+                    style={{ textDecorationLine: 'underline' }}
+                  >
+                    Criar agora
+                  </Text>
+                </Text>
+              </HapticButton>
+            </Box>
+          </Animated.View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

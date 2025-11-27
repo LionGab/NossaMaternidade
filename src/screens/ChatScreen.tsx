@@ -95,7 +95,7 @@ export default function ChatScreen() {
       } else {
         const profile = await profileService.getCurrentProfile();
         if (profile) {
-          const newConv = await chatService.createConversation(profile.id);
+          const newConv = await chatService.createConversation({});
           if (newConv) {
             setConversationId(newConv.id);
             const welcomeMsg = await chatService.sendMessage({
@@ -172,11 +172,13 @@ export default function ChatScreen() {
         {
           text: 'Limpar',
           style: 'destructive',
-          onPress: async () => {
-            try {
-              await chatService.clearConversations();
-              await initializeChat();
-              triggerHaptic();
+            onPress: async () => {
+              try {
+                // Deletar todas as conversas
+                const conversations = await chatService.getConversations(100);
+                await Promise.all(conversations.map(conv => chatService.deleteConversation(conv.id)));
+                await initializeChat();
+                triggerHaptic();
             } catch (error) {
               logger.error('Erro ao limpar histórico', error);
               Alert.alert('Erro', 'Não foi possível limpar o histórico');
@@ -295,13 +297,13 @@ export default function ChatScreen() {
             )}
           </Box>
           <Box
-            position="absolute"
-            bottom={-1}
-            right={-1}
-            width={8}
-            height={8}
-            rounded="full"
             style={{
+              position: 'absolute',
+              bottom: -1,
+              right: -1,
+              width: 8,
+              height: 8,
+              borderRadius: 9999,
               backgroundColor: colors.status.success,
               borderWidth: 1.5,
               borderColor: colors.background.card,
@@ -358,7 +360,7 @@ export default function ChatScreen() {
               : mode === 'balanced'
               ? colors.primary.main
               : mode === 'thinking'
-              ? colors.accent.purple
+              ? colors.secondary.main
               : colors.status.success
             : 'transparent';
 
@@ -384,7 +386,7 @@ export default function ChatScreen() {
                   fill={isActive ? colors.text.inverse : 'none'}
                 />
                 <Text
-                  size="2xs"
+                  size="xs"
                   weight="bold"
                   color={isActive ? 'inverse' : 'tertiary'}
                 >
@@ -425,7 +427,7 @@ export default function ChatScreen() {
                   />
                 ) : (
                   <Box flex={1} align="center" justify="center" bg="elevated">
-                    <Text size="5xl">💙</Text>
+                    <Text style={{ fontSize: 48 }}>💙</Text>
                   </Box>
                 )}
               </Box>
@@ -558,7 +560,7 @@ export default function ChatScreen() {
                 flex={1}
                 direction="row"
                 align="center"
-                bg={isDark ? 'canvas' : 'input'}
+                bg={isDark ? 'canvas' : 'card'}
                 rounded="2xl"
                 borderWidth={1}
                 borderColor="light"
@@ -612,7 +614,6 @@ export default function ChatScreen() {
                   ? colors.primary.main
                   : colors.text.disabled,
               }}
-              shadow="md"
               accessibilityLabel={loading ? "Enviando mensagem" : "Enviar mensagem"}
             >
               {loading ? (
