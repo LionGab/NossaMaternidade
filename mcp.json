@@ -22,11 +22,11 @@
     },
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:/Users/User/Documents/NossaMaternidade/NossaMaternidadeMelhor"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:/Users/Usuario/Documents/NossaMaternidade"]
     },
     "git": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-git", "C:/Users/User/Documents/NossaMaternidade/NossaMaternidadeMelhor"]
+      "args": ["-y", "@modelcontextprotocol/server-git", "C:/Users/Usuario/Documents/NossaMaternidade"]
     },
     "brave-search": {
       "command": "npx",
@@ -34,6 +34,18 @@
       "env": {
         "BRAVE_API_KEY": "BSA_HzGhPTbT2loxQCr5jw95NGgMAqk"
       }
+    },
+    "design-tokens": {
+      "command": "node",
+      "args": ["C:/Users/Usuario/Documents/NossaMaternidade/src/mcp/runners/design-tokens-runner.js"]
+    },
+    "code-quality": {
+      "command": "node",
+      "args": ["C:/Users/Usuario/Documents/NossaMaternidade/src/mcp/runners/code-quality-runner.js"]
+    },
+    "accessibility": {
+      "command": "node",
+      "args": ["C:/Users/Usuario/Documents/NossaMaternidade/src/mcp/runners/accessibility-runner.js"]
     }
   }
 }

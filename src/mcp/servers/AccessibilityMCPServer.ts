@@ -127,7 +127,8 @@ export class AccessibilityMCPServer implements MCPServer {
     }
 
     try {
-      const [category, action] = request.method.split('.');
+      const [category, ...rest] = request.method.split('.');
+      const action = rest.join('.');
 
       switch (category) {
         case 'a11y':
