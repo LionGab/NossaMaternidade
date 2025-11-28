@@ -19,26 +19,27 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 import { PremiumButton } from '../components/premium';
+import { ColorTokens } from '@/theme/tokens';
 
-// Theme constants (migrated from deleted Theme.ts)
+// Theme constants usando ColorTokens
 const COLORS = {
   primary: {
-    main: '#0D5FFF',
-    gradient: ['#0D5FFF', '#0047AB'],
+    main: ColorTokens.info[500],
+    gradient: [ColorTokens.info[500], ColorTokens.info[700]] as [string, string],
   },
   secondary: {
-    gradient: ['#A855F7', '#7C3AED'],
+    gradient: [ColorTokens.accent.purple, ColorTokens.purple?.[600] || '#7C3AED'] as [string, string],
   },
   success: {
-    gradient: ['#10B981', '#059669'],
+    gradient: [ColorTokens.success[500], ColorTokens.success[600]] as [string, string],
   },
   background: {
-    primary: '#FFFFFF',
-    secondary: '#F8F9FA',
+    primary: ColorTokens.neutral[0],
+    secondary: ColorTokens.neutral[50],
   },
   text: {
-    primary: '#1F2937',
-    secondary: '#6B7280',
+    primary: ColorTokens.neutral[800],
+    secondary: ColorTokens.neutral[500],
   },
 };
 
@@ -79,14 +80,14 @@ const RADIUS = {
 
 const SHADOWS = {
   sm: {
-    shadowColor: '#000',
+    shadowColor: ColorTokens.neutral[900],
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
   },
   md: {
-    shadowColor: '#000',
+    shadowColor: ColorTokens.neutral[900],
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,

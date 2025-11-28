@@ -70,14 +70,16 @@ const SIZE_CONFIG: Record<MaternalCardSize, { height: number; padding: keyof typ
  * Usa tokens quando disponível, fallback para cores específicas quando necessário
  */
 const getEmotionGradients = (colors: ReturnType<typeof useThemeColors>): Record<MaternalCardEmotion, readonly string[]> => {
-  // Fallback seguro para cor laranja (accent.orange)
-  const orangeColor = colors.raw?.accent?.orange || '#FB923C'; // Fallback direto do ColorTokens
+  // Usar cores raw dos tokens quando disponível
+  const orangeColor = colors.raw?.accent?.orange || colors.raw?.warning?.[400] || '#FB923C';
+  const coralColor = colors.raw?.primary?.[200] || '#FFCCD7'; // Rosa leitoso do token primary
+  const deepMint = colors.raw?.mint?.[500] || '#0F5247'; // Deep mint do token
   
   return {
     calm: [colors.primary.main, colors.primary.dark],      // Ocean → Deep Navy - professional, trustworthy
-    warm: [colors.secondary.light, '#FFC4D9'],              // Rosa leitoso - acolhimento maternal (TODO: adicionar token)
+    warm: [colors.secondary.light, coralColor],             // Rosa leitoso - acolhimento maternal
     energetic: [colors.status.warning, orangeColor],        // Sunshine → Orange - vibrante
-    peaceful: [colors.status.success, '#0D4B3F'],          // Mint → Deep Mint - calmo, natureza (TODO: adicionar token)
+    peaceful: [colors.status.success, deepMint],            // Mint → Deep Mint - calmo, natureza
     safe: [colors.primary.main, colors.primary.light],     // Light Ocean - confiável, suave (dark mode aware)
   };
 };

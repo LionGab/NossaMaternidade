@@ -3,7 +3,7 @@
  * Agente especializado em conversas de suporte maternal
  */
 
-import { BaseAgent, AgentConfig, AgentContext } from '../core/BaseAgent';
+import { BaseAgent, AgentConfig, AgentContext as _AgentContext } from '../core/BaseAgent';
 import { orchestrator } from '../core/AgentOrchestrator';
 import { MCPResponse } from '../../mcp/types';
 import { sessionPersistence } from '../../services/sessionPersistence';

@@ -22,7 +22,7 @@ import HabitsScreen from '../screens/HabitsScreen';
 
 // Theme
 import { useTheme } from '../theme/ThemeContext';
-import { Tokens } from '../theme';
+import { Tokens, ColorTokens } from '../theme';
 
 // Icons - Premium Design
 import {
@@ -60,7 +60,7 @@ export const TabNavigator = () => {
           backgroundColor: colors.background.card,
           borderTopWidth: 0,
           elevation: 20,
-          shadowColor: '#000',
+          shadowColor: ColorTokens.neutral[900],
           shadowOffset: { width: 0, height: -4 },
           shadowOpacity: 0.1,
           shadowRadius: 12,

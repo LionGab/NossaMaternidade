@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Button, Logo } from '../components';
 import { useTheme } from '../theme/ThemeContext';
-import { Tokens } from '../theme';
+import { Tokens, ColorTokens } from '../theme';
 import type { RootStackParamList } from '../navigation/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SplashScreen from 'expo-splash-screen';
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     overflow: 'hidden',
     marginBottom: Tokens.spacing['8'], // 32
-    shadowColor: '#000',
+    shadowColor: ColorTokens.neutral[900],
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

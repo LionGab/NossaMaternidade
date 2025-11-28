@@ -4,10 +4,10 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, ImageBackground, ImageSourcePropType } from 'react-native';
+import { View, StyleSheet, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/theme';
-import { Radius } from '@/theme/tokens';
+import { Radius, ColorTokens } from '@/theme/tokens';
 
 export interface HeroBannerProps {
   imageUrl: string;
@@ -31,21 +31,24 @@ export function HeroBanner({
   accessibilityLabel,
   children,
 }: HeroBannerProps) {
-  const { colors, isDark } = useTheme();
+  const { isDark } = useTheme();
 
   const borderRadiusValue = typeof borderRadius === 'number' ? borderRadius : Radius[borderRadius];
+
+  // Cor base para overlays (usando tokens)
+  const overlayBaseColor = ColorTokens.neutral[950]; // #0A0A0A - quase preto
 
   // Preparar cores do overlay
   const getGradientColors = (): string[] => {
     if (!overlay || overlay.type === 'solid') {
       const opacity = overlay?.opacity ?? 0.5;
-      const color = overlay?.color ?? (isDark ? '#000000' : '#000000');
+      const color = overlay?.color ?? overlayBaseColor;
       return [`${color}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`, color];
     }
 
     // Gradient overlay
     const opacity = overlay.opacity ?? 0.6;
-    const baseColor = overlay.color ?? (isDark ? '#000000' : '#000000');
+    const baseColor = overlay.color ?? overlayBaseColor;
     const transparent = `${baseColor}00`;
     const opaque = `${baseColor}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`;
 

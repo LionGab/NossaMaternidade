@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/theme';
-import { Tokens } from '@/theme/tokens';
+import { Tokens, ColorTokens } from '@/theme/tokens';
 
 export interface ModalProps {
   visible: boolean;
@@ -120,7 +120,7 @@ export const Modal: React.FC<ModalProps> = ({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: ColorTokens.overlay.backdrop,
   },
 });
 

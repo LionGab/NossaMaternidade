@@ -345,7 +345,7 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onToggle, isCompletedToday
             ]}
           >
             {isCompletedToday && (
-              <Ionicons name="checkmark" size={20} color="#fff" />
+              <Ionicons name="checkmark" size={20} color={colors.text.inverse} />
             )}
           </Animated.View>
         </View>

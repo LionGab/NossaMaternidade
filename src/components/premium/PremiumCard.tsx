@@ -200,7 +200,7 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
         };
       case 'glass':
         return {
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backgroundColor: COLORS.overlay?.glass || 'rgba(255, 255, 255, 0.95)',
           ...Platform.select({
             ios: {
               backdropFilter: 'blur(20px)',

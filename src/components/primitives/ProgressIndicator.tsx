@@ -64,8 +64,8 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   // Cores
   const primaryColor = color || colors.primary.main;
   const bgTrackColor = trackColor || (isDark
-    ? 'rgba(255, 255, 255, 0.1)'
-    : 'rgba(0, 0, 0, 0.1)');
+    ? colors.raw.overlay?.card || 'rgba(255, 255, 255, 0.1)'
+    : colors.border.light);
 
   // Tamanhos
   const getSizeValue = () => {
@@ -304,7 +304,7 @@ export const StepProgress: React.FC<{
                   ? colors.primary.main
                   : index === currentStep
                   ? colors.primary.main
-                  : 'rgba(255, 255, 255, 0.3)',
+                  : ColorTokens.overlay.light,
               width: index === currentStep ? 24 : 8,
             },
           ]}

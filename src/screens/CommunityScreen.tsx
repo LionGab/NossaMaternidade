@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { FlashList } from '@shopify/flash-list';
 import { useTheme } from '../theme/ThemeContext';
+import { ColorTokens } from '../theme/tokens';
 import { Heart, MessageSquare, TrendingUp, Sparkles, MessagesSquare } from 'lucide-react-native';
 import { HeroBanner } from '@/components/molecules/HeroBanner';
 
@@ -66,13 +67,13 @@ export default function CommunityScreen() {
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                    backgroundColor: ColorTokens.overlay.light,
                     paddingHorizontal: 12,
                     paddingVertical: 6,
                     borderRadius: 20,
                     marginBottom: 16,
                     borderWidth: 1,
-                    borderColor: 'rgba(255, 255, 255, 0.4)',
+                    borderColor: ColorTokens.overlay.light,
                   }}
                 >
                   <Text style={{ fontSize: 12, color: colors.text.inverse, fontWeight: '700', marginRight: 4 }}>

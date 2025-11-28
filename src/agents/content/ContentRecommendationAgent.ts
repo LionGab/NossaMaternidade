@@ -3,7 +3,7 @@
  * Agente especializado em recomendar conteúdo personalizado baseado no perfil e comportamento do usuário
  */
 
-import { BaseAgent, AgentConfig, AgentContext } from '../core/BaseAgent';
+import { BaseAgent, AgentConfig, AgentContext as _AgentContext } from '../core/BaseAgent';
 import { orchestrator } from '../core/AgentOrchestrator';
 import { MCPResponse } from '../../mcp/types';
 import { logger } from '../../utils/logger';

@@ -3,7 +3,7 @@
  * Agente especializado em análise de hábitos e bem-estar maternal
  */
 
-import { BaseAgent, AgentConfig, AgentContext } from '../core/BaseAgent';
+import { BaseAgent, AgentConfig, AgentContext as _AgentContext } from '../core/BaseAgent';
 import { orchestrator } from '../core/AgentOrchestrator';
 import { MCPResponse } from '../../mcp/types';
 import { logger } from '../../utils/logger';

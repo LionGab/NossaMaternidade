@@ -26,16 +26,21 @@ interface State {
 
 const isDevelopment = process.env.NODE_ENV === 'development' || __DEV__;
 
-// Cores do Design System (inline para garantir funcionamento mesmo com erro de tema)
+/**
+ * Cores do Design System (inline para garantir funcionamento mesmo com erro de tema)
+ * Valores sincronizados com src/theme/tokens.ts - ColorTokens
+ * IMPORTANTE: Manter hardcoded pois ErrorBoundary não pode depender de hooks/contexto
+ */
 const colors = {
-  background: '#FFFFFF',
-  backgroundDark: '#F5F5F5',
-  text: '#1A1A2E',
-  textSecondary: '#6B7280',
-  error: '#EF4444',
-  errorLight: '#FEE2E2',
-  primary: '#FF6B9D',
-  white: '#FFFFFF',
+  background: '#FFFFFF',           // ColorTokens.neutral[0]
+  backgroundDark: '#F5F5F5',       // ColorTokens.neutral[100]
+  text: '#0F172A',                 // LightTheme.text.primary (Charcoal)
+  textSecondary: '#475569',        // LightTheme.text.tertiary (WCAG AAA)
+  error: '#EF4444',                // ColorTokens.error[500]
+  errorLight: '#FEE2E2',           // ColorTokens.error[100]
+  primary: '#FF7A96',              // ColorTokens.primary[400] (Rosa Nathália)
+  white: '#FFFFFF',                // ColorTokens.neutral[0]
+  shadowColor: '#171717',          // ColorTokens.neutral[900]
 };
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -244,7 +249,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   paddingHorizontal: 32,
                   paddingVertical: 16,
                   borderRadius: 30,
-                  shadowColor: '#000',
+                  shadowColor: colors.shadowColor,
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.1,
                   shadowRadius: 4,

@@ -15,7 +15,7 @@ import { Text } from '@/components/primitives/Text';
 import { Heading } from '@/components/primitives/Heading';
 import { HapticButton } from '@/components/primitives/HapticButton';
 import { feedService, type ContentItem } from '@/services/feedService';
-import { Spacing, Radius } from '@/theme/tokens';
+import { Spacing, Radius, ColorTokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';
 import type { RootStackParamList } from '@/navigation/types';
 
@@ -118,7 +118,7 @@ export default function ContentDetailScreen() {
           <Box
             style={{
               flex: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+              backgroundColor: ColorTokens.overlay.medium,
               justifyContent: 'space-between',
               paddingTop: Spacing['6'],
             }}
@@ -138,7 +138,7 @@ export default function ContentDetailScreen() {
                 size="sm"
                 onPress={() => navigation.goBack()}
                 style={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                  backgroundColor: ColorTokens.overlay.dark,
                   borderRadius: Radius.full,
                   padding: Spacing['2'],
                 }}
@@ -154,7 +154,7 @@ export default function ContentDetailScreen() {
                   size="sm"
                   onPress={handleLike}
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                    backgroundColor: ColorTokens.overlay.dark,
                     borderRadius: Radius.full,
                     padding: Spacing['2'],
                   }}
@@ -168,7 +168,7 @@ export default function ContentDetailScreen() {
                   size="sm"
                   onPress={handleShare}
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                    backgroundColor: ColorTokens.overlay.dark,
                     borderRadius: Radius.full,
                     padding: Spacing['2'],
                   }}
@@ -207,7 +207,7 @@ export default function ContentDetailScreen() {
                 alignSelf: 'flex-start',
                 marginLeft: Spacing['4'],
                 marginBottom: Spacing['4'],
-                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                backgroundColor: ColorTokens.overlay.heavy,
                 paddingHorizontal: Spacing['3'],
                 paddingVertical: Spacing['2'],
                 borderRadius: Radius.lg,

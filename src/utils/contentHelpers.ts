@@ -4,7 +4,7 @@
  */
 
 import { ContentItem } from '../types/content';
-import { Colors } from '../theme';
+import { Colors, ColorTokens } from '../theme';
 
 export const getTypeIcon = (type: ContentItem['type']): string => {
   switch (type) {
@@ -34,7 +34,7 @@ export const getTypeColor = (type: ContentItem['type']): string => {
     // case 'Bastidor':
     //   return Colors.accent.pink;
     case 'reels':
-      return '#E91E63';
+      return ColorTokens.accent.pink; // Rosa para reels
     default:
       return Colors.text.secondary;
   }

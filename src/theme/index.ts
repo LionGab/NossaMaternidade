@@ -66,14 +66,14 @@ export const Colors = {
   brand: {
     blue: ColorTokens.primary[400],
     lightBlue: ColorTokens.primary[100],
-    warm: '#F8F9FA',
-    dark: '#5D4E4B',
+    warm: ColorTokens.neutral[50],        // Substituído #F8F9FA
+    dark: ColorTokens.neutral[700],       // Substituído #5D4E4B
     pink: ColorTokens.secondary[400],
   },
   background: {
     canvas: DarkTheme.background.canvas,
     card: DarkTheme.background.card,
-    sleep: '#111827',
+    sleep: ColorTokens.neutral[900],      // Substituído #111827
     pause: DarkTheme.background.elevated,
     light: LightTheme.background.canvas,
     dark: DarkTheme.background.canvas,
@@ -102,7 +102,7 @@ export const Colors = {
     light: LightTheme.border.light,
     medium: LightTheme.border.medium,
     dark: DarkTheme.border.light,
-    subtle: 'rgba(255, 255, 255, 0.05)',
+    subtle: ColorTokens.overlay.card,     // Substituído rgba
   },
   status: {
     success: ColorTokens.success[500],
@@ -112,7 +112,7 @@ export const Colors = {
   },
   progress: {
     active: ColorTokens.primary[400],
-    inactive: 'rgba(255, 255, 255, 0.3)',
+    inactive: ColorTokens.overlay.light,  // Substituído rgba
   },
 } as const;
 

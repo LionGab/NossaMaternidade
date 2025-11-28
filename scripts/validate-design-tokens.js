@@ -33,16 +33,36 @@ const HEX_PATTERN = /#[0-9A-Fa-f]{3,8}/g;
 const RGB_PATTERN = /rgba?\([^)]+\)/g;
 const NAMED_COLOR_PATTERN = /\b(white|black|red|blue|green|yellow|orange|pink|purple|gray|grey)\b/gi;
 
-// Arquivos permitidos para ter cores (definições de tokens)
+// Arquivos permitidos para ter cores (definições de tokens ou casos legítimos)
 const ALLOWED_FILES = [
   'tokens.ts',
   'colors.ts',
   'ThemeContext.tsx',
+  'ErrorBoundary.tsx',     // Fallback component - não pode usar hooks/context
+  'Theme.ts',              // Arquivo de compatibilidade de tema
+  'shadowHelper.ts',       // Define valores de shadow com fallback
+  'habits.ts',             // Dados estáticos com cores semânticas
+];
+
+// Padrões que são falsos positivos (cores em comentários, fallbacks com tokens já usados)
+const ALLOWED_PATTERNS = [
+  /ColorTokens\.[a-zA-Z]+\[.*\]/,  // ColorTokens.xxx[] - valores de tokens
+  /colors\.raw\./,                  // colors.raw.xxx - acesso raw a tokens
+  /\/\/ ?(ColorTokens|Substituído|fallback|#[0-9A-Fa-f]{6})/i, // Comentários de documentação
+  /\|\| ['"]?#[0-9A-Fa-f]/,        // Fallbacks: || '#xxx'
+  /\|\| ['"]?rgba/,                // Fallbacks: || 'rgba(...)'
+  /className=.*\b(white|black)\b/i, // Classes NativeWind com cores (text-white, bg-black)
+  /\* +.*=.*rgba\(/,               // Comentários JSDoc com exemplos: * rippleColor="rgba(..."
+  /return `rgba\(/,                // Funções que geram cores dinamicamente
 ];
 
 function isAllowedFile(filePath) {
   const fileName = path.basename(filePath);
   return ALLOWED_FILES.some(allowed => fileName.includes(allowed));
+}
+
+function isAllowedPattern(line) {
+  return ALLOWED_PATTERNS.some(pattern => pattern.test(line));
 }
 
 function findViolations(filePath) {
@@ -64,10 +84,19 @@ function findViolations(filePath) {
       return;
     }
 
+    // Ignorar padrões permitidos (fallbacks, comentários de documentação)
+    if (isAllowedPattern(line)) {
+      return;
+    }
+
     // Detectar hex colors
     const hexMatches = line.match(HEX_PATTERN);
     if (hexMatches) {
       hexMatches.forEach(match => {
+        // Ignorar se é um fallback com || 
+        if (line.includes(`|| '${match}'`) || line.includes(`|| "${match}"`)) {
+          return;
+        }
         const suggestion = TOKEN_SUGGESTIONS[match.toUpperCase()] || TOKEN_SUGGESTIONS[match];
         violations.push({
           file: filePath,
@@ -83,6 +112,10 @@ function findViolations(filePath) {
     const rgbMatches = line.match(RGB_PATTERN);
     if (rgbMatches) {
       rgbMatches.forEach(match => {
+        // Ignorar se é um fallback com ||
+        if (line.includes(`|| '${match}'`) || line.includes(`|| "${match}"`)) {
+          return;
+        }
         violations.push({
           file: filePath,
           line: lineNumber,

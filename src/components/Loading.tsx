@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, ActivityIndicator, Text } from 'react-native';
+import { ColorTokens } from '@/theme/tokens';
 
 export interface LoadingProps {
   size?: 'small' | 'large';
@@ -11,7 +12,7 @@ export interface LoadingProps {
 
 export const Loading: React.FC<LoadingProps> = ({
   size = 'large',
-  color = '#FF69B4',
+  color = ColorTokens.primary[400], // Rosa Nathália
   message,
   fullScreen = false,
   className = '',

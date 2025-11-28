@@ -4,7 +4,7 @@
  * e alertas de saúde mental (depressão pós-parto, ansiedade, etc.)
  */
 
-import { BaseAgent, AgentContext } from '../core/BaseAgent';
+import { BaseAgent, AgentContext as _AgentContext } from '../core/BaseAgent';
 import { orchestrator } from '../core/AgentOrchestrator';
 import { createMCPRequest } from '../../mcp/servers';
 import { logger } from '../../utils/logger';

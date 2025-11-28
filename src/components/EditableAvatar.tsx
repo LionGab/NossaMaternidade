@@ -313,9 +313,9 @@ export const EditableAvatar: React.FC<EditableAvatarProps> = ({
           ]}
         >
           {uploading ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
+            <ActivityIndicator size="small" color={colors.text.inverse} />
           ) : (
-            <Camera size={16} color="#FFFFFF" />
+            <Camera size={16} color={colors.text.inverse} />
           )}
         </View>
       </TouchableOpacity>

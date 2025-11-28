@@ -137,7 +137,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         ]}
       >
         <Animated.View style={animatedCheckStyle}>
-          <Check size={iconSize} color="#FFFFFF" strokeWidth={3} />
+          <Check size={iconSize} color={colors.text.inverse} strokeWidth={3} />
         </Animated.View>
       </Animated.View>
 
