@@ -30,7 +30,7 @@ export const Button: React.FC<ButtonProps> = ({
   accessibilityLabel,
   accessibilityHint,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   const handlePress = () => {
     if (disabled || loading) return;

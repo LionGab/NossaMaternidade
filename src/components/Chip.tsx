@@ -95,7 +95,7 @@ export const Chip: React.FC<ChipProps> = ({
     },
   };
 
-  const { paddingHorizontal, paddingVertical, fontSize, iconSize, deleteSize } = sizeConfig[size];
+  const { paddingHorizontal, paddingVertical, fontSize, iconSize: _iconSize, deleteSize } = sizeConfig[size];
   const colorConfig = variantColors[variant];
 
   const handlePress = () => {

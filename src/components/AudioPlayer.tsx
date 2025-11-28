@@ -28,7 +28,7 @@ interface AudioPlayerProps {
 }
 
 export const AudioPlayer: React.FC<AudioPlayerProps> = ({
-  audioUrl,
+  audioUrl: _audioUrl,
   title,
   duration,
   onPlay,

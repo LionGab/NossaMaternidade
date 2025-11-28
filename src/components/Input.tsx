@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { TextInput, View, Text, TextInputProps, ViewStyle, TextStyle, Animated } from 'react-native';
+import { TextInput, View, Text, TextInputProps, ViewStyle, TextStyle } from 'react-native';
 import { useThemeColors } from '@/theme';
 import { Spacing, Radius, Typography, ColorTokens } from '@/theme/tokens';
 

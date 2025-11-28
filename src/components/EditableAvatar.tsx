@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { Camera, Image as ImageIcon, Trash2 } from 'lucide-react-native';
+import { Camera } from 'lucide-react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens } from '../theme/tokens';
 import { profileService } from '../services/profileService';

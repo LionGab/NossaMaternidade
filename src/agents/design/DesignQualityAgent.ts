@@ -4,7 +4,7 @@
  */
 
 import { BaseAgent, AgentProcessOptions } from '../core/BaseAgent';
-import { createMCPRequest, MCPResponse } from '../../mcp/servers';
+import { createMCPRequest as _createMCPRequest, MCPResponse } from '../../mcp/servers';
 // MCP Servers de desenvolvimento estão em scripts/mcp-servers e não devem ser usados no app mobile
 // TODO: Criar versões mobile-friendly ou usar apenas em scripts de build
 // import { designTokensValidationMCP } from '../../scripts/mcp-servers/DesignTokensValidationMCPServer';
