@@ -15,12 +15,12 @@ module.exports = {
     userInterfaceStyle: 'automatic', // Segue preferência do sistema (iOS/Android)
     scheme: 'nossamaternidade',
     owner: 'liongab',
-    primaryColor: '#0D5FFF',
+    primaryColor: '#FF7A96',
     backgroundColor: '#FFFFFF',
     splash: {
       image: './assets/splash.png',
       resizeMode: 'cover',
-      backgroundColor: '#0D5FFF',
+      backgroundColor: '#FF7A96',
     },
     updates: {
       enabled: true,
@@ -48,6 +48,7 @@ module.exports = {
         NSUserTrackingUsageDescription:
           'Precisamos de sua permissão para personalizar sua experiência e melhorar o conteúdo oferecido.',
         CFBundleDisplayName: 'Nossa Maternidade',
+        NSPrivacyPolicyURL: 'https://nossamaternidade.com.br/privacidade',
         ITSAppUsesNonExemptEncryption: false,
         UIBackgroundModes: ['fetch', 'remote-notification'],
         UIStatusBarStyle: 'UIStatusBarStyleDefault',
@@ -73,7 +74,7 @@ module.exports = {
       icon: './assets/icon.png',
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
-        backgroundColor: '#0D5FFF',
+        backgroundColor: '#FF7A96',
       },
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
@@ -89,7 +90,7 @@ module.exports = {
         'android.permission.ACCESS_NETWORK_STATE',
       ],
       splash: {
-        backgroundColor: '#0D5FFF',
+        backgroundColor: '#FF7A96',
         resizeMode: 'cover',
         image: './assets/splash.png',
       },
@@ -113,7 +114,7 @@ module.exports = {
     },
     notification: {
       icon: './assets/notification-icon.png',
-      color: '#0D5FFF',
+      color: '#FF7A96',
       iosDisplayInForeground: true,
       androidMode: 'default',
     },
@@ -141,6 +142,10 @@ module.exports = {
         projectId: 'ceee9479-e404-47b8-bc37-4f913c18f270',
       },
       backendUrl: process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:8080',
+      // URLs obrigatórias para stores
+      privacyPolicyUrl: 'https://nossamaternidade.com.br/privacidade',
+      termsOfServiceUrl: 'https://nossamaternidade.com.br/termos',
+      supportEmail: 'suporte@nossamaternidade.com.br',
     },
     plugins: [
       'expo-secure-store',
@@ -148,6 +153,14 @@ module.exports = {
       'expo-localization',
       'expo-tracking-transparency',
       '@sentry/react-native/expo',
+      [
+        'expo-notifications',
+        {
+          icon: './assets/notification-icon.png',
+          color: '#FF7A96',
+          sounds: [],
+        },
+      ],
     ],
   },
 };
