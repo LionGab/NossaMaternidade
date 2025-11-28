@@ -188,7 +188,7 @@ export default function DesignSystemScreen() {
               <Chip
                 label="Com ícone"
                 variant="primary"
-                icon={<Star size={14} color="#FFFFFF" />}
+                icon={<Star size={14} color={colors.text.inverse} />}
               />
               <Chip
                 label="Deletável"

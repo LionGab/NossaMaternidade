@@ -12,7 +12,8 @@ import React from 'react';
 import { TouchableOpacity, ViewStyle, Animated } from 'react-native';
 import { Moon, Sun } from 'lucide-react-native';
 import { useTheme } from '@/theme/ThemeContext';
-import { COLORS, SPACING, BORDERS } from '@/design-system';
+import { useThemeColors } from '@/hooks/useTheme';
+import { Tokens } from '@/theme/tokens';
 import { getShadowFromToken } from '@/utils/shadowHelper';
 import { getAnimationConfig } from '@/utils/animationHelper';
 
@@ -30,7 +31,8 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   style,
   accessibilityLabel,
 }) => {
-  const { isDark, toggleTheme, colors } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
+  const colors = useThemeColors();
   const [scaleAnim] = React.useState(new Animated.Value(1));
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -43,19 +45,19 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         return {
           container: 36,
           icon: 18,
-          padding: SPACING[2],
+          padding: Tokens.spacing['2'],
         };
       case 'lg':
         return {
           container: 56,
           icon: 28,
-          padding: SPACING[4],
+          padding: Tokens.spacing['4'],
         };
       default: // md
         return {
-          container: 44,
+          container: Tokens.touchTargets.min, // 44pt WCAG AAA
           icon: 22,
-          padding: SPACING[3],
+          padding: Tokens.spacing['3'],
         };
     }
   };
@@ -93,19 +95,17 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   const containerStyle: ViewStyle = {
     width: sizeConfig.container,
     height: sizeConfig.container,
-    borderRadius: BORDERS.buttonRadius,
-    backgroundColor: isDark 
-      ? COLORS.neutral[800] 
-      : COLORS.neutral[100],
+    borderRadius: Tokens.radius.lg,
+    backgroundColor: colors.background.elevated,
     alignItems: 'center',
     justifyContent: 'center',
-    ...getShadowFromToken('sm'),
+    ...Tokens.shadows.sm,
   };
 
   const Icon = isDark ? Sun : Moon;
   const iconColor = isDark 
-    ? COLORS.gold[500]  // Sol dourado no dark mode
-    : COLORS.neutral[700]; // Lua escura no light mode
+    ? colors.raw.warning[500]  // Sol dourado no dark mode
+    : colors.text.secondary; // Lua escura no light mode
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // RENDER

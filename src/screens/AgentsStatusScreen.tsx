@@ -9,7 +9,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator,
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -307,7 +306,7 @@ export default function AgentsStatusScreen() {
                           marginLeft: 8,
                         }}
                       >
-                        <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>
+                        <Text style={{ fontSize: 12, fontWeight: '700', color: colors.text.inverse }}>
                           {item.badge}
                         </Text>
                       </View>

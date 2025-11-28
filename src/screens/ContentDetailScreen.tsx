@@ -144,7 +144,7 @@ export default function ContentDetailScreen() {
                 }}
                 accessibilityLabel="Voltar para tela anterior"
               >
-                <ArrowLeft size={24} color="#FFFFFF" />
+                <ArrowLeft size={24} color={colors.text.inverse} />
               </HapticButton>
 
               {/* Ações */}
@@ -160,7 +160,7 @@ export default function ContentDetailScreen() {
                   }}
                   accessibilityLabel={isLiked ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                 >
-                  <Heart size={24} color={isLiked ? '#EF4444' : '#FFFFFF'} fill={isLiked ? '#EF4444' : 'none'} />
+                  <Heart size={24} color={isLiked ? colors.status.error : colors.text.inverse} fill={isLiked ? colors.status.error : 'none'} />
                 </HapticButton>
 
                 <HapticButton
@@ -174,7 +174,7 @@ export default function ContentDetailScreen() {
                   }}
                   accessibilityLabel="Compartilhar conteúdo"
                 >
-                  <Share2 size={24} color="#FFFFFF" />
+                  <Share2 size={24} color={colors.text.inverse} />
                 </HapticButton>
               </Box>
             </Box>
@@ -196,7 +196,7 @@ export default function ContentDetailScreen() {
                   }}
                   accessibilityLabel={content.type === 'video' ? 'Reproduzir vídeo' : 'Reproduzir áudio'}
                 >
-                  <Play size={40} color="#FFFFFF" />
+                  <Play size={40} color={colors.text.inverse} />
                 </HapticButton>
               </Box>
             )}

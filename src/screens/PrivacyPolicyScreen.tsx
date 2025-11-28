@@ -37,7 +37,7 @@ export default function PrivacyPolicyScreen() {
           alignItems: 'center',
           borderBottomWidth: 1,
           borderBottomColor: colors.border.light,
-          shadowColor: '#000',
+          shadowColor: colors.raw.neutral[900],
           shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.05,
           shadowRadius: 2,
@@ -47,7 +47,7 @@ export default function PrivacyPolicyScreen() {
         <TouchableOpacity
           onPress={handleGoBack}
           style={{
-            backgroundColor: isDark ? colors.background.elevated : '#F3F4F6',
+            backgroundColor: colors.background.elevated,
             padding: 8,
             borderRadius: 20,
             marginRight: 12,

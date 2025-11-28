@@ -10,11 +10,9 @@
 
 import React from 'react';
 import { TouchableOpacity, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
-import { COLORS, TYPOGRAPHY, SPACING, BORDERS, SIZES } from '@/design-system';
+import { Tokens } from '@/theme/tokens';
+import { useThemeColors } from '@/hooks/useTheme';
 import { SafeView, SafeText } from './SafeView';
-import { getShadowFromToken } from '@/utils/shadowHelper';
-import { getAnimationConfig } from '@/utils/animationHelper';
-import { useTheme } from '@/theme/ThemeContext';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -60,7 +58,7 @@ export const Button: React.FC<ButtonProps> = ({
   accessibilityLabel,
   accessibilityHint,
 }) => {
-  const { colors, isDark } = useTheme();
+  const colors = useThemeColors();
   const isDisabled = disabled || loading;
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -69,16 +67,17 @@ export const Button: React.FC<ButtonProps> = ({
 
   const getVariantStyles = (): { container: ViewStyle; text: TextStyle } => {
     const baseContainer: ViewStyle = {
-      borderRadius: BORDERS.buttonRadius,
-      borderWidth: BORDERS.buttonBorder,
+      borderRadius: Tokens.radius.lg,
+      borderWidth: 2,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      minHeight: SIZES.button[size === 'sm' ? 'small' : size === 'lg' ? 'large' : 'medium'],
+      minHeight: Tokens.touchTargets.min,
     };
 
     const baseText: TextStyle = {
-      ...TYPOGRAPHY.button,
+      fontSize: Tokens.typography.sizes.md,
+      fontWeight: Tokens.typography.weights.semibold,
       textAlign: 'center',
     };
 
@@ -87,13 +86,13 @@ export const Button: React.FC<ButtonProps> = ({
         return {
           container: {
             ...baseContainer,
-            backgroundColor: isDisabled ? COLORS.neutral[300] : COLORS.primary[500],
+            backgroundColor: isDisabled ? colors.text.disabled : colors.primary.main,
             borderColor: 'transparent',
-            ...getShadowFromToken('md', COLORS.primary[500]),
+            ...Tokens.shadows.md,
           },
           text: {
             ...baseText,
-            color: COLORS.neutral[0], // Branco
+            color: colors.text.inverse,
           },
         };
 
@@ -101,13 +100,13 @@ export const Button: React.FC<ButtonProps> = ({
         return {
           container: {
             ...baseContainer,
-            backgroundColor: isDisabled ? COLORS.neutral[200] : COLORS.purple[500],
+            backgroundColor: isDisabled ? colors.border.light : colors.secondary.main,
             borderColor: 'transparent',
-            ...getShadowFromToken('sm', COLORS.purple[500]),
+            ...Tokens.shadows.sm,
           },
           text: {
             ...baseText,
-            color: COLORS.neutral[0],
+            color: colors.text.inverse,
           },
         };
 
@@ -116,11 +115,11 @@ export const Button: React.FC<ButtonProps> = ({
           container: {
             ...baseContainer,
             backgroundColor: 'transparent',
-            borderColor: isDisabled ? COLORS.neutral[300] : COLORS.primary[500],
+            borderColor: isDisabled ? colors.border.light : colors.primary.main,
           },
           text: {
             ...baseText,
-            color: isDisabled ? COLORS.neutral[400] : COLORS.primary[500],
+            color: isDisabled ? colors.text.disabled : colors.primary.main,
           },
         };
 
@@ -133,7 +132,7 @@ export const Button: React.FC<ButtonProps> = ({
           },
           text: {
             ...baseText,
-            color: isDisabled ? COLORS.neutral[400] : COLORS.primary[500],
+            color: isDisabled ? colors.text.disabled : colors.primary.main,
           },
         };
 
@@ -141,13 +140,13 @@ export const Button: React.FC<ButtonProps> = ({
         return {
           container: {
             ...baseContainer,
-            backgroundColor: isDisabled ? COLORS.neutral[300] : COLORS.semantic.danger,
+            backgroundColor: isDisabled ? colors.text.disabled : colors.status.error,
             borderColor: 'transparent',
-            ...getShadowFromToken('sm', COLORS.semantic.danger),
+            ...Tokens.shadows.sm,
           },
           text: {
             ...baseText,
-            color: COLORS.neutral[0],
+            color: colors.text.inverse,
           },
         };
 
@@ -168,34 +167,36 @@ export const Button: React.FC<ButtonProps> = ({
       case 'sm':
         return {
           container: {
-            paddingHorizontal: SPACING[4],
-            paddingVertical: SPACING[2],
+            paddingHorizontal: Tokens.spacing['4'],
+            paddingVertical: Tokens.spacing['2'],
           },
           text: {
-            ...TYPOGRAPHY.buttonSm,
+            fontSize: Tokens.typography.sizes.sm,
+            fontWeight: Tokens.typography.weights.semibold,
           },
         };
 
       case 'lg':
         return {
           container: {
-            paddingHorizontal: SPACING[8],
-            paddingVertical: SPACING[4],
+            paddingHorizontal: Tokens.spacing['8'],
+            paddingVertical: Tokens.spacing['4'],
           },
           text: {
-            ...TYPOGRAPHY.button,
-            fontSize: TYPOGRAPHY.h5.fontSize,
+            fontSize: Tokens.typography.sizes.lg,
+            fontWeight: Tokens.typography.weights.bold,
           },
         };
 
       default: // md
         return {
           container: {
-            paddingHorizontal: SPACING[6],
-            paddingVertical: SPACING[3],
+            paddingHorizontal: Tokens.spacing['6'],
+            paddingVertical: Tokens.spacing['3'],
           },
           text: {
-            ...TYPOGRAPHY.button,
+            fontSize: Tokens.typography.sizes.md,
+            fontWeight: Tokens.typography.weights.semibold,
           },
         };
     }
@@ -238,7 +239,7 @@ export const Button: React.FC<ButtonProps> = ({
       ) : (
         <>
           {leftIcon && (
-            <SafeView style={{ marginRight: SPACING[2] }}>
+            <SafeView style={{ marginRight: Tokens.spacing['2'] }}>
               {leftIcon}
             </SafeView>
           )}
@@ -249,7 +250,7 @@ export const Button: React.FC<ButtonProps> = ({
             {title}
           </SafeText>
           {rightIcon && (
-            <SafeView style={{ marginLeft: SPACING[2] }}>
+            <SafeView style={{ marginLeft: Tokens.spacing['2'] }}>
               {rightIcon}
             </SafeView>
           )}

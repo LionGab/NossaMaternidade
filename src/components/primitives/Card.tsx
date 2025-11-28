@@ -9,11 +9,10 @@
  */
 
 import React from 'react';
-import { View, ViewStyle, TouchableOpacity } from 'react-native';
-import { COLORS, SPACING, BORDERS, PADDING } from '@/design-system';
+import { ViewStyle, TouchableOpacity } from 'react-native';
+import { Tokens } from '@/theme/tokens';
+import { useThemeColors } from '@/hooks/useTheme';
 import { SafeView } from './SafeView';
-import { getShadowFromToken } from '@/utils/shadowHelper';
-import { useTheme } from '@/theme/ThemeContext';
 
 export type CardVariant = 'default' | 'elevated' | 'outlined' | 'flat' | 'gradient';
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
@@ -44,7 +43,7 @@ export const Card: React.FC<CardProps> = ({
   style,
   accessibilityLabel,
 }) => {
-  const { colors, isDark } = useTheme();
+  const colors = useThemeColors();
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // ESTILOS POR VARIANTE
@@ -52,7 +51,7 @@ export const Card: React.FC<CardProps> = ({
 
   const getVariantStyles = (): ViewStyle => {
     const baseStyle: ViewStyle = {
-      borderRadius: BORDERS.cardRadius,
+      borderRadius: Tokens.radius.lg,
       overflow: 'hidden',
     };
 
@@ -60,22 +59,22 @@ export const Card: React.FC<CardProps> = ({
       case 'elevated':
         return {
           ...baseStyle,
-          backgroundColor: isDark ? COLORS.dark.bgSecondary : COLORS.bg.primary,
-          ...getShadowFromToken('lg'),
+          backgroundColor: colors.background.elevated,
+          ...Tokens.shadows.lg,
         };
 
       case 'outlined':
         return {
           ...baseStyle,
-          backgroundColor: isDark ? COLORS.dark.bg : COLORS.bg.primary,
-          borderWidth: BORDERS.cardBorder,
-          borderColor: isDark ? COLORS.neutral[700] : COLORS.border.base,
+          backgroundColor: colors.background.card,
+          borderWidth: 1,
+          borderColor: colors.border.medium,
         };
 
       case 'flat':
         return {
           ...baseStyle,
-          backgroundColor: isDark ? COLORS.dark.bgSecondary : COLORS.bg.secondary,
+          backgroundColor: colors.background.elevated,
         };
 
       case 'gradient':
@@ -88,8 +87,8 @@ export const Card: React.FC<CardProps> = ({
       default: // 'default'
         return {
           ...baseStyle,
-          backgroundColor: isDark ? COLORS.dark.bgSecondary : COLORS.bg.primary,
-          ...getShadowFromToken('md'),
+          backgroundColor: colors.background.card,
+          ...Tokens.shadows.md,
         };
     }
   };
@@ -103,11 +102,11 @@ export const Card: React.FC<CardProps> = ({
       case 'none':
         return 0;
       case 'sm':
-        return PADDING.sm;
+        return Tokens.spacing['3']; // 12px
       case 'lg':
-        return PADDING.lg;
+        return Tokens.spacing['6']; // 24px
       default: // 'md'
-        return PADDING.md;
+        return Tokens.spacing['4']; // 16px
     }
   };
 

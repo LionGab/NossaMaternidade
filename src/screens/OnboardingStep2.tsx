@@ -39,8 +39,8 @@ export default function OnboardingStep2({ onNext }: OnboardingStep2Props) {
       <LinearGradient
         colors={
           isDark
-            ? ['#020617', '#1E293B', '#334155'] as [string, string, ...string[]]
-            : ['#F0F8FF', '#E6F0FA', '#FFFFFF'] as [string, string, ...string[]]
+            ? [colors.background.canvas, colors.background.card, colors.background.elevated] as [string, string, ...string[]]
+            : [colors.raw.primary[50], colors.raw.neutral[100], colors.raw.neutral[0]] as [string, string, ...string[]]
         }
         style={StyleSheet.absoluteFill}
       />
@@ -83,8 +83,8 @@ export default function OnboardingStep2({ onNext }: OnboardingStep2Props) {
               styles.iconCircle,
               {
                 backgroundColor: isDark
-                  ? 'rgba(96, 165, 250, 0.1)'
-                  : 'rgba(0, 78, 154, 0.05)',
+                  ? colors.raw.primary[900] + '20'
+                  : colors.raw.primary[50],
                 borderColor: colors.primary.main,
               },
             ]}
@@ -197,11 +197,11 @@ export default function OnboardingStep2({ onNext }: OnboardingStep2Props) {
               <Text
                 size="lg"
                 weight="bold"
-                style={{ color: '#FFFFFF', marginRight: Tokens.spacing['2'] }}
+                style={{ color: colors.text.inverse, marginRight: Tokens.spacing['2'] }}
               >
                 Continuar
               </Text>
-              <ArrowRight size={20} color="#FFFFFF" />
+              <ArrowRight size={20} color={colors.text.inverse} />
             </View>
           </HapticButton>
 

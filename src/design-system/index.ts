@@ -1,12 +1,29 @@
 /**
  * Design System Central - Nossa Maternidade
  * 
- * Exporta todos os tokens de design
- * Usar: import { COLORS, SPACING, TYPOGRAPHY } from '@/design-system'
+ * ⚠️ DEPRECATED: Este módulo está obsoleto.
+ * Use: import { Tokens } from '@/theme/tokens'
+ * Use: import { useThemeColors } from '@/hooks/useTheme'
  * 
- * @version 1.0
+ * Migração:
+ * - COLORS.primary[500] → colors.primary.main (com useThemeColors())
+ * - SPACING[4] → Tokens.spacing['4']
+ * - TYPOGRAPHY.button → Tokens.typography.semantic.button
+ * - BORDERS.buttonRadius → Tokens.radius.lg
+ * 
+ * @version 1.0 (DEPRECATED)
  * @date 2025-11-27
+ * @deprecated Use @/theme/tokens instead
  */
+
+// Log de deprecação
+if (__DEV__) {
+  console.warn(
+    '[DEPRECATED] @/design-system está obsoleto. ' +
+    'Use @/theme/tokens e useThemeColors() em vez disso. ' +
+    'Veja docs/DESIGN_VALIDATION_GUIDE.md para migração.'
+  );
+}
 
 export * from './colors';
 export * from './typography';

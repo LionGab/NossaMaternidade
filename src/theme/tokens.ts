@@ -128,9 +128,19 @@ export const ColorTokens = {
     blue: '#60A5FA',       // Light ocean (for dark mode accents)
     ocean: '#004E9A',      // Ocean blue (rebaixado de primary → accent)
     oceanDark: '#002244',  // Deep navy (hover state)
-    coral: '#D93025',      // Coral (antigo secondary)
+    coral: '#FF6B9D',      // Coral maternal pink
     sunshine: '#F59E0B',   // Amber/Warning - web reference
     gold: '#FFA500',       // Gold (lifestyle Nathália)
+  },
+
+  // Overlay System - For semi-transparent backgrounds
+  overlay: {
+    light: 'rgba(255, 255, 255, 0.25)',     // Light overlay for dark backgrounds
+    medium: 'rgba(0, 0, 0, 0.4)',           // Medium overlay
+    dark: 'rgba(0, 0, 0, 0.6)',             // Dark overlay
+    heavy: 'rgba(0, 0, 0, 0.7)',            // Heavy overlay
+    backdrop: 'rgba(0, 0, 0, 0.5)',         // Modal backdrop
+    card: 'rgba(255, 255, 255, 0.1)',       // Card overlay for dark mode
   },
 
   // Mint System (web reference - success/positive accent)

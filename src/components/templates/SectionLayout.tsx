@@ -9,8 +9,7 @@ import { Box } from '@/components/primitives/Box';
 import { Heading } from '@/components/primitives/Heading';
 import { HapticButton } from '@/components/primitives/HapticButton';
 import { Text } from '@/components/primitives/Text';
-import { Spacing } from '@/theme/tokens';
-import { TYPOGRAPHY } from '@/design-system';
+import { Tokens } from '@/theme/tokens';
 
 export interface SectionLayoutProps {
   title: string | React.ReactNode;
@@ -29,10 +28,28 @@ export function SectionLayout({
   containerStyle,
   headingLevel = 'h3',
 }: SectionLayoutProps) {
+  // Mapeamento de heading levels para tamanhos de fonte
+  const getFontSize = () => {
+    switch (headingLevel) {
+      case 'h2': return Tokens.typography.sizes['2xl'];
+      case 'h3': return Tokens.typography.sizes.xl;
+      case 'h4': return Tokens.typography.sizes.lg;
+      case 'h5': return Tokens.typography.sizes.md;
+      case 'h6': return Tokens.typography.sizes.sm;
+      default: return Tokens.typography.sizes.lg;
+    }
+  };
+
+  const getFontWeight = () => {
+    return headingLevel === 'h2' || headingLevel === 'h3' 
+      ? Tokens.typography.weights.bold 
+      : Tokens.typography.weights.semibold;
+  };
+
   return (
     <Box
       style={StyleSheet.flatten([
-        { paddingHorizontal: Spacing['4'], paddingVertical: Spacing['3'] },
+        { paddingHorizontal: Tokens.spacing['4'], paddingVertical: Tokens.spacing['3'] },
         containerStyle,
       ])}
     >
@@ -42,7 +59,7 @@ export function SectionLayout({
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: Spacing['3'],
+          marginBottom: Tokens.spacing['3'],
         }}
       >
         {typeof title === 'string' ? (
@@ -50,14 +67,8 @@ export function SectionLayout({
             level={headingLevel} 
             color="primary"
             style={{ 
-              fontSize: headingLevel === 'h2' ? TYPOGRAPHY.h3.fontSize : 
-                       headingLevel === 'h3' ? TYPOGRAPHY.h4.fontSize :
-                       headingLevel === 'h4' ? TYPOGRAPHY.h5.fontSize :
-                       TYPOGRAPHY.h6.fontSize,
-              fontWeight: headingLevel === 'h2' ? TYPOGRAPHY.h3.fontWeight : 
-                         headingLevel === 'h3' ? TYPOGRAPHY.h4.fontWeight :
-                         headingLevel === 'h4' ? TYPOGRAPHY.h5.fontWeight :
-                         TYPOGRAPHY.h6.fontWeight,
+              fontSize: getFontSize(),
+              fontWeight: getFontWeight(),
             }}
           >
             {title}
@@ -67,14 +78,8 @@ export function SectionLayout({
             level={headingLevel} 
             color="primary"
             style={{ 
-              fontSize: headingLevel === 'h2' ? TYPOGRAPHY.h3.fontSize : 
-                       headingLevel === 'h3' ? TYPOGRAPHY.h4.fontSize :
-                       headingLevel === 'h4' ? TYPOGRAPHY.h5.fontSize :
-                       TYPOGRAPHY.h6.fontSize,
-              fontWeight: headingLevel === 'h2' ? TYPOGRAPHY.h3.fontWeight : 
-                         headingLevel === 'h3' ? TYPOGRAPHY.h4.fontWeight :
-                         headingLevel === 'h4' ? TYPOGRAPHY.h5.fontWeight :
-                         TYPOGRAPHY.h6.fontWeight,
+              fontSize: getFontSize(),
+              fontWeight: getFontWeight(),
             }}
           >
             {title}
