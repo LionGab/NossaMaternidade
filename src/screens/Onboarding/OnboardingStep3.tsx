@@ -21,7 +21,7 @@ const stages = [
 ];
 
 export default function OnboardingStep3({ step, formData, updateData, nextStep, prevStep }: OnboardingStepProps) {
-  const { colors, isDark, toggleTheme } = useTheme();
+  const { colors, toggleTheme } = useTheme();
   const TOTAL_STEPS = 8;
 
   return (

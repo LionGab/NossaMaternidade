@@ -19,7 +19,7 @@ interface SplashScreenProps {
 }
 
 export default function SplashScreenComponent({ onComplete }: SplashScreenProps) {
-  const { colors, isDark } = useTheme();
+  const { colors, isDark: _isDark } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
 

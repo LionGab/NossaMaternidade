@@ -123,6 +123,11 @@ export const COLORS = {
     main: LightTheme.status.info,
     gradient: LightTheme.gradients.info,
   },
+  // Overlay colors
+  overlay: {
+    ...ColorTokens.overlay,
+    glass: 'rgba(255, 255, 255, 0.95)', // Glass effect overlay
+  },
 };
 
 // Typography - mapear formato antigo

@@ -4,7 +4,7 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Dimensions,
+  // Dimensions não utilizado - removido
   Animated,
   FlatList,
 } from 'react-native';
@@ -19,7 +19,7 @@ import { useAsyncStorage } from '../hooks/useStorage';
 import { Tokens } from '../theme/tokens';
 import { HabitsBarChart } from '../components/charts/HabitsBarChart';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+// SCREEN_WIDTH não utilizado - removido
 const HABIT_STORAGE_KEY = '@nossa_maternidade:habits';
 
 // Styled function - defined first so components can use it
@@ -421,7 +421,6 @@ export default function HabitsScreen() {
   const haptics = useHaptics();
 
   // Calcular estatísticas
-  const today = new Date().toISOString().split('T')[0];
   const activeHabits = habits.filter((h) => h.is_active);
   const filteredHabits =
     selectedCategory === 'all'

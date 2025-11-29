@@ -8,11 +8,12 @@
  * @date 2025-11-27
  */
 
-import React from 'react';
-import { TouchableOpacity, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
+import React, { useMemo, useCallback } from 'react';
+import { Pressable, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
 import { Tokens } from '@/theme/tokens';
 import { useThemeColors } from '@/hooks/useTheme';
 import { SafeView, SafeText } from './SafeView';
+import { triggerPlatformHaptic, isIOS, isAndroid, getPlatformShadow } from '@/theme/platform';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -44,7 +45,7 @@ export interface ButtonProps {
   accessibilityHint?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button: React.FC<ButtonProps> = React.memo(({
   title,
   onPress,
   variant = 'primary',
@@ -61,11 +62,19 @@ export const Button: React.FC<ButtonProps> = ({
   const colors = useThemeColors();
   const isDisabled = disabled || loading;
 
+  // Handler com haptic feedback
+  const handlePress = useCallback(() => {
+    if (!isDisabled && onPress) {
+      triggerPlatformHaptic('buttonPress');
+      onPress();
+    }
+  }, [isDisabled, onPress]);
+
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // ESTILOS POR VARIANTE
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  const getVariantStyles = (): { container: ViewStyle; text: TextStyle } => {
+  const variantStyles = useMemo((): { container: ViewStyle; text: TextStyle } => {
     const baseContainer: ViewStyle = {
       borderRadius: Tokens.radius.lg,
       borderWidth: 2,
@@ -73,6 +82,8 @@ export const Button: React.FC<ButtonProps> = ({
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: Tokens.touchTargets.min,
+      // Platform-specific shadow/elevation
+      ...getPlatformShadow('md'),
     };
 
     const baseText: TextStyle = {
@@ -88,7 +99,6 @@ export const Button: React.FC<ButtonProps> = ({
             ...baseContainer,
             backgroundColor: isDisabled ? colors.text.disabled : colors.primary.main,
             borderColor: 'transparent',
-            ...Tokens.shadows.md,
           },
           text: {
             ...baseText,
@@ -102,7 +112,6 @@ export const Button: React.FC<ButtonProps> = ({
             ...baseContainer,
             backgroundColor: isDisabled ? colors.border.light : colors.secondary.main,
             borderColor: 'transparent',
-            ...Tokens.shadows.sm,
           },
           text: {
             ...baseText,
@@ -142,7 +151,6 @@ export const Button: React.FC<ButtonProps> = ({
             ...baseContainer,
             backgroundColor: isDisabled ? colors.text.disabled : colors.status.error,
             borderColor: 'transparent',
-            ...Tokens.shadows.sm,
           },
           text: {
             ...baseText,
@@ -156,13 +164,13 @@ export const Button: React.FC<ButtonProps> = ({
           text: baseText,
         };
     }
-  };
+  }, [isDisabled, colors]);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // ESTILOS POR TAMANHO
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  const getSizeStyles = (): { container: ViewStyle; text: TextStyle } => {
+  const sizeStyles = useMemo((): { container: ViewStyle; text: TextStyle } => {
     switch (size) {
       case 'sm':
         return {
@@ -200,28 +208,36 @@ export const Button: React.FC<ButtonProps> = ({
           },
         };
     }
-  };
+  }, [size]);
 
-  const variantStyles = getVariantStyles();
-  const sizeStyles = getSizeStyles();
-
-  const containerStyle: ViewStyle = {
+  const containerStyle: ViewStyle = useMemo(() => ({
     ...variantStyles.container,
     ...sizeStyles.container,
     ...(fullWidth && { width: '100%' }),
     ...style,
-  };
+  }), [variantStyles, sizeStyles, fullWidth, style]);
+
+  // Android ripple effect
+  const androidRipple = isAndroid ? {
+    color: colors.text.primary,
+    borderless: false,
+  } : undefined;
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // RENDER
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
+    <Pressable
+      onPress={handlePress}
       disabled={isDisabled}
-      activeOpacity={0.7}
-      style={containerStyle}
+      style={({ pressed }) => [
+        containerStyle,
+        pressed && {
+          opacity: isIOS ? 0.7 : 0.8,
+        },
+      ]}
+      android_ripple={androidRipple}
       accessible={true}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || title}
@@ -234,7 +250,7 @@ export const Button: React.FC<ButtonProps> = ({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variantStyles.text.color}
+          color={variantStyles.text?.color || colors.text.inverse}
         />
       ) : (
         <>
@@ -244,7 +260,7 @@ export const Button: React.FC<ButtonProps> = ({
             </SafeView>
           )}
           <SafeText
-            style={[variantStyles.text, sizeStyles.text]}
+            style={[{ ...variantStyles.text, ...sizeStyles.text }]}
             fallbackText={title}
           >
             {title}
@@ -256,9 +272,11 @@ export const Button: React.FC<ButtonProps> = ({
           )}
         </>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
-};
+});
+
+Button.displayName = 'Button';
 
 export default Button;
 

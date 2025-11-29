@@ -14,7 +14,7 @@ import { Moon, Sun } from 'lucide-react-native';
 import { useTheme } from '@/theme/ThemeContext';
 import { useThemeColors } from '@/hooks/useTheme';
 import { Tokens } from '@/theme/tokens';
-import { getShadowFromToken } from '@/utils/shadowHelper';
+// getShadowFromToken não utilizado - removido
 import { getAnimationConfig } from '@/utils/animationHelper';
 
 export interface ThemeToggleProps {

@@ -243,7 +243,22 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
     }
   };
 
+  // TODO: Habilitar login social quando OAuth estiver configurado no Supabase
+  // Para configurar: https://supabase.com/dashboard > Authentication > Providers
+  const SOCIAL_LOGIN_ENABLED = false; // Mudar para true quando OAuth estiver configurado
+
   const handleSocialLogin = async (provider: 'apple' | 'google') => {
+    // Verificar se login social está habilitado
+    if (!SOCIAL_LOGIN_ENABLED) {
+      haptics.warning();
+      Alert.alert(
+        'Em breve! 🚀',
+        `O login com ${provider === 'apple' ? 'Apple' : 'Google'} estará disponível em breve.\n\nPor enquanto, use email e senha para entrar.`,
+        [{ text: 'OK', style: 'default' }]
+      );
+      return;
+    }
+
     setIsLoading(true);
     haptics.light();
     
@@ -605,13 +620,14 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
                   justifyContent: 'center',
                   paddingVertical: Spacing['4'],
                   borderRadius: Radius.lg,
+                  opacity: SOCIAL_LOGIN_ENABLED ? 1 : 0.6,
                 }}
-                accessibilityLabel="Continuar com Apple"
-                accessibilityHint="Faz login usando sua conta Apple"
+                accessibilityLabel={SOCIAL_LOGIN_ENABLED ? "Continuar com Apple" : "Login com Apple em breve"}
+                accessibilityHint={SOCIAL_LOGIN_ENABLED ? "Faz login usando sua conta Apple" : "Este recurso estará disponível em breve"}
               >
                 <Apple size={20} color={colors.text.primary} style={{ marginRight: Spacing['2'] }} />
                 <Text size="md" weight="semibold" color="primary">
-                  Continuar com Apple
+                  {SOCIAL_LOGIN_ENABLED ? 'Continuar com Apple' : 'Apple (em breve)'}
                 </Text>
               </HapticButton>
 
@@ -629,9 +645,10 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
                   justifyContent: 'center',
                   paddingVertical: Spacing['4'],
                   borderRadius: Radius.lg,
+                  opacity: SOCIAL_LOGIN_ENABLED ? 1 : 0.6,
                 }}
-                accessibilityLabel="Continuar com Google"
-                accessibilityHint="Faz login usando sua conta Google"
+                accessibilityLabel={SOCIAL_LOGIN_ENABLED ? "Continuar com Google" : "Login com Google em breve"}
+                accessibilityHint={SOCIAL_LOGIN_ENABLED ? "Faz login usando sua conta Google" : "Este recurso estará disponível em breve"}
               >
                 <View style={{ 
                   width: 20, 
@@ -641,7 +658,7 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
                   marginRight: Spacing['2'],
                 }} />
                 <Text size="md" weight="semibold" color="primary">
-                  Continuar com Google
+                  {SOCIAL_LOGIN_ENABLED ? 'Continuar com Google' : 'Google (em breve)'}
                 </Text>
               </HapticButton>
             </Box>

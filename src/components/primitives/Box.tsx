@@ -3,10 +3,11 @@
  * Componente genérico de layout com props theme-aware
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, ViewProps, ViewStyle } from 'react-native';
 import { useThemeColors } from '@/theme';
 import { Spacing, Radius, Shadows } from '@/theme/tokens';
+import { getPlatformShadow } from '@/theme/platform';
 
 export interface BoxProps extends Omit<ViewProps, 'style'> {
   children?: React.ReactNode;
@@ -53,7 +54,7 @@ export interface BoxProps extends Omit<ViewProps, 'style'> {
   style?: ViewStyle;
 }
 
-export function Box({
+export const Box = React.memo(function Box({
   children,
   bg,
   p, px, py, pt, pb, pl, pr,
@@ -87,51 +88,57 @@ export function Box({
     focus: colors.border.focus,
   };
 
-  const computedStyle = {
-    ...(bg && { backgroundColor: bgMap[bg] }),
+  const computedStyle = useMemo(() => {
+    const shadowStyle = shadow 
+      ? getPlatformShadow(shadow)
+      : {};
 
-    // Padding
-    ...(p !== undefined && { padding: Spacing[p] }),
-    ...(px !== undefined && { paddingHorizontal: Spacing[px] }),
-    ...(py !== undefined && { paddingVertical: Spacing[py] }),
-    ...(pt !== undefined && { paddingTop: Spacing[pt] }),
-    ...(pb !== undefined && { paddingBottom: Spacing[pb] }),
-    ...(pl !== undefined && { paddingLeft: Spacing[pl] }),
-    ...(pr !== undefined && { paddingRight: Spacing[pr] }),
+    return {
+      ...(bg && { backgroundColor: bgMap[bg] }),
 
-    // Margin
-    ...(m !== undefined && { margin: Spacing[m] }),
-    ...(mx !== undefined && { marginHorizontal: Spacing[mx] }),
-    ...(my !== undefined && { marginVertical: Spacing[my] }),
-    ...(mt !== undefined && { marginTop: Spacing[mt] }),
-    ...(mb !== undefined && { marginBottom: Spacing[mb] }),
-    ...(ml !== undefined && { marginLeft: Spacing[ml] }),
-    ...(mr !== undefined && { marginRight: Spacing[mr] }),
+      // Padding
+      ...(p !== undefined && { padding: Spacing[p] }),
+      ...(px !== undefined && { paddingHorizontal: Spacing[px] }),
+      ...(py !== undefined && { paddingVertical: Spacing[py] }),
+      ...(pt !== undefined && { paddingTop: Spacing[pt] }),
+      ...(pb !== undefined && { paddingBottom: Spacing[pb] }),
+      ...(pl !== undefined && { paddingLeft: Spacing[pl] }),
+      ...(pr !== undefined && { paddingRight: Spacing[pr] }),
 
-    // Border
-    ...(borderWidth !== undefined && { borderWidth }),
-    ...(borderColor && { borderColor: borderColorMap[borderColor] }),
-    ...(rounded && { borderRadius: Radius[rounded] }),
+      // Margin
+      ...(m !== undefined && { margin: Spacing[m] }),
+      ...(mx !== undefined && { marginHorizontal: Spacing[mx] }),
+      ...(my !== undefined && { marginVertical: Spacing[my] }),
+      ...(mt !== undefined && { marginTop: Spacing[mt] }),
+      ...(mb !== undefined && { marginBottom: Spacing[mb] }),
+      ...(ml !== undefined && { marginLeft: Spacing[ml] }),
+      ...(mr !== undefined && { marginRight: Spacing[mr] }),
 
-    // Shadow
-    ...(shadow && Shadows[shadow]),
+      // Border
+      ...(borderWidth !== undefined && { borderWidth }),
+      ...(borderColor && { borderColor: borderColorMap[borderColor] }),
+      ...(rounded && { borderRadius: Radius[rounded] }),
 
-    // Flex
-    ...(flex !== undefined && { flex }),
-    ...(direction && { flexDirection: direction }),
-    ...(align && { alignItems: align }),
-    ...(justify && { justifyContent: justify }),
+      // Shadow (platform-adaptive)
+      ...shadowStyle,
 
-    // Size
-    ...(width !== undefined && { width }),
-    ...(height !== undefined && { height }),
+      // Flex
+      ...(flex !== undefined && { flex }),
+      ...(direction && { flexDirection: direction }),
+      ...(align && { alignItems: align }),
+      ...(justify && { justifyContent: justify }),
 
-    ...style,
-  };
+      // Size
+      ...(width !== undefined && { width }),
+      ...(height !== undefined && { height }),
+
+      ...style,
+    };
+  }, [bg, p, px, py, pt, pb, pl, pr, m, mx, my, mt, mb, ml, mr, borderWidth, borderColor, rounded, shadow, flex, direction, align, justify, width, height, style, colors]);
 
   return (
     <View style={computedStyle as ViewStyle} {...props}>
       {children}
     </View>
   );
-}
+});

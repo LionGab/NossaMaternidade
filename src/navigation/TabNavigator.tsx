@@ -39,7 +39,7 @@ import { HapticPatterns, triggerHaptic } from '../theme/haptics';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export const TabNavigator = () => {
-  const { colors, isDark } = useTheme();
+  const { colors, isDark: _isDark } = useTheme();
   const insets = useSafeAreaInsets();
 
   // Haptic feedback ao trocar de tab

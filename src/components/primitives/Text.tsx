@@ -3,10 +3,11 @@
  * Componente para textos body com variants e theme-aware
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Text as RNText, TextProps as RNTextProps, TextStyle } from 'react-native';
 import { useThemeColors } from '@/theme';
 import { Typography } from '@/theme/tokens';
+import { getFontFamily, getScaledFontSize } from '@/theme/platform';
 
 export type TextVariant = 'body' | 'caption' | 'label' | 'overline' | 'small';
 export type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -67,7 +68,7 @@ const sizeMap: Record<TextSize, number> = {
   xl: Typography.sizes.xl,
 };
 
-export function Text({
+export const Text = React.memo(function Text({
   variant = 'body',
   size,
   color = 'primary',
@@ -78,8 +79,9 @@ export function Text({
   strikethrough = false,
   children,
   style,
+  allowFontScaling = true,
   ...props
-}: CustomTextProps) {
+}: CustomTextProps & { allowFontScaling?: boolean }) {
   const colors = useThemeColors();
 
   const colorMap: Record<TextColor, string> = {
@@ -94,24 +96,43 @@ export function Text({
     error: colors.text.error,
   };
 
-  const computedStyle: TextStyle = {
-    ...variantStyles[variant],
-    ...(size && { fontSize: sizeMap[size] }),
-    color: colorMap[color],
-    textAlign: align,
-    ...(weight && { fontWeight: Typography.weights[weight] }),
-    ...(italic && { fontStyle: 'italic' }),
-    ...(underline && { textDecorationLine: 'underline' }),
-    ...(strikethrough && { textDecorationLine: 'line-through' }),
-    ...style,
-  };
+  const computedStyle: TextStyle = useMemo(() => {
+    const baseSize = size ? sizeMap[size] : variantStyles[variant].fontSize || Typography.sizes.md;
+    const fontSize = allowFontScaling 
+      ? getScaledFontSize(baseSize)
+      : baseSize;
+
+    const fontFamily = weight 
+      ? getFontFamily(weight)
+      : getFontFamily(variantStyles[variant].fontWeight as keyof typeof Typography.weights || 'regular');
+
+    return {
+      ...variantStyles[variant],
+      fontSize,
+      fontFamily,
+      color: colorMap[color],
+      textAlign: align,
+      ...(weight && { fontWeight: Typography.weights[weight] }),
+      ...(italic && { fontStyle: 'italic' }),
+      ...(underline && { textDecorationLine: 'underline' }),
+      ...(strikethrough && { textDecorationLine: 'line-through' }),
+      allowFontScaling,
+      ...style,
+    };
+  }, [variant, size, color, align, weight, italic, underline, strikethrough, allowFontScaling, style, colors]);
 
   return (
-    <RNText style={computedStyle} {...props}>
+    <RNText 
+      style={computedStyle} 
+      allowFontScaling={allowFontScaling}
+      accessible={true}
+      accessibilityRole="text"
+      {...props}
+    >
       {children}
     </RNText>
   );
-}
+});
 
 // Convenience exports
 export const Body = (props: Omit<CustomTextProps, 'variant'>) => <Text variant="body" {...props} />;

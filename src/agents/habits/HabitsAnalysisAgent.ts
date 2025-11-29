@@ -69,7 +69,7 @@ export class HabitsAnalysisAgent extends BaseAgent {
       entries: HabitEntry[];
       timeRange?: { start: string; end: string };
     },
-    options?: Record<string, unknown>
+    _options?: Record<string, unknown>
   ): Promise<WellbeingAnalysis> {
     const { userId, entries, timeRange } = input;
 

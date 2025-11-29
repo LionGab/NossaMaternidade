@@ -3,7 +3,7 @@
  * Centraliza gerenciamento de todas as sessões (auth, chat, analytics)
  */
 
-import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
+import { Session, User } from '@supabase/supabase-js';
 import { supabase, isSupabaseReady, initSecureStorageMigration } from './supabase';
 import { ensureValidSession, getValidSession } from '../middleware/sessionValidator';
 import { logger } from '../utils/logger';

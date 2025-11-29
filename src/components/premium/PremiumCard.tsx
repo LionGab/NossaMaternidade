@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import {
-  View,
   StyleSheet,
   ViewStyle,
+  StyleProp,
   Animated,
   TouchableOpacity,
   Platform,
@@ -200,7 +200,7 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
         };
       case 'glass':
         return {
-          backgroundColor: COLORS.overlay?.glass || 'rgba(255, 255, 255, 0.95)',
+          backgroundColor: ColorTokens.overlay?.glass || 'rgba(255, 255, 255, 0.95)', // Glass effect overlay (usar token se disponível)
           ...Platform.select({
             ios: {
               backdropFilter: 'blur(20px)',
@@ -282,7 +282,7 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
 
   if (onPress) {
     return (
-      <Animated.View style={animatedCardStyle as any}>
+      <Animated.View style={animatedCardStyle as StyleProp<ViewStyle>}>
         <TouchableOpacity
           onPress={handlePress}
           onPressIn={handlePressIn}
@@ -300,7 +300,7 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
   }
 
   return (
-    <Animated.View style={animatedCardStyle as any}>
+    <Animated.View style={animatedCardStyle as StyleProp<ViewStyle>}>
       {content}
     </Animated.View>
   );

@@ -51,40 +51,9 @@ export interface NathiaResponse {
  * NATHIA - A voz autêntica de Nathália Valente
  */
 export class NathiaPersonalityAgent extends BaseAgent {
-  private readonly NATHIA_VOICE_RULES = {
-    // O que a Nathália NUNCA faz
-    NEVER: [
-      'diagnosticar condições médicas',
-      'prescrever medicamentos ou tratamentos',
-      'dar conselhos médicos específicos',
-      'fingir ser uma guru perfeita',
-      'infantilizar a mãe',
-      'julgar escolhas maternas',
-      'fugir do contexto de maternidade',
-      'dar falsas garantias sobre saúde',
-    ],
-
-    // O que a Nathália SEMPRE faz
-    ALWAYS: [
-      'validar emoções ANTES de qualquer coisa',
-      'falar como uma amiga real, não como guru',
-      'ser vulnerável e admitir que maternidade é difícil',
-      'redirecionar para profissionais quando necessário',
-      'usar "você" (2ª pessoa)',
-      'ser direta mas carinhosa',
-      'contextualizar dentro da maternidade',
-      'celebrar pequenas vitórias',
-    ],
-
-    // Tom de voz característico
-    TONE_MARKERS: [
-      'acolhedor mas não meloso',
-      'firme quando necessário',
-      'vulnerável de verdade',
-      'próximo, como conversa de cafezinho',
-      'sem frases motivacionais genéricas',
-    ],
-  };
+  // NATHIA_VOICE_RULES removed - documentation moved to comments
+  // Voice rules: validar emoções ANTES, falar como amiga real, ser vulnerável,
+  // redirecionar para profissionais, usar "você", ser direta mas carinhosa
 
   private readonly MEDICAL_RED_FLAGS = [
     // Palavras que indicam conselho médico
@@ -125,7 +94,7 @@ export class NathiaPersonalityAgent extends BaseAgent {
   /**
    * Processa qualquer mensagem IA para garantir voz da Nathália
    */
-  async process(input: NathiaMessage, options?: Record<string, unknown>): Promise<NathiaResponse> {
+  async process(input: NathiaMessage, _options?: Record<string, unknown>): Promise<NathiaResponse> {
     const { originalText, context } = input;
 
     // 1. Detectar problemas na mensagem original

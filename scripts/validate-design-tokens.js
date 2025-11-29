@@ -73,7 +73,43 @@ function findViolations(filePath) {
     return violations;
   }
 
+  // Ignorar arquivos dentro de src/design-system/ (sistema legado)
+  if (filePath.includes('src/design-system') || filePath.includes('src\\design-system')) {
+    return violations;
+  }
+
   const content = fs.readFileSync(filePath, 'utf-8');
+  
+  // Detectar uso de src/design-system/ (legado) - mas ignorar se for comentário
+  const legacyPattern = /@\/design-system/;
+  if (legacyPattern.test(content)) {
+    // Verificar se não está em comentário
+    const lines = content.split('\n');
+    let foundInCode = false;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      // Ignorar comentários
+      if (line.startsWith('//') || line.startsWith('/*') || line.startsWith('*')) {
+        continue;
+      }
+      if (legacyPattern.test(line)) {
+        foundInCode = true;
+        break;
+      }
+    }
+    
+    if (foundInCode) {
+      violations.push({
+        file: filePath,
+        line: 1,
+        content: 'Uso de src/design-system/ (legado)',
+        type: 'legacy',
+        suggestion: 'Migre para src/theme/tokens.ts e useTheme() hook',
+      });
+    }
+  }
+  
   const lines = content.split('\n');
 
   lines.forEach((line, index) => {

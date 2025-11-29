@@ -18,7 +18,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ArrowLeft, Settings, Save, ChevronRight } from 'lucide-react-native';
+import { ArrowLeft, Settings, Save } from 'lucide-react-native';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { Tokens } from '../theme/tokens';
 import { profileService, UpdateProfileData } from '../services/profileService';

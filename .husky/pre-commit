@@ -1,8 +1,68 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+# Pre-commit hook - Validação de Design System
+# Compatível com Windows (Git Bash) e Unix
 
-echo "🎨 Validando design tokens..."
-npm run validate:design
+echo "🎨 Nossa Maternidade - Pre-commit Validation"
+echo "============================================="
 
-echo "✅ TypeScript type checking..."
-npm run type-check
+# Detectar sistema operacional
+if [ -n "$WINDIR" ] || [ -n "$windir" ]; then
+  IS_WINDOWS=true
+else
+  IS_WINDOWS=false
+fi
+
+# Função para executar comando e verificar resultado
+run_check() {
+  local name="$1"
+  local cmd="$2"
+  
+  echo ""
+  echo "📦 $name..."
+  
+  if eval "$cmd"; then
+    echo "✅ $name passou"
+    return 0
+  else
+    echo "❌ $name falhou!"
+    return 1
+  fi
+}
+
+# 1. Validar Design Tokens (crítico - bloqueia commit)
+run_check "Design Tokens" "npm run validate:design --silent"
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "🚫 COMMIT BLOQUEADO: Violações de design tokens encontradas"
+  echo "💡 Execute 'npm run validate:design' para ver detalhes"
+  echo "💡 Use tokens do design system em vez de cores hardcoded"
+  exit 1
+fi
+
+# 2. TypeScript Check (crítico - bloqueia commit)
+run_check "TypeScript" "npm run type-check --silent 2>&1 | head -50"
+TS_EXIT_CODE=${PIPESTATUS[0]:-$?}
+if [ $TS_EXIT_CODE -ne 0 ]; then
+  echo ""
+  echo "🚫 COMMIT BLOQUEADO: Erros de TypeScript encontrados"
+  echo "💡 Execute 'npm run type-check' para ver detalhes"
+  exit 1
+fi
+
+# 3. Lint-staged (arquivos modificados)
+echo ""
+echo "🧹 Executando lint nos arquivos staged..."
+npx lint-staged --quiet
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "🚫 COMMIT BLOQUEADO: Erros de lint encontrados"
+  echo "💡 Execute 'npm run lint' para ver detalhes"
+  exit 1
+fi
+
+echo ""
+echo "============================================="
+echo "✅ Todas as validações passaram!"
+echo "🚀 Commit autorizado - Nossa Maternidade"
+echo "============================================="
+exit 0

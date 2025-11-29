@@ -23,7 +23,7 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
   subtitle,
   selected = false,
   onPress,
-  className = '',
+  className: _className = '',
 }) => {
   const colors = useThemeColors();
 

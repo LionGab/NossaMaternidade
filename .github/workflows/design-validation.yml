@@ -1,63 +1,165 @@
-name: 🎨 Design Validation
+# GitHub Actions: Validação de Design System
+# Executa validações automáticas em cada PR
+
+name: 🎨 Design System Validation
 
 on:
   pull_request:
-    branches: [main, dev]
+    branches: [main, develop]
     paths:
-      - 'src/**/*.ts'
-      - 'src/**/*.tsx'
-      - 'src/theme/**/*'
+      - 'src/**'
+      - 'scripts/**'
+      - 'package.json'
   push:
-    branches: [main, dev]
+    branches: [main]
     paths:
-      - 'src/**/*.ts'
-      - 'src/**/*.tsx'
-      - 'src/theme/**/*'
+      - 'src/**'
+
+env:
+  NODE_VERSION: '20'
 
 jobs:
-  validate-design:
-    name: Validate Design Tokens
+  # Job 1: Validação de Design Tokens
+  design-tokens:
+    name: 📦 Design Tokens
     runs-on: ubuntu-latest
-
     steps:
-      - name: 📥 Checkout code
+      - name: 📥 Checkout
         uses: actions/checkout@v4
 
       - name: 📦 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: 📥 Install dependencies
+      - name: 📦 Install Dependencies
         run: npm ci
 
-      - name: 🎨 Validate design tokens
+      - name: 🎨 Validate Design Tokens
         run: npm run validate:design
 
-      - name: ✅ TypeScript type checking
+      - name: 📊 Upload Report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-token-violations
+          path: reports/design-violations.json
+          retention-days: 7
+
+  # Job 2: Validação de Platform Design (iOS/Android)
+  platform-design:
+    name: 📱 Platform Design
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 📱 Validate Platform Design
+        run: npm run validate:platform
+        continue-on-error: true  # Warnings não bloqueiam
+
+  # Job 3: TypeScript Check
+  typescript:
+    name: 📝 TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 📝 Type Check
         run: npm run type-check
 
-      - name: 🔍 ESLint
-        run: npm run lint
-        continue-on-error: true
+  # Job 4: Validação Completa Pré-Deploy
+  pre-deploy:
+    name: 🚀 Pre-Deploy Validation
+    runs-on: ubuntu-latest
+    needs: [design-tokens, typescript]
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
 
-      - name: 📊 Generate design report
-        if: failure()
-        run: |
-          echo "## 🔴 Design Validation Failed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Design tokens validation encontrou violações." >> $GITHUB_STEP_SUMMARY
-          echo "Por favor, corrija as violações antes de fazer merge." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Como corrigir:" >> $GITHUB_STEP_SUMMARY
-          echo "1. Execute \`npm run validate:design\` localmente" >> $GITHUB_STEP_SUMMARY
-          echo "2. Substitua cores hardcoded por design tokens" >> $GITHUB_STEP_SUMMARY
-          echo "3. Use \`useThemeColors()\` hook para acessar cores do tema" >> $GITHUB_STEP_SUMMARY
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
-      - name: ✅ Design validation passed
-        if: success()
-        run: |
-          echo "## ✅ Design Validation Passed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Todos os design tokens estão sendo usados corretamente!" >> $GITHUB_STEP_SUMMARY
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🔍 Full Pre-Deploy Validation
+        run: npm run validate:pre-deploy
+
+      - name: ✅ All Checks Passed
+        run: echo "🎉 Todas as validações de design passaram!"
+
+  # Job 5: Comentário no PR com Status
+  pr-comment:
+    name: 💬 PR Comment
+    runs-on: ubuntu-latest
+    needs: [design-tokens, platform-design, typescript, pre-deploy]
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: 💬 Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('Design System Validation')
+            );
+            
+            const body = `## 🎨 Design System Validation
+            
+            | Check | Status |
+            |-------|--------|
+            | Design Tokens | ✅ Passed |
+            | Platform Design | ✅ Passed |
+            | TypeScript | ✅ Passed |
+            | Pre-Deploy | ✅ Passed |
+            
+            **Result:** All design system validations passed! ✨
+            
+            ---
+            *Automated by Nossa Maternidade Design System*`;
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            }

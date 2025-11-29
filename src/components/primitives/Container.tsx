@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { View, ViewProps, ViewStyle } from 'react-native';
-import { Spacing, Breakpoints, isSmallDevice, isMediumDevice, isLargeDevice } from '@/theme/tokens';
+import { Spacing, Breakpoints } from '@/theme/tokens';
 
 export interface ContainerProps extends Omit<ViewProps, 'style'> {
   children: React.ReactNode;

@@ -93,3 +93,24 @@ export type {
   ProgressType,
   ProgressSize,
 } from './ProgressIndicator';
+
+// =====================
+// 🎮 Gamification (Flo-inspired)
+// =====================
+export { PillButton } from './PillButton';
+export type { PillButtonProps } from './PillButton';
+
+export { Streak } from './Streak';
+export type { StreakProps } from './Streak';
+
+// =====================
+// ⏳ Loading States
+// =====================
+export {
+  Skeleton,
+  SkeletonGroup,
+  SkeletonAvatar,
+  SkeletonCard,
+  SkeletonListItem,
+} from './Skeleton';
+export type { SkeletonProps, SkeletonGroupProps } from './Skeleton';

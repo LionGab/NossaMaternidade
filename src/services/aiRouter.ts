@@ -150,7 +150,7 @@ class AIRouter {
   /**
    * Constrói chain de fallback baseado no modelo primário
    */
-  private buildFallbackChain(primaryModel: AIModel, isCrisis: boolean): AIModel[] {
+  private buildFallbackChain(_primaryModel: AIModel, isCrisis: boolean): AIModel[] {
     // Se crise, começar com GPT-4o, depois Flash como fallback
     if (isCrisis) {
       return ['gpt-4o', 'gemini-1.5-flash', 'claude-opus'];

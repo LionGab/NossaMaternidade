@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Animated,
   TouchableOpacity,
-  Platform,
   TextInputProps,
   ViewStyle,
   TextStyle,

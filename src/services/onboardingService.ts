@@ -1,9 +1,11 @@
 /**
  * onboardingService
  * Gerencia o fluxo de onboarding e salva dados do perfil
+ * Suporta modo guest (sem autenticação) usando AsyncStorage
  */
 
-import { supabase } from './supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase, isSupabaseReady } from './supabase';
 import { logger } from '@/utils/logger';
 
 // ======================
@@ -20,6 +22,13 @@ export interface OnboardingData {
   notification_opt_in: boolean;
 }
 
+// Storage keys
+const STORAGE_KEYS = {
+  ONBOARDING_DATA: 'nath_onboarding_data',
+  ONBOARDING_COMPLETED: 'nath_onboarding_completed',
+  ONBOARDING_STEP: 'nath_onboarding_step',
+};
+
 // ======================
 // 🔧 ONBOARDING SERVICE
 // ======================
@@ -27,42 +36,54 @@ export interface OnboardingData {
 class OnboardingService {
   /**
    * Completa o onboarding e salva todos os dados do perfil
+   * Funciona com ou sem autenticação (modo guest)
    */
   async completeOnboarding(data: OnboardingData): Promise<boolean> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      // Sempre salvar localmente primeiro (funciona offline e modo guest)
+      await this.saveToLocalStorage(data);
 
-      if (!user) {
-        logger.error('No authenticated user found');
-        return false;
+      // Tentar salvar no Supabase se estiver disponível e autenticado
+      if (isSupabaseReady()) {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+          // Usuário autenticado - salvar no Supabase também
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              display_name: data.display_name,
+              life_stage_generic: data.life_stage_generic,
+              main_goals: data.main_goals,
+              baseline_emotion: data.baseline_emotion,
+              first_focus: data.first_focus,
+              preferred_language_tone: data.preferred_language_tone,
+              notification_opt_in: data.notification_opt_in,
+              onboarding_completed: true,
+              onboarding_step: 7,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', user.id);
+
+          if (error) {
+            logger.warn('Failed to save onboarding to Supabase (data saved locally)', error);
+            // Não retorna false pois salvou localmente
+          } else {
+            logger.info('Onboarding completed (Supabase + local)', {
+              userId: user.id,
+              displayName: data.display_name,
+            });
+          }
+        } else {
+          logger.info('Onboarding completed (guest mode - local only)', {
+            displayName: data.display_name,
+          });
+        }
+      } else {
+        logger.info('Onboarding completed (offline mode - local only)', {
+          displayName: data.display_name,
+        });
       }
-
-      // Atualizar perfil com dados do onboarding
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          display_name: data.display_name,
-          life_stage_generic: data.life_stage_generic,
-          main_goals: data.main_goals,
-          baseline_emotion: data.baseline_emotion,
-          first_focus: data.first_focus,
-          preferred_language_tone: data.preferred_language_tone,
-          notification_opt_in: data.notification_opt_in,
-          onboarding_completed: true,
-          onboarding_step: 7,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
-
-      if (error) {
-        logger.error('Failed to save onboarding data', error);
-        return false;
-      }
-
-      logger.info('Onboarding completed successfully', {
-        userId: user.id,
-        displayName: data.display_name,
-      });
 
       return true;
     } catch (error) {
@@ -72,29 +93,47 @@ class OnboardingService {
   }
 
   /**
+   * Salva dados localmente no AsyncStorage
+   */
+  private async saveToLocalStorage(data: OnboardingData): Promise<void> {
+    await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_DATA, JSON.stringify(data));
+    await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
+    await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_STEP, '7');
+  }
+
+  /**
    * Salva progresso parcial do onboarding (útil para multi-step)
+   * Funciona com ou sem autenticação (modo guest)
    */
   async saveOnboardingStep(step: number, partialData: Partial<OnboardingData>): Promise<boolean> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      // Sempre salvar localmente
+      await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_STEP, String(step));
+      
+      // Mesclar com dados existentes
+      const existingDataStr = await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_DATA);
+      const existingData = existingDataStr ? JSON.parse(existingDataStr) : {};
+      const mergedData = { ...existingData, ...partialData };
+      await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_DATA, JSON.stringify(mergedData));
 
-      if (!user) {
-        logger.error('No authenticated user found');
-        return false;
-      }
+      // Tentar salvar no Supabase se disponível e autenticado
+      if (isSupabaseReady()) {
+        const { data: { user } } = await supabase.auth.getUser();
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          ...partialData,
-          onboarding_step: step,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
+        if (user) {
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              ...partialData,
+              onboarding_step: step,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', user.id);
 
-      if (error) {
-        logger.error('Failed to save onboarding step', error, { step });
-        return false;
+          if (error) {
+            logger.warn('Failed to save onboarding step to Supabase', error, { step });
+          }
+        }
       }
 
       return true;
@@ -106,27 +145,44 @@ class OnboardingService {
 
   /**
    * Verifica se o usuário já completou o onboarding
+   * Funciona com ou sem autenticação (modo guest)
    */
   async isOnboardingCompleted(): Promise<boolean> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (!user) {
-        return false;
+      // Primeiro verificar localmente (funciona em todos os modos)
+      const localCompleted = await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
+      if (localCompleted === 'true') {
+        return true;
       }
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('onboarding_completed')
-        .eq('id', user.id)
-        .single();
+      // Se não completou localmente, verificar Supabase (se disponível e autenticado)
+      if (isSupabaseReady()) {
+        const { data: { user } } = await supabase.auth.getUser();
 
-      if (error) {
-        logger.error('Failed to check onboarding status', error);
-        return false;
+        if (user) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('onboarding_completed')
+            .eq('id', user.id)
+            .single();
+
+          if (error) {
+            logger.warn('Failed to check onboarding in Supabase', error);
+            return false;
+          }
+
+          const completed = data?.onboarding_completed ?? false;
+          
+          // Sincronizar com local storage
+          if (completed) {
+            await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
+          }
+
+          return completed;
+        }
       }
 
-      return data?.onboarding_completed ?? false;
+      return false;
     } catch (error) {
       logger.error('Error checking onboarding status', error);
       return false;
@@ -135,27 +191,44 @@ class OnboardingService {
 
   /**
    * Retorna o passo atual do onboarding (útil para retomar)
+   * Funciona com ou sem autenticação (modo guest)
    */
   async getCurrentStep(): Promise<number> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (!user) {
-        return 0;
+      // Primeiro verificar localmente
+      const localStep = await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_STEP);
+      if (localStep) {
+        return parseInt(localStep, 10);
       }
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('onboarding_step')
-        .eq('id', user.id)
-        .single();
+      // Se não há local, verificar Supabase
+      if (isSupabaseReady()) {
+        const { data: { user } } = await supabase.auth.getUser();
 
-      if (error) {
-        logger.error('Failed to get onboarding step', error);
-        return 0;
+        if (user) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('onboarding_step')
+            .eq('id', user.id)
+            .single();
+
+          if (error) {
+            logger.warn('Failed to get onboarding step from Supabase', error);
+            return 0;
+          }
+
+          const step = data?.onboarding_step ?? 0;
+          
+          // Sincronizar com local
+          if (step > 0) {
+            await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_STEP, String(step));
+          }
+
+          return step;
+        }
       }
 
-      return data?.onboarding_step ?? 0;
+      return 0;
     } catch (error) {
       logger.error('Error getting onboarding step', error);
       return 0;
@@ -164,35 +237,76 @@ class OnboardingService {
 
   /**
    * Pula o onboarding (útil para testes ou casos especiais)
+   * Funciona com ou sem autenticação (modo guest)
    */
   async skipOnboarding(): Promise<boolean> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      // Sempre salvar localmente
+      await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
+      await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_STEP, '7');
 
-      if (!user) {
-        logger.error('No authenticated user found');
-        return false;
+      // Tentar salvar no Supabase se disponível
+      if (isSupabaseReady()) {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              onboarding_completed: true,
+              onboarding_step: 7,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', user.id);
+
+          if (error) {
+            logger.warn('Failed to skip onboarding in Supabase', error);
+          } else {
+            logger.info('Onboarding skipped (Supabase + local)', { userId: user.id });
+          }
+        } else {
+          logger.info('Onboarding skipped (guest mode - local only)');
+        }
+      } else {
+        logger.info('Onboarding skipped (offline mode - local only)');
       }
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          onboarding_completed: true,
-          onboarding_step: 7,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
-
-      if (error) {
-        logger.error('Failed to skip onboarding', error);
-        return false;
-      }
-
-      logger.info('Onboarding skipped', { userId: user.id });
       return true;
     } catch (error) {
       logger.error('Error skipping onboarding', error);
       return false;
+    }
+  }
+
+  /**
+   * Obtém os dados do onboarding salvos localmente
+   */
+  async getLocalOnboardingData(): Promise<OnboardingData | null> {
+    try {
+      const dataStr = await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_DATA);
+      if (dataStr) {
+        return JSON.parse(dataStr);
+      }
+      return null;
+    } catch (error) {
+      logger.error('Error getting local onboarding data', error);
+      return null;
+    }
+  }
+
+  /**
+   * Limpa todos os dados de onboarding (útil para reset)
+   */
+  async clearOnboarding(): Promise<void> {
+    try {
+      await AsyncStorage.multiRemove([
+        STORAGE_KEYS.ONBOARDING_DATA,
+        STORAGE_KEYS.ONBOARDING_COMPLETED,
+        STORAGE_KEYS.ONBOARDING_STEP,
+      ]);
+      logger.info('Onboarding data cleared');
+    } catch (error) {
+      logger.error('Error clearing onboarding data', error);
     }
   }
 }

@@ -141,6 +141,70 @@ export const ColorTokens = {
     heavy: 'rgba(0, 0, 0, 0.7)',            // Heavy overlay
     backdrop: 'rgba(0, 0, 0, 0.5)',         // Modal backdrop
     card: 'rgba(255, 255, 255, 0.1)',       // Card overlay for dark mode
+    // ⭐ NOVOS: Overlays inspirados em Clean Slate e Catppuccin
+    glass: 'rgba(255, 255, 255, 0.08)',      // Glass effect suave
+    glassStrong: 'rgba(255, 255, 255, 0.12)', // Glass effect forte
+    darkGlass: 'rgba(0, 0, 0, 0.3)',         // Glass dark mode
+    blur: 'rgba(0, 0, 0, 0.45)',              // Blur backdrop
+    highlight: 'rgba(255, 122, 150, 0.15)',  // Rosa highlight overlay
+  },
+
+  // Mood Colors - Emotional tracking (Lofee-inspired)
+  mood: {
+    happy: '#FFD93D',       // Yellow - Happy/Joyful
+    calm: '#6BCB77',        // Green - Calm/Peaceful
+    sad: '#4D96FF',         // Blue - Sad
+    anxious: '#FF6B6B',     // Red - Anxious/Worried
+    angry: '#FF4757',       // Dark Red - Angry
+    tired: '#A29BFE',       // Purple - Tired
+    energetic: '#FF9FF3',   // Pink - Energetic
+    loved: '#FF6B9D',       // Rose - Loved
+  },
+
+  // Cycle Colors - Period/Fertility tracking (Lofee-inspired)
+  cycle: {
+    period: {
+      main: '#FF6B9D',
+      gradient: ['#FF6B9D', '#FF8A80'] as const,
+    },
+    fertile: {
+      main: '#B794F6',
+      gradient: ['#9C7CF4', '#B794F6'] as const,
+    },
+    ovulation: {
+      main: '#7C4DFF',
+      gradient: ['#7C4DFF', '#B388FF'] as const,
+    },
+    luteal: {
+      main: '#FF80AB',
+      gradient: ['#FF80AB', '#FF4081'] as const,
+    },
+  },
+
+  // Category Colors - Content categories (Lofee-inspired)
+  category: {
+    dailyWoman: ['#FF6B9D', '#FF8A80'] as const,
+    moodBooster: ['#7C4DFF', '#B388FF'] as const,
+    spreadHappiness: ['#FFD93D', '#FF9500'] as const,
+    healthTips: ['#6BCB77', '#4ECDC4'] as const,
+    selfCare: ['#A29BFE', '#6C5CE7'] as const,
+    pregnancy: ['#FF9FF3', '#F368E0'] as const,
+    postpartum: ['#54A0FF', '#5F27CD'] as const,
+    nutrition: ['#1DD1A1', '#10AC84'] as const,
+  },
+
+  // Notification Colors - Alert types
+  notification: {
+    ovulation: { main: '#7C4DFF', bg: '#7C4DFF20' },
+    period: { main: '#FF6B9D', bg: '#FF6B9D20' },
+    pregnancy: { main: '#FF9FF3', bg: '#FF9FF320' },
+    reminder: { main: '#FFD93D', bg: '#FFD93D20' },
+    mood: { main: '#FF6B6B', bg: '#FF6B6B20' },
+    sleep: { main: '#A29BFE', bg: '#A29BFE20' },
+    water: { main: '#54A0FF', bg: '#54A0FF20' },
+    medicine: { main: '#6BCB77', bg: '#6BCB7720' },
+    appointment: { main: '#FF9500', bg: '#FF950020' },
+    general: { main: '#636E72', bg: '#636E7220' },
   },
 
   // Mint System (web reference - success/positive accent)
@@ -231,8 +295,13 @@ export const LightTheme = {
     warning: ['#FCD34D', '#F59E0B', '#D97706'],  // Sunshine gradient
     error: ['#FCA5A5', '#EF4444', '#DC2626'],    // Error gradient ⭐ ATUALIZADO
     info: ['#60A5FA', '#3B82F6', '#2563EB'],
-    maternal: ['#FF7A96', '#FF6583', '#EC5975'], // ⭐ NOVO: Maternal gradient
-    spiritual: ['#A78BFA', '#8B5CF6', '#7C3AED'], // ⭐ NOVO: Spiritual gradient
+    maternal: ['#FF7A96', '#FF6583', '#EC5975'], // Maternal gradient (Rosa)
+    spiritual: ['#A78BFA', '#8B5CF6', '#7C3AED'], // Spiritual gradient (Roxo)
+    // ⭐ NOVOS: Gradientes Azuis (preferência Nathália)
+    ocean: ['#60A5FA', '#3B82F6', '#2563EB'] as const,       // Ocean blue gradient
+    maternalBlue: ['#FFE4E9', '#BFDBFE', '#60A5FA'] as const, // Rosa → Azul (transição suave)
+    serenity: ['#93C5FD', '#FFA8BC'] as const,               // Azul → Rosa suave
+    trust: ['#60A5FA', '#3B82F6'] as const,                  // Azul confiança
   },
 };
 
@@ -255,17 +324,18 @@ export const DarkTheme = {
   },
 
   // Text - Off-white/Light grey system (web reference)
+  // ⭐ MELHORADO: Melhor contraste WCAG AAA (inspirado em Catppuccin)
   text: {
-    primary: '#F8FAFC',       // Off-white (web reference)
-    secondary: '#CBD5E1',     // Light grey (web reference)
-    tertiary: '#94A3B8',      // Mid grey (web reference)
+    primary: '#FFFFFF',       // Branco puro (melhor contraste - WCAG AAA 15.8:1)
+    secondary: '#E2E8F0',     // Light grey (mais legível)
+    tertiary: '#A8B4C4',      // Mid grey (hierarquia clara)
     disabled: '#64748B',      // Silver (web reference)
     placeholder: '#94A3B8',   // Mid grey
     inverse: '#0F172A',       // Charcoal (web reference)
-    link: '#FFA8BC',          // Light pink ⭐ ATUALIZADO (não mais ocean)
+    link: '#FFB5C9',          // Light pink ⭐ MELHORADO (mais suave)
     success: '#4ADE80',       // Light mint
     warning: '#FCD34D',       // Light sunshine
-    error: '#F87171',         // Light red ⭐ ATUALIZADO
+    error: '#F87171',         // Light red
     info: '#60A5FA',          // Light ocean
   },
 
@@ -274,17 +344,17 @@ export const DarkTheme = {
     light: 'rgba(148, 163, 184, 0.1)',
     medium: '#475569',        // Mid-slate border (web reference)
     dark: 'rgba(148, 163, 184, 0.3)',
-    focus: '#FFA8BC',         // Light pink ⭐ ATUALIZADO
+    focus: '#FFB5C9',         // Light pink ⭐ MELHORADO (mais suave)
     error: '#F87171',         // Light red
     success: '#4ADE80',       // Light mint
   },
 
-  // Primary - Light Pink ⭐ ATUALIZADO (não mais ocean)
+  // Primary - Light Pink ⭐ MELHORADO (tons mais suaves, inspirado em Catppuccin)
   primary: {
-    main: '#FFA8BC',          // Light coral pink (dark mode friendly)
-    light: '#FFCCD7',         // Lighter pink
-    dark: '#EC5975',          // Mid pink
-    gradient: ['#FFA8BC', '#FF7A96', '#FF6583'],  // Light pink gradient
+    main: '#FFB5C9',          // Rosa mais suave (melhor harmonia e contraste)
+    light: '#FFD4E0',         // Rosa muito claro (melhor legibilidade)
+    dark: '#FF8FA3',          // Rosa médio (hover states)
+    gradient: ['#FFD4E0', '#FFB5C9', '#FF8FA3'],  // Gradiente suave e acolhedor
   },
 
   // Secondary - Light Purple ⭐ ATUALIZADO (não mais coral)
@@ -309,8 +379,10 @@ export const DarkTheme = {
     warning: ['#FDE68A', '#FCD34D', '#FBBF24'],  // Light sunshine gradient
     error: ['#FCA5A5', '#F87171', '#EF4444'],    // Light red gradient ⭐ ATUALIZADO
     info: ['#93C5FD', '#60A5FA', '#3B82F6'],     // Light ocean gradient
-    maternal: ['#FFA8BC', '#FF7A96', '#FF6583'], // ⭐ NOVO: Maternal gradient
+    maternal: ['#FFD4E0', '#FFB5C9', '#FF8FA3'], // ⭐ MELHORADO: Maternal gradient (tons mais suaves)
     spiritual: ['#C4B5FD', '#A78BFA', '#8B5CF6'], // ⭐ NOVO: Spiritual gradient
+    // ⭐ NOVO: Warm gradient para dark mode (inspirado nas imagens - amarelo/laranja acolhedor)
+    warm: ['#FFD4A3', '#FFB980', '#FFA366'] as const,  // Warm gradient (hero banner dark mode)
   },
 };
 
@@ -372,6 +444,7 @@ export const Typography = {
     '2xs': 16,
     'xs': 18,
     'sm': 20,
+    'base': 24,  // alias for md
     'md': 24,
     'lg': 26,
     'xl': 28,
@@ -815,6 +888,21 @@ export const Opacity = {
 } as const;
 
 // ======================
+// 🌫️ BLUR VALUES (Flo-inspired glassmorphism)
+// ======================
+
+export const Blur = {
+  none: 0,
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 16,
+  '2xl': 24,
+  backdrop: 10,   // For modal/sheet backdrops
+  glass: 20,      // For glassmorphism cards
+} as const;
+
+// ======================
 // 🌈 EMOTION GRADIENTS (Flo-inspired)
 // ======================
 
@@ -826,6 +914,11 @@ export const EmotionGradients = {
   safe: [ColorTokens.primary[400], ColorTokens.secondary[400]], // Rosa → Roxo (main → main)
   spiritual: [ColorTokens.secondary[400], ColorTokens.secondary[600]], // Roxo gradient
   joyful: [ColorTokens.primary[300], ColorTokens.warning[400]], // Pink → Yellow
+  // ⭐ NOVOS: Gradientes com Azul (preferência Nathália)
+  trust: [ColorTokens.info[400], ColorTokens.info[600]], // Azul confiança
+  serenity: [ColorTokens.info[300], ColorTokens.primary[200]], // Azul → Rosa suave
+  ocean: [ColorTokens.info[400], ColorTokens.info[500]], // Ocean blue
+  hopeful: [ColorTokens.info[300], ColorTokens.success[400]], // Azul → Verde esperança
 } as const;
 
 // ======================
@@ -869,6 +962,7 @@ export const Tokens = {
   iconSizes: IconSizes, // Alias for compatibility
   emojiSizes: EmojiSizes, // ⭐ NOVO: Emoji sizes
   opacity: Opacity, // ⭐ NOVO: Opacity values
+  blur: Blur, // ⭐ NOVO: Blur values (Flo-inspired glassmorphism)
   emotionGradients: EmotionGradients, // ⭐ NOVO: Emotion gradients (Flo-inspired)
   zIndex: ZIndex,
   breakpoints: Breakpoints,

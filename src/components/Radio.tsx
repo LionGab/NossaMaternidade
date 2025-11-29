@@ -13,7 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useThemeColors } from '@/theme';
-import { Spacing, Radius, Typography } from '@/theme/tokens';
+import { Spacing, Typography } from '@/theme/tokens';
 
 interface RadioGroupContextValue {
   value: string;

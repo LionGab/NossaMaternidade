@@ -57,7 +57,7 @@ export function MoodChart({
     datasets: [
       {
         data,
-        color: (opacity = 1) => colors.primary.main, // Rosa maternal
+        color: (_opacity = 1) => colors.primary.main, // Rosa maternal
         strokeWidth: 3,
       },
     ],
@@ -70,7 +70,7 @@ export function MoodChart({
     backgroundGradientTo: colors.background.card,
     decimalPlaces: 0, // Sem casas decimais
     color: (opacity = 1) => `${colors.primary.main}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`,
-    labelColor: (opacity = 1) => colors.text.secondary,
+    labelColor: (_opacity = 1) => colors.text.secondary,
     style: {
       borderRadius: Tokens.radius.lg,
     },

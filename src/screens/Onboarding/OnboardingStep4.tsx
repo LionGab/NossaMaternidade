@@ -22,7 +22,6 @@ export default function OnboardingStep4({ step, formData, updateData, nextStep, 
   
   const isPregnant = formData.stage === 'Gestante';
   const maxVal = isPregnant ? 42 : 24;
-  const _label = isPregnant ? 'Semanas de gestação' : 'Meses do bebê';
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background.canvas }}>

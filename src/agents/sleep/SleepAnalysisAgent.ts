@@ -60,7 +60,7 @@ export class SleepAnalysisAgent extends BaseAgent {
     this.initialized = true;
   }
 
-  async process(input: { entries: SleepEntry[] }, options?: Record<string, unknown>): Promise<SleepAnalysisResult> {
+  async process(input: { entries: SleepEntry[] }, _options?: Record<string, unknown>): Promise<SleepAnalysisResult> {
     const { entries } = input;
 
     if (!entries || entries.length === 0) {
@@ -203,7 +203,7 @@ export class SleepAnalysisAgent extends BaseAgent {
     avgQuality: number,
     avgInterruptions: number,
     trend: string,
-    deprivation: string
+    _deprivation: string
   ): string[] {
     const insights: string[] = [];
 
@@ -318,7 +318,7 @@ export class SleepAnalysisAgent extends BaseAgent {
     return recommendations[deprivation] || recommendations['moderate'];
   }
 
-  private createAlerts(patterns: SleepPattern, currentState: SleepAnalysisResult['currentState']) {
+  private createAlerts(patterns: SleepPattern, _currentState: SleepAnalysisResult['currentState']) {
     const alerts: Array<{ type: 'warning' | 'danger' | 'info'; message: string }> = [];
 
     if (patterns.deprivationLevel === 'severe') {

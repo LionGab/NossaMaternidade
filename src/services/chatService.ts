@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { geminiService } from './geminiService';
+// geminiService não utilizado - removido
 import { profileService } from './profileService';
 import { logger } from '@/utils/logger';
 
@@ -310,7 +310,7 @@ class ChatService {
       // Se a IA quer chamar uma tool
       if (response.tool_call) {
         const { aiToolExecutor } = await import('./aiTools');
-        const toolResult = await aiToolExecutor.executeTool(response.tool_call, userId);
+        await aiToolExecutor.executeTool(response.tool_call, userId);
 
         // Envia resultado da tool de volta para IA obter resposta final
         const finalResponse = await aiRouter.route(

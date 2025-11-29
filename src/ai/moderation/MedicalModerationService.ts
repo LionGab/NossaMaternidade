@@ -202,7 +202,7 @@ export class MedicalModerationService {
     const normalizedUserMessage = userMessage.toLowerCase();
 
     // Verificar cada padrão de moderação
-    for (const [patternName, pattern] of Object.entries(MODERATION_PATTERNS)) {
+    for (const [_patternName, pattern] of Object.entries(MODERATION_PATTERNS)) {
       const foundInResponse = pattern.keywords.some(keyword =>
         normalizedResponse.includes(keyword)
       );

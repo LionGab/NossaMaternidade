@@ -69,7 +69,7 @@ export class ContentRecommendationAgent extends BaseAgent {
    */
   async process(
     input: RecommendationRequest,
-    options?: Record<string, unknown>
+    _options?: Record<string, unknown>
   ): Promise<RecommendationResult> {
     const {
       userId,
@@ -176,7 +176,7 @@ export class ContentRecommendationAgent extends BaseAgent {
     content: ContentItem[],
     userProfile: RecommendationRequest['userProfile']
   ): Promise<ContentItem[]> {
-    const { lifeStage, timeline, challenges = [], viewHistory = [] } = userProfile;
+    const { lifeStage, timeline: _timeline, challenges = [], viewHistory = [] } = userProfile;
 
     return content.map((item) => {
       let score = 0;

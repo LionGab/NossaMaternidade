@@ -213,7 +213,7 @@ export function getProfilesInfo(): Record<LlmProfile, Omit<LlmModelConfig, 'cost
 
   for (const profile of listProfiles()) {
     const config = resolveModel(profile);
-    const { costPer1kTokens, ...rest } = config;
+    const { costPer1kTokens: _costPer1kTokens, ...rest } = config;
     result[profile] = rest;
   }
 

@@ -45,7 +45,7 @@ export const SafeAreaWrapper: React.FC<SafeAreaWrapperProps> = ({
   accessibilityLabel,
 }) => {
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
+  // insets removed - using SafeAreaView component instead
 
   // Determinar cor de fundo
   const bgColor = backgroundColor

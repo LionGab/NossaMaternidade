@@ -124,7 +124,7 @@ const PostCard: React.FC<PostCardProps> = ({ item, colors, onPress }) => {
 };
 
 export default function FeedScreen() {
-  const { colors, isDark } = useTheme();
+  const { colors, isDark: _isDark } = useTheme();
   const haptics = useHaptics();
   const [filter, setFilter] = useState<FilterType>('all');
 

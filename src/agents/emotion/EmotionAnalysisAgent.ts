@@ -80,7 +80,7 @@ export class EmotionAnalysisAgent extends BaseAgent {
     this.initialized = true;
   }
 
-  async process(input: EmotionAnalysisInput, options?: ProcessOptions): Promise<EmotionAnalysisResult> {
+  async process(input: EmotionAnalysisInput, _options?: ProcessOptions): Promise<EmotionAnalysisResult> {
     const snapshots = input.snapshots as EmotionSnapshot[];
     const currentSnapshot = input.currentSnapshot as EmotionSnapshot;
 
@@ -200,7 +200,7 @@ export class EmotionAnalysisAgent extends BaseAgent {
 
   private assessRisk(
     snapshots: EmotionSnapshot[],
-    dominantEmotion: string,
+    _dominantEmotion: string,
     trend: 'improving' | 'declining' | 'stable'
   ): 'low' | 'medium' | 'high' | 'critical' {
     // Emoções de alto risco
@@ -232,7 +232,7 @@ export class EmotionAnalysisAgent extends BaseAgent {
     snapshots: EmotionSnapshot[],
     dominantEmotion: string,
     trend: 'improving' | 'declining' | 'stable',
-    riskLevel: string
+    _riskLevel: string
   ): string[] {
     const insights: string[] = [];
 
@@ -346,7 +346,7 @@ export class EmotionAnalysisAgent extends BaseAgent {
     return recommendations[riskLevel] || recommendations['medium'];
   }
 
-  private createAlerts(patterns: EmotionPattern, currentState: CurrentEmotionState) {
+  private createAlerts(patterns: EmotionPattern, _currentState: CurrentEmotionState) {
     const alerts: Array<{
       type: 'warning' | 'danger' | 'info';
       message: string;

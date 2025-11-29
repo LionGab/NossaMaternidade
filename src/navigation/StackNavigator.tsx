@@ -15,10 +15,15 @@ import AgentsStatusScreen from '../screens/AgentsStatusScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import ContentDetailScreen from '../screens/ContentDetailScreen';
 import DesignSystemScreen from '../screens/DesignSystemScreen';
+import DesignMetricsDashboard from '../screens/DesignMetricsDashboard';
 import { onboardingService } from '../services/onboardingService';
 import { logger } from '../utils/logger';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+// 🔧 CONFIGURAÇÃO: Defina como true para exigir login, false para modo guest
+// Quando false, o app funciona sem login (modo desenvolvimento/demo)
+const REQUIRE_AUTH = false;
 
 export const StackNavigator = () => {
   // ✅ Usar AuthContext em vez de duplicar lógica
@@ -32,23 +37,26 @@ export const StackNavigator = () => {
     const checkOnboarding = async () => {
       try {
         // Verificar se usuário completou onboarding via serviço
-        if (user) {
+        // Em modo guest (REQUIRE_AUTH = false), verificar mesmo sem user
+        const shouldCheck = REQUIRE_AUTH ? !!user : true;
+        
+        if (shouldCheck) {
           const completed = await onboardingService.isOnboardingCompleted();
-        if (isMounted.current) {
-          setHasCompletedOnboarding(completed);
+          if (isMounted.current) {
+            setHasCompletedOnboarding(completed);
+          }
+        } else {
+          if (isMounted.current) {
+            setHasCompletedOnboarding(false);
+          }
         }
-      } else {
+      } catch (error) {
+        logger.warn('[StackNavigator] Erro ao verificar onboarding', error);
         if (isMounted.current) {
           setHasCompletedOnboarding(false);
         }
-      }
-    } catch (error) {
-      logger.warn('[StackNavigator] Erro ao verificar onboarding', error);
-      if (isMounted.current) {
-        setHasCompletedOnboarding(false);
-      }
-    } finally {
-      if (isMounted.current) {
+      } finally {
+        if (isMounted.current) {
           setOnboardingLoading(false);
         }
       }
@@ -61,17 +69,27 @@ export const StackNavigator = () => {
     };
   }, [user]);
 
-  // Loading enquanto verifica autenticação ou onboarding
-  const loading = authLoading || onboardingLoading;
+  // Loading enquanto verifica onboarding
+  // Em modo guest, não esperar authLoading
+  const loading = REQUIRE_AUTH ? (authLoading || onboardingLoading) : onboardingLoading;
 
-  // Aguardar tanto o loading de onboarding quanto de auth
-  if (loading || authLoading) {
+  if (loading) {
     return <SplashScreenComponent />;
   }
 
   // Determinar rota inicial baseado no estado
-  // ✅ Usa user do AuthContext (já validado e gerenciado)
   const getInitialRouteName = (): keyof RootStackParamList => {
+    // 🎯 MODO GUEST: Não exige login
+    if (!REQUIRE_AUTH) {
+      // Se completou onboarding → Main
+      if (hasCompletedOnboarding) {
+        return 'Main';
+      }
+      // Se não completou onboarding → Onboarding
+      return 'Onboarding';
+    }
+
+    // 🔐 MODO AUTH: Exige login (comportamento original)
     // Se usuário está logado E completou onboarding → Main
     if (user && hasCompletedOnboarding) {
       return 'Main';
@@ -169,6 +187,14 @@ export const StackNavigator = () => {
       <Stack.Screen
         name="DesignSystem"
         component={DesignSystemScreen}
+        options={{
+          presentation: 'card',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen
+        name="DesignMetrics"
+        component={DesignMetricsDashboard}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',

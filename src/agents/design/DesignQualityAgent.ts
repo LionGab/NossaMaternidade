@@ -158,7 +158,7 @@ export class DesignQualityAgent extends BaseAgent<DesignValidationInput, DesignV
     }
   }
 
-  protected async callMCP(server: string, method: string, params: Record<string, unknown>): Promise<MCPResponse> {
+  protected async callMCP(server: string, method: string, _params: Record<string, unknown>): Promise<MCPResponse> {
     // MCP Servers de desenvolvimento não disponíveis no app mobile
     // Retornar resposta vazia por enquanto
     logger.warn('[DesignQualityAgent] MCP servers não disponíveis no app mobile', { server, method });

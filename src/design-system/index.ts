@@ -17,8 +17,10 @@
  */
 
 // Log de deprecação
+import { logger } from '@/utils/logger';
+
 if (__DEV__) {
-  console.warn(
+  logger.warn(
     '[DEPRECATED] @/design-system está obsoleto. ' +
     'Use @/theme/tokens e useThemeColors() em vez disso. ' +
     'Veja docs/DESIGN_VALIDATION_GUIDE.md para migração.'
@@ -50,31 +52,17 @@ export const DESIGN_SYSTEM = {
 } as const;
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// EXEMPLO DE USO
+// EXEMPLO DE USO (DEPRECATED - NÃO USAR)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-/*
-import { COLORS, TYPOGRAPHY, SPACING, BORDERS } from '@/design-system';
-
-// Em um componente React Native:
-
-<View
-  style={{
-    padding: SPACING[4],                    // 16px
-    backgroundColor: COLORS.primary[50],    // Rosa muito claro
-    borderRadius: BORDERS.cardRadius,       // 16px
-    marginBottom: SPACING[3],               // 12px
-  }}
->
-  <Text
-    style={{
-      fontSize: TYPOGRAPHY.h3.fontSize,
-      fontWeight: TYPOGRAPHY.h3.fontWeight,
-      color: COLORS.text.primary,
-    }}
-  >
-    Olá, mãe! 💫
-  </Text>
-</View>
-*/
+// Exemplo antigo (DEPRECATED):
+// import { COLORS, TYPOGRAPHY, SPACING, BORDERS } from '@/design-system';
+//
+// Use em vez disso:
+// import { Tokens } from '@/theme/tokens';
+// import { useThemeColors } from '@/theme';
+//
+// const colors = useThemeColors();
+// padding: Tokens.spacing['4']
+// backgroundColor: colors.background.card
 

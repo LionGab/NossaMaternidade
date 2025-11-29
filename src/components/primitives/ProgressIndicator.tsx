@@ -16,7 +16,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
-import { Tokens, ColorTokens } from '../../theme';
+import { ColorTokens } from '../../theme';
 import { HapticPatterns, triggerHaptic } from '../../theme/haptics';
 
 export type ProgressType = 'linear' | 'circular';
@@ -191,8 +191,6 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   // Renderizar indicador circular
   const renderCircular = () => {
     const strokeWidth = size === 'sm' ? 3 : size === 'lg' ? 5 : 4;
-    const radius = (sizeValue.circular - strokeWidth) / 2;
-    const circumference = 2 * Math.PI * radius;
 
     const rotation = indeterminate
       ? indeterminateAnim.interpolate({
@@ -201,12 +199,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
         })
       : '0deg';
 
-    const strokeDashoffset = indeterminate
-      ? circumference * 0.75
-      : progressAnim.interpolate({
-          inputRange: [0, 1],
-          outputRange: [circumference, 0],
-        });
+    // strokeDashoffset calculation removed - not used in rendering
 
     return (
       <Animated.View

@@ -8,15 +8,16 @@
  */
 
 import React, { memo } from 'react';
-import { ViewStyle, ImageBackground, Image, StyleSheet } from 'react-native';
+import { ViewStyle, ImageBackground, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Star } from 'lucide-react-native';
 import { Box } from '@/components/primitives/Box';
 import { Text } from '@/components/primitives/Text';
 import { Heading } from '@/components/primitives/Heading';
 import { HapticButton } from '@/components/primitives/HapticButton';
 import { ProgressIndicator } from '@/components/primitives/ProgressIndicator';
-import { Spacing, Radius, Shadows } from '@/theme/tokens';
-import { useThemeColors } from '@/theme';
+import { Spacing, Radius, Shadows, ColorTokens } from '@/theme/tokens';
+import { useThemeColors, useTheme } from '@/theme';
 
 // ======================
 // 🎨 TYPES
@@ -24,7 +25,7 @@ import { useThemeColors } from '@/theme';
 
 export type MaternalCardVariant = 'hero' | 'insight' | 'action' | 'progress' | 'content';
 export type MaternalCardSize = 'sm' | 'md' | 'lg' | 'xl';
-export type MaternalCardEmotion = 'calm' | 'warm' | 'energetic' | 'peaceful' | 'safe';
+export type MaternalCardEmotion = 'calm' | 'warm' | 'energetic' | 'peaceful' | 'safe' | 'trust' | 'serenity';
 
 export interface MaternalCardProps {
   // Core props
@@ -42,6 +43,8 @@ export interface MaternalCardProps {
   // Variant-specific props
   emotion?: MaternalCardEmotion;      // hero, insight
   badge?: string;                      // content
+  badgeType?: 'default' | 'exclusive' | 'new';  // ⭐ NOVO: Tipos de badge
+  warmBackground?: boolean;            // ⭐ NOVO: Background warm para cards (dark mode)
   progress?: number;                   // progress (0-100)
   streak?: number;                     // progress (dias consecutivos)
   isCompleted?: boolean;               // progress
@@ -74,6 +77,9 @@ const getEmotionGradients = (colors: ReturnType<typeof useThemeColors>): Record<
   const orangeColor = colors.raw?.accent?.orange || colors.raw?.warning?.[400] || '#FB923C';
   const coralColor = colors.raw?.primary?.[200] || '#FFCCD7'; // Rosa leitoso do token primary
   const deepMint = colors.raw?.mint?.[500] || '#0F5247'; // Deep mint do token
+  const infoMain = colors.raw?.info?.[400] || '#60A5FA'; // Azul info
+  const infoDeep = colors.raw?.info?.[600] || '#2563EB'; // Azul profundo
+  const infoLight = colors.raw?.info?.[300] || '#93C5FD'; // Azul claro
   
   return {
     calm: [colors.primary.main, colors.primary.dark],      // Ocean → Deep Navy - professional, trustworthy
@@ -81,6 +87,9 @@ const getEmotionGradients = (colors: ReturnType<typeof useThemeColors>): Record<
     energetic: [colors.status.warning, orangeColor],        // Sunshine → Orange - vibrante
     peaceful: [colors.status.success, deepMint],            // Mint → Deep Mint - calmo, natureza
     safe: [colors.primary.main, colors.primary.light],     // Light Ocean - confiável, suave (dark mode aware)
+    // ⭐ NOVOS: Gradientes com Azul (preferência Nathália - Flo-inspired)
+    trust: [infoMain, infoDeep],                            // Azul confiança - profissional, seguro
+    serenity: [infoLight, coralColor],                      // Azul → Rosa suave - serenidade maternal
   };
 };
 
@@ -95,6 +104,8 @@ function MaternalCardComponent({
   icon,
   image,
   badge,
+  badgeType = 'default',
+  warmBackground = false,
   emotion = 'calm',
   progress,
   streak,
@@ -107,6 +118,47 @@ function MaternalCardComponent({
   const colors = useThemeColors();
   const sizeConfig = SIZE_CONFIG[size];
   const emotionGradients = getEmotionGradients(colors);
+  const { isDark } = useTheme();
+  
+  // ⭐ Helper para badge styles baseado no tipo
+  const getBadgeStyle = (): ViewStyle => {
+    const baseStyle: ViewStyle = {
+      alignSelf: 'flex-start',
+      paddingHorizontal: Spacing['2'],
+      paddingVertical: Spacing['1'],
+      borderRadius: Radius.md,
+      marginBottom: Spacing['2'],
+    };
+
+    if (badgeType === 'exclusive') {
+      return {
+        ...baseStyle,
+        backgroundColor: ColorTokens.warning[400], // Amarelo sunshine (#FBBF24)
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+      };
+    }
+    if (badgeType === 'new') {
+      return {
+        ...baseStyle,
+        backgroundColor: colors.primary.main,
+      };
+    }
+    return {
+      ...baseStyle,
+      backgroundColor: colors.primary.main,
+    };
+  };
+  
+  // ⭐ Helper para overlay com warm background
+  const getOverlayColor = () => {
+    if (warmBackground && isDark) {
+      // Overlay rosa suave no dark mode (inspirado nas imagens)
+      return colors.raw?.overlay?.highlight || 'rgba(255, 122, 150, 0.15)';
+    }
+    return colors.background.overlay;
+  };
 
   // ======================
   // 🎯 VARIANT RENDERERS
@@ -320,23 +372,28 @@ function MaternalCardComponent({
             <Box
               style={{
                 flex: 1,
-                backgroundColor: colors.background.overlay,
+                backgroundColor: warmBackground ? getOverlayColor() : colors.background.overlay,
                 padding: Spacing[sizeConfig.padding],
                 justifyContent: 'flex-end',
               }}
             >
               {badge && (
                 <Box
-                  style={{
-                    alignSelf: 'flex-start',
-                    backgroundColor: colors.primary.main,
-                    paddingHorizontal: Spacing['2'],
-                    paddingVertical: Spacing['1'],
-                    borderRadius: Radius.md,
-                    marginBottom: Spacing['2'],
-                  }}
+                  style={getBadgeStyle()}
                 >
-                  <Text size="xs" color="inverse" weight="semibold">
+                  {/* ⭐ ESTRELA AMARELA para badge "exclusive" */}
+                  {badgeType === 'exclusive' && (
+                    <Star size={12} color={colors.text.inverse} fill={colors.text.inverse} />
+                  )}
+                  <Text 
+                    size="xs" 
+                    color="inverse" 
+                    weight="semibold"
+                    style={{ 
+                      textTransform: badgeType === 'exclusive' ? 'uppercase' : 'none',
+                      letterSpacing: badgeType === 'exclusive' ? 0.5 : 0,
+                    }}
+                  >
                     {badge}
                   </Text>
                 </Box>

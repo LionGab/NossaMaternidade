@@ -8,12 +8,12 @@ import {
   ViewStyle,
   TextStyle,
   Animated,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SHADOWS, TOUCH_TARGETS, ANIMATIONS } from '../../constants/Theme';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS, SHADOWS, TOUCH_TARGETS } from '../../constants/Theme';
+// ANIMATIONS não utilizado - removido
 
 export interface PremiumButtonProps {
   title: string;

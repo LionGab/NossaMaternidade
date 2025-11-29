@@ -32,7 +32,7 @@ export function getAnimationConfig(useNativeDriver?: boolean): AnimationConfig {
  * Helper para criar timing animation com config automático
  */
 export function createTimingAnimation(
-  value: any,
+  _value: unknown,
   toValue: number,
   duration: number = 300,
   useNativeDriver?: boolean
@@ -50,7 +50,7 @@ export function createTimingAnimation(
  * Helper para criar spring animation com config automático
  */
 export function createSpringAnimation(
-  value: any,
+  _value: unknown,
   toValue: number,
   useNativeDriver?: boolean
 ) {

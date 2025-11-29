@@ -28,11 +28,7 @@ interface AnalyticsEvent {
   sessionId?: string;
 }
 
-interface UserIdentity {
-  userId: string;
-  traits?: Record<string, JsonValue>;
-  timestamp: number;
-}
+// _UserIdentity não utilizado - removido
 
 export class AnalyticsMCPServer implements MCPServer {
   name = 'analytics-mcp';

@@ -9,7 +9,7 @@ import {
   MCPRequest,
   MCPResponse,
   createMCPResponse,
-  MCPError,
+  MCPError as _MCPError,
   JsonValue,
 } from '../types';
 import { logger } from '../../utils/logger';

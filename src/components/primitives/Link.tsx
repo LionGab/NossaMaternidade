@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import {
   Text as RNText,
-  TextProps as RNTextProps,
+  TextProps as _RNTextProps,
   TextStyle,
   Pressable,
   PressableProps,

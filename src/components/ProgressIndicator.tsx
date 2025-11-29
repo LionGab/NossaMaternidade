@@ -25,7 +25,6 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
       {Array.from({ length: totalSteps }).map((_, index) => {
         const stepNumber = index + 1;
         const isActive = stepNumber <= currentStep;
-        const isCurrent = stepNumber === currentStep;
 
         const dotStyle: ViewStyle = {
           height: 6,

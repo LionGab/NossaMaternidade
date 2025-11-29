@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Image } from 'expo-image';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import {
   ArrowLeft,
   Sparkles,
@@ -34,7 +34,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../theme/ThemeContext';
-import { Spacing, Radius, Shadows, Typography } from '../theme/tokens';
+import { Spacing, Radius, Typography } from '../theme/tokens';
 import { chatService, ChatMessage } from '../services/chatService';
 import { profileService } from '../services/profileService';
 import { MessageBubble } from '../components/MessageBubble';
@@ -62,7 +62,6 @@ type AIMode = 'fast' | 'balanced' | 'thinking' | 'search';
 
 export default function ChatScreen() {
   const navigation = useNavigation();
-  const route = useRoute();
   const [avatarError, setAvatarError] = useState(false);
   const { colors, isDark } = useTheme();
 
@@ -76,7 +75,7 @@ export default function ChatScreen() {
   const [aiMode, setAiMode] = useState<AIMode>('balanced');
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [_selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     initializeChat();

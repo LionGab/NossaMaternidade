@@ -15,7 +15,7 @@ interface OnboardingStepProps {
 }
 
 export default function OnboardingStep9({ formData, updateData, onFinish }: OnboardingStepProps) {
-  const { colors, isDark, toggleTheme } = useTheme();
+  const { colors, toggleTheme } = useTheme();
 
   return (
     <SafeAreaView className="flex-1 items-center justify-center px-6" style={{ backgroundColor: colors.background.canvas }}>

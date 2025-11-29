@@ -3,7 +3,7 @@
  * Executa as ferramentas chamadas pela IA e retorna resultados estruturados
  */
 
-import { supabase } from '../supabase';
+// supabase não utilizado - removido
 import { profileService } from '../profileService';
 import { checkInService } from '../checkInService';
 import { feedService } from '../feedService';

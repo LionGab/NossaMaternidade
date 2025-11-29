@@ -75,7 +75,7 @@ export function HabitsBarChart({
       const b = parseInt(hex.substring(4, 6), 16);
       return `rgba(${r}, ${g}, ${b}, ${opacity})`;
     },
-    labelColor: (opacity = 1) => colors.text.secondary,
+    labelColor: (_opacity = 1) => colors.text.secondary,
     style: {
       borderRadius: Tokens.radius.lg,
     },

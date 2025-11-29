@@ -17,6 +17,7 @@ export interface HeroBannerProps {
     direction?: 'top' | 'bottom' | 'left' | 'right';
     opacity?: number;
     color?: string;
+    colors?: readonly string[];  // Array de cores para gradiente customizado (Flo-inspired)
   };
   borderRadius?: keyof typeof Radius | number;
   accessibilityLabel?: string;
@@ -31,7 +32,7 @@ export function HeroBanner({
   accessibilityLabel,
   children,
 }: HeroBannerProps) {
-  const { isDark } = useTheme();
+  const { isDark: _isDark } = useTheme();
 
   const borderRadiusValue = typeof borderRadius === 'number' ? borderRadius : Radius[borderRadius];
 
@@ -40,13 +41,29 @@ export function HeroBanner({
 
   // Preparar cores do overlay
   const getGradientColors = (): string[] => {
+    // Se colors customizados foram fornecidos, usar diretamente (Flo-inspired gradients)
+    if (overlay?.colors && overlay.colors.length >= 2) {
+      // Aplicar opacity às cores se fornecida
+      if (overlay.opacity !== undefined && overlay.opacity < 1) {
+        const opacityHex = Math.round(overlay.opacity * 255).toString(16).padStart(2, '0');
+        return overlay.colors.map(color => {
+          // Se a cor já tem alpha, substituir; senão, adicionar
+          if (color.length === 9) {
+            return color.slice(0, 7) + opacityHex;
+          }
+          return color + opacityHex;
+        });
+      }
+      return [...overlay.colors];
+    }
+
     if (!overlay || overlay.type === 'solid') {
       const opacity = overlay?.opacity ?? 0.5;
       const color = overlay?.color ?? overlayBaseColor;
       return [`${color}${Math.round(opacity * 255).toString(16).padStart(2, '0')}`, color];
     }
 
-    // Gradient overlay
+    // Gradient overlay padrão
     const opacity = overlay.opacity ?? 0.6;
     const baseColor = overlay.color ?? overlayBaseColor;
     const transparent = `${baseColor}00`;

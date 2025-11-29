@@ -36,7 +36,7 @@ import { logger } from '../utils/logger';
 import * as FileSystem from 'expo-file-system/legacy';
 
 export default function SettingsScreen() {
-  const { colors, isDark } = useTheme();
+  const { colors, isDark: _isDark } = useTheme();
   const navigation = useNavigation();
   const { signOut, user } = useAuth();
   const [exporting, setExporting] = useState(false);

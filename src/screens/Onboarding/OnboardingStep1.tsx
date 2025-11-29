@@ -16,7 +16,7 @@ interface OnboardingStepProps {
 }
 
 export default function OnboardingStep1({ nextStep }: OnboardingStepProps) {
-  const { isDark, toggleTheme } = useTheme();
+  const { toggleTheme } = useTheme();
   const colors = useThemeColors();
 
   return (

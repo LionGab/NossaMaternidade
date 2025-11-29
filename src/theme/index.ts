@@ -135,3 +135,72 @@ export const DarkColors = {
   primary: DarkTheme.primary,
   border: DarkTheme.border,
 } as const;
+
+// Platform Helpers
+export {
+  // Platform detection
+  isIOS,
+  isAndroid,
+  isWeb,
+
+  // Safe areas
+  getDefaultSafeAreaInsets,
+  getSafeAreaHorizontal,
+  getSafeAreaPadding,
+
+  // Typography
+  PlatformFonts,
+  getFontFamily,
+  getScaledFontSize,
+
+  // Shadows/Elevation
+  getIOSShadow,
+  getAndroidElevation,
+  getPlatformShadow,
+
+  // Haptics
+  PlatformHaptics,
+  triggerPlatformHaptic,
+
+  // Touch targets
+  getMinTouchTarget,
+  hasValidTouchTarget,
+
+  // Navigation
+  PlatformNavigation,
+
+  // Responsive
+  PlatformBreakpoints,
+  isSmallDevice as isSmallDevicePlatform,
+  isTabletDevice,
+
+  // Default export
+  default as PlatformHelpers,
+} from './platform';
+
+// Platform Adapters
+export {
+  iOSAdapter,
+  iOSColors,
+  iOSTypography,
+  iOSShadows,
+  iOSSpacing,
+  iOSRadius,
+  iOSTouchTargets,
+  createiOSButtonStyle,
+  createiOSCardStyle,
+  default as iOS,
+} from './adapters/ios';
+
+export {
+  AndroidAdapter,
+  AndroidColors,
+  AndroidTypography,
+  AndroidElevation,
+  AndroidSpacing,
+  AndroidRadius,
+  AndroidTouchTargets,
+  createAndroidButtonStyle,
+  createAndroidCardStyle,
+  default as Android,
+} from './adapters/android';

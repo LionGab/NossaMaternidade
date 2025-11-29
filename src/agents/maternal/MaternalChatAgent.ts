@@ -153,7 +153,7 @@ export class MaternalChatAgent extends BaseAgent {
    */
   async process(
     input: ProcessInput,
-    options?: ProcessOptions
+    _options?: ProcessOptions
   ): Promise<ChatMessage> {
     if (!this.currentSession) {
       throw new Error('No active chat session. Call startSession() first.');
