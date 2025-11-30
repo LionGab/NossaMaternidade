@@ -9,12 +9,11 @@
 
 import React, { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { 
-  Bell, 
-  Heart, 
-  Calendar, 
-  Moon, 
-  Sun,
+import {
+  Bell,
+  Heart,
+  Calendar,
+  Moon,
   Droplet,
   Baby,
   Pill,
@@ -23,7 +22,6 @@ import {
 } from 'lucide-react-native';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
-import { Box } from '@/components/primitives/Box';
 import { Text } from '@/components/primitives/Text';
 import { HapticButton } from '@/components/primitives/HapticButton';
 
@@ -128,14 +126,14 @@ const TYPE_CONFIG: Record<NotificationType, {
 // ======================
 
 export const NotificationItem: React.FC<NotificationItemProps> = ({
-  id,
+  id: _id,
   type,
   title,
   description,
   timestamp,
   isRead = false,
   onPress,
-  onDismiss,
+  onDismiss: _onDismiss,
 }) => {
   const { colors, isDark } = useTheme();
   const config = TYPE_CONFIG[type];

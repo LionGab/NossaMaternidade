@@ -11,7 +11,7 @@
 import React, { useMemo, useCallback } from 'react';
 import { View, StyleSheet, Pressable, ViewStyle, TextStyle } from 'react-native';
 import { useTheme } from '@/theme';
-import { Tokens, ColorTokens } from '@/theme/tokens';
+import { Tokens } from '@/theme/tokens';
 import { Text } from './Text';
 import { triggerPlatformHaptic } from '@/theme/platform';
 
@@ -55,7 +55,7 @@ const SIZE_CONFIG = {
     paddingHorizontal: Tokens.spacing['2'],  // 8
     paddingVertical: Tokens.spacing['1'],    // 4
     minHeight: 28,
-    fontSize: Tokens.typography.fontSize.xs, // 12
+    fontSize: Tokens.typography.sizes.xs, // 12
     iconSize: 12,
     gap: Tokens.spacing['1'],                // 4
   },
@@ -63,7 +63,7 @@ const SIZE_CONFIG = {
     paddingHorizontal: Tokens.spacing['3'],  // 12
     paddingVertical: Tokens.spacing['1.5'],  // 6
     minHeight: 32,
-    fontSize: Tokens.typography.fontSize.sm, // 14
+    fontSize: Tokens.typography.sizes.sm, // 14
     iconSize: 14,
     gap: Tokens.spacing['1.5'],              // 6
   },
@@ -71,7 +71,7 @@ const SIZE_CONFIG = {
     paddingHorizontal: Tokens.spacing['4'],  // 16
     paddingVertical: Tokens.spacing['2'],    // 8
     minHeight: Tokens.touchTargets.small,    // 44 (WCAG AAA)
-    fontSize: Tokens.typography.fontSize.md, // 16
+    fontSize: Tokens.typography.sizes.md, // 16
     iconSize: 16,
     gap: Tokens.spacing['2'],                // 8
   },

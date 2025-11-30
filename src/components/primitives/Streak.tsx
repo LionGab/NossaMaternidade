@@ -47,22 +47,22 @@ export interface StreakProps {
 const SIZE_CONFIG = {
   sm: {
     iconSize: 14,
-    fontSize: Tokens.typography.fontSize.sm, // 14
-    labelSize: Tokens.typography.fontSize.xs, // 12
+    fontSize: Tokens.typography.sizes.sm, // 14
+    labelSize: Tokens.typography.sizes.xs, // 12
     gap: Tokens.spacing['1'], // 4
     padding: Tokens.spacing['2'], // 8
   },
   md: {
     iconSize: 18,
-    fontSize: Tokens.typography.fontSize.lg, // 18
-    labelSize: Tokens.typography.fontSize.sm, // 14
+    fontSize: Tokens.typography.sizes.lg, // 18
+    labelSize: Tokens.typography.sizes.sm, // 14
     gap: Tokens.spacing['1.5'], // 6
     padding: Tokens.spacing['3'], // 12
   },
   lg: {
     iconSize: 24,
-    fontSize: Tokens.typography.fontSize['2xl'], // 24
-    labelSize: Tokens.typography.fontSize.md, // 16
+    fontSize: Tokens.typography.sizes['2xl'], // 24
+    labelSize: Tokens.typography.sizes.md, // 16
     gap: Tokens.spacing['2'], // 8
     padding: Tokens.spacing['4'], // 16
   },
@@ -83,7 +83,7 @@ export const Streak: React.FC<StreakProps> = ({
   layout = 'horizontal',
   isActive = true,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const sizeConfig = SIZE_CONFIG[size];
 
   // Determine streak color

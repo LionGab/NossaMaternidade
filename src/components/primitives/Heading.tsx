@@ -6,7 +6,7 @@
 import React from 'react';
 import { Text as RNText, TextProps as RNTextProps, TextStyle } from 'react-native';
 import { useThemeColors } from '@/theme';
-import { Typography } from '@/theme/tokens';
+import { Typography, Spacing } from '@/theme/tokens';
 
 export type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
@@ -16,6 +16,8 @@ export interface HeadingProps extends Omit<RNTextProps, 'style'> {
   color?: 'primary' | 'secondary' | 'tertiary' | 'inverse';
   align?: 'left' | 'center' | 'right';
   weight?: 'regular' | 'medium' | 'semibold' | 'bold';
+  mb?: keyof typeof Spacing;
+  mt?: keyof typeof Spacing;
   style?: TextStyle;
 }
 
@@ -64,6 +66,8 @@ export function Heading({
   color = 'primary',
   align = 'left',
   weight,
+  mb,
+  mt,
   style,
   ...props
 }: HeadingProps) {
@@ -81,6 +85,8 @@ export function Heading({
     color: colorMap[color],
     textAlign: align,
     ...(weight && { fontWeight: Typography.weights[weight] }),
+    ...(mb !== undefined && { marginBottom: Spacing[mb] }),
+    ...(mt !== undefined && { marginTop: Spacing[mt] }),
     ...style,
   };
 

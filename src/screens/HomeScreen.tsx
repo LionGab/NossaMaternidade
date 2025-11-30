@@ -444,10 +444,10 @@ export default function HomeScreen() {
       {/* Seção 3: Check-in emocional - Espaçamento generoso (inspirado no Web) */}
       <Box px="5" py="3" style={{ marginTop: Spacing['10'] }}>
         <Box style={{ marginBottom: Spacing['6'] }}>
-          <Heading 
+          <Heading
             level="h3"
-            weight="black"
-            style={{ 
+            weight="bold"
+            style={{
               fontSize: 24, // ⭐ Tamanho maior (text-2xl)
               lineHeight: 28,
               color: colors.text.primary,
@@ -539,7 +539,7 @@ export default function HomeScreen() {
                 weight="bold"
                 style={{ 
                   fontSize: 18,
-                  fontWeight: Typography.weights.black,
+                  fontWeight: Typography.weights.extrabold,
                   color: colors.text.inverse,
                   textTransform: 'uppercase',
                   letterSpacing: 0.5,

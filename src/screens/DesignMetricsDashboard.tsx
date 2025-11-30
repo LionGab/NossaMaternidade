@@ -8,12 +8,13 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, ScrollView, RefreshControl, Dimensions } from 'react-native';
+import { View, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme';
-import { Tokens, ColorTokens } from '@/theme/tokens';
+import { Tokens } from '@/theme/tokens';
 import { Box } from '@/components/primitives/Box';
-import { Text, Heading } from '@/components/primitives/Text';
+import { Text } from '@/components/primitives/Text';
+import { Heading } from '@/components/primitives/Heading';
 import { Button } from '@/components/primitives/Button';
 import { 
   Activity, 
@@ -140,7 +141,7 @@ const ValidationCard: React.FC<{
   result: ValidationResult;
   colors: ReturnType<typeof useTheme>['colors'];
 }> = ({ result, colors }) => {
-  const total = result.passed + result.failed + result.warnings;
+  const _total = result.passed + result.failed + result.warnings;
   
   return (
     <Box
@@ -208,7 +209,7 @@ const ValidationCard: React.FC<{
 // ======================
 
 export default function DesignMetricsDashboard() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [metrics, setMetrics] = useState<DesignMetric[]>([]);
   const [validation, setValidation] = useState<ValidationResult | null>(null);

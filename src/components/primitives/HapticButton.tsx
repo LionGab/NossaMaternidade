@@ -19,6 +19,7 @@ import {
   TextStyle,
   View,
   Platform,
+  StyleProp,
 } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { Tokens } from '../../theme';
@@ -50,13 +51,21 @@ export interface HapticButtonProps {
   /** Desabilitar haptic feedback */
   disableHaptic?: boolean;
   /** Estilos customizados do container */
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   /** Estilos customizados do texto */
   textStyle?: TextStyle;
   /** Label de acessibilidade */
   accessibilityLabel?: string;
   /** Hint de acessibilidade */
   accessibilityHint?: string;
+  /** Role de acessibilidade */
+  accessibilityRole?: 'button' | 'link' | 'radio' | 'checkbox' | 'tab' | 'menuitem';
+  /** Estado de acessibilidade */
+  accessibilityState?: {
+    selected?: boolean;
+    disabled?: boolean;
+    checked?: boolean | 'mixed';
+  };
 }
 
 export const HapticButton: React.FC<HapticButtonProps> = ({
@@ -74,6 +83,8 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
   textStyle,
   accessibilityLabel,
   accessibilityHint,
+  accessibilityRole = 'button',
+  accessibilityState: customAccessibilityState,
 }) => {
   const { colors } = useTheme();
 
@@ -218,12 +229,13 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
         pressed && Platform.OS !== 'web' && { opacity: 0.7 },
       ]}
       accessible={true}
-      accessibilityRole="button"
+      accessibilityRole={accessibilityRole}
       accessibilityLabel={accessibilityLabel || (typeof children === 'string' ? children : undefined)}
       accessibilityHint={accessibilityHint}
       accessibilityState={{
         disabled: disabled || loading,
         busy: loading,
+        ...customAccessibilityState,
       }}
     >
       {loading ? (

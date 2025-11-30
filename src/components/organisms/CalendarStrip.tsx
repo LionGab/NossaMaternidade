@@ -8,7 +8,7 @@
  */
 
 import React, { useRef, useCallback, useMemo } from 'react';
-import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import { Calendar } from 'lucide-react-native';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
@@ -69,7 +69,7 @@ export const CalendarStrip: React.FC<CalendarStripProps> = ({
   onOpenCalendar,
   monthYear,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const haptics = useHaptics();
   const scrollRef = useRef<ScrollView>(null);
 
