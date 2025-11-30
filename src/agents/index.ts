@@ -52,3 +52,15 @@ export {
   type SleepPattern,
   type SleepAnalysisResult,
 } from './sleep/SleepAnalysisAgent';
+
+// 🎨 Design Quality Agent
+export {
+  DesignQualityAgent,
+  designQualityAgent,
+  type DesignValidationInput,
+  type DesignValidationOutput,
+  type DesignViolation,
+  type DesignAnalysis,
+  type A11yAuditResult,
+  type RefactorSuggestion,
+} from './design/DesignQualityAgent';

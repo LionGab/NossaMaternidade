@@ -238,9 +238,9 @@ export default function SettingsScreen() {
     >
       <View
         style={{
-          width: 40,
-          height: 40,
-          borderRadius: 20,
+          width: Tokens.touchTargets.min, // 44pt WCAG AAA
+          height: Tokens.touchTargets.min, // 44pt WCAG AAA
+          borderRadius: Tokens.touchTargets.min / 2,
           backgroundColor: destructive
             ? `${colors.text.error}15`
             : `${colors.primary.main}15`,
@@ -302,11 +302,14 @@ export default function SettingsScreen() {
           borderBottomColor: colors.border.light,
         }}
       >
-        <TouchableOpacity accessibilityRole="button"
+        <TouchableOpacity 
+          accessibilityRole="button"
+          accessibilityLabel="Voltar"
+          accessibilityHint="Retorna para a tela anterior"
           onPress={() => navigation.goBack()}
           style={{
-            width: 40,
-            height: 40,
+            width: Tokens.touchTargets.min, // 44pt WCAG AAA
+            height: Tokens.touchTargets.min, // 44pt WCAG AAA
             alignItems: 'center',
             justifyContent: 'center',
             marginRight: 12,

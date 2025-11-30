@@ -124,11 +124,11 @@ export class ToolExecutor {
   /**
    * Executa uma única ferramenta com retry logic
    */
-  async execute<T extends MCPMethod>(
+  async execute<T extends MCPMethod, R = JsonValue>(
     call: ToolCall<T>,
     executor: (request: MCPRequest) => Promise<MCPResponse>,
     options: ExecutionOptions = {}
-  ): Promise<ToolResult> {
+  ): Promise<ToolResult<R>> {
     const opts = { ...DEFAULT_EXECUTION_OPTIONS, ...options };
     const retryConfig = { ...DEFAULT_RETRY_CONFIG, ...opts.retry };
 
@@ -184,7 +184,7 @@ export class ToolExecutor {
 
         return {
           success: true,
-          data: response.data,
+          data: response.data as R,
           server: call.server,
           method: call.method,
           callId,
@@ -258,10 +258,10 @@ export class ToolExecutor {
     });
 
     // Executar todas em paralelo
-    const promises = calls.map(call => this.execute(call, executor, options));
+    const promises = calls.map(call => this.execute<MCPMethod, T>(call, executor, options));
 
     // Aguardar todas (não falha se alguma falhar)
-    const results = await Promise.all(promises);
+    const results: ToolResult<T>[] = await Promise.all(promises);
 
     // Agregar resultados
     const successes = results.filter(r => r.success);

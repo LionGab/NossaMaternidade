@@ -57,6 +57,14 @@ export interface HapticButtonProps {
   accessibilityLabel?: string;
   /** Hint de acessibilidade */
   accessibilityHint?: string;
+  /** Estado de acessibilidade */
+  accessibilityState?: {
+    disabled?: boolean;
+    selected?: boolean;
+    checked?: boolean | 'mixed';
+    busy?: boolean;
+    expanded?: boolean;
+  };
 }
 
 export const HapticButton: React.FC<HapticButtonProps> = ({
@@ -74,6 +82,7 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
   textStyle,
   accessibilityLabel,
   accessibilityHint,
+  accessibilityState,
 }) => {
   const { colors } = useTheme();
 
@@ -221,7 +230,7 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || (typeof children === 'string' ? children : undefined)}
       accessibilityHint={accessibilityHint}
-      accessibilityState={{
+      accessibilityState={accessibilityState || {
         disabled: disabled || loading,
         busy: loading,
       }}

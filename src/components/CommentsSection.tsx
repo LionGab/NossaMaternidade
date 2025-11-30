@@ -71,6 +71,7 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
         <TouchableOpacity
           accessibilityRole="button"
           accessibilityLabel="Fechar comentários"
+          accessibilityHint="Fecha a tela de comentários e retorna à visualização anterior"
           onPress={onClose}
           style={styles.closeButton}
         >
@@ -98,6 +99,7 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
           <TouchableOpacity
             accessibilityRole="button"
             accessibilityLabel="Carregar mais comentários"
+            accessibilityHint={`Carrega mais ${totalComments - comments.length} comentários restantes`}
             style={styles.loadMoreButton}
           >
             <Text style={styles.loadMoreText}>
@@ -115,6 +117,7 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
         <View style={styles.inputWrapper}>
           <TextInput
             accessibilityLabel="Campo de comentário"
+            accessibilityHint="Digite sua mensagem para compartilhar com outras mães. Máximo de 500 caracteres"
             style={styles.input}
             placeholder="Compartilhe seu momento, mãe..."
             placeholderTextColor={colors.text.tertiary}
@@ -126,6 +129,7 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
           <TouchableOpacity
             accessibilityRole="button"
             accessibilityLabel="Enviar comentário"
+            accessibilityHint={newComment.trim() ? 'Envia seu comentário para a comunidade' : 'Botão desabilitado. Digite uma mensagem para habilitar'}
             style={[
               styles.sendButton,
               !newComment.trim() && styles.sendButtonDisabled,

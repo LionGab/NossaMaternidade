@@ -98,7 +98,7 @@ describe('ChatService', () => {
 
       (supabase.from as jest.Mock).mockImplementation(mockFrom);
 
-      const conversations = await chatService.getConversations();
+      await chatService.getConversations();
 
       expect(supabase.auth.getUser).toHaveBeenCalled();
     });
@@ -142,7 +142,7 @@ describe('ChatService', () => {
 
       (supabase.from as jest.Mock).mockImplementation(mockFrom);
 
-      const conversation = await chatService.createConversation();
+      await chatService.createConversation();
 
       // Verifica que a funcao foi chamada
       expect(supabase.auth.getUser).toHaveBeenCalled();

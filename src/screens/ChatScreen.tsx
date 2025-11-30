@@ -17,6 +17,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Image } from 'expo-image';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   ArrowLeft,
   Sparkles,
@@ -30,11 +31,12 @@ import {
   AudioLines,
   MessageCircle,
   ImagePlus,
+  AlertTriangle,
 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../theme/ThemeContext';
-import { Spacing, Radius, Typography } from '../theme/tokens';
+import { Spacing, Radius, Typography, Tokens } from '../theme/tokens';
 import { chatService, ChatMessage } from '../services/chatService';
 import { profileService } from '../services/profileService';
 import { MessageBubble } from '../components/MessageBubble';
@@ -44,6 +46,7 @@ import { Heading } from '@/components/primitives/Heading';
 import { HapticButton } from '@/components/primitives/HapticButton';
 import { IconButton } from '@/components/primitives/IconButton';
 import { ScreenLayout } from '@/components/templates/ScreenLayout';
+import { AIDisclaimerModal } from '@/components/molecules/AIDisclaimerModal';
 import { logger } from '../utils/logger';
 
 const INITIAL_CHAT_GREETING = "Oi, mãe. Tô aqui com você. Como você está se sentindo agora?";
@@ -76,10 +79,41 @@ export default function ChatScreen() {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [_selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
 
   useEffect(() => {
+    checkDisclaimerStatus();
     initializeChat();
   }, []);
+
+  const checkDisclaimerStatus = async () => {
+    try {
+      const accepted = await AsyncStorage.getItem('ai_disclaimer_accepted');
+      if (accepted === 'true') {
+        setDisclaimerAccepted(true);
+        setShowDisclaimer(false);
+      } else {
+        setShowDisclaimer(true);
+      }
+    } catch (error) {
+      logger.error('Erro ao verificar disclaimer', error);
+      // Em caso de erro, mostrar o disclaimer por segurança
+      setShowDisclaimer(true);
+    }
+  };
+
+  const handleAcceptDisclaimer = async () => {
+    try {
+      await AsyncStorage.setItem('ai_disclaimer_accepted', 'true');
+      setDisclaimerAccepted(true);
+      setShowDisclaimer(false);
+      logger.info('[ChatScreen] AI disclaimer accepted by user');
+    } catch (error) {
+      logger.error('Erro ao salvar aceite do disclaimer', error);
+      Alert.alert('Erro', 'Não foi possível salvar sua preferência.');
+    }
+  };
 
   const initializeChat = async () => {
     try {
@@ -251,6 +285,34 @@ export default function ChatScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background.canvas }} edges={['top']}>
       <StatusBar style={isDark ? "light" : "dark"} />
+
+      {/* AI Disclaimer Modal */}
+      <AIDisclaimerModal
+        visible={showDisclaimer}
+        onAccept={handleAcceptDisclaimer}
+        onDismiss={undefined} // Não permitir fechar sem aceitar
+      />
+
+      {/* Banner de Aviso Fixo (sempre visível após aceitar) */}
+      {disclaimerAccepted && (
+        <Box
+          p="2"
+          direction="row"
+          align="center"
+          style={{
+            backgroundColor: isDark ? Tokens.colors.warning[900] : Tokens.colors.warning[50],
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border.light,
+          }}
+          accessibilityRole="alert"
+          accessibilityLabel="Aviso: NathIA é uma IA e não substitui profissionais de saúde"
+        >
+          <AlertTriangle size={16} color={colors.status.warning} style={{ marginRight: Spacing['2'] }} />
+          <Text size="xs" color="warning" weight="medium" style={{ flex: 1 }}>
+            NathIA é uma IA. Não substitui profissionais de saúde.
+          </Text>
+        </Box>
+      )}
 
       {/* Header - Refatorado */}
       <Box
@@ -456,7 +518,15 @@ export default function ChatScreen() {
               showsVerticalScrollIndicator={false}
               ListFooterComponent={
                 loading ? (
-                  <Box direction="row" justify="flex-start" style={{ marginBottom: Spacing['4'] }}>
+                  <Box 
+                    direction="row" 
+                    justify="flex-start" 
+                    style={{ marginBottom: Spacing['4'] }}
+                    accessible={true}
+                    accessibilityRole="progressbar"
+                    accessibilityLabel="NathIA está digitando"
+                    accessibilityLiveRegion="polite"
+                  >
                     <Box
                       bg="card"
                       p="4"
@@ -464,8 +534,12 @@ export default function ChatScreen() {
                       borderWidth={1}
                       borderColor="light"
                       shadow="sm"
+                      style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing['2'] }}
                     >
-                      <ActivityIndicator size="small" color={colors.text.tertiary} />
+                      <ActivityIndicator size="small" color={colors.primary.main} />
+                      <Text size="sm" color="secondary">
+                        NathIA está digitando...
+                      </Text>
                     </Box>
                   </Box>
                 ) : null

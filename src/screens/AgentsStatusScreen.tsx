@@ -26,6 +26,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../theme/ThemeContext';
 import { useAgents } from '../contexts/AgentsContext';
+import { Tokens } from '@/theme/tokens';
 
 export default function AgentsStatusScreen() {
   const { colors } = useTheme();
@@ -38,6 +39,7 @@ export default function AgentsStatusScreen() {
     emotionAgent,
     nathiaAgent,
     sleepAgent,
+    designAgent,
     error,
   } = useAgents();
 
@@ -61,7 +63,7 @@ export default function AgentsStatusScreen() {
       description: 'Chat empático com IA Gemini 2.0',
       agent: chatAgent,
       icon: Sparkles,
-      color: colors.raw.primary[500],
+      color: colors.primary.main,
       capabilities: ['chat', 'emotion-analysis', 'session-management'],
     },
     {
@@ -69,7 +71,7 @@ export default function AgentsStatusScreen() {
       description: 'Recomendações personalizadas',
       agent: contentAgent,
       icon: Brain,
-      color: colors.raw.info[500],
+      color: colors.status.info,
       capabilities: ['recommendation', 'filtering', 'scoring'],
     },
     {
@@ -77,7 +79,7 @@ export default function AgentsStatusScreen() {
       description: 'Análise de bem-estar e hábitos',
       agent: habitsAgent,
       icon: Heart,
-      color: colors.raw.success[500],
+      color: colors.status.success,
       capabilities: ['habit-tracking', 'pattern-detection', 'insights'],
     },
     {
@@ -85,7 +87,7 @@ export default function AgentsStatusScreen() {
       description: 'Análise emocional profunda',
       agent: emotionAgent,
       icon: Heart,
-      color: colors.raw.warning[500],
+      color: colors.status.warning,
       capabilities: ['emotion-detection', 'risk-assessment', 'support'],
       badge: 'NEW',
     },
@@ -94,7 +96,7 @@ export default function AgentsStatusScreen() {
       description: 'Voz autêntica da Nathália',
       agent: nathiaAgent,
       icon: Sparkles,
-      color: colors.raw.primary[600],
+      color: colors.primary.dark,
       capabilities: ['personality-validation', 'medical-prevention', 'tone-correction'],
       badge: 'NEW',
       special: true,
@@ -104,8 +106,17 @@ export default function AgentsStatusScreen() {
       description: 'Análise inteligente de sono',
       agent: sleepAgent,
       icon: Moon,
-      color: colors.raw.info[500],
+      color: colors.status.info,
       capabilities: ['sleep-tracking', 'deprivation-assessment', 'recommendations'],
+      badge: 'NEW',
+    },
+    {
+      name: 'Design Quality Agent',
+      description: 'Validação de design tokens e acessibilidade',
+      agent: designAgent,
+      icon: Sparkles,
+      color: colors.secondary.main,
+      capabilities: ['validate-design-tokens', 'audit-accessibility', 'suggest-fixes'],
       badge: 'NEW',
     },
   ];
@@ -113,9 +124,27 @@ export default function AgentsStatusScreen() {
   const activeCount = agents.filter(a => a.agent !== null).length;
   const progress = (activeCount / agents.length) * 100;
 
-  const successColor = colors.raw.success[500];
-  const errorColor = colors.raw.error[500];
-  const warningColor = colors.raw.warning[500];
+  const successColor = colors.status.success;
+  const errorColor = colors.status.error;
+  const warningColor = colors.status.warning;
+
+  // Helper para converter hex para rgba com opacidade
+  const hexToRgba = (hex: string, opacity: number): string => {
+    // Remove # se presente
+    const cleanHex = hex.replace('#', '');
+    // Converte para RGB
+    const r = parseInt(cleanHex.substring(0, 2), 16);
+    const g = parseInt(cleanHex.substring(2, 4), 16);
+    const b = parseInt(cleanHex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  };
+
+  // Overlays para cores de status - usa hexToRgba para cores específicas
+  // ColorTokens.overlay.* é usado apenas para overlays genéricos (preto/branco)
+  const getStatusOverlay = (color: string, opacity: number): string => {
+    // Para cores específicas (success, error, warning, etc), sempre usar hexToRgba
+    return hexToRgba(color, opacity);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background.canvas }}>
@@ -130,12 +159,15 @@ export default function AgentsStatusScreen() {
           borderBottomColor: colors.border.light,
         }}
       >
-        <TouchableOpacity accessibilityRole="button"
+        <TouchableOpacity 
+          accessibilityRole="button"
+          accessibilityLabel="Voltar"
+          accessibilityHint="Retorna para a tela anterior"
           onPress={handleBack}
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 20,
+            width: Tokens.touchTargets.min, // 44pt WCAG AAA
+            height: Tokens.touchTargets.min, // 44pt WCAG AAA
+            borderRadius: Tokens.touchTargets.min / 2,
             backgroundColor: colors.background.elevated,
             alignItems: 'center',
             justifyContent: 'center',
@@ -160,7 +192,7 @@ export default function AgentsStatusScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor={colors.raw.primary[500]}
+            tintColor={colors.primary.main}
           />
         }
       >
@@ -168,19 +200,19 @@ export default function AgentsStatusScreen() {
         <View
           style={{
             backgroundColor: initialized
-              ? successColor + '15'
+              ? getStatusOverlay(successColor, 0.15)
               : error
-              ? errorColor + '15'
-              : warningColor + '15',
+              ? getStatusOverlay(errorColor, 0.15)
+              : getStatusOverlay(warningColor, 0.15),
             borderRadius: 16,
             padding: 20,
             marginBottom: 24,
             borderWidth: 1,
             borderColor: initialized
-              ? successColor + '40'
+              ? getStatusOverlay(successColor, 0.40)
               : error
-              ? errorColor + '40'
-              : warningColor + '40',
+              ? getStatusOverlay(errorColor, 0.40)
+              : getStatusOverlay(warningColor, 0.40),
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
@@ -228,7 +260,7 @@ export default function AgentsStatusScreen() {
               style={{
                 marginTop: 12,
                 padding: 12,
-                backgroundColor: errorColor + '20',
+                backgroundColor: getStatusOverlay(errorColor, 0.20),
                 borderRadius: 8,
               }}
             >
@@ -267,7 +299,7 @@ export default function AgentsStatusScreen() {
                 marginBottom: 12,
                 borderWidth: item.special ? 2 : 1,
                 borderColor: item.special
-                  ? item.color + '80'
+                  ? getStatusOverlay(item.color, 0.80)
                   : colors.border.light,
               }}
             >
@@ -277,7 +309,7 @@ export default function AgentsStatusScreen() {
                     width: 48,
                     height: 48,
                     borderRadius: 12,
-                    backgroundColor: item.color + '20',
+                    backgroundColor: getStatusOverlay(item.color, 0.20),
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
@@ -370,7 +402,7 @@ export default function AgentsStatusScreen() {
                   style={{
                     marginTop: 12,
                     padding: 8,
-                    backgroundColor: item.color + '15',
+                    backgroundColor: getStatusOverlay(item.color, 0.15),
                     borderRadius: 8,
                     borderLeftWidth: 3,
                     borderLeftColor: item.color,

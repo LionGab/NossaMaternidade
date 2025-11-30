@@ -14,7 +14,6 @@ import {
   Heart, 
   Calendar, 
   Moon, 
-  Sun,
   Droplet,
   Baby,
   Pill,
@@ -23,7 +22,6 @@ import {
 } from 'lucide-react-native';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
-import { Box } from '@/components/primitives/Box';
 import { Text } from '@/components/primitives/Text';
 import { HapticButton } from '@/components/primitives/HapticButton';
 
@@ -128,15 +126,16 @@ const TYPE_CONFIG: Record<NotificationType, {
 // ======================
 
 export const NotificationItem: React.FC<NotificationItemProps> = ({
-  id,
+  id: _id,
   type,
   title,
   description,
   timestamp,
   isRead = false,
   onPress,
-  onDismiss,
+  onDismiss: _onDismiss,
 }) => {
+  // Variáveis prefixadas com _ são intencionalmente não utilizadas (props obrigatórias da interface)
   const { colors, isDark } = useTheme();
   const config = TYPE_CONFIG[type];
   const Icon = config.icon;
@@ -160,19 +159,16 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     <HapticButton
       variant="ghost"
       onPress={onPress}
-      style={[
-        styles.container,
-        {
-          backgroundColor: isDark 
-            ? isRead ? colors.background.card : colors.background.elevated
-            : isRead ? colors.background.canvas : colors.background.card,
-          borderColor: colors.border.light,
-          opacity: isRead ? 0.7 : 1,
-        },
-      ]}
+      style={{
+        ...styles.container,
+        backgroundColor: isDark 
+          ? isRead ? colors.background.card : colors.background.elevated
+          : isRead ? colors.background.canvas : colors.background.card,
+        borderColor: colors.border.light,
+        opacity: isRead ? 0.7 : 1,
+      }}
       accessibilityLabel={`${title}. ${description}`}
       accessibilityHint="Toque para ver detalhes"
-      accessibilityRole="button"
     >
       {/* Icon */}
       <View style={[styles.iconContainer, { backgroundColor: config.bgColor }]}>

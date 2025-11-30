@@ -1,9 +1,18 @@
 # Script PowerShell para atualizar .env com valores reais
 # Execute: .\update-env-values.ps1
+# Uso: pwsh -ExecutionPolicy Bypass -File update-env-values.ps1
+#
+# ⚠️  ATENÇÃO: Este script contém valores REAIS de API keys
+# NUNCA commite o arquivo .env após executar este script
+
+$ErrorActionPreference = "Stop"
 
 Write-Host "============================================" -ForegroundColor Cyan
 Write-Host "Atualizando arquivo .env com valores reais..." -ForegroundColor Cyan
 Write-Host "============================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "⚠️  ATENÇÃO: Este script contém valores REAIS de API keys" -ForegroundColor Red
+Write-Host "   Certifique-se de que o .env está no .gitignore" -ForegroundColor Yellow
 Write-Host ""
 
 $envContent = @"
@@ -90,14 +99,21 @@ if (Test-Path .env) {
     }
 }
 
-$envContent | Out-File -FilePath .env -Encoding utf8 -NoNewline
-
-Write-Host ""
-Write-Host "✅ Arquivo .env atualizado com sucesso!" -ForegroundColor Green
-Write-Host ""
-Write-Host "⚠️  IMPORTANTE:" -ForegroundColor Yellow
-Write-Host "   - O arquivo .env está no .gitignore (não será commitado)" -ForegroundColor Yellow
-Write-Host "   - NUNCA commite este arquivo com valores reais" -ForegroundColor Red
-Write-Host ""
-Write-Host "Próximo passo: Execute 'npm start -- --clear' para reiniciar o servidor Expo" -ForegroundColor Cyan
+try {
+    $envContent | Out-File -FilePath ".env" -Encoding utf8 -NoNewline
+    
+    Write-Host ""
+    Write-Host "✅ Arquivo .env atualizado com sucesso!" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "⚠️  IMPORTANTE:" -ForegroundColor Yellow
+    Write-Host "   - O arquivo .env está no .gitignore (não será commitado)" -ForegroundColor Yellow
+    Write-Host "   - NUNCA commite este arquivo com valores reais" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Próximo passo: Execute 'npm start -- --clear' para reiniciar o servidor Expo" -ForegroundColor Cyan
+    exit 0
+} catch {
+    Write-Host ""
+    Write-Host "❌ Erro ao atualizar .env: $_" -ForegroundColor Red
+    exit 1
+}
 

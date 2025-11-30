@@ -1,23 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { TabNavigator } from './TabNavigator';
 import { useAuth } from '../contexts/AuthContext';
-import SplashScreenComponent from '../screens/SplashScreen';
-import LoginScreenNew from '../screens/LoginScreenNew';
-import OnboardingScreen from '../screens/Onboarding/OnboardingScreen';
-import RitualScreen from '../screens/RitualScreen';
-import DiaryScreen from '../screens/DiaryScreen';
-import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
-import TermsOfServiceScreen from '../screens/TermsOfServiceScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-import AgentsStatusScreen from '../screens/AgentsStatusScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import ContentDetailScreen from '../screens/ContentDetailScreen';
-import DesignSystemScreen from '../screens/DesignSystemScreen';
-import DesignMetricsDashboard from '../screens/DesignMetricsDashboard';
 import { onboardingService } from '../services/onboardingService';
 import { logger } from '../utils/logger';
+import { View, ActivityIndicator } from 'react-native';
+import { useTheme } from '../theme/ThemeContext';
+
+// 🚀 LAZY LOADING: Screens carregadas sob demanda para reduzir bundle inicial
+const SplashScreenComponent = React.lazy(() => import('../screens/SplashScreen').then(m => ({ default: m.default })));
+const LoginScreenNew = React.lazy(() => import('../screens/LoginScreenNew'));
+const AuthCallbackScreen = React.lazy(() => import('../screens/AuthCallbackScreen'));
+const ResetPasswordScreen = React.lazy(() => import('../screens/ResetPasswordScreen'));
+const OnboardingScreen = React.lazy(() => import('../screens/Onboarding/OnboardingScreen'));
+const RitualScreen = React.lazy(() => import('../screens/RitualScreen'));
+const DiaryScreen = React.lazy(() => import('../screens/DiaryScreen'));
+const PrivacyPolicyScreen = React.lazy(() => import('../screens/PrivacyPolicyScreen'));
+const TermsOfServiceScreen = React.lazy(() => import('../screens/TermsOfServiceScreen'));
+const SettingsScreen = React.lazy(() => import('../screens/SettingsScreen'));
+const AgentsStatusScreen = React.lazy(() => import('../screens/AgentsStatusScreen'));
+const ProfileScreen = React.lazy(() => import('../screens/ProfileScreen'));
+const ContentDetailScreen = React.lazy(() => import('../screens/ContentDetailScreen'));
+const DesignSystemScreen = React.lazy(() => import('../screens/DesignSystemScreen'));
+const DesignMetricsDashboard = React.lazy(() => import('../screens/DesignMetricsDashboard'));
+
+// Loading fallback component
+const ScreenLoadingFallback = () => {
+  const { colors } = useTheme();
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background.canvas }}>
+      <ActivityIndicator size="large" color={colors.primary.main} />
+    </View>
+  );
+};
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -51,7 +67,7 @@ export const StackNavigator = () => {
           }
         }
       } catch (error) {
-        logger.warn('[StackNavigator] Erro ao verificar onboarding', error);
+        logger.warn('[StackNavigator] Error ao verificar onboarding', error);
         if (isMounted.current) {
           setHasCompletedOnboarding(false);
         }
@@ -106,6 +122,18 @@ export const StackNavigator = () => {
     return 'Splash';
   };
 
+  // Wrapper para lazy-loaded screens com Suspense
+  const LazyScreen = <P extends Record<string, unknown> = Record<string, unknown>>({ 
+    component: Component, 
+    ...props 
+  }: { 
+    component: React.LazyExoticComponent<React.ComponentType<P>>; 
+  } & P) => (
+    <Suspense fallback={<ScreenLoadingFallback />}>
+      <Component {...(props as unknown as P)} />
+    </Suspense>
+  );
+
   return (
     <Stack.Navigator
       initialRouteName={getInitialRouteName()}
@@ -115,91 +143,113 @@ export const StackNavigator = () => {
         presentation: 'card',
       }}
     >
-      <Stack.Screen name="Splash" component={SplashScreenComponent} />
-      <Stack.Screen name="Auth" component={LoginScreenNew} />
-      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+      <Stack.Screen name="Splash">
+        {(props) => <LazyScreen component={SplashScreenComponent} {...props} />}
+      </Stack.Screen>
+      <Stack.Screen name="Auth">
+        {(props) => <LazyScreen component={LoginScreenNew} {...props} />}
+      </Stack.Screen>
+      <Stack.Screen name="AuthCallback">
+        {(props) => <LazyScreen component={AuthCallbackScreen} {...props} />}
+      </Stack.Screen>
+      <Stack.Screen name="ResetPassword">
+        {(props) => <LazyScreen component={ResetPasswordScreen} {...props} />}
+      </Stack.Screen>
+      <Stack.Screen name="Onboarding">
+        {(props) => <LazyScreen component={OnboardingScreen} {...props} />}
+      </Stack.Screen>
       <Stack.Screen name="Main" component={TabNavigator} />
       {/* Modais */}
       <Stack.Screen 
-        name="Ritual" 
-        component={RitualScreen}
+        name="Ritual"
         options={{
           presentation: 'modal',
           animation: 'slide_from_bottom',
         }}
-      />
+      >
+        {(props) => <LazyScreen component={RitualScreen} {...props} />}
+      </Stack.Screen>
       <Stack.Screen
         name="Diary"
-        component={DiaryScreen}
         options={{
           presentation: 'modal',
           animation: 'slide_from_bottom',
         }}
-      />
+      >
+        {(props) => <LazyScreen component={DiaryScreen} {...props} />}
+      </Stack.Screen>
       <Stack.Screen
         name="ContentDetail"
-        component={ContentDetailScreen}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',
         }}
-      />
+      >
+        {(props) => <LazyScreen component={ContentDetailScreen} {...props} />}
+      </Stack.Screen>
       <Stack.Screen
         name="PrivacyPolicy"
-        component={PrivacyPolicyScreen}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',
         }}
-      />
+      >
+        {(props) => <LazyScreen component={PrivacyPolicyScreen} {...props} />}
+      </Stack.Screen>
       <Stack.Screen
         name="TermsOfService"
-        component={TermsOfServiceScreen}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',
         }}
-      />
+      >
+        {(props) => <LazyScreen component={TermsOfServiceScreen} {...props} />}
+      </Stack.Screen>
       <Stack.Screen
         name="Settings"
-        component={SettingsScreen}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',
         }}
-      />
+      >
+        {(props) => <LazyScreen component={SettingsScreen} {...props} />}
+      </Stack.Screen>
       <Stack.Screen
         name="AgentsStatus"
-        component={AgentsStatusScreen}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',
         }}
-      />
+      >
+        {(props) => <LazyScreen component={AgentsStatusScreen} {...props} />}
+      </Stack.Screen>
       <Stack.Screen
         name="Profile"
-        component={ProfileScreen}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',
         }}
-      />
+      >
+        {(props) => <LazyScreen component={ProfileScreen} {...props} />}
+      </Stack.Screen>
       <Stack.Screen
         name="DesignSystem"
-        component={DesignSystemScreen}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',
         }}
-      />
+      >
+        {(props) => <LazyScreen component={DesignSystemScreen} {...props} />}
+      </Stack.Screen>
       <Stack.Screen
         name="DesignMetrics"
-        component={DesignMetricsDashboard}
         options={{
           presentation: 'card',
           animation: 'slide_from_right',
         }}
-      />
+      >
+        {(props) => <LazyScreen component={DesignMetricsDashboard} {...props} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 };

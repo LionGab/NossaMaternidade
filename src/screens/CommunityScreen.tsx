@@ -1,45 +1,101 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, FlatList } from 'react-native';
+/**
+ * CommunityScreen - Tela de Comunidade MãesValentes
+ * Design inspirado nas imagens fornecidas: header com avatar, botões de ação, filtros e posts
+ */
+
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
-import { FlashList } from '@shopify/flash-list';
-import { useTheme } from '../theme/ThemeContext';
-import { ColorTokens } from '../theme/tokens';
-import { Heart, MessageSquare, TrendingUp, Sparkles, MessagesSquare } from 'lucide-react-native';
-import { HeroBanner } from '@/components/molecules/HeroBanner';
+import { useTheme } from '@/theme';
+import { Tokens, Shadows, Spacing, Typography } from '@/theme/tokens';
+import { Plus, Grid3x3, Users, MoreVertical, Heart, MessageCircle } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
+
+type FilterType = 'Todos' | 'Dicas' | 'Desabafos' | 'Dúvidas' | 'Humor';
+
+interface Post {
+  id: string;
+  author: string;
+  authorInitials: string;
+  timeAgo: string;
+  title: string;
+  content: string;
+  likes: number;
+  replies: number;
+}
 
 export default function CommunityScreen() {
   const { colors, isDark } = useTheme();
+  const [selectedFilter, setSelectedFilter] = useState<FilterType>('Todos');
 
-  const mockDiscussions = [
+  const filters: FilterType[] = ['Todos', 'Dicas', 'Desabafos', 'Dúvidas', 'Humor'];
+
+  const mockPosts: Post[] = [
     {
       id: '1',
-      author: 'Ana Silva',
-      authorAvatar: 'https://i.pravatar.cc/150?img=1',
-      timeAgo: 'há 2h',
-      text: 'Como vocês lidam com a culpa materna? Me sinto péssima toda vez que preciso deixar meu filho na creche...',
-      likes: 24,
-      replies: 12,
+      author: 'Sofia L.',
+      authorInitials: 'SL',
+      timeAgo: '45min atrás',
+      title: 'EU QUASE DESISTI. MAS AÍ, UMA NOTIFICAÇÃO MUDOU O DIA.',
+      content: `A madrugada foi um inferno.
+Meu bebê chorando, meu marido dormindo, meu peito cheio, minha cabeça girando.
+Eu quis sumir.
+Quis sair pela porta e não voltar por algumas horas.
+Quando o sol começou a nascer, eu já estava vazia.
+Sem energia, sem paciência, sem esperança.
+Peguei o celular pra desligar todas as notificações do mundo.
+E aí...
+veio uma notificação do NossaMaternidade:
+"Respira. Hoje você não precisa ser forte o tempo inteiro."
+A frase parecia boba.
+Mas naquele estado...
+foi um abraço.
+Eu abri o app, entrei na comunidade, li três relatos parecidos com o meu e senti um alívio...`,
+      likes: 127,
+      replies: 23,
     },
     {
       id: '2',
-      author: 'Juliana Costa',
-      authorAvatar: 'https://i.pravatar.cc/150?img=2',
-      timeAgo: 'há 5h',
-      text: 'Alguém mais aqui amamentando e trabalhando? Preciso de dicas de como organizar as bombadas!',
-      likes: 18,
+      author: 'Ana Silva',
+      authorInitials: 'AS',
+      timeAgo: '2h atrás',
+      title: 'DICA: Como organizar a rotina de amamentação',
+      content: 'Compartilhando o que funcionou pra mim: criar um app de lembretes e sempre ter uma garrafa d\'água por perto!',
+      likes: 45,
       replies: 8,
     },
     {
       id: '3',
-      author: 'Mariana Oliveira',
-      authorAvatar: 'https://i.pravatar.cc/150?img=3',
-      timeAgo: 'há 1d',
-      text: 'Tive meu segundo filho e estou completamente exausta. Como vocês fazem para equilibrar a atenção entre os filhos?',
-      likes: 31,
+      author: 'Juliana Costa',
+      authorInitials: 'JC',
+      timeAgo: '5h atrás',
+      title: 'Alguém mais aqui amamentando e trabalhando?',
+      content: 'Preciso de dicas de como organizar as bombadas durante o expediente. Como vocês fazem?',
+      likes: 32,
       replies: 15,
     },
   ];
+
+  const handleFilterPress = (filter: FilterType) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedFilter(filter);
+  };
+
+  const handleCreatePost = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    // navigation.navigate('CreatePost');
+  };
+
+  const handleViewFeed = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // navigation.navigate('Feed');
+  };
+
+  const handleGroups = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // navigation.navigate('Groups');
+  };
 
   return (
     <SafeAreaView
@@ -48,293 +104,390 @@ export default function CommunityScreen() {
       accessible={true}
       accessibilityLabel="Tela da Comunidade MãesValentes"
     >
-      <FlatList
-        data={mockDiscussions}
-        keyExtractor={(item) => item.id}
-        accessible={false}
-        ListHeaderComponent={() => (
-          <>
-            {/* Hero Banner Header - MãesValentes - Estilo Premium */}
-            <HeroBanner
-              imageUrl="https://i.imgur.com/U5ttbqK.png"
-              height={340}
-              overlay={{ type: 'gradient', direction: 'bottom', opacity: 0.75 }}
-              accessibilityLabel="Banner da comunidade MãesValentes - Mãe ajuda mãe. Você não está sozinha"
-            >
-              <View style={{ alignItems: 'flex-start', justifyContent: 'flex-end', flex: 1 }}>
-                {/* Badge Comunidade Oficial */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    backgroundColor: ColorTokens.overlay.light,
-                    paddingHorizontal: 12,
-                    paddingVertical: 6,
-                    borderRadius: 20,
-                    marginBottom: 16,
-                    borderWidth: 1,
-                    borderColor: ColorTokens.overlay.light,
-                  }}
-                >
-                  <Text style={{ fontSize: 12, color: colors.text.inverse, fontWeight: '700', marginRight: 4 }}>
-                    ✨
-                  </Text>
-                  <Text style={{ fontSize: 11, color: colors.text.inverse, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                    COMUNIDADE OFICIAL
-                  </Text>
-                </View>
-
-                {/* Título */}
-                <Text
-                  style={{ fontSize: 36, fontWeight: 'bold', color: colors.text.inverse, marginBottom: 8, letterSpacing: -0.5 }}
-                  accessibilityRole="header"
-                  accessibilityLabel="Mães Valentes"
-                >
-                  Mães Valentes
-                </Text>
-
-                {/* Subtítulo */}
-                <Text
-                  style={{ fontSize: 16, color: colors.text.inverse, opacity: 0.95, lineHeight: 22 }}
-                  accessibilityLabel="Mãe ajuda mãe. Você não está sozinha"
-                >
-                  Mãe ajuda mãe. Você não está sozinha. 💛
-                </Text>
-              </View>
-            </HeroBanner>
-
-            {/* Stats Cards - Estatísticas da Comunidade */}
-            <View style={{ flexDirection: 'row', padding: 16, gap: 12 }}>
-              <View
-                style={{ flex: 1, backgroundColor: colors.background.card, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border.light }}
-                accessible={true}
-                accessibilityLabel="Estatística: 1.200 mães conectadas na comunidade"
-                accessibilityRole="text"
-              >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <Heart size={20} color={colors.raw.accent.coral} fill={colors.raw.accent.coral} />
-                  <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}>1.2k</Text>
-                </View>
-                <Text style={{ fontSize: 12, color: colors.text.secondary }}>Mães conectadas</Text>
-              </View>
-
-              <View
-                style={{ flex: 1, backgroundColor: colors.background.card, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border.light }}
-                accessible={true}
-                accessibilityLabel="Estatística: 3.500 trocas de apoio na comunidade"
-                accessibilityRole="text"
-              >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <MessagesSquare size={20} color={colors.primary.main} />
-                  <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text.primary }}>3.5k</Text>
-                </View>
-                <Text style={{ fontSize: 12, color: colors.text.secondary }}>Trocas de apoio</Text>
-              </View>
-            </View>
-
-            {/* Mãe Inspiração do Dia */}
-            <View
-              style={{
-                margin: 16,
-                marginTop: 0,
-                padding: 16,
-                backgroundColor: colors.background.card,
-                borderRadius: 16,
-                borderWidth: 1,
-                borderColor: colors.border.light,
-              }}
-              accessible={true}
-              accessibilityLabel="Mãe Inspiração: Paula Santos, mãe de 2, São Paulo. Ajudou 12 mães esta semana com apoio emocional e dicas práticas"
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <Sparkles size={20} color={colors.raw.accent.gold} fill={colors.raw.accent.gold} />
-                <Text
-                  style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
-                  accessibilityRole="header"
-                >
-                  Mãe Inspiração do Dia
-                </Text>
-              </View>
-
-              <View style={{ flexDirection: 'row', gap: 12 }}>
-                <Image
-                  source={{ uri: 'https://i.pravatar.cc/150?img=5' }}
-                  style={{ width: 60, height: 60, borderRadius: 30 }}
-                  contentFit="cover"
-                  transition={200}
-                  accessible={true}
-                  accessibilityLabel="Foto de Paula Santos"
-                />
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.primary }}>
-                    Paula Santos
-                  </Text>
-                  <Text style={{ fontSize: 12, color: colors.text.secondary, marginTop: 2 }}>
-                    Mãe de 2 • São Paulo
-                  </Text>
-                  <Text style={{ fontSize: 12, color: colors.text.tertiary, marginTop: 4, lineHeight: 16 }}>
-                    "Ajudou 12 mães esta semana com apoio emocional e dicas práticas"
-                  </Text>
-                  <TouchableOpacity
-                    style={{
-                      marginTop: 8,
-                      paddingVertical: 6,
-                      paddingHorizontal: 12,
-                      backgroundColor: colors.primary.main,
-                      borderRadius: 8,
-                      alignSelf: 'flex-start',
-                    }}
-                    accessibilityRole="button"
-                    accessibilityLabel="Conectar com Paula Santos"
-                    accessibilityHint="Envia solicitação de conexão para Paula Santos"
-                  >
-                    <Text style={{ color: colors.text.inverse, fontSize: 12, fontWeight: '600' }}>
-                      Conectar
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-
-            {/* Assuntos do Momento */}
-            <View style={{ paddingHorizontal: 16, marginBottom: 12 }}>
-              <View
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}
-                accessible={true}
-                accessibilityRole="header"
-              >
-                <TrendingUp size={18} color={colors.raw.accent.coral} />
-                <Text
-                  style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
-                  accessibilityLabel="Assuntos do Momento"
-                >
-                  Assuntos do Momento
-                </Text>
-              </View>
-              <View style={{ height: 40, marginLeft: -16 }}>
-                <FlashList
-                  data={['Amamentação', 'Volta ao trabalho', 'Sono do bebê', 'Autocuidado', 'Alimentação']}
-                  renderItem={({ item: topic }) => (
-                    <TouchableOpacity
-                      style={{
-                        paddingHorizontal: 16,
-                        paddingVertical: 8,
-                        borderRadius: 20,
-                        backgroundColor: isDark ? colors.background.elevated : colors.raw.primary[50],
-                        borderWidth: 1,
-                        borderColor: colors.border.light,
-                        marginRight: 8,
-                        alignSelf: 'flex-start',
-                      }}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Tópico: ${topic}`}
-                      accessibilityHint={`Toque para ver discussões sobre ${topic}`}
-                    >
-                      <Text style={{ color: colors.primary.main, fontSize: 13, fontWeight: '500' }}>
-                        #{topic}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ paddingLeft: 16 }}
-                  keyExtractor={(item, index) => `${item}-${index}`}
-                />
-              </View>
-            </View>
-
-            {/* Últimas Conversas Header */}
-            <View
-              style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 }}
-              accessible={true}
-              accessibilityRole="header"
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <MessagesSquare size={18} color={colors.primary.main} />
-                <Text
-                  style={{ fontSize: 16, fontWeight: 'bold', color: colors.text.primary }}
-                  accessibilityLabel="Últimas Conversas"
-                >
-                  Últimas Conversas
-                </Text>
-              </View>
-            </View>
-          </>
-        )}
-        renderItem={({ item: discussion }) => (
-          <TouchableOpacity
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: Spacing['20'] }}
+      >
+        {/* Header Section - Avatar Grande + Título */}
+        <View
+          style={{
+            backgroundColor: isDark ? colors.raw.neutral[800] : colors.raw.neutral[100],
+            paddingTop: Spacing['6'],
+            paddingBottom: Spacing['8'],
+            alignItems: 'center',
+          }}
+        >
+          {/* Avatar Circular Grande */}
+          <View
             style={{
-              marginHorizontal: 16,
-              padding: 12,
-              backgroundColor: colors.background.card,
-              borderRadius: 12,
-              marginBottom: 12,
-              borderWidth: 1,
-              borderColor: colors.border.light,
+              width: 120,
+              height: 120,
+              borderRadius: 60,
+              backgroundColor: isDark ? colors.raw.neutral[700] : colors.raw.neutral[200],
+              marginBottom: Spacing['4'],
+              overflow: 'hidden',
+              ...Shadows.md,
             }}
-            accessibilityRole="button"
-            accessibilityLabel={`Discussão de ${discussion.author}, ${discussion.timeAgo}. ${discussion.text}. ${discussion.likes} curtidas, ${discussion.replies} respostas`}
-            accessibilityHint="Toque para ver a discussão completa e participar"
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <Image
-                source={{ uri: discussion.authorAvatar }}
-                style={{ width: 32, height: 32, borderRadius: 16 }}
-                contentFit="cover"
-                transition={200}
-                accessible={true}
-                accessibilityLabel={`Foto de ${discussion.author}`}
-              />
-              <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text.primary }}>
-                {discussion.author}
-              </Text>
-              <Text style={{ fontSize: 12, color: colors.text.tertiary }}>
-                {discussion.timeAgo}
-              </Text>
-            </View>
-            <Text style={{ fontSize: 14, color: colors.text.primary, lineHeight: 20, marginBottom: 12 }}>
-              {discussion.text}
-            </Text>
-            <View style={{ flexDirection: 'row', gap: 16 }}>
-              <View
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
-                accessible={true}
-                accessibilityLabel={`${discussion.likes} curtidas`}
-              >
-                <Heart size={16} color={colors.text.tertiary} />
-                <Text style={{ fontSize: 12, color: colors.text.tertiary }}>{discussion.likes}</Text>
-              </View>
-              <View
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
-                accessible={true}
-                accessibilityLabel={`${discussion.replies} respostas`}
-              >
-                <MessageSquare size={16} color={colors.text.tertiary} />
-                <Text style={{ fontSize: 12, color: colors.text.tertiary }}>{discussion.replies} respostas</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        )}
-        ListFooterComponent={() => (
-          <View style={{ padding: 16, paddingTop: 0, paddingBottom: 120 }}>
+            <Image
+              source={{ uri: 'https://i.imgur.com/U5ttbqK.png' }}
+              style={{ width: '100%', height: '100%' }}
+              contentFit="cover"
+              transition={200}
+              accessible={true}
+              accessibilityLabel="Avatar da comunidade MãesValentes"
+            />
+          </View>
+
+          {/* Título */}
+          <Text
+            style={{
+              fontSize: Typography.sizes['3xl'],
+              fontWeight: Typography.weights.bold,
+              color: colors.text.primary,
+              marginBottom: Spacing['1'],
+              textAlign: 'center',
+            }}
+            accessibilityRole="header"
+            accessibilityLabel="Comunidade"
+          >
+            Comunidade
+          </Text>
+
+          {/* Subtítulo */}
+          <Text
+            style={{
+              fontSize: Typography.sizes.base,
+              color: colors.text.secondary,
+              marginBottom: Spacing['6'],
+              textAlign: 'center',
+            }}
+          >
+            Mãe ajuda mãe ❤️
+          </Text>
+
+          {/* Botões de Ação */}
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: Spacing['3'],
+              paddingHorizontal: Spacing['5'],
+              width: '100%',
+            }}
+          >
+            {/* Botão Criar Post */}
             <TouchableOpacity
+              onPress={handleCreatePost}
+              activeOpacity={0.7}
               style={{
+                flex: 1,
                 backgroundColor: colors.primary.main,
-                paddingVertical: 16,
-                borderRadius: 12,
+                paddingVertical: Spacing['3'],
+                paddingHorizontal: Spacing['4'],
+                borderRadius: Tokens.radius.lg,
+                flexDirection: 'row',
                 alignItems: 'center',
+                justifyContent: 'center',
+                gap: Spacing['2'],
+                ...Shadows.sm,
               }}
               accessibilityRole="button"
-              accessibilityLabel="Iniciar Nova Conversa"
-              accessibilityHint="Toque para criar uma nova discussão na comunidade"
+              accessibilityLabel="Criar Post"
+              accessibilityHint="Toque para criar um novo post na comunidade"
             >
-              <Text style={{ color: colors.text.inverse, fontSize: 16, fontWeight: 'bold' }}>
-                + Iniciar Nova Conversa
+              <Plus size={18} color={colors.text.inverse} />
+              <Text
+                style={{
+                  fontSize: Typography.sizes.sm,
+                  fontWeight: Typography.weights.semibold,
+                  color: colors.text.inverse,
+                }}
+              >
+                Criar Post
+              </Text>
+            </TouchableOpacity>
+
+            {/* Botão Ver Feed */}
+            <TouchableOpacity
+              onPress={handleViewFeed}
+              activeOpacity={0.7}
+              style={{
+                flex: 1,
+                backgroundColor: colors.raw.secondary[500],
+                paddingVertical: Spacing['3'],
+                paddingHorizontal: Spacing['4'],
+                borderRadius: Tokens.radius.lg,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: Spacing['2'],
+                ...Shadows.sm,
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Ver Feed"
+              accessibilityHint="Toque para ver o feed completo da comunidade"
+            >
+              <Grid3x3 size={18} color={colors.text.inverse} />
+              <Text
+                style={{
+                  fontSize: Typography.sizes.sm,
+                  fontWeight: Typography.weights.semibold,
+                  color: colors.text.inverse,
+                }}
+              >
+                Ver Feed
+              </Text>
+            </TouchableOpacity>
+
+            {/* Botão Grupos */}
+            <TouchableOpacity
+              onPress={handleGroups}
+              activeOpacity={0.7}
+              style={{
+                flex: 1,
+                backgroundColor: colors.raw.accent.orange,
+                paddingVertical: Spacing['3'],
+                paddingHorizontal: Spacing['4'],
+                borderRadius: Tokens.radius.lg,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: Spacing['2'],
+                ...Shadows.sm,
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Grupos"
+              accessibilityHint="Toque para ver os grupos da comunidade"
+            >
+              <Users size={18} color={colors.text.inverse} />
+              <Text
+                style={{
+                  fontSize: Typography.sizes.sm,
+                  fontWeight: Typography.weights.semibold,
+                  color: colors.text.inverse,
+                }}
+              >
+                Grupos
               </Text>
             </TouchableOpacity>
           </View>
-        )}
-      />
+        </View>
+
+        {/* Barra de Filtros */}
+        <View
+          style={{
+            flexDirection: 'row',
+            paddingHorizontal: Spacing['4'],
+            paddingVertical: Spacing['3'],
+            gap: Spacing['2'],
+            backgroundColor: colors.background.canvas,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border.light,
+          }}
+        >
+          {filters.map((filter) => {
+            const isSelected = selectedFilter === filter;
+            return (
+              <TouchableOpacity
+                key={filter}
+                onPress={() => handleFilterPress(filter)}
+                activeOpacity={0.7}
+                style={{
+                  paddingHorizontal: Spacing['4'],
+                  paddingVertical: Spacing['2'],
+                  borderRadius: Tokens.radius.full,
+                  backgroundColor: isSelected
+                    ? (isDark ? colors.raw.neutral[700] : colors.raw.neutral[200])
+                    : 'transparent',
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={`Filtro: ${filter}`}
+                accessibilityState={{ selected: isSelected }}
+                accessibilityHint={`Toque para filtrar posts por ${filter.toLowerCase()}`}
+              >
+                <Text
+                  style={{
+                    fontSize: Typography.sizes.sm,
+                    fontWeight: isSelected ? Typography.weights.semibold : Typography.weights.medium,
+                    color: isSelected ? colors.text.primary : colors.text.secondary,
+                  }}
+                >
+                  {filter}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* Lista de Posts */}
+        <View style={{ paddingTop: Spacing['4'] }}>
+          {mockPosts.map((post) => (
+            <View
+              key={post.id}
+              style={{
+                marginHorizontal: Spacing['4'],
+                marginBottom: Spacing['4'],
+                backgroundColor: colors.background.card,
+                borderRadius: Tokens.radius.xl,
+                padding: Spacing['5'],
+                borderWidth: 1,
+                borderColor: colors.border.light,
+                ...Shadows.sm,
+              }}
+              accessible={true}
+              accessibilityLabel={`Post de ${post.author}, ${post.timeAgo}. ${post.title}`}
+            >
+              {/* Header do Post */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginBottom: Spacing['4'],
+                }}
+              >
+                {/* Avatar do Autor */}
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: colors.primary.light,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: Spacing['3'],
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: Typography.sizes.sm,
+                      fontWeight: Typography.weights.bold,
+                      color: colors.primary.main,
+                    }}
+                  >
+                    {post.authorInitials}
+                  </Text>
+                </View>
+
+                {/* Nome e Tempo */}
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      fontSize: Typography.sizes.base,
+                      fontWeight: Typography.weights.semibold,
+                      color: colors.text.primary,
+                    }}
+                  >
+                    {post.author}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: Typography.sizes.xs,
+                      color: colors.text.tertiary,
+                      marginTop: 2,
+                    }}
+                  >
+                    {post.timeAgo}
+                  </Text>
+                </View>
+
+                {/* Menu */}
+                <TouchableOpacity
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Opções do post"
+                >
+                  <MoreVertical size={20} color={colors.text.tertiary} />
+                </TouchableOpacity>
+              </View>
+
+              {/* Título do Post */}
+              <Text
+                style={{
+                  fontSize: Typography.sizes.lg,
+                  fontWeight: Typography.weights.bold,
+                  color: colors.text.primary,
+                  marginBottom: Spacing['3'],
+                  textTransform: 'uppercase',
+                  lineHeight: Typography.lineHeights.lg * Typography.sizes.lg,
+                }}
+              >
+                {post.title}
+              </Text>
+
+              {/* Conteúdo do Post */}
+              <Text
+                style={{
+                  fontSize: Typography.sizes.base,
+                  color: colors.text.primary,
+                  lineHeight: Typography.lineHeights.base * Typography.sizes.base,
+                  marginBottom: Spacing['4'],
+                }}
+              >
+                {post.content}
+              </Text>
+
+              {/* Ações do Post */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: Spacing['6'],
+                  paddingTop: Spacing['3'],
+                  borderTopWidth: 1,
+                  borderTopColor: colors.border.light,
+                }}
+              >
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: Spacing['2'],
+                  }}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${post.likes} curtidas`}
+                >
+                  <Heart size={18} color={colors.text.tertiary} />
+                  <Text
+                    style={{
+                      fontSize: Typography.sizes.sm,
+                      color: colors.text.tertiary,
+                    }}
+                  >
+                    {post.likes}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: Spacing['2'],
+                  }}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${post.replies} respostas`}
+                >
+                  <MessageCircle size={18} color={colors.text.tertiary} />
+                  <Text
+                    style={{
+                      fontSize: Typography.sizes.sm,
+                      color: colors.text.tertiary,
+                    }}
+                  >
+                    {post.replies}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

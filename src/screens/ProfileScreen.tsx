@@ -206,6 +206,7 @@ export default function ProfileScreen() {
           style={styles.backButton}
           accessibilityRole="button"
           accessibilityLabel="Voltar"
+          accessibilityHint="Retorna para a tela anterior"
         >
           <ArrowLeft size={24} color={colors.text.primary} />
         </TouchableOpacity>
@@ -217,6 +218,7 @@ export default function ProfileScreen() {
           style={styles.backButton}
           accessibilityRole="button"
           accessibilityLabel="Configurações"
+          accessibilityHint="Abre as configurações do aplicativo"
         >
           <Settings size={20} color={colors.text.secondary} />
         </TouchableOpacity>
@@ -501,7 +503,7 @@ const InputField: React.FC<InputFieldProps> = ({
     <Text style={[styles.inputLabel, { color: colors.text.secondary }]}>
       {label}
     </Text>
-    <TextInput
+    <TextInput accessibilityLabel="Text input field"
       value={value}
       onChangeText={onChangeText}
       placeholder={placeholder}
@@ -548,8 +550,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   backButton: {
-    width: 40,
-    height: 40,
+    width: Tokens.touchTargets.min, // 44pt WCAG AAA
+    height: Tokens.touchTargets.min, // 44pt WCAG AAA
     alignItems: 'center',
     justifyContent: 'center',
   },

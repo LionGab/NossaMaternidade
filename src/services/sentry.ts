@@ -4,11 +4,10 @@
  * DSN configurado via variáveis de ambiente (app.json extra.sentryDsn)
  */
 
-/* eslint-disable no-console */
-
 import * as Sentry from '@sentry/react-native';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import { logger } from '../utils/logger';
 
 // Configuração do Sentry
 const SENTRY_DSN = Constants.expoConfig?.extra?.sentryDsn || '';
@@ -22,7 +21,7 @@ export function initSentry(): void {
   // Não inicializar em desenvolvimento sem DSN
   if (!SENTRY_DSN) {
     if (isDevelopment) {
-      console.log('[Sentry] DSN não configurado - crash reporting desabilitado');
+      logger.debug('[Sentry] DSN não configurado - crash reporting desabilitado');
     }
     return;
   }
@@ -70,10 +69,10 @@ export function initSentry(): void {
     });
 
     if (!isDevelopment) {
-      console.log('[Sentry] Inicializado com sucesso');
+      logger.info('[Sentry] Inicializado com sucesso');
     }
   } catch (error) {
-    console.error('[Sentry] Erro ao inicializar:', error);
+    logger.error('[Sentry] Erro ao inicializar', error);
   }
 }
 
@@ -92,7 +91,7 @@ export function captureException(
 ): string | undefined {
   if (!SENTRY_DSN) {
     if (isDevelopment) {
-      console.error('[Sentry] Erro capturado (DSN não configurado):', error);
+      logger.warn('[Sentry] Erro capturado (DSN não configurado)', error);
     }
     return undefined;
   }
@@ -106,7 +105,7 @@ export function captureException(
 
     return eventId;
   } catch (e) {
-    console.error('[Sentry] Falha ao capturar exceção:', e);
+    logger.error('[Sentry] Falha ao capturar exceção', e instanceof Error ? e : new Error(String(e)));
     return undefined;
   }
 }
@@ -127,7 +126,7 @@ export function captureMessage(
   try {
     return Sentry.captureMessage(message, level);
   } catch (e) {
-    console.error('[Sentry] Falha ao capturar mensagem:', e);
+    logger.error('[Sentry] Falha ao capturar mensagem', e instanceof Error ? e : new Error(String(e)));
     return undefined;
   }
 }
@@ -146,7 +145,7 @@ export function setUser(userId: string | null): void {
       Sentry.setUser(null);
     }
   } catch (e) {
-    console.error('[Sentry] Falha ao definir usuário:', e);
+    logger.error('[Sentry] Falha ao definir usuário', e instanceof Error ? e : new Error(String(e)));
   }
 }
 
@@ -170,7 +169,7 @@ export function addBreadcrumb(breadcrumb: {
       data: breadcrumb.data,
     });
   } catch (e) {
-    console.error('[Sentry] Falha ao adicionar breadcrumb:', e);
+    logger.error('[Sentry] Falha ao adicionar breadcrumb', e instanceof Error ? e : new Error(String(e)));
   }
 }
 

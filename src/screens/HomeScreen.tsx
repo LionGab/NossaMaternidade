@@ -12,13 +12,16 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { FlatList, RefreshControl, View, ImageBackground, TouchableOpacity } from 'react-native';
+import { FlatList, RefreshControl, View, ImageBackground, TouchableOpacity, Platform } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import type { CompositeNavigationProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { Moon, Star, Sparkles, Search, ArrowRight, Zap } from 'lucide-react-native';
+import { Moon, Star, Sparkles, Search, ArrowRight, Zap, MessageCircleHeart, Wind } from 'lucide-react-native';
 import { useTheme } from '@/theme';
+import { ColorTokens } from '@/theme/tokens';
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Box } from '@/components/primitives/Box';
 import { Text } from '@/components/primitives/Text';
@@ -45,6 +48,49 @@ type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'Home'>,
   NativeStackNavigationProp<RootStackParamList>
 >;
+
+// ======================
+// 🎨 ANIMATED WRAPPER (Web-safe)
+// ======================
+
+// Wrapper que desabilita animações no web para evitar erros
+const AnimatedSection = ({ 
+  children, 
+  delay = 0, 
+  duration = 400 
+}: { 
+  children: React.ReactNode; 
+  delay?: number; 
+  duration?: number;
+}) => {
+  if (Platform.OS === 'web') {
+    return <View>{children}</View>;
+  }
+  return (
+    <Animated.View entering={FadeInDown.delay(delay).duration(duration)}>
+      {children}
+    </Animated.View>
+  );
+};
+
+const AnimatedCard = ({ 
+  children, 
+  delay = 0, 
+  duration = 400 
+}: { 
+  children: React.ReactNode; 
+  delay?: number; 
+  duration?: number;
+}) => {
+  if (Platform.OS === 'web') {
+    return <View>{children}</View>;
+  }
+  return (
+    <Animated.View entering={FadeInDown.delay(delay).duration(duration)}>
+      {children}
+    </Animated.View>
+  );
+};
 
 // ======================
 // 🏠 HOME SCREEN
@@ -207,7 +253,13 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.background.canvas, padding: Spacing['4'] }}>
+      <View 
+        style={{ flex: 1, backgroundColor: colors.background.canvas, padding: Spacing['4'] }}
+        accessible={true}
+        accessibilityRole="progressbar"
+        accessibilityLabel="Carregando conteúdo"
+        accessibilityLiveRegion="polite"
+      >
         {/* Skeleton Hero Banner */}
         <SkeletonCard height={200} animated showImage />
         
@@ -255,7 +307,7 @@ export default function HomeScreen() {
             borderRadius: 40, // ⭐ Bordas mais arredondadas (40px ao invés de 24px)
             overflow: 'hidden',
             backgroundColor: isDark 
-              ? colors.raw?.accent?.orange + '30' || '#FFE5D9' // Warm background com opacity
+              ? `${ColorTokens.accent.orange}30` // Warm background com opacity
               : colors.background.card, // Light mode usa card
             position: 'relative',
             ...Shadows.lg, // Shadow premium
@@ -299,14 +351,159 @@ export default function HomeScreen() {
         </Box>
       </Box>
 
-      {/* Seção 2: Card NathIA Expandido - Múltiplas camadas, input simulado (inspirado no projeto Web) */}
-      <Box px="5" pt="3" style={{ marginTop: Spacing['9'] }}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Chat')}
-          activeOpacity={0.95}
-          accessibilityRole="button"
-          accessibilityLabel="Abrir conversa com NathIA - assistente de apoio emocional"
-        >
+      {/* Seção 2: Hoje eu tô com você - Cards de ação rápida */}
+      <AnimatedSection delay={100} duration={400}>
+        <Box px="5" pt="3" style={{ marginTop: Spacing['9'] }}>
+          <SectionLayout
+            title="Hoje eu tô com você"
+            actionLabel="Ver tudo"
+            onActionPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              navigation.navigate('Chat');
+            }}
+            containerStyle={{ paddingTop: Spacing['1'], paddingBottom: Spacing['2'] }}
+          >
+            <FlatList
+              horizontal
+              data={[
+                {
+                  id: 'chat',
+                  title: 'Como você tá se sentindo?',
+                  description: 'Desabafa comigo. Eu tô aqui pra te ouvir sem julgamentos.',
+                  action: 'Conversar agora →',
+                  icon: MessageCircleHeart,
+                  iconColor: colors.primary.main,
+                  bgColor: isDark ? colors.background.canvas : colors.primary.light,
+                  badge: { text: 'ONLINE AGORA', bg: colors.primary.light, textColor: colors.status.success },
+                  actionColor: colors.primary.main,
+                  onPress: () => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    navigation.navigate('Chat');
+                  },
+                },
+                {
+                  id: 'ritual',
+                  title: 'Crise de ansiedade?',
+                  description: 'Vamos respirar juntas. Um ritual rápido pra acalmar o coração.',
+                  action: 'Começar ritual',
+                  icon: Wind,
+                  iconColor: ColorTokens.accent.purple,
+                  bgColor: isDark ? colors.background.canvas : colors.primary.light,
+                  badge: { text: '3 min', bg: colors.primary.light, textColor: ColorTokens.accent.purple },
+                  actionColor: ColorTokens.accent.purple,
+                  onPress: () => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    navigation.navigate('Ritual');
+                  },
+                },
+              ]}
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+              removeClippedSubviews={true}
+              initialNumToRender={2}
+              maxToRenderPerBatch={2}
+              windowSize={5}
+              contentContainerStyle={{ paddingHorizontal: Spacing['4'], gap: Spacing['3'] }}
+              renderItem={({ item, index }) => (
+                <AnimatedCard delay={150 + index * 100} duration={400}>
+                  <TouchableOpacity
+                    onPress={item.onPress}
+                    activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${item.title}. ${item.description}`}
+                    accessibilityHint={`Toque para ${item.action.toLowerCase()}`}
+                    style={{
+                      width: 288,
+                      backgroundColor: colors.background.card,
+                      borderRadius: Tokens.radius['3xl'],
+                      padding: Spacing['5'],
+                      borderWidth: 1,
+                      borderColor: isDark ? colors.border.light : 'transparent',
+                      ...Shadows.sm,
+                    }}
+                  >
+                <Box direction="row" justify="space-between" align="flex-start" mb="4">
+                  <Box
+                    style={{
+                      padding: Spacing['3'],
+                      borderRadius: Tokens.radius.xl,
+                      backgroundColor: item.bgColor,
+                    }}
+                  >
+                    <item.icon size={24} color={item.iconColor} />
+                  </Box>
+                  {item.badge && (
+                    <Box
+                      style={{
+                        paddingHorizontal: Spacing['2'],
+                        paddingVertical: Spacing['1'],
+                        borderRadius: Tokens.radius.xl,
+                        backgroundColor: item.badge.bg,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: Typography.sizes['2xs'],
+                          fontWeight: Typography.weights.bold,
+                          textTransform: 'uppercase',
+                          color: item.badge.textColor,
+                        }}
+                      >
+                        {item.badge.text}
+                      </Text>
+                    </Box>
+                  )}
+                </Box>
+                <Heading
+                  level="h4"
+                  weight="bold"
+                  style={{
+                    fontSize: Typography.sizes.lg,
+                    color: colors.text.primary,
+                    marginBottom: Spacing['1'],
+                  }}
+                >
+                  {item.title}
+                </Heading>
+                <Text
+                  size="sm"
+                  color="secondary"
+                  style={{ marginBottom: Spacing['4'] }}
+                >
+                  {item.description}
+                </Text>
+                <Box direction="row" align="center" style={{ gap: Spacing['2'] }}>
+                  <Text
+                    style={{
+                      fontWeight: Typography.weights.bold,
+                      fontSize: Typography.sizes.sm,
+                      color: item.actionColor,
+                    }}
+                  >
+                    {item.action}
+                  </Text>
+                  <ArrowRight size={16} color={item.actionColor} />
+                </Box>
+              </TouchableOpacity>
+                </AnimatedCard>
+              )}
+            />
+          </SectionLayout>
+        </Box>
+      </AnimatedSection>
+
+      {/* Seção 3: Card NathIA Expandido - Múltiplas camadas, input simulado (inspirado no projeto Web) */}
+      <AnimatedSection delay={300} duration={400}>
+        <Box px="5" pt="3" style={{ marginTop: Spacing['6'] }}>
+          <TouchableOpacity
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              navigation.navigate('Chat');
+            }}
+            activeOpacity={0.95}
+            accessibilityRole="button"
+            accessibilityLabel="Abrir conversa com NathIA - assistente de apoio emocional"
+          >
           <Box
             rounded="3xl"
             style={{
@@ -385,9 +582,9 @@ export default function HomeScreen() {
                 {/* Arrow icon */}
                 <Box
                   style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
+                    width: Tokens.touchTargets.min, // 44pt WCAG AAA
+                    height: Tokens.touchTargets.min, // 44pt WCAG AAA
+                    borderRadius: Tokens.touchTargets.min / 2,
                     backgroundColor: colors.background.elevated,
                     borderWidth: 1,
                     borderColor: colors.border.light,
@@ -440,13 +637,15 @@ export default function HomeScreen() {
           </Box>
         </TouchableOpacity>
       </Box>
+      </AnimatedSection>
 
-      {/* Seção 3: Check-in emocional - Espaçamento generoso (inspirado no Web) */}
-      <Box px="5" py="3" style={{ marginTop: Spacing['10'] }}>
+      {/* Seção 4: Check-in emocional - Espaçamento generoso (inspirado no Web) */}
+      <AnimatedSection delay={400} duration={400}>
+        <Box px="5" py="3" style={{ marginTop: Spacing['10'] }}>
         <Box style={{ marginBottom: Spacing['6'] }}>
           <Heading 
             level="h3"
-            weight="black"
+            weight="bold"
             style={{ 
               fontSize: 24, // ⭐ Tamanho maior (text-2xl)
               lineHeight: 28,
@@ -469,8 +668,9 @@ export default function HomeScreen() {
           onSelect={handleEmotionSelect}
         />
       </Box>
+      </AnimatedSection>
 
-      {/* Seção 4: Destaques - Carousel de conteúdo exclusivo */}
+      {/* Seção 5: Destaques - Carousel de conteúdo exclusivo */}
       {highlights.length > 0 && (
         <SectionLayout
           title={
@@ -491,26 +691,32 @@ export default function HomeScreen() {
             maxToRenderPerBatch={2}
             windowSize={5}
             contentContainerStyle={{ paddingHorizontal: Spacing['4'], gap: Spacing['3'] }}
-            renderItem={({ item }) => (
-              <MaternalCard
-                variant="content"
-                size="lg"
-                title={item.title}
-                image={item.thumbnail_url}
-                badge="EXCLUSIVO"
-                badgeType="exclusive"
-                warmBackground={true}
-                onPress={() => handleContentOpen(item.id)}
-                accessibilityLabel={`Conteúdo em destaque: ${item.title}`}
-                style={{ width: 280, borderRadius: Tokens.radius['2xl'] }}
-              />
+            renderItem={({ item, index }) => (
+              <AnimatedCard delay={500 + index * 100} duration={400}>
+                <MaternalCard
+                  variant="content"
+                  size="lg"
+                  title={item.title}
+                  image={item.thumbnail_url}
+                  badge="EXCLUSIVO"
+                  badgeType="exclusive"
+                  warmBackground={true}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    handleContentOpen(item.id);
+                  }}
+                  accessibilityLabel={`Conteúdo em destaque: ${item.title}`}
+                  style={{ width: 280, borderRadius: Tokens.radius['2xl'] }}
+                />
+              </AnimatedCard>
             )}
           />
         </SectionLayout>
       )}
 
-      {/* Seção 5: Dica do Dia - Card azul sólido, estrela top-left (inspirado no projeto Web) */}
-      <Box px="5" py="3">
+      {/* Seção 6: Dica do Dia - Card azul sólido, estrela top-left (inspirado no projeto Web) */}
+      <AnimatedSection delay={600} duration={400}>
+        <Box px="5" py="3">
         <Box
           style={{ 
             borderRadius: 32, // ⭐ Bordas mais arredondadas (32px)
@@ -522,7 +728,7 @@ export default function HomeScreen() {
           {/* ⭐ Azul sólido vibrante (não gradiente forte) */}
           <Box
             style={{
-              backgroundColor: colors.raw?.info?.[500] || colors.status.info, // Azul do design system
+              backgroundColor: colors.status.info, // Azul do design system
               padding: Spacing['6'], // ⭐ Padding generoso
             }}
           >
@@ -539,7 +745,7 @@ export default function HomeScreen() {
                 weight="bold"
                 style={{ 
                   fontSize: 18,
-                  fontWeight: Typography.weights.black,
+                  fontWeight: Typography.weights.extrabold,
                   color: colors.text.inverse,
                   textTransform: 'uppercase',
                   letterSpacing: 0.5,
@@ -563,9 +769,11 @@ export default function HomeScreen() {
           </Box>
         </Box>
       </Box>
+      </AnimatedSection>
 
-      {/* Seção 6: Registro de Hoje - Card suave */}
-      <Box px="4" py="2">
+      {/* Seção 7: Registro de Hoje - Card suave */}
+      <AnimatedSection delay={700} duration={400}>
+        <Box px="4" py="2">
         <MaternalCard
           variant="insight"
           size="sm"
@@ -574,14 +782,16 @@ export default function HomeScreen() {
           subtitle="Registrar agora"
           icon={<Moon size={24} color={colors.text.secondary} />}
           onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             navigation.navigate('Diary');
             logger.info('Navigating to sleep diary', { screen: 'HomeScreen' });
           }}
           accessibilityLabel="Registrar qualidade do sono de hoje"
         />
       </Box>
+      </AnimatedSection>
 
-      {/* Seção 7: Hábitos de hoje - Layout compacto */}
+      {/* Seção 8: Hábitos de hoje - Layout compacto */}
       {userHabits.length > 0 && (
         <SectionLayout 
           title="Hábitos de hoje" 
@@ -597,31 +807,39 @@ export default function HomeScreen() {
             maxToRenderPerBatch={2}
             windowSize={5}
             contentContainerStyle={{ paddingHorizontal: Spacing['4'], gap: Spacing['3'] }}
-            renderItem={({ item }) => (
-              <MaternalCard
-                variant="progress"
-                size="sm"
-                title={item.custom_name || item.habit?.name || 'Hábito'}
-                progress={item.today_completed ? 100 : 0}
-                streak={item.current_streak || 0}
-                isCompleted={item.today_completed}
-                onPress={() => handleHabitToggle(item.id)}
-                accessibilityLabel={`Hábito ${item.custom_name || item.habit?.name}, ${
-                  item.current_streak || 0
-                } dias consecutivos`}
-                style={{ width: 180 }}
-              />
+            renderItem={({ item, index }) => (
+              <AnimatedCard delay={800 + index * 100} duration={400}>
+                <MaternalCard
+                  variant="progress"
+                  size="sm"
+                  title={item.custom_name || item.habit?.name || 'Hábito'}
+                  progress={item.today_completed ? 100 : 0}
+                  streak={item.current_streak || 0}
+                  isCompleted={item.today_completed}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    handleHabitToggle(item.id);
+                  }}
+                  accessibilityLabel={`Hábito ${item.custom_name || item.habit?.name}, ${
+                    item.current_streak || 0
+                  } dias consecutivos`}
+                  style={{ width: 180 }}
+                />
+              </AnimatedCard>
             )}
           />
         </SectionLayout>
       )}
 
-      {/* Seção 8: Mundo Nath pra você - Feed personalizado */}
+      {/* Seção 9: Mundo Nath pra você - Feed personalizado */}
       {recommendedContent.length > 0 && (
         <SectionLayout
           title="Mundo Nath pra você"
           actionLabel="Ver tudo"
-          onActionPress={() => navigation.navigate('MundoNath')}
+          onActionPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            navigation.navigate('MundoNath');
+          }}
           containerStyle={{ paddingTop: Spacing['3'], paddingBottom: Spacing['2'] }}
         >
           <FlatList
@@ -634,17 +852,22 @@ export default function HomeScreen() {
             maxToRenderPerBatch={2}
             windowSize={5}
             contentContainerStyle={{ paddingHorizontal: Spacing['4'], gap: Spacing['3'] }}
-            renderItem={({ item }) => (
-              <MaternalCard
-                variant="content"
-                size="md"
-                title={item.title}
-                image={item.thumbnail_url}
-                badge={item.type === 'video' ? 'Novo' : undefined}
-                onPress={() => handleContentOpen(item.id)}
-                accessibilityLabel={`Conteúdo: ${item.title}, tipo ${item.type}`}
-                style={{ width: 240 }}
-              />
+            renderItem={({ item, index }) => (
+              <AnimatedCard delay={900 + index * 100} duration={400}>
+                <MaternalCard
+                  variant="content"
+                  size="md"
+                  title={item.title}
+                  image={item.thumbnail_url}
+                  badge={item.type === 'video' ? 'Novo' : undefined}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    handleContentOpen(item.id);
+                  }}
+                  accessibilityLabel={`Conteúdo: ${item.title}, tipo ${item.type}`}
+                  style={{ width: 240 }}
+                />
+              </AnimatedCard>
             )}
           />
         </SectionLayout>

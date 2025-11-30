@@ -9,7 +9,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated, ViewStyle, Easing } from 'react-native';
+import { View, StyleSheet, Animated, ViewStyle, Easing, DimensionValue } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/theme';
 import { Tokens } from '@/theme/tokens';
@@ -117,8 +117,8 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   });
 
   const containerStyle: ViewStyle = {
-    width: typeof width === 'number' ? width : width,
-    height: variant === 'circular' ? (typeof width === 'number' ? width : height) : height,
+    width: width as DimensionValue,
+    height: (variant === 'circular' ? (typeof width === 'number' ? width : height) : height) as DimensionValue,
     backgroundColor: baseColor,
     overflow: 'hidden',
     ...variantStyle,

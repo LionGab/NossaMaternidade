@@ -185,9 +185,9 @@ export class PlaywrightMCPServer {
    * Compara duas imagens visualmente
    */
   async compareScreenshots(
-    baselinePath: string,
-    currentPath: string,
-    threshold: number = 0.1
+    _baselinePath: string,
+    _currentPath: string,
+    _threshold: number = 0.1
   ): Promise<VisualComparisonResult> {
     logger.info(`[PlaywrightMCP] Comparando screenshots`);
     

@@ -34,8 +34,7 @@ jest.mock('../../src/utils/logger', () => ({
   },
 }));
 
-import { supabase, isSupabaseReady, initSecureStorageMigration } from '../../src/services/supabase';
-import { ensureValidSession, getValidSession } from '../../src/middleware/sessionValidator';
+import { supabase } from '../../src/services/supabase';
 
 // Importamos um novo SessionManager para cada teste
 // porque é uma instância singleton

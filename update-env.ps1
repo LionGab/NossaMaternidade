@@ -1,5 +1,25 @@
 # Script para atualizar .env com as variáveis fornecidas
 # Execute: .\update-env.ps1
+# Uso: pwsh -ExecutionPolicy Bypass -File update-env.ps1
+#
+# ⚠️  ATENÇÃO: Este script sobrescreve o .env com valores de exemplo
+# Use apenas para desenvolvimento/teste
+
+$ErrorActionPreference = "Stop"
+
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host "Atualizando arquivo .env..." -ForegroundColor Cyan
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "⚠️  ATENÇÃO: Este script usa valores de EXEMPLO" -ForegroundColor Yellow
+Write-Host "   Para valores reais, use update-env-values.ps1 ou edite manualmente" -ForegroundColor Yellow
+Write-Host ""
+
+$response = Read-Host "Deseja continuar? (s/N)"
+if ($response -ne "s" -and $response -ne "S") {
+    Write-Host "Operação cancelada." -ForegroundColor Yellow
+    exit 0
+}
 
 $envContent = @"
 # ============================================
@@ -42,7 +62,13 @@ EXPO_PUBLIC_SENTRY_DSN=
 EXPO_PUBLIC_ONESIGNAL_APP_ID=
 "@
 
-$envContent | Out-File -FilePath .env -Encoding utf8 -NoNewline
-Write-Host "✅ Arquivo .env atualizado com sucesso!" -ForegroundColor Green
-Write-Host "🔄 Reinicie o servidor Expo (Ctrl+C e depois npm start)" -ForegroundColor Yellow
+try {
+    $envContent | Out-File -FilePath ".env" -Encoding utf8 -NoNewline
+    Write-Host "✅ Arquivo .env atualizado com sucesso!" -ForegroundColor Green
+    Write-Host "🔄 Reinicie o servidor Expo (Ctrl+C e depois npm start)" -ForegroundColor Yellow
+    exit 0
+} catch {
+    Write-Host "❌ Erro ao atualizar .env: $_" -ForegroundColor Red
+    exit 1
+}
 

@@ -128,7 +128,7 @@ export default function OnboardingStep2({ onNext }: OnboardingStep2Props) {
               },
             ]}
           >
-            <TextInput
+            <TextInput accessibilityLabel="Text input field"
               value={name}
               onChangeText={setName}
               placeholder="Seu nome ou apelido"

@@ -4,7 +4,7 @@
  * Theme-aware with Design System tokens
  */
 
-import React, { useRef } from 'react';
+import React, { useRef, memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Animated, GestureResponderEvent } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ContentItem, ContentType } from '../types/content';
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ContentCard: React.FC<ContentCardProps> = ({
+const ContentCardComponent: React.FC<ContentCardProps> = ({
   item,
   onPress,
   onLike,
@@ -376,5 +376,8 @@ export const ContentCard: React.FC<ContentCardProps> = ({
     </Animated.View>
   );
 };
+
+// 🚀 MEMOIZATION: Evita re-renders desnecessários quando props não mudam
+export const ContentCard = memo(ContentCardComponent);
 
 export default ContentCard;

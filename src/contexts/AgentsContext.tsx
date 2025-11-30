@@ -4,7 +4,7 @@
  * Mobile-First para iOS/Android
  */
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useMemo } from 'react';
 import { orchestrator } from '../agents';
 import {
   MaternalChatAgent,
@@ -13,8 +13,19 @@ import {
   EmotionAnalysisAgent,
   NathiaPersonalityAgent,
   SleepAnalysisAgent,
+  DesignQualityAgent,
 } from '../agents';
 import { logger } from '../utils/logger';
+
+// Tipo union para todos os agentes suportados
+type SupportedAgent =
+  | MaternalChatAgent
+  | ContentRecommendationAgent
+  | HabitsAnalysisAgent
+  | EmotionAnalysisAgent
+  | NathiaPersonalityAgent
+  | SleepAnalysisAgent
+  | DesignQualityAgent;
 
 interface AgentsContextValue {
   initialized: boolean;
@@ -27,7 +38,11 @@ interface AgentsContextValue {
   emotionAgent: EmotionAnalysisAgent | null;
   nathiaAgent: NathiaPersonalityAgent | null;
   sleepAgent: SleepAnalysisAgent | null;
+  designAgent: DesignQualityAgent | null;
   error: string | null;
+  // 🚀 Lazy loading helpers
+  initializeAgent: (agentName: string) => Promise<void>;
+  isAgentReady: (agentName: string) => boolean;
 }
 
 const AgentsContext = createContext<AgentsContextValue | undefined>(undefined);
@@ -35,6 +50,11 @@ const AgentsContext = createContext<AgentsContextValue | undefined>(undefined);
 interface AgentsProviderProps {
   children: ReactNode;
 }
+
+// 🚀 CONFIGURAÇÃO: Timeout e graceful degradation
+const AGENT_INIT_TIMEOUT = 10000; // 10 segundos
+// Agentes críticos inicializados primeiro (removido pois não usado ainda)
+// const CRITICAL_AGENTS = ['chat', 'content', 'habits'];
 
 export function AgentsProvider({ children }: AgentsProviderProps) {
   const [initialized, setInitialized] = useState(false);
@@ -46,68 +66,115 @@ export function AgentsProvider({ children }: AgentsProviderProps) {
   const [emotionAgent, setEmotionAgent] = useState<EmotionAnalysisAgent | null>(null);
   const [nathiaAgent, setNathiaAgent] = useState<NathiaPersonalityAgent | null>(null);
   const [sleepAgent, setSleepAgent] = useState<SleepAnalysisAgent | null>(null);
+  const [designAgent, setDesignAgent] = useState<DesignQualityAgent | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [agentStatus, setAgentStatus] = useState<Record<string, boolean>>({});
+
+  // 🚀 Helper: Inicializar agente com timeout
+  const initializeAgentWithTimeout = async <T extends SupportedAgent>(
+    agentName: string,
+    agentInstance: T,
+    setter: (agent: T) => void
+  ): Promise<void> => {
+    try {
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error(`Timeout: ${agentName} took too long to initialize`)), AGENT_INIT_TIMEOUT);
+      });
+
+      await Promise.race([agentInstance.initialize(), timeoutPromise]);
+
+      orchestrator.registerAgent(agentInstance);
+      setter(agentInstance);
+      setAgentStatus(prev => ({ ...prev, [agentName]: true }));
+      logger.info(`[AgentsContext] ${agentName} initialized successfully`);
+    } catch (err) {
+      logger.warn(`[AgentsContext] ${agentName} initialization failed or timed out`, err);
+      setAgentStatus(prev => ({ ...prev, [agentName]: false }));
+      // Graceful degradation: app continua funcionando mesmo se alguns agents falharem
+    }
+  };
+
+  // 🚀 Lazy initialization: Inicializar agente sob demanda
+  const initializeAgent = async (agentName: string): Promise<void> => {
+    if (agentStatus[agentName]) {
+      return; // Já inicializado
+    }
+
+    try {
+      switch (agentName) {
+        case 'chat':
+          if (!chatAgent) {
+            await initializeAgentWithTimeout('chat', new MaternalChatAgent(), setChatAgent);
+          }
+          break;
+        case 'content':
+          if (!contentAgent) {
+            await initializeAgentWithTimeout('content', new ContentRecommendationAgent(), setContentAgent);
+          }
+          break;
+        case 'habits':
+          if (!habitsAgent) {
+            await initializeAgentWithTimeout('habits', new HabitsAnalysisAgent(), setHabitsAnalysisAgent);
+          }
+          break;
+        case 'emotion':
+          if (!emotionAgent) {
+            await initializeAgentWithTimeout('emotion', new EmotionAnalysisAgent(), setEmotionAgent);
+          }
+          break;
+        case 'nathia':
+          if (!nathiaAgent) {
+            await initializeAgentWithTimeout('nathia', new NathiaPersonalityAgent(), setNathiaAgent);
+          }
+          break;
+        case 'sleep':
+          if (!sleepAgent) {
+            await initializeAgentWithTimeout('sleep', new SleepAnalysisAgent(), setSleepAgent);
+          }
+          break;
+        case 'design':
+          if (!designAgent) {
+            await initializeAgentWithTimeout('design', new DesignQualityAgent(), setDesignAgent);
+          }
+          break;
+      }
+    } catch (err) {
+      logger.error(`[AgentsContext] Failed to lazy initialize ${agentName}`, err);
+    }
+  };
+
+  const isAgentReady = (agentName: string): boolean => {
+    return agentStatus[agentName] === true;
+  };
 
   useEffect(() => {
-    async function initializeAgents() {
+    async function initializeCriticalAgents() {
       try {
-        logger.info('[AgentsContext] Initializing EXPANDED agent system...');
-        logger.info('[AgentsContext] Creating 6 specialized agents...');
+        logger.info('[AgentsContext] Initializing orchestrator and critical agents...');
 
         // 1. Inicializar Orchestrator (inicializa todos os MCPs)
         await orchestrator.initialize();
         logger.info('[AgentsContext] Orchestrator initialized');
 
-        // 2. Criar TODOS os agentes (3 principais + 3 novos especializados)
-        const maternal = new MaternalChatAgent();
-        const content = new ContentRecommendationAgent();
-        const habits = new HabitsAnalysisAgent();
-        const emotion = new EmotionAnalysisAgent();
-        const nathia = new NathiaPersonalityAgent();
-        const sleep = new SleepAnalysisAgent();
-
-        logger.info('[AgentsContext] 6 agents created, initializing...');
-
-        // 3. Inicializar TODOS os agentes em paralelo
-        await Promise.all([
-          maternal.initialize(),
-          content.initialize(),
-          habits.initialize(),
-          emotion.initialize(),
-          nathia.initialize(),
-          sleep.initialize(),
+        // 2. Inicializar apenas agentes críticos primeiro (lazy loading dos outros)
+        // Inicializar agentes críticos em paralelo com timeout
+        await Promise.allSettled([
+          initializeAgentWithTimeout('chat', new MaternalChatAgent(), setChatAgent),
+          initializeAgentWithTimeout('content', new ContentRecommendationAgent(), setContentAgent),
+          initializeAgentWithTimeout('habits', new HabitsAnalysisAgent(), setHabitsAnalysisAgent),
         ]);
 
-        logger.info('[AgentsContext] All agents initialized');
-
-        // 4. Registrar TODOS no orchestrator
-        orchestrator.registerAgent(maternal);
-        orchestrator.registerAgent(content);
-        orchestrator.registerAgent(habits);
-        orchestrator.registerAgent(emotion);
-        orchestrator.registerAgent(nathia);
-        orchestrator.registerAgent(sleep);
-
-        logger.info('[AgentsContext] All agents registered in orchestrator');
-
-        // 5. Atualizar estado com TODOS os agentes
-        setChatAgent(maternal);
-        setContentAgent(content);
-        setHabitsAnalysisAgent(habits);
-        setEmotionAgent(emotion);
-        setNathiaAgent(nathia);
-        setSleepAgent(sleep);
         setInitialized(true);
-
-        logger.info('[AgentsContext] 6 AGENTES ATIVOS! Sistema expandido pronto!');
-        logger.debug('[AgentsContext] Agents: MaternalChat, Content, Habits, Emotion, Nathia, Sleep');
+        logger.info('[AgentsContext] Critical agents initialized. Other agents will load on demand.');
       } catch (err: unknown) {
-        logger.error('[AgentsContext] Initialization failed', err);
-        setError(err instanceof Error ? err.message : 'Failed to initialize agents');
+        logger.error('[AgentsContext] Critical initialization failed', err);
+        setError(err instanceof Error ? err.message : 'Failed to initialize critical agents');
+        // Graceful degradation: marcar como inicializado mesmo com errors
+        setInitialized(true);
       }
     }
 
-    initializeAgents();
+    initializeCriticalAgents();
 
     // Cleanup
     return () => {
@@ -115,7 +182,8 @@ export function AgentsProvider({ children }: AgentsProviderProps) {
     };
   }, []);
 
-  const value: AgentsContextValue = {
+  // 🚀 MEMOIZATION: Evita recriação do value object a cada render
+  const value: AgentsContextValue = useMemo(() => ({
     initialized,
     orchestrator,
     // Agentes principais
@@ -126,8 +194,12 @@ export function AgentsProvider({ children }: AgentsProviderProps) {
     emotionAgent,
     nathiaAgent,
     sleepAgent,
+    designAgent,
     error,
-  };
+    // 🚀 Lazy loading helpers
+    initializeAgent,
+    isAgentReady,
+  }), [initialized, chatAgent, contentAgent, habitsAgent, emotionAgent, nathiaAgent, sleepAgent, designAgent, error, agentStatus]);
 
   return <AgentsContext.Provider value={value}>{children}</AgentsContext.Provider>;
 }

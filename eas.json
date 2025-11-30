@@ -62,14 +62,25 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "app@nossamaternidade.com.br",
         "language": "pt-BR",
-        "sku": "NOSSA_MATERNIDADE_2024"
+        "sku": "NOSSA_MATERNIDADE_2024",
+        "ascAppId": "YOUR_APP_STORE_CONNECT_APP_ID"
       },
       "android": {
         "serviceAccountKeyPath": "./google-play-service-account.json",
         "track": "production",
         "releaseStatus": "completed"
+      }
+    },
+    "internal": {
+      "ios": {
+        "language": "pt-BR",
+        "sku": "NOSSA_MATERNIDADE_2024"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-play-service-account.json",
+        "track": "internal",
+        "releaseStatus": "draft"
       }
     }
   }

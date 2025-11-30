@@ -1,5 +1,8 @@
 # 🔍 Script de Verificação: Claude Code Git Bash
 # Uso: pwsh -ExecutionPolicy Bypass -File scripts/verify-claude-code-bash.ps1
+#      ou: npm run verify:claude-bash
+
+$ErrorActionPreference = "Continue"
 
 Write-Host "🔍 Verificando configuração do Claude Code Git Bash..." -ForegroundColor Cyan
 Write-Host ""

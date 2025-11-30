@@ -53,7 +53,7 @@ export interface PressableProps extends Omit<RNPressableProps, 'style'> {
  * @example
  * ```tsx
  * <Pressable
- *   onPress={() => console.log('Pressed')}
+ *   onPress={() => logger.debug('Pressed')}
  *   rippleColor="rgba(0, 0, 0, 0.1)"
  *   rippleRadius={200}
  *   hapticFeedback

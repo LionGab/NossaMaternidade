@@ -7,7 +7,7 @@
  * @see https://www.figma.com/design/fqH3Ro3Ll8sL2s3EJuW22H/Lofee---Woman-Health-UI-Mobile-Design-Kit
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { View, StyleSheet, Dimensions, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image } from 'expo-image';
@@ -105,7 +105,7 @@ const CARD_WIDTH = (SCREEN_WIDTH - Tokens.spacing['4'] * 2 - Tokens.spacing['3']
 // 🧩 COMPONENT
 // ======================
 
-export const ArticleCard: React.FC<ArticleCardProps> = ({
+const ArticleCardComponent: React.FC<ArticleCardProps> = ({
   id: _id,
   title,
   subtitle,
@@ -155,7 +155,6 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
       } as ViewStyle}
       accessibilityLabel={`${title}, ${config.label}`}
       accessibilityHint="Toque para ler o artigo"
-      accessibilityRole="button"
     >
       {/* Background Image or Gradient */}
       {imageUrl ? (
@@ -286,6 +285,9 @@ const styles = StyleSheet.create({
     marginBottom: Tokens.spacing['2'],
   },
 });
+
+// 🚀 MEMOIZATION: Evita re-renders desnecessários quando props não mudam
+export const ArticleCard = memo(ArticleCardComponent);
 
 export default ArticleCard;
 

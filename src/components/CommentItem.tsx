@@ -54,6 +54,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
             size={32}
             source={comment.isFromNath ? nathAvatar : undefined}
             name={comment.author.charAt(0)}
+            accessibilityIgnoresInvertColors={true}
           />
           <View style={styles.authorText}>
             <View style={styles.authorRow}>
@@ -91,6 +92,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
         <TouchableOpacity
           accessibilityRole="button"
           accessibilityLabel={isLiked ? 'Remover curtida' : 'Curtir comentário'}
+          accessibilityHint={isLiked ? 'Remove sua curtida deste comentário' : 'Adiciona uma curtida a este comentário'}
           style={styles.actionButton}
           onPress={handleLike}
           activeOpacity={0.7}
@@ -114,6 +116,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
           <TouchableOpacity
             accessibilityRole="button"
             accessibilityLabel="Responder comentário"
+            accessibilityHint="Abre o campo de texto para escrever uma resposta a este comentário"
             style={styles.actionButton}
             onPress={() => onReply(comment.id)}
             activeOpacity={0.7}

@@ -13,6 +13,7 @@
 import { orchestrator } from '../core/AgentOrchestrator';
 import { ToolCall } from '../core/ToolExecutor';
 import { JsonValue } from '../../mcp/types';
+import { logger } from '../../utils/logger';
 
 // ============================================================================
 // EXEMPLO 1: Buscar dados em paralelo
@@ -66,7 +67,7 @@ export async function fetchUserDataParallel(userId: string) {
     const [profile, habits, sessions] = result.data;
     return { profile, habits, sessions };
   } else {
-    console.error('Erros:', result.errors);
+    logger.error('[AdvancedToolUseExamples] Erros ao buscar dados do usuário em paralelo', undefined, { errors: result.errors });
     // Retorna apenas os dados que funcionaram
     return {
       profile: result.data[0] || null,
@@ -233,7 +234,7 @@ export function findAIServers() {
   // Busca todos os servidores com tag 'ai'
   const aiServers = orchestrator.searchMCPServers('ai');
 
-  console.log('Servidores de AI disponíveis:', aiServers);
+  logger.debug('[AdvancedToolUseExamples] Servidores de AI disponíveis', { aiServers });
   // Output: ['googleai', 'openai', 'anthropic']
 
   return aiServers;
@@ -245,7 +246,7 @@ export function findAIServers() {
 export function getTokenSavings() {
   const stats = orchestrator.getMCPStats();
 
-  console.log('MCP Loader Stats:', {
+  logger.debug('[AdvancedToolUseExamples] MCP Loader Stats', {
     totalConfigured: stats.totalConfigured,
     loaded: stats.loaded,
     deferred: stats.deferred,

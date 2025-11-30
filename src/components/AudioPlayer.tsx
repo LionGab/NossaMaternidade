@@ -101,6 +101,9 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       pulseAnim.setValue(1);
       return undefined;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // progressAnim e pulseAnim são refs estáveis (useRef), não precisam estar nas dependências
+    // onEnd é callback opcional - incluí-lo causaria re-execução desnecessária do efeito
   }, [isPlaying, durationMs]);
 
   const playPause = () => {
@@ -135,6 +138,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         <TouchableOpacity
           accessibilityRole="button"
           accessibilityLabel={isPlaying ? 'Pausar áudio' : 'Reproduzir áudio'}
+          accessibilityHint={isPlaying ? 'Pausa a reprodução do áudio atual' : 'Inicia a reprodução do áudio'}
           style={styles.playButton}
           onPress={playPause}
           activeOpacity={0.7}
@@ -146,6 +150,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                 transform: [{ scale: pulseAnim }],
               },
             ]}
+            accessibilityIgnoresInvertColors={true}
           >
             {isPlaying ? (
               <Ionicons name="pause" size={24} color={colors.raw.neutral[0]} />
@@ -171,7 +176,11 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       </View>
 
       {/* Progress Bar */}
-      <View style={styles.progressBarContainer}>
+      <View 
+        style={styles.progressBarContainer}
+        accessibilityLabel="Barra de progresso do áudio"
+        accessibilityHint={`${Math.round((position / durationMs) * 100)}% reproduzido`}
+      >
         <Animated.View
           style={[
             styles.progressBar,
@@ -179,6 +188,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               width: progressWidth,
             },
           ]}
+          accessibilityIgnoresInvertColors={true}
         />
       </View>
     </View>

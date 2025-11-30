@@ -11,6 +11,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { COLORS, RADIUS, SHADOWS, SPACING, ANIMATIONS } from '../../constants/Theme';
+import { ColorTokens } from '@/theme/tokens';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -200,7 +201,7 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
         };
       case 'glass':
         return {
-          backgroundColor: ColorTokens.overlay?.glass || 'rgba(255, 255, 255, 0.95)', // Glass effect overlay (usar token se disponível)
+          backgroundColor: ColorTokens.overlay.glass || 'rgba(255, 255, 255, 0.95)', // Glass effect overlay
           ...Platform.select({
             ios: {
               backdropFilter: 'blur(20px)',

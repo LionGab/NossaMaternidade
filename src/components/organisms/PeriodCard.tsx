@@ -12,7 +12,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Heart, Edit3 } from 'lucide-react-native';
 import { useTheme } from '@/theme';
-import { Tokens, ColorTokens } from '@/theme/tokens';
+import { Tokens, ColorTokens, Typography } from '@/theme/tokens';
 import { Box } from '@/components/primitives/Box';
 import { Text } from '@/components/primitives/Text';
 import { HapticButton } from '@/components/primitives/HapticButton';
@@ -98,7 +98,6 @@ export const PeriodCard: React.FC<PeriodCardProps> = ({
       activeOpacity={0.9}
       onPress={onPress}
       style={containerStyle}
-      accessibilityRole="button"
       accessibilityLabel={`${config.title}, Dia ${cycleDay} do ciclo`}
       accessibilityHint="Toque para ver detalhes do ciclo"
     >
@@ -136,9 +135,9 @@ export const PeriodCard: React.FC<PeriodCardProps> = ({
             </Text>
             
             <Text 
-              size="2xl" 
+              size="xl" 
               weight="bold" 
-              style={{ color: config.iconColor }}
+              style={{ color: config.iconColor, fontSize: Typography.sizes['2xl'] }}
             >
               Dia {cycleDay}
             </Text>

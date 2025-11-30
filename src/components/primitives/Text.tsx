@@ -10,7 +10,7 @@ import { Typography } from '@/theme/tokens';
 import { getFontFamily, getScaledFontSize } from '@/theme/platform';
 
 export type TextVariant = 'body' | 'caption' | 'label' | 'overline' | 'small';
-export type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 export type TextColor = 'primary' | 'secondary' | 'tertiary' | 'disabled' | 'inverse' | 'link' | 'success' | 'warning' | 'error';
 
 export interface CustomTextProps extends Omit<RNTextProps, 'style'> {
@@ -66,6 +66,8 @@ const sizeMap: Record<TextSize, number> = {
   md: Typography.sizes.md,
   lg: Typography.sizes.lg,
   xl: Typography.sizes.xl,
+  '2xl': Typography.sizes['2xl'] || 24, // 24px
+  '3xl': Typography.sizes['3xl'] || 28, // 28px
 };
 
 export const Text = React.memo(function Text({

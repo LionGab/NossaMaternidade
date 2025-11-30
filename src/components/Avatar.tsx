@@ -9,6 +9,7 @@ export interface AvatarProps {
   name?: string;
   className?: string;
   onPress?: () => void;
+  accessibilityIgnoresInvertColors?: boolean;
 }
 
 export const Avatar: React.FC<AvatarProps> = ({
@@ -17,6 +18,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   name,
   className = '',
   onPress,
+  accessibilityIgnoresInvertColors = false,
 }) => {
   const colors = useThemeColors();
   const TouchableComponent = onPress ? TouchableOpacity : View;
@@ -40,6 +42,7 @@ export const Avatar: React.FC<AvatarProps> = ({
             height: size,
           }}
           resizeMode="cover"
+          accessibilityIgnoresInvertColors={accessibilityIgnoresInvertColors}
         />
       ) : name ? (
         <Text

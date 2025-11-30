@@ -18,8 +18,12 @@ const colors = {
   cyan: '\x1b[36m',
 };
 
-// Variáveis obrigatórias
+// Variáveis obrigatórias (aceita com ou sem EXPO_PUBLIC_)
 const REQUIRED_VARS = [
+  'EXPO_PUBLIC_SUPABASE_URL',
+  'EXPO_PUBLIC_SUPABASE_ANON_KEY',
+  'EXPO_PUBLIC_GEMINI_API_KEY',
+  // Fallback para nomes sem prefixo (compatibilidade)
   'SUPABASE_URL',
   'SUPABASE_ANON_KEY',
   'GEMINI_API_KEY',
@@ -78,13 +82,20 @@ function validateRequiredVars() {
   const missing = [];
   const invalid = [];
   
-  REQUIRED_VARS.forEach(varName => {
-    const value = process.env[varName];
+  // Verificar variáveis obrigatórias (prioridade para EXPO_PUBLIC_*)
+  const requiredVars = [
+    { name: 'EXPO_PUBLIC_SUPABASE_URL', fallback: 'SUPABASE_URL' },
+    { name: 'EXPO_PUBLIC_SUPABASE_ANON_KEY', fallback: 'SUPABASE_ANON_KEY' },
+    { name: 'EXPO_PUBLIC_GEMINI_API_KEY', fallback: 'GEMINI_API_KEY' },
+  ];
+  
+  requiredVars.forEach(({ name, fallback }) => {
+    const value = process.env[name] || process.env[fallback];
     
     if (!value) {
-      missing.push(varName);
-    } else if (value.includes('your-') || value.includes('xxx')) {
-      invalid.push(varName);
+      missing.push(name);
+    } else if (value.includes('your-') || value.includes('xxx') || value.includes('your_')) {
+      invalid.push(name);
     }
   });
   
@@ -116,7 +127,7 @@ function validateDeployVars() {
 }
 
 function validateSupabaseUrl() {
-  const url = process.env.SUPABASE_URL;
+  const url = process.env.EXPO_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   
   if (!url) return { valid: false, message: 'Não configurado' };
   
@@ -135,7 +146,7 @@ function validateApiKeys() {
   const results = {};
   
   // Gemini
-  const geminiKey = process.env.GEMINI_API_KEY;
+  const geminiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
   if (geminiKey && geminiKey.startsWith('AIza')) {
     results.gemini = { valid: true, message: 'OK' };
   } else if (geminiKey) {
@@ -145,7 +156,7 @@ function validateApiKeys() {
   }
   
   // OpenAI (opcional)
-  const openaiKey = process.env.OPENAI_API_KEY;
+  const openaiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
   if (openaiKey && openaiKey.startsWith('sk-')) {
     results.openai = { valid: true, message: 'OK' };
   } else if (openaiKey) {
@@ -153,7 +164,7 @@ function validateApiKeys() {
   }
   
   // Anthropic (opcional)
-  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const anthropicKey = process.env.EXPO_PUBLIC_CLAUDE_API_KEY || process.env.ANTHROPIC_API_KEY;
   if (anthropicKey && anthropicKey.startsWith('sk-ant-')) {
     results.anthropic = { valid: true, message: 'OK' };
   } else if (anthropicKey) {

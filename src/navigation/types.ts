@@ -2,9 +2,11 @@ import type { NavigatorScreenParams } from '@react-navigation/native';
 
 export type RootStackParamList = {
   Splash: undefined;
-  Auth: undefined;
+  Auth: { action?: string } | undefined;
+  AuthCallback: undefined; // 🔐 OAuth callback (Google/Apple)
+  ResetPassword: { token?: string } | undefined; // 🔐 Reset de senha
   Onboarding: undefined;
-  Main: NavigatorScreenParams<MainTabParamList>;
+  Main: NavigatorScreenParams<MainTabParamList> | undefined;
   Ritual: undefined;
   Diary: undefined;
   ContentDetail: { contentId: string }; // 🆕 Tela de detalhes de conteúdo (Week 1)

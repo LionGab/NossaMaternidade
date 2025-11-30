@@ -169,7 +169,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'nossa-maternidade://reset-password',
+        redirectTo: 'nossamaternidade://auth/reset-password',
       });
       return { error };
     } catch (error) {

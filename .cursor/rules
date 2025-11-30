@@ -61,6 +61,25 @@ Antes de aceitar mudanças, sempre valide:
 - Guia Mobile: `MOBILE_IMPLEMENTATION_GUIDE.md`
 - Prompts: `PROMPTS_DESIGN_VALIDATION.md`
 
+## Otimização Claude no Cursor
+
+### Configurações Recomendadas
+- ✅ Modelo padrão: Claude Sonnet 4.5 (melhor custo/benefício)
+- ✅ Codebase Indexing: Ativo para melhor contexto
+- ✅ Context Window: Large (8192 tokens)
+- ✅ Configurações em: `.cursor/settings.json`
+
+### Uso Eficiente
+- ✅ Use `@mentions` para contexto específico (`@arquivo.tsx`, `@pasta/`)
+- ✅ Inicie novas conversas para novos tópicos
+- ✅ Use Composer (Cmd+Shift+I) para edições multi-arquivo
+- ✅ Agrupe perguntas relacionadas
+- ❌ Evite conversas muito longas (economiza tokens)
+
+### Verificação
+- Execute `npm run verify:cursor` para verificar configuração
+- Consulte `docs/CURSOR_CLAUDE_SETUP.md` para guia completo
+
 ## Lembrete Constante
 
 Este é um projeto MOBILE (iOS/Android), não web. Todo código deve ser React Native nativo.

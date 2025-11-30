@@ -243,9 +243,10 @@ export default function LoginScreen({ onLogin, onBack }: LoginScreenProps) {
     }
   };
 
-  // TODO: Habilitar login social quando OAuth estiver configurado no Supabase
-  // Para configurar: https://supabase.com/dashboard > Authentication > Providers
-  const SOCIAL_LOGIN_ENABLED = false; // Mudar para true quando OAuth estiver configurado
+  // Login social configurável via variável de ambiente
+  // Por padrão habilitado em produção, pode ser desabilitado via EXPO_PUBLIC_SOCIAL_LOGIN_ENABLED=false
+  // Para configurar OAuth: https://supabase.com/dashboard > Authentication > Providers
+  const SOCIAL_LOGIN_ENABLED = process.env.EXPO_PUBLIC_SOCIAL_LOGIN_ENABLED !== 'false';
 
   const handleSocialLogin = async (provider: 'apple' | 'google') => {
     // Verificar se login social está habilitado

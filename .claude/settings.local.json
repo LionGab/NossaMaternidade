@@ -23,7 +23,9 @@
       "Bash(npm test:*)",
       "Bash(find:*)",
       "Bash(node:*)",
-      "WebFetch(domain:www.youtube.com)"
+      "WebFetch(domain:www.youtube.com)",
+      "Bash(npm run test)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": [],

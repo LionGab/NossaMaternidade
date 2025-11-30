@@ -1,5 +1,8 @@
 # 🔧 Script de Fix: Claude Code Git Bash no Windows
 # Uso: pwsh -ExecutionPolicy Bypass -File scripts/fix-claude-code-bash.ps1
+#      ou: npm run fix:claude-bash
+
+$ErrorActionPreference = "Stop"
 
 Write-Host "🔧 Configurando Claude Code Git Bash no Windows..." -ForegroundColor Cyan
 Write-Host ""

@@ -1,9 +1,18 @@
 # Script de Validação - Verifica se o projeto está pronto para build/deploy
-# Uso: pwsh scripts/check-ready.ps1
+# Uso: pwsh -ExecutionPolicy Bypass -File scripts/check-ready.ps1
+#      ou: npm run check-ready
+
+$ErrorActionPreference = "Continue"
 
 Write-Host "🔍 Verificando prontidão para deploy..." -ForegroundColor Cyan
 Write-Host "=======================================" -ForegroundColor Cyan
 Write-Host ""
+
+# Verificar se estamos na raiz do projeto
+if (-not (Test-Path "package.json")) {
+    Write-Host "❌ Erro: Execute este script na raiz do projeto" -ForegroundColor Red
+    exit 1
+}
 
 $REPO_PATH = Get-Location
 Set-Location $REPO_PATH

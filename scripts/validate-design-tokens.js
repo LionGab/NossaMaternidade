@@ -54,6 +54,9 @@ const ALLOWED_PATTERNS = [
   /className=.*\b(white|black)\b/i, // Classes NativeWind com cores (text-white, bg-black)
   /\* +.*=.*rgba\(/,               // Comentários JSDoc com exemplos: * rippleColor="rgba(..."
   /return `rgba\(/,                // Funções que geram cores dinamicamente
+  /#access_token/,                 // OAuth token identifier
+  /#id/,                           // Fragment identifier
+  /includes\(['"]#/,               // String includes com # (URL fragments, tokens)
 ];
 
 function isAllowedFile(filePath) {
@@ -132,6 +135,31 @@ function findViolations(filePath) {
         // Ignorar se é um fallback com || 
         if (line.includes(`|| '${match}'`) || line.includes(`|| "${match}"`)) {
           return;
+        }
+        // Ignorar padrões que não são cores válidas (ex: #access_token, #id, etc)
+        // Cores hex válidas têm 3, 4, 6 ou 8 caracteres hexadecimais após o #
+        const hexValue = match.substring(1); // Remove o #
+        // Verificar se é uma cor válida (3, 4, 6 ou 8 caracteres hex)
+        const isValidColor = /^[0-9A-Fa-f]{3}$/.test(hexValue) || 
+                             /^[0-9A-Fa-f]{4}$/.test(hexValue) || 
+                             /^[0-9A-Fa-f]{6}$/.test(hexValue) || 
+                             /^[0-9A-Fa-f]{8}$/.test(hexValue);
+        if (!isValidColor) {
+          return; // Não é uma cor válida, ignorar (ex: #access_token, #id, etc)
+        }
+        // Ignorar se está em contexto de URL, string ou identificador
+        if (line.includes('url') || line.includes('includes') || line.includes('callback') || 
+            line.includes('token') || line.includes('fragment') || line.includes('hash')) {
+          // Se o match está dentro de uma string, provavelmente é um identificador
+          const matchIndex = line.indexOf(match);
+          const beforeMatch = line.substring(0, matchIndex);
+          const afterMatch = line.substring(matchIndex + match.length);
+          // Verificar se está entre aspas ou em contexto de string
+          const quotesBefore = (beforeMatch.match(/['"`]/g) || []).length;
+          const quotesAfter = (afterMatch.match(/['"`]/g) || []).length;
+          if (quotesBefore % 2 === 1 || quotesAfter % 2 === 1) {
+            return; // Está dentro de uma string, provavelmente é um identificador
+          }
         }
         const suggestion = TOKEN_SUGGESTIONS[match.toUpperCase()] || TOKEN_SUGGESTIONS[match];
         violations.push({

@@ -8,12 +8,13 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, ScrollView, RefreshControl, Dimensions } from 'react-native';
+import { View, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme';
-import { Tokens, ColorTokens } from '@/theme/tokens';
+import { Tokens } from '@/theme/tokens';
 import { Box } from '@/components/primitives/Box';
-import { Text, Heading } from '@/components/primitives/Text';
+import { Text } from '@/components/primitives/Text';
+import { Heading } from '@/components/primitives/Heading';
 import { Button } from '@/components/primitives/Button';
 import { 
   Activity, 
@@ -140,7 +141,6 @@ const ValidationCard: React.FC<{
   result: ValidationResult;
   colors: ReturnType<typeof useTheme>['colors'];
 }> = ({ result, colors }) => {
-  const total = result.passed + result.failed + result.warnings;
   
   return (
     <Box
@@ -208,7 +208,7 @@ const ValidationCard: React.FC<{
 // ======================
 
 export default function DesignMetricsDashboard() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [metrics, setMetrics] = useState<DesignMetric[]>([]);
   const [validation, setValidation] = useState<ValidationResult | null>(null);
@@ -311,9 +311,11 @@ export default function DesignMetricsDashboard() {
       >
         {/* Header */}
         <Box mb="6">
-          <Heading level="h2" mb="1">
-            📊 Design System
-          </Heading>
+          <Box mb="1">
+            <Heading level="h2">
+              📊 Design System
+            </Heading>
+          </Box>
           <Text color="secondary">
             Métricas de qualidade e conformidade
           </Text>
@@ -328,9 +330,11 @@ export default function DesignMetricsDashboard() {
 
         {/* Metrics Grid */}
         <Box mb="6">
-          <Heading level="h4" mb="4">
-            Métricas de Qualidade
-          </Heading>
+          <Box mb="4">
+            <Heading level="h4">
+              Métricas de Qualidade
+            </Heading>
+          </Box>
           <Box gap="4">
             <Box direction="row" gap="4">
               {metrics.slice(0, 2).map(metric => (
@@ -351,9 +355,11 @@ export default function DesignMetricsDashboard() {
 
         {/* Quick Actions */}
         <Box mb="6">
-          <Heading level="h4" mb="4">
-            Ações Rápidas
-          </Heading>
+          <Box mb="4">
+            <Heading level="h4">
+              Ações Rápidas
+            </Heading>
+          </Box>
           <Box gap="3">
             <Button
               title="Executar Validação Completa"
@@ -379,9 +385,11 @@ export default function DesignMetricsDashboard() {
           rounded="lg"
           style={{ backgroundColor: `${colors.primary.main}10` }}
         >
-          <Heading level="h5" mb="2">
-            ℹ️ Como interpretar
-          </Heading>
+          <Box mb="2">
+            <Heading level="h5">
+              ℹ️ Como interpretar
+            </Heading>
+          </Box>
           <Text size="sm" color="secondary">
             • <Text weight="semibold">Cobertura de Tokens:</Text> % de estilos usando design tokens{'\n'}
             • <Text weight="semibold">Acessibilidade:</Text> Score WCAG AAA (contraste, touch targets){'\n'}

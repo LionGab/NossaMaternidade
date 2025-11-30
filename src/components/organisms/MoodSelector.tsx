@@ -7,13 +7,14 @@
  * @see https://www.figma.com/design/fqH3Ro3Ll8sL2s3EJuW22H/Lofee---Woman-Health-UI-Mobile-Design-Kit
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Plus } from 'lucide-react-native';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
 import { Box } from '@/components/primitives/Box';
-import { Text, Heading } from '@/components/primitives/Text';
+import { Text } from '@/components/primitives/Text';
+import { Heading } from '@/components/primitives/Heading';
 import { HapticButton } from '@/components/primitives/HapticButton';
 import { useHaptics } from '@/hooks/useHaptics';
 
@@ -102,15 +103,13 @@ export const MoodSelector: React.FC<MoodSelectorProps> = ({
           <HapticButton
             variant="ghost"
             onPress={handleAddMood}
-            style={[
-              styles.moodButton,
-              {
-                backgroundColor: isDark ? colors.background.elevated : colors.background.card,
-                borderColor: colors.border.light,
-                borderWidth: 2,
-                borderStyle: 'dashed',
-              },
-            ]}
+            style={{
+              ...styles.moodButton,
+              backgroundColor: isDark ? colors.background.elevated : colors.background.card,
+              borderColor: colors.border.light,
+              borderWidth: 2,
+              borderStyle: 'dashed' as const,
+            }}
             accessibilityLabel="Adicionar humor"
             accessibilityHint="Registra como você está se sentindo"
           >
@@ -132,18 +131,15 @@ export const MoodSelector: React.FC<MoodSelectorProps> = ({
               key={mood.id}
               variant="ghost"
               onPress={() => handleSelectMood(mood.id)}
-              style={[
-                styles.moodButton,
-                {
-                  backgroundColor: isSelected 
-                    ? `${mood.color}20` 
-                    : isDark ? colors.background.elevated : colors.background.card,
-                  borderColor: isSelected ? mood.color : colors.border.light,
-                  borderWidth: isSelected ? 2 : 1,
-                },
-              ]}
+              style={{
+                ...styles.moodButton,
+                backgroundColor: isSelected 
+                  ? `${mood.color}20` 
+                  : isDark ? colors.background.elevated : colors.background.card,
+                borderColor: isSelected ? mood.color : colors.border.light,
+                borderWidth: isSelected ? 2 : 1,
+              }}
               accessibilityLabel={`${mood.label} ${isSelected ? 'selecionado' : ''}`}
-              accessibilityRole="radio"
               accessibilityState={{ selected: isSelected }}
             >
               <View style={styles.emojiContainer}>

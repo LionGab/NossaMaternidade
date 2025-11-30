@@ -29,8 +29,14 @@ const isDevelopment = process.env.NODE_ENV === 'development' || __DEV__;
 /**
  * Cores do Design System (inline para garantir funcionamento mesmo com erro de tema)
  * Valores sincronizados com src/theme/tokens.ts - ColorTokens
- * IMPORTANTE: Manter hardcoded pois ErrorBoundary não pode depender de hooks/contexto
+ * 
+ * ⚠️ IMPORTANTE: Manter hardcoded pois ErrorBoundary não pode depender de hooks/contexto.
+ * Este componente precisa funcionar mesmo quando o sistema de tema quebra.
+ * As cores aqui são uma cópia estática dos tokens para garantir fallback seguro.
+ * 
+ * ESLint: no-restricted-syntax desabilitado intencionalmente para este arquivo.
  */
+// eslint-disable-next-line no-restricted-syntax
 const colors = {
   background: '#FFFFFF',           // ColorTokens.neutral[0]
   backgroundDark: '#F5F5F5',       // ColorTokens.neutral[100]

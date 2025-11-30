@@ -3,6 +3,32 @@
  * Import único: import { UserProfile, EmotionType, ChatMessage } from '@/types'
  */
 
+// Database Types (Supabase)
+export type {
+  Database,
+  ProfileRow,
+  ProfileInsert,
+  ProfileUpdate,
+  CheckInLogRow,
+  CheckInLogInsert,
+  CheckInLogUpdate,
+  Tables,
+  InsertTables,
+  UpdateTables,
+  Enums,
+  PhaseType,
+  EmotionType as DBEmotionType,
+  LifeStageType,
+  LanguageToneType,
+  FirstFocusType,
+  ThemeType,
+  SubscriptionType,
+  SupportNetworkType,
+  MotherhoodStageType,
+  BabyGenderType,
+  PregnancyTrimesterType,
+} from './database';
+
 // User & Profile
 export type {
   UserProfile,
@@ -79,6 +105,15 @@ export type {
   AIToolResult,
   AIContext,
 } from './ai';
+
+// File Review
+export type {
+  FileReview,
+  FileChange,
+  ReviewSession,
+  ReviewPermissions,
+  FileReviewStatus,
+} from './fileReview';
 
 // Utility types
 export interface ApiResponse<T> {

@@ -139,41 +139,47 @@ class UserDataService {
       }
 
       // 3. Hábitos
-      const { data: userHabits } = await supabase
+      const { data: userHabitsRaw } = await supabase
         .from('user_habits')
         .select('*, habit:habits(*)')
         .eq('user_id', user.id);
+      const userHabits: SupabaseUserHabit[] | null = userHabitsRaw as SupabaseUserHabit[] | null;
 
       // 4. Logs de hábitos
-      const { data: habitLogs } = await supabase
+      const { data: habitLogsRaw } = await supabase
         .from('habit_logs')
         .select('*')
         .eq('user_id', user.id)
         .order('completed_at', { ascending: false });
+      const habitLogs: SupabaseHabitLog[] | null = habitLogsRaw as SupabaseHabitLog[] | null;
 
       // 5. Marcos do bebê
-      const { data: milestones } = await supabase
+      const { data: milestonesRaw } = await supabase
         .from('user_baby_milestones')
         .select('*, milestone:baby_milestones(*)')
         .eq('user_id', user.id);
+      const milestones: SupabaseUserBabyMilestone[] | null = milestonesRaw as SupabaseUserBabyMilestone[] | null;
 
       // 6. Interações com conteúdo
-      const { data: interactions } = await supabase
+      const { data: interactionsRaw } = await supabase
         .from('user_content_interactions')
         .select('*')
         .eq('user_id', user.id);
+      const interactions: SupabaseUserContentInteraction[] | null = interactionsRaw as SupabaseUserContentInteraction[] | null;
 
       // 7. Posts da comunidade (se houver)
-      const { data: communityPosts } = await supabase
+      const { data: communityPostsRaw } = await supabase
         .from('community_posts')
         .select('*')
         .eq('user_id', user.id);
+      const communityPosts: SupabaseCommunityPost[] | null = communityPostsRaw as SupabaseCommunityPost[] | null;
 
       // 8. Comentários
-      const { data: comments } = await supabase
+      const { data: commentsRaw } = await supabase
         .from('community_comments')
         .select('*')
         .eq('user_id', user.id);
+      const comments: SupabaseCommunityComment[] | null = commentsRaw as SupabaseCommunityComment[] | null;
 
       const exportedData: ExportedUserData = {
         profile: profile || {},

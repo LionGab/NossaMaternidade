@@ -44,7 +44,7 @@ if ($SetSecrets) {
     Write-Host "🔑 Configurando secrets..." -ForegroundColor Yellow
 
     # Ler do .env
-    $envPath = "..\..\. env"
+    $envPath = Join-Path (Get-Location).Parent.Parent ".env"
     if (Test-Path $envPath) {
         $geminiKey = (Get-Content $envPath | Select-String "^GEMINI_API_KEY=").Line.Split("=")[1]
 

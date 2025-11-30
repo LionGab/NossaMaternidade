@@ -46,6 +46,7 @@ export interface BoxProps extends Omit<ViewProps, 'style'> {
   direction?: 'row' | 'column';
   align?: 'flex-start' | 'center' | 'flex-end' | 'stretch';
   justify?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
+  gap?: keyof typeof Spacing;
 
   // Width/Height
   width?: number | string;
@@ -67,6 +68,7 @@ export const Box = React.memo(function Box({
   direction,
   align,
   justify,
+  gap,
   width,
   height,
   style,
@@ -127,6 +129,7 @@ export const Box = React.memo(function Box({
       ...(direction && { flexDirection: direction }),
       ...(align && { alignItems: align }),
       ...(justify && { justifyContent: justify }),
+      ...(gap !== undefined && { gap: Spacing[gap] }),
 
       // Size
       ...(width !== undefined && { width }),
@@ -134,7 +137,7 @@ export const Box = React.memo(function Box({
 
       ...style,
     };
-  }, [bg, p, px, py, pt, pb, pl, pr, m, mx, my, mt, mb, ml, mr, borderWidth, borderColor, rounded, shadow, flex, direction, align, justify, width, height, style, colors]);
+  }, [bg, p, px, py, pt, pb, pl, pr, m, mx, my, mt, mb, ml, mr, borderWidth, borderColor, rounded, shadow, flex, direction, align, justify, gap, width, height, style, colors]);
 
   return (
     <View style={computedStyle as ViewStyle} {...props}>

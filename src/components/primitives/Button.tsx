@@ -260,7 +260,7 @@ export const Button: React.FC<ButtonProps> = React.memo(({
             </SafeView>
           )}
           <SafeText
-            style={[{ ...variantStyles.text, ...sizeStyles.text }]}
+            style={{ ...variantStyles.text, ...sizeStyles.text }}
             fallbackText={title}
           >
             {title}

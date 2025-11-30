@@ -8,7 +8,7 @@
  */
 
 import React, { useRef, useCallback, useMemo } from 'react';
-import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { StyleSheet, ScrollView, ViewStyle } from 'react-native';
 import { Calendar } from 'lucide-react-native';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
@@ -69,7 +69,7 @@ export const CalendarStrip: React.FC<CalendarStripProps> = ({
   onOpenCalendar,
   monthYear,
 }) => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const haptics = useHaptics();
   const scrollRef = useRef<ScrollView>(null);
 
@@ -144,9 +144,9 @@ export const CalendarStrip: React.FC<CalendarStripProps> = ({
     <Box>
       {/* Header */}
       <Box direction="row" justify="space-between" align="center" mb="3">
-        <Box direction="row" align="center" gap="2">
+        <Box direction="row" align="center" style={{ gap: Tokens.spacing['2'] }}>
           <Calendar size={18} color={colors.primary.main} />
-          <Text size="sm" weight="semibold" color="primary" style={{ textTransform: 'capitalize' }}>
+          <Text size="sm" weight="semibold" color="primary" style={{ textTransform: 'capitalize', marginLeft: Tokens.spacing['2'] }}>
             {currentMonthYear}
           </Text>
         </Box>
@@ -179,16 +179,13 @@ export const CalendarStrip: React.FC<CalendarStripProps> = ({
               key={`${day.date.toISOString()}-${index}`}
               variant="ghost"
               onPress={() => handleSelectDate(day.date)}
-              style={[
-                styles.dayButton,
-                {
-                  backgroundColor,
-                  borderColor: borderColor || colors.border.light,
-                  borderWidth: borderColor !== 'transparent' ? 2 : 1,
-                },
-              ]}
+              style={{
+                ...styles.dayButton,
+                backgroundColor,
+                borderColor: borderColor || colors.border.light,
+                borderWidth: borderColor !== 'transparent' ? 2 : 1,
+              } as ViewStyle}
               accessibilityLabel={`${day.day} de ${currentMonthYear}, ${WEEKDAYS_FULL[weekdayIndex]}`}
-              accessibilityRole="button"
             >
               <Text 
                 size="xs" 
