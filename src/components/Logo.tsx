@@ -33,6 +33,8 @@ export const Logo: React.FC<LogoProps> = ({
           imageStyle,
         ]}
         resizeMode="contain"
+        accessibilityIgnoresInvertColors={true}
+        accessibilityLabel="Logo NossaMaternidade"
       />
     </View>
   );

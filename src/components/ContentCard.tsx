@@ -249,6 +249,7 @@ const ContentCardComponent: React.FC<ContentCardProps> = ({
       <TouchableOpacity
         accessibilityRole="button"
         accessibilityLabel={`Conteúdo: ${item.title}`}
+        accessibilityHint={`Abre o conteúdo do tipo ${item.type}: ${item.title}`}
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
@@ -256,7 +257,11 @@ const ContentCardComponent: React.FC<ContentCardProps> = ({
         style={[styles.contentCard, { backgroundColor: colors.background.card, borderColor: colors.border.light }]}
       >
         <View style={styles.cardImageContainer}>
-          <Image source={{ uri: item.imageUrl }} style={styles.cardImage} />
+          <Image
+            source={{ uri: item.imageUrl }}
+            style={styles.cardImage}
+            accessibilityIgnoresInvertColors={true}
+          />
           <View style={styles.cardImageOverlay} />
 
           {/* Exclusive Badge */}
@@ -340,6 +345,7 @@ const ContentCardComponent: React.FC<ContentCardProps> = ({
             <TouchableOpacity
               accessibilityRole="button"
               accessibilityLabel={isLiked ? 'Remover curtida' : 'Curtir'}
+              accessibilityHint={isLiked ? 'Remove sua curtida deste conteúdo' : 'Adiciona uma curtida a este conteúdo'}
               style={[styles.actionButton, { backgroundColor: colors.background.elevated }]}
               onPress={handleLikePress}
               activeOpacity={0.7}
@@ -363,6 +369,7 @@ const ContentCardComponent: React.FC<ContentCardProps> = ({
             <TouchableOpacity
               accessibilityRole="button"
               accessibilityLabel="Comentar"
+              accessibilityHint="Abre a seção de comentários deste conteúdo"
               style={[styles.actionButton, { backgroundColor: colors.background.elevated }]}
               onPress={handleCommentPress}
               activeOpacity={0.7}

@@ -118,7 +118,7 @@ export const ColorTokens = {
     900: '#1E3A8A',
   },
 
-  // Accent colors
+  // Accent colors (GeminiApp-inspired semantic colors)
   accent: {
     purple: '#8B5CF6',
     teal: '#14B8A6',
@@ -126,11 +126,18 @@ export const ColorTokens = {
     pink: '#EC4899',
     green: '#10B981',
     blue: '#60A5FA',       // Light ocean (for dark mode accents)
-    ocean: '#004E9A',      // Ocean blue (rebaixado de primary → accent)
-    oceanDark: '#002244',  // Deep navy (hover state)
-    coral: '#FF6B9D',      // Coral maternal pink
-    sunshine: '#F59E0B',   // Amber/Warning - web reference
-    gold: '#FFA500',       // Gold (lifestyle Nathália)
+    // ⭐ GeminiApp Semantic Colors
+    ocean: '#0EA5E9',      // Sky 500 - primary action, trust
+    oceanDeep: '#0369A1',  // Sky 700 - darker accent
+    oceanLight: '#E0F2FE', // Sky 100 - light backgrounds
+    coral: '#F43F5E',      // Rose 500 - emotional, likes, errors
+    coralLight: '#FFE4E6', // Rose 100 - light coral bg
+    mint: '#10B981',       // Emerald 500 - success, completion
+    mintLight: '#D1FAE5',  // Emerald 100 - light mint bg
+    sunshine: '#F59E0B',   // Amber 500 - warning, premium, highlights
+    sunshineLight: '#FEF3C7', // Amber 100 - light sunshine bg
+    gold: '#FFA500',       // Gold (lifestyle Nathalia)
+    indigo: '#6366F1',     // Indigo 500 - thinking mode
   },
 
   // Overlay System - For semi-transparent backgrounds

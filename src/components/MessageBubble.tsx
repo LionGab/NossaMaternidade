@@ -60,6 +60,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         accessibilityLabel ||
         (isUser ? `Você disse: ${content}` : `NathIA respondeu: ${content}`)
       }
+      accessibilityHint={isUser ? 'Mensagem enviada por você' : 'Resposta da assistente NathIA'}
     >
       <View style={bubbleStyle}>
         <Text style={textStyle}>{content}</Text>

@@ -42,6 +42,7 @@ export const Modal: React.FC<ModalProps> = ({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Fechar modal"
+        accessibilityHint="Fecha a janela modal atual e retorna à tela anterior"
         style={styles.backdrop}
         onPress={onClose}
       >
@@ -83,6 +84,7 @@ export const Modal: React.FC<ModalProps> = ({
                     <TouchableOpacity
                       accessibilityRole="button"
                       accessibilityLabel="Fechar"
+                      accessibilityHint="Fecha a janela modal atual"
                       onPress={onClose}
                       style={{
                         minWidth: Tokens.touchTargets.min,

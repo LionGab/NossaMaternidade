@@ -30,6 +30,14 @@ export { Skeleton, SkeletonText, SkeletonCard, type SkeletonProps, type Skeleton
 export { EmptyState, type EmptyStateProps } from './EmptyState';
 export { ErrorState, type ErrorStateProps, type ErrorType } from './ErrorState';
 
+// GeminiApp-Inspired Components (New Design System)
+export { HeroHeader, type HeroHeaderProps } from './HeroHeader';
+export { GlassCard, type GlassCardProps, type GlassVariant } from './GlassCard';
+export { MoodSelector, type MoodSelectorProps, type MoodType, MOOD_OPTIONS } from './MoodSelector';
+export { AIModePicker, type AIModePickerProps, type AIMode, AI_MODE_OPTIONS } from './AIModePicker';
+export { FloatingTabBar, type FloatingTabBarProps, type TabName, TAB_CONFIG } from './FloatingTabBar';
+export { BabyTrackerCard, type BabyTrackerCardProps } from './BabyTrackerCard';
+
 // Primitive Components
 export { H1, H2, H3 } from './primitives/Heading';
 export { Text, Body, Caption } from './primitives/Text';
