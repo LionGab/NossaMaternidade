@@ -3,25 +3,26 @@
  *
  * Botão flutuante com animação de pulso para acesso rápido ao SOS Mãe
  * em qualquer tela do app.
+ * 
+ * Otimizado para iOS (App Store) com SafeArea support.
+ * 
  * Referência: app-redesign-studio-ab40635e/src/components/sos/SOSMaeFloatingButton.tsx
  * Adaptado para React Native com react-native-reanimated.
  */
 
 import { AlertCircle } from 'lucide-react-native';
-import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Pressable, Platform } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withRepeat,
   withTiming,
-  withSequence,
   Easing,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 
-import { Text } from '@/components/atoms/Text';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
 import { useNavigation } from '@react-navigation/native';
@@ -35,13 +36,20 @@ interface SOSMaeFloatingButtonProps {
 }
 
 export function SOSMaeFloatingButton({ style }: SOSMaeFloatingButtonProps) {
-  const { colors, isDark } = useTheme();
+  const { isDark } = useTheme();
   const navigation = useNavigation<NavigationProp>();
-  const [isPressed, setIsPressed] = useState(false);
 
   const scale = useSharedValue(1);
   const pulseScale = useSharedValue(1);
   const pulseOpacity = useSharedValue(0.5);
+
+  // iOS: posição considerando SafeArea (notch + home indicator)
+  // Android/Web: posição padrão
+  // Para iOS, usamos valor fixo seguro (34px home indicator + padding)
+  // Na web, sempre usar 100px
+  const bottomOffset = Platform.OS === 'ios' 
+    ? 100 + 34 // iOS: posição base + home indicator height aproximado
+    : 100; // Android/Web: posição fixa
 
   // Animação de pulso contínuo
   React.useEffect(() => {
@@ -61,6 +69,7 @@ export function SOSMaeFloatingButton({ style }: SOSMaeFloatingButtonProps) {
       -1,
       true
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlePress = () => {
@@ -69,12 +78,10 @@ export function SOSMaeFloatingButton({ style }: SOSMaeFloatingButtonProps) {
   };
 
   const handlePressIn = () => {
-    setIsPressed(true);
     scale.value = withTiming(0.95, { duration: 100 });
   };
 
   const handlePressOut = () => {
-    setIsPressed(false);
     scale.value = withTiming(1, { duration: 100 });
   };
 
@@ -92,21 +99,41 @@ export function SOSMaeFloatingButton({ style }: SOSMaeFloatingButtonProps) {
       style={[
         {
           position: 'absolute',
-          bottom: 100,
+          bottom: bottomOffset,
           right: Tokens.spacing['4'],
           zIndex: 50,
+          ...Platform.select({
+            ios: {
+              // iOS: garantir que está acima de tudo
+              elevation: 10,
+            },
+            android: {
+              elevation: 8,
+            },
+          }),
         },
         style,
       ]}
+      pointerEvents="box-none"
     >
-      <TouchableOpacity
+      <Pressable
         onPress={handlePress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        activeOpacity={0.9}
         accessibilityRole="button"
         accessibilityLabel="Abrir SOS Mãe"
         accessibilityHint="Acesso rápido ao suporte emergencial"
+        style={{
+          minWidth: 64,
+          minHeight: 64,
+          ...Platform.select({
+            ios: {
+              // iOS: garantir touch target mínimo
+              minWidth: 44,
+              minHeight: 44,
+            },
+          }),
+        }}
       >
         <Animated.View style={buttonAnimatedStyle}>
           {/* Badge de pulso */}
@@ -151,7 +178,7 @@ export function SOSMaeFloatingButton({ style }: SOSMaeFloatingButtonProps) {
             </LinearGradient>
           </View>
         </Animated.View>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }

@@ -79,6 +79,20 @@ A documentação de design estabelece princípios, padrões e decisões definiti
 
 **Regra de Ouro:** Quando houver dúvida sobre design, consulte `docs/design/` primeiro. Não "adivinhe" - tudo está documentado.
 
+### 🤖 Arquitetura IA (NathIA)
+
+Documentação completa da arquitetura do sistema de IA multi-provider:
+
+- **[Arquitetura NathIA](./docs/NATHIA_ARCHITECTURE.md)**: Documento completo sobre a arquitetura do assistente virtual NathIA, incluindo sistema de agentes, roteamento inteligente, moderação, MCP architecture e integração com o design system
+
+**Tópicos cobertos:**
+- Sistema Multi-Provider (Gemini, OpenAI, Claude) com fallback automático
+- Arquitetura de Agentes (Orchestrator, NathiaPersonalityAgent, MaternalChatAgent, etc.)
+- Roteamento Inteligente (seleção automática de modelo baseado em contexto)
+- Moderação e Segurança (detecção de crise, prevenção de conselhos médicos)
+- Observabilidade e Custos (rastreamento de tokens, custos por provider)
+- Performance e Otimizações
+
 ### 📖 Outros Documentos
 
 - **[Plano de Migração](./MIGRATION_PLAN.md)**: Guia completo para migração para React Native com Expo usando Supabase
