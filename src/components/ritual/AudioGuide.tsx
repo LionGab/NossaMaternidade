@@ -45,6 +45,9 @@ export function AudioGuide({
     if (!trackUrl) return;
 
     let sound: Audio.Sound | null = null;
+    // Capturar valores atuais para uso no callback
+    const currentIsMuted = isMuted;
+    const currentVolume = volume;
 
     const loadAudio = async () => {
       try {
@@ -55,7 +58,7 @@ export function AudioGuide({
 
         const { sound: newSound } = await Audio.Sound.createAsync(
           { uri: trackUrl },
-          { shouldPlay: autoPlay, volume: isMuted ? 0 : volume },
+          { shouldPlay: autoPlay, volume: currentIsMuted ? 0 : currentVolume },
           (status) => {
             if (status.isLoaded) {
               setCurrentTime(status.positionMillis / 1000);
@@ -84,7 +87,7 @@ export function AudioGuide({
         sound.unloadAsync().catch(() => {});
       }
     };
-  }, [trackUrl, autoPlay, onEnded]);
+  }, [trackUrl, autoPlay, onEnded, isMuted, volume]);
 
   useEffect(() => {
     if (soundRef.current) {

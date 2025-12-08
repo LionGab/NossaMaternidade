@@ -75,7 +75,7 @@ export function BreathingGuide({
 
     setPhase('inhale');
     setTimeRemaining(config.inhaleDuration);
-  }, [isActive, config]);
+  }, [isActive, config, scale, opacity]);
 
   // Animações baseadas na fase
   useEffect(() => {
