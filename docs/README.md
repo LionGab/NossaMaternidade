@@ -8,12 +8,35 @@
 
 ### Guias Principais
 
+- **[PLANO_ACAO_CONCRETO.md](./PLANO_ACAO_CONCRETO.md)** ⭐⭐ **COMECE AQUI**
+  - Plano de ação detalhado dia a dia
+  - Tarefas específicas com comandos exatos
+  - Checkpoints para cada fase
+  - 3-4 semanas para publicação completa
+  - Cronograma realista e executável
+
+- **[PLANO_ACAO_RAPIDO.md](./PLANO_ACAO_RAPIDO.md)** ⚡ **VERSÃO RESUMIDA**
+  - Versão resumida do plano
+  - Para quem quer começar rápido
+  - Checklist mínimo
+
 - **[GUIA_PRODUCAO_BRUTAL_2025.md](./GUIA_PRODUCAO_BRUTAL_2025.md)** ⭐ **NOVO**
   - Guia completo e brutal para deixar o app pronto para produção
   - Passo a passo semana a semana
   - Modelos de IA recomendados
   - Guardrails e segurança
   - Checklist completo para App Store e Google Play
+
+- **[ERROS_E_PROBLEMAS.md](./ERROS_E_PROBLEMAS.md)** 🔴 **NOVO**
+  - Lista completa de erros encontrados
+  - Bloqueadores críticos
+  - Problemas importantes
+  - Soluções para cada erro
+
+- **[QUICK_FIX.md](./QUICK_FIX.md)** ⚡ **NOVO**
+  - Correções rápidas
+  - Ações imediatas
+  - Comandos essenciais
 
 - **[DEPLOYMENT_READINESS_CHECKLIST.md](./DEPLOYMENT_READINESS_CHECKLIST.md)**
   - Checklist detalhado de prontidão para deploy
@@ -191,9 +214,15 @@
 ## 🎯 Guias Rápidos por Objetivo
 
 ### "Quero publicar o app nas lojas"
-1. Leia: [GUIA_PRODUCAO_BRUTAL_2025.md](./GUIA_PRODUCAO_BRUTAL_2025.md)
+1. **COMECE AQUI:** [PLANO_ACAO_CONCRETO.md](./PLANO_ACAO_CONCRETO.md) ⭐
 2. Execute: `npm run validate:production`
-3. Siga: Checklist semana a semana no guia
+3. Siga: Tarefas dia a dia no plano
+4. Referência: [GUIA_PRODUCAO_BRUTAL_2025.md](./GUIA_PRODUCAO_BRUTAL_2025.md)
+
+### "Encontrei erros, o que fazer?"
+1. Leia: [ERROS_E_PROBLEMAS.md](./ERROS_E_PROBLEMAS.md)
+2. Quick fix: [QUICK_FIX.md](./QUICK_FIX.md)
+3. Execute correções na ordem de prioridade
 
 ### "Quero melhorar a qualidade do código"
 1. Leia: [MELHORIAS_IDENTIFICADAS.md](./MELHORIAS_IDENTIFICADAS.md)
