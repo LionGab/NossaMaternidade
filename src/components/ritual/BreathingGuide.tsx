@@ -24,7 +24,6 @@ import { Button } from '@/components/atoms/Button';
 import { Text } from '@/components/atoms/Text';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
-import { logger } from '@/utils/logger';
 import type { BreathingConfig } from '@/types/ritual';
 
 interface BreathingGuideProps {
@@ -45,17 +44,12 @@ export function BreathingGuide({
   const [cycle, setCycle] = useState(0);
   const [isActive, setIsActive] = useState(autoStart);
   const [timeRemaining, setTimeRemaining] = useState(config.inhaleDuration);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const scale = useSharedValue(1);
   const opacity = useSharedValue(0.6);
 
-  const phaseDurations: Record<BreathingPhase, number> = {
-    inhale: config.inhaleDuration,
-    hold: config.holdDuration,
-    exhale: config.exhaleDuration,
-    pause: 1,
-  };
+  // phaseDurations removido - não utilizado
 
   const phaseLabels: Record<BreathingPhase, string> = {
     inhale: 'Inspire',

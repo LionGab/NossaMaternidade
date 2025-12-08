@@ -15,6 +15,5 @@ export {
   type ResponseTemplate,
   type TopicTrigger,
   type NathiaValidationResult,
+  default as NATHIA_PERSONA_DEFAULT,
 } from './nathia.persona';
-
-export { default as NathiaPersona } from './nathia.persona';

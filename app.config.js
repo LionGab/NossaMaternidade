@@ -135,6 +135,13 @@ module.exports = {
     },
     web: {
       favicon: './assets/favicon.png',
+      bundler: 'metro',
+      // Configuração para evitar problemas com import.meta
+      build: {
+        babel: {
+          include: ['**/*'],
+        },
+      },
     },
     notification: {
       icon: './assets/notification-icon.png',

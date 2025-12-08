@@ -63,6 +63,7 @@ export interface BoxProps extends Omit<ViewProps, 'style'> {
     | 'space-between'
     | 'space-around'
     | 'space-evenly';
+  flexWrap?: 'wrap' | 'nowrap';
   gap?: keyof typeof Spacing;
 
   // Width/Height
@@ -98,6 +99,7 @@ export const Box = React.memo(function Box({
   direction,
   align,
   justify,
+  flexWrap,
   gap,
   width,
   height,
@@ -157,6 +159,7 @@ export const Box = React.memo(function Box({
       ...(direction && { flexDirection: direction }),
       ...(align && { alignItems: align }),
       ...(justify && { justifyContent: justify }),
+      ...(flexWrap && { flexWrap }),
       ...(gap !== undefined && { gap: Spacing[gap] }),
 
       // Size
@@ -189,6 +192,7 @@ export const Box = React.memo(function Box({
     direction,
     align,
     justify,
+    flexWrap,
     gap,
     width,
     height,

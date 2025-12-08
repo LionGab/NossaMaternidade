@@ -14,11 +14,9 @@ import {
   Heart,
   Coffee,
   BookOpen,
-  Loader2,
 } from 'lucide-react-native';
 import React, { useState, useCallback } from 'react';
 import {
-  View,
   TextInput,
   TouchableOpacity,
   ScrollView,

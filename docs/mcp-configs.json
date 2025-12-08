@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json.schemastore.org/mcp-config",
+  "version": "1.0.0",
+  "project": "nossa-maternidade",
+  "description": "Configurações MCP para o projeto Nossa Maternidade",
+  "servers": {
+    "supabase-mcp": {
+      "name": "Supabase MCP Server",
+      "type": "supabase",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/src/mcp/servers/SupabaseMCPServer.ts"
+      ],
+      "env": {
+        "SUPABASE_URL": "${SUPABASE_URL}",
+        "SUPABASE_ANON_KEY": "${SUPABASE_ANON_KEY}",
+        "SUPABASE_SERVICE_ROLE_KEY": "${SUPABASE_SERVICE_ROLE_KEY}"
+      },
+      "methods": [
+        "query",
+        "insert",
+        "update",
+        "delete",
+        "auth.login",
+        "auth.signup",
+        "auth.logout",
+        "storage.upload",
+        "storage.download",
+        "storage.list"
+      ],
+      "description": "Servidor MCP para acesso ao Supabase (banco de dados, autenticação, storage)"
+    },
+    "google-ai-mcp": {
+      "name": "Google AI (Gemini) MCP Server",
+      "type": "google-ai",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/src/mcp/servers/GoogleAIMCPServer.ts"
+      ],
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "GEMINI_MODEL": "gemini-2.5-flash"
+      },
+      "methods": [
+        "chat",
+        "generate",
+        "embed"
+      ],
+      "description": "Servidor MCP para acesso ao Google AI (Gemini 2.5 Flash) - IA principal do projeto"
+    },
+    "openai-mcp": {
+      "name": "OpenAI MCP Server",
+      "type": "openai",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/src/mcp/servers/OpenAIMCPServer.ts"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "OPENAI_MODEL": "gpt-4o"
+      },
+      "methods": [
+        "chat",
+        "moderate"
+      ],
+      "description": "Servidor MCP para acesso ao OpenAI (GPT-4o) - Usado para crises emocionais e moderação"
+    },
+    "anthropic-mcp": {
+      "name": "Anthropic (Claude) MCP Server",
+      "type": "anthropic",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/src/mcp/servers/AnthropicMCPServer.ts"
+      ],
+      "env": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "ANTHROPIC_MODEL": "claude-opus-3"
+      },
+      "methods": [
+        "chat",
+        "analyze"
+      ],
+      "description": "Servidor MCP para acesso ao Anthropic (Claude Opus) - Análise profunda e moderação"
+    },
+    "analytics-mcp": {
+      "name": "Analytics MCP Server",
+      "type": "analytics",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/src/mcp/servers/AnalyticsMCPServer.ts"
+      ],
+      "env": {
+        "ANALYTICS_ENABLED": "true"
+      },
+      "methods": [
+        "track",
+        "metrics",
+        "report"
+      ],
+      "description": "Servidor MCP para métricas e analytics do projeto"
+    }
+  },
+  "deeplinks": {
+    "base": "cursor-mcp://nossa-maternidade",
+    "servers": {
+      "supabase": {
+        "query": "{base}/supabase/query?table={table}&select={select}&filter={filter}",
+        "insert": "{base}/supabase/insert?table={table}&data={data}",
+        "update": "{base}/supabase/update?table={table}&id={id}&data={data}",
+        "delete": "{base}/supabase/delete?table={table}&id={id}",
+        "auth.login": "{base}/supabase/auth/login?email={email}&password={password}",
+        "auth.signup": "{base}/supabase/auth/signup?email={email}&password={password}",
+        "storage.upload": "{base}/supabase/storage/upload?bucket={bucket}&path={path}&file={file}",
+        "storage.download": "{base}/supabase/storage/download?bucket={bucket}&path={path}"
+      },
+      "google-ai": {
+        "chat": "{base}/google-ai/chat?message={message}&model={model}&temperature={temperature}",
+        "generate": "{base}/google-ai/generate?prompt={prompt}&type={type}",
+        "embed": "{base}/google-ai/embed?text={text}&model={model}"
+      },
+      "openai": {
+        "chat": "{base}/openai/chat?message={message}&model={model}&system={system}",
+        "moderate": "{base}/openai/moderate?text={text}"
+      },
+      "anthropic": {
+        "chat": "{base}/anthropic/chat?message={message}&model={model}",
+        "analyze": "{base}/anthropic/analyze?content={content}&type={type}"
+      },
+      "analytics": {
+        "track": "{base}/analytics/track?event={event}&properties={properties}",
+        "metrics": "{base}/analytics/metrics?type={type}&period={period}"
+      }
+    }
+  },
+  "routing": {
+    "default": "google-ai-mcp",
+    "crisis": "openai-mcp",
+    "analysis": "anthropic-mcp",
+    "moderation": "openai-mcp",
+    "embeddings": "google-ai-mcp"
+  },
+  "fallback": {
+    "enabled": true,
+    "order": [
+      "google-ai-mcp",
+      "openai-mcp",
+      "anthropic-mcp"
+    ]
+  },
+  "metadata": {
+    "author": "Nossa Maternidade Team",
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-XX",
+    "repository": "https://github.com/LionGab/NossaMaternidade"
+  }
+}
+

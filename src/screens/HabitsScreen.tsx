@@ -6,9 +6,8 @@
  * Refatorado para usar componentes separados (CreateHabitModal, HabitCard) e integrar com habitsService.
  */
 
-import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Plus, Heart, Sparkles, Trophy, Flame, TrendingUp } from 'lucide-react-native';
+import { Plus, Heart, Trophy, Flame, TrendingUp } from 'lucide-react-native';
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
@@ -23,7 +22,6 @@ import { Avatar } from '@/components/Avatar';
 import { Badge } from '@/components/Badge';
 import { CreateHabitModal, HabitCard } from '@/components/habits';
 import { Box } from '@/components/atoms/Box';
-import { Button } from '@/components/atoms/Button';
 import { Text } from '@/components/atoms/Text';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { habitsService, type UserHabit } from '@/services/habitsService';
@@ -40,7 +38,7 @@ import { logger } from '@/utils/logger';
 
 export default function HabitsScreen() {
   const { colors, isDark } = useTheme();
-  const insets = useSafeAreaInsets();
+  useSafeAreaInsets();
 
   const [habits, setHabits] = useState<UserHabit[]>([]);
   const [loading, setLoading] = useState(true);

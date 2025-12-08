@@ -11,10 +11,9 @@
  * Alternativa: Usar expo-web-browser ou Linking para abrir YouTube em navegador externo
  */
 
-import { Heart, Clock, Users, Star } from 'lucide-react-native';
+import { Heart, Clock, Users } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { View, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
-import { WebView } from 'react-native-webview';
+import { ActivityIndicator, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 
@@ -44,15 +43,13 @@ interface FeaturedVideoProps {
   onPlay?: () => void;
 }
 
-const DEFAULT_VIDEO_ID = 'riVUidsF2qo'; // Vídeo especial marcado no coração das mães
+// Vídeo especial marcado no coração das mães
+// const DEFAULT_VIDEO_ID = 'riVUidsF2qo';
 
 export function FeaturedVideo({
-  videoId = DEFAULT_VIDEO_ID,
-  videoUrl,
   title = 'O Vídeo que Marcou o Coração de Muitas Mães',
   description = 'Um conteúdo que tocou profundamente milhares de mães. Uma experiência emocional única e transformadora.',
   viewsCount = 10000,
-  rating = 4.9,
   duration = 15,
   onPlay,
 }: FeaturedVideoProps) {
@@ -68,9 +65,7 @@ export function FeaturedVideo({
     setTimeout(() => setVideoLoaded(true), 300);
   };
 
-  const youtubeEmbedUrl = videoUrl
-    ? videoUrl
-    : `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&si=L1Ax2xursLh8w3Fh`;
+  // youtubeEmbedUrl removido - WebView não disponível no momento
 
   return (
     <Box
@@ -152,7 +147,8 @@ export function FeaturedVideo({
               💖 Vídeo Especial
             </Badge>
             <Badge
-              variant="outline"
+              variant="default"
+            outlined
               containerStyle={{
                 backgroundColor: isDark ? `${ColorTokens.neutral[0]}15` : `${ColorTokens.neutral[0]}90`,
                 borderColor: isDark ? ColorTokens.secondary[600] : ColorTokens.secondary[200],
@@ -355,28 +351,9 @@ export function FeaturedVideo({
                   </Text>
                 </Box>
               ) : (
-                <WebView
-                  source={{ uri: youtubeEmbedUrl }}
-                  style={{ flex: 1 }}
-                  allowsFullscreenVideo
-                  mediaPlaybackRequiresUserAction={false}
-                  javaScriptEnabled
-                  domStorageEnabled
-                  startInLoadingState
-                  renderLoading={() => (
-                    <Box
-                      align="center"
-                      justify="center"
-                      style={{
-                        position: 'absolute',
-                        inset: 0,
-                        backgroundColor: ColorTokens.neutral[900],
-                      }}
-                    >
-                      <ActivityIndicator size="large" color={ColorTokens.secondary[500]} />
-                    </Box>
-                  )}
-                />
+                <View style={{ flex: 1, backgroundColor: colors.background.elevated, justifyContent: 'center', alignItems: 'center' }}>
+                  <Text size="sm" color="secondary">WebView não disponível. Instale react-native-webview.</Text>
+                </View>
               )}
             </View>
           )}

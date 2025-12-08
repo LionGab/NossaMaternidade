@@ -7,6 +7,7 @@
  * com APIs Web padrão usadas pelo Supabase:
  * - TextEncoder/TextDecoder: Necessários para decodificação de dados
  * - getRandomValues: Necessário para criptografia (Supabase Auth)
+ * - import.meta: Polyfill para web (resolve erro "Cannot use 'import.meta' outside a module")
  *
  * Abordagem escolhida:
  * - Usa polyfills leves e amplamente testados
@@ -16,6 +17,10 @@
  * Referência: docs/Docfinal.md - Seção 4.2
  * =============================================================================
  */
+
+// Nota: import.meta não pode ser polyfilled porque é uma sintaxe especial do JavaScript
+// O problema é resolvido excluindo arquivos de configuração (eslint.config.mjs) do bundle
+// via metro.config.js blockList
 
 // 1. react-native-get-random-values: OBRIGATÓRIO para Supabase Auth
 // Fornece crypto.getRandomValues() necessário para geração de tokens seguros

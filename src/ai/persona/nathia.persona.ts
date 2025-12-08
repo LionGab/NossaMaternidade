@@ -278,16 +278,7 @@ export const NATHIA_CATCHPHRASES = {
 export async function getNathiaSystemPrompt(): Promise<string> {
   // Em produção, ler do arquivo .md
   // Para dev, usar versão inline
-  try {
-    // Tentar importar o arquivo .md via bundler
-    const promptModule = await import('../prompts/nathia.system.md');
-    if (typeof promptModule.default === 'string') {
-      return promptModule.default;
-    }
-  } catch {
-    // Fallback: retornar versão resumida
-  }
-
+  // TODO: Criar arquivo ../prompts/nathia.system.md quando necessário
   return generateInlineSystemPrompt();
 }
 

@@ -6,7 +6,7 @@
  */
 
 import { logger } from '../../utils/logger';
-import { NATHIA_PERSONA, NATHIA_CATCHPHRASES, NATHIA_EMOJIS } from '../persona/nathia.persona';
+import { NATHIA_PERSONA, NATHIA_CATCHPHRASES } from '../persona/nathia.persona';
 
 // ============================================
 // TIPOS
@@ -118,7 +118,7 @@ const SLANG_PATTERNS = [
  */
 export function validateNathiaResponse(
   response: string,
-  context?: {
+  _context?: {
     userMessage?: string;
     topic?: string;
     userEmotion?: string;

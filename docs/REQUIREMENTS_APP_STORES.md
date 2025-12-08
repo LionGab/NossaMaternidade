@@ -79,11 +79,11 @@ export const useSafeAreaPadding = () => {
 **Uso:**
 
 ```typescript
-import { useSafeAreaPadding } from '@/design-system/safe-areas';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const { top, bottom } = useSafeAreaPadding();
+const insets = useSafeAreaInsets();
 
-<View style={{ paddingTop: top, paddingBottom: bottom }}>
+<View style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
   {/* Conteúdo */}
 </View>
 ```

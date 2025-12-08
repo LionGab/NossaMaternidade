@@ -166,6 +166,57 @@ module.exports = {
         'nath-warm': '#F1F5F9',
         'nath-dark': '#0F172A',
         'nath-pink': '#D93025',
+
+        // ========================================
+        // Flo Design System - Azul & Rosa
+        // Adaptado do Flo Pregnancy Mode
+        // ========================================
+
+        // Flo Pink (Primary)
+        'flo-pink': {
+          50: '#FDF2F8',
+          100: '#FCE7F3',
+          200: '#FBCFE8',
+          300: '#F9A8D4',
+          400: '#F472B6',  // MAIN
+          500: '#EC4899',
+          600: '#DB2777',
+          700: '#BE185D',
+          800: '#9D174D',
+          900: '#831843',
+          DEFAULT: '#F472B6',
+        },
+
+        // Flo Blue (Accent)
+        'flo-blue': {
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',  // MAIN
+          500: '#3B82F6',
+          600: '#2563EB',
+          700: '#1D4ED8',
+          800: '#1E40AF',
+          900: '#1E3A8A',
+          DEFAULT: '#60A5FA',
+        },
+
+        // Flo Backgrounds
+        'flo-bg': {
+          light: '#FFFBFE',      // Branco rosado
+          dark: '#1A1520',       // Roxo escuro
+          card: '#FFFFFF',       // Card branco
+          'card-dark': '#2D2233', // Card dark
+        },
+
+        // Flo Text
+        'flo-text': {
+          primary: '#1F2937',    // gray-800
+          secondary: '#6B7280',  // gray-500
+          muted: '#9CA3AF',      // gray-400
+          accent: '#EC4899',     // pink-500
+        },
       },
 
       // Design System Spacing
@@ -335,6 +386,12 @@ module.exports = {
         'gradient-coral': 'linear-gradient(to bottom right, #D93025, #991B1B)',
         'gradient-mint': 'linear-gradient(to bottom right, #5EEAD4, #236B62)',
         'gradient-sunshine': 'linear-gradient(to bottom right, #FCD34D, #F59E0B)',
+        // Flo Design Gradients
+        'gradient-flo': 'linear-gradient(to right, #F472B6, #60A5FA)',           // Rosa -> Azul
+        'gradient-flo-alt': 'linear-gradient(to right, #EC4899, #8B5CF6)',       // Pink -> Violet
+        'gradient-flo-soft': 'linear-gradient(to right, #FCE7F3, #DBEAFE)',      // Rosa claro -> Azul claro
+        'gradient-flo-header': 'linear-gradient(to right, #F472B6, #EC4899, #8B5CF6)', // Header 3 cores
+        'gradient-flo-dark': 'linear-gradient(to right, #831843, #1E3A5F)',      // Dark mode
       },
     },
   },

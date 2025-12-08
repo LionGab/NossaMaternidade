@@ -207,3 +207,22 @@ export {
   createAndroidCardStyle,
   default as Android,
 } from './adapters/android';
+
+// Flo Design System (Azul & Rosa)
+export {
+  FloTheme,
+  FloLightColors,
+  FloDarkColors,
+  FloPink,
+  FloBlue,
+  FloFunctional,
+  FloGradients,
+  FloTypography,
+  FloRadius,
+  FloShadows,
+  FloComponents,
+  getFloColors,
+  getFloFunctionalColor,
+  createFloGradient,
+  default as Flo,
+} from './floColors';

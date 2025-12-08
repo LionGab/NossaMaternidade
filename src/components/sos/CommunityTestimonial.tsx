@@ -9,7 +9,6 @@
 
 import { Users, Heart } from 'lucide-react-native';
 import React from 'react';
-import { View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -28,7 +27,6 @@ interface CommunityTestimonialProps {
 
 export function CommunityTestimonial({
   testimonial,
-  stats,
   sentiment,
 }: CommunityTestimonialProps) {
   const { colors, isDark } = useTheme();
@@ -121,7 +119,7 @@ export function CommunityTestimonial({
             size="sm"
             style={{
               fontStyle: 'italic',
-              lineHeight: Tokens.typography.lineHeights.relaxed,
+              lineHeight: Tokens.typography.lineHeights.lg,
               color: colors.text.primary,
               marginBottom: Tokens.spacing['3'],
             }}

@@ -248,9 +248,10 @@ export const guiltService = {
         {} as Record<GuiltType, number>
       );
 
-      const mostCommonGuilt = Object.entries(guiltCounts).reduce((a, b) =>
-        a[1] > b[1] ? a : b
-      )[0] as GuiltType;
+      const entries = Object.entries(guiltCounts) as [GuiltType, number][];
+      const mostCommonGuilt = (entries.reduce(
+        (a, b) => (a[1] > b[1] ? a : b)
+      )[0] as GuiltType);
 
       // Calcular streak (dias consecutivos)
       const uniqueDays = new Set(

@@ -9,23 +9,18 @@
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Plus, Users, Grid, Sparkles, Loader2 } from 'lucide-react-native';
+import { Plus, Users, Grid } from 'lucide-react-native';
 import React, { useState, useCallback, useEffect } from 'react';
 import {
   TouchableOpacity,
   ScrollView,
-  StyleSheet,
   View,
-  FlatList,
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
-import { Badge } from '@/components/Badge';
 import { CreatePostModal, PostCard } from '@/components/community';
 import { Box } from '@/components/atoms/Box';
 import { Text } from '@/components/atoms/Text';
@@ -37,7 +32,6 @@ import { triggerPlatformHaptic } from '@/theme/platform';
 import {
   ColorTokens,
   Tokens,
-  Shadows,
   Spacing,
   Radius,
 } from '@/theme/tokens';
@@ -56,7 +50,7 @@ export default function CommunityScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [likingPostId, setLikingPostId] = useState<string | null>(null);
-  const [page, setPage] = useState(0);
+  const [_page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
   const filters: FilterType[] = ['Todos', 'Dicas', 'Desabafos', 'Dúvidas', 'Humor'];
@@ -97,12 +91,12 @@ export default function CommunityScreen() {
     loadPosts(0, true);
   }, [loadPosts]);
 
-  // Load more
-  const handleLoadMore = useCallback(() => {
-    if (!loading && hasMore && !refreshing) {
-      loadPosts(page + 1, false);
-    }
-  }, [loading, hasMore, refreshing, page, loadPosts]);
+  // Load more (função disponível mas não usada atualmente no FlatList)
+  // const handleLoadMore = useCallback(() => {
+  //   if (!loading && hasMore && !refreshing) {
+  //     loadPosts(page + 1, false);
+  //   }
+  // }, [loading, hasMore, refreshing, page, loadPosts]);
 
   const handleFilterPress = (filter: FilterType) => {
     triggerPlatformHaptic('selection');
