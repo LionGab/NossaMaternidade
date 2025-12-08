@@ -54,6 +54,10 @@ export function AmbientSound({ config, onConfigChange }: AmbientSoundProps) {
     if (!url) return;
 
     let sound: Audio.Sound | null = null;
+    // Capturar valores atuais para uso no cleanup e async
+    const currentIsPlaying = isPlaying;
+    const currentVolume = config.volume;
+    const currentEnabled = config.enabled;
 
     const loadAudio = async () => {
       try {
@@ -65,8 +69,8 @@ export function AmbientSound({ config, onConfigChange }: AmbientSoundProps) {
         const { sound: newSound } = await Audio.Sound.createAsync(
           { uri: url },
           {
-            shouldPlay: config.enabled && isPlaying,
-            volume: config.volume,
+            shouldPlay: currentEnabled && currentIsPlaying,
+            volume: currentVolume,
             isLooping: true,
           }
         );
@@ -85,7 +89,7 @@ export function AmbientSound({ config, onConfigChange }: AmbientSoundProps) {
         sound.unloadAsync().catch(() => {});
       }
     };
-  }, [config.type]);
+  }, [config.type, config.enabled, config.volume, isPlaying]);
 
   useEffect(() => {
     if (soundRef.current) {
