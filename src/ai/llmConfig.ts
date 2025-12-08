@@ -60,11 +60,11 @@ const LLM_PROFILES: Record<LlmProfile, LlmModelConfig> = {
   CHAT_DEFAULT: {
     provider: 'gemini',
     modelName: 'gemini-2.5-flash',
-    temperature: 0.9,
+    temperature: 0.85, // Otimizado para expressividade sem perder coerência (conforme estudo)
     topP: 0.95,
     topK: 40,
-    maxTokens: 2048,
-    description: 'Chat geral com NathIA - modelo rápido e empático',
+    maxTokens: 500, // Reduzido para respostas mais concisas (chat mobile)
+    description: 'Chat geral com NathIA - modelo rápido e empático com persona autêntica',
     costPer1kTokens: {
       input: 0.0001, // Aproximado para Gemini Flash
       output: 0.0002,

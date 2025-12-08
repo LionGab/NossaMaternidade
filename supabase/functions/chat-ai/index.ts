@@ -97,12 +97,15 @@ serve(async (req) => {
     });
 
     // Iniciar chat com histórico
+    // Configuração otimizada para NathIA (temperature 0.85 conforme estudo técnico)
     const chat = model.startChat({
       history: history,
       generationConfig: {
-        maxOutputTokens: 1024,
-        temperature: 0.9,
+        temperature: 0.85, // Expressividade sem perder coerência
         topP: 0.95,
+        topK: 40,
+        maxOutputTokens: 500, // Respostas concisas para chat mobile
+        stopSequences: [],
       },
     });
 
