@@ -61,6 +61,7 @@
     "fix:virtualization": "pwsh -ExecutionPolicy Bypass -File scripts/fix-docker-virtualization.ps1",
     "validate:platform": "ts-node scripts/validate-platform-design.ts",
     "validate:pre-deploy": "ts-node scripts/validate-pre-deploy.ts",
+    "validate:production": "node scripts/validate-production-readiness.js",
     "design:refactor": "ts-node scripts/design-refactor.ts",
     "design:validate": "ts-node scripts/design-refactor.ts --validate",
     "validate": "npm run type-check && npm run validate:design && npm run validate:env || echo '⚠️  validate:env falhou (arquivo .env pode não existir)' && npm run lint || echo '⚠️  lint falhou'",
