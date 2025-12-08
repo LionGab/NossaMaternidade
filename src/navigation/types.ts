@@ -16,6 +16,7 @@ export type RootStackParamList = {
   SOSMae: undefined; // 🆘 SOS Mãe - suporte emergencial
   PrivacyPolicy: undefined;
   TermsOfService: undefined;
+  MedicalDisclaimer: undefined;
   Settings: undefined;
   AgentsStatus: undefined; // 🆕 Tela de status dos agentes IA
   Profile: undefined;

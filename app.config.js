@@ -34,7 +34,9 @@ module.exports = {
     backgroundColor: COLORS.background,
 
     // New Architecture (React Native 0.76+)
-    newArchEnabled: true,
+    // ⚠️ DESABILITADO para compatibilidade com Expo Go
+    // Para usar nova arquitetura, use development build: npm run build:dev
+    newArchEnabled: false,
 
     splash: {
       image: './assets/splash.png',
@@ -166,7 +168,9 @@ module.exports = {
       'expo-font',
       'expo-localization',
       'expo-tracking-transparency',
-      '@sentry/react-native/expo',
+      // ⚠️ Sentry plugin removido para compatibilidade com Expo Go
+      // Para usar Sentry, faça development build: npm run build:dev
+      // '@sentry/react-native/expo',
       [
         'expo-splash-screen',
         {

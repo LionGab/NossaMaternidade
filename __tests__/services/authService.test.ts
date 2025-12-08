@@ -186,5 +186,62 @@ describe('AuthService', () => {
 
       expect(result).toBeNull();
     });
+
+    it('deve retornar null quando ocorre erro', async () => {
+      (supabase.auth.getUser as jest.Mock).mockResolvedValue({
+        data: { user: null },
+        error: { message: 'Auth error' },
+      });
+
+      const result = await authService.getCurrentUser();
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('deve enviar email de reset de senha', async () => {
+      (supabase.auth.resetPasswordForEmail as jest.Mock).mockResolvedValue({
+        data: {},
+        error: null,
+      });
+
+      const result = await authService.resetPassword('test@example.com');
+
+      expect(result.error).toBeNull();
+      expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalledWith('test@example.com', {
+        redirectTo: expect.any(String),
+      });
+    });
+
+    it('deve retornar erro quando email invalido', async () => {
+      (supabase.auth.resetPasswordForEmail as jest.Mock).mockResolvedValue({
+        data: {},
+        error: { message: 'Invalid email' },
+      });
+
+      const result = await authService.resetPassword('invalid-email');
+
+      expect(result.error).toBeTruthy();
+      expect(result.error?.message).toBe('Invalid email');
+    });
+  });
+
+  describe('signInWithOAuth', () => {
+    it('deve iniciar OAuth flow', async () => {
+      (supabase.auth.signInWithOAuth as jest.Mock).mockResolvedValue({
+        data: { provider: 'google', url: 'https://oauth.url' },
+        error: null,
+      });
+
+      const result = await authService.signInWithOAuth('google');
+
+      expect(result.error).toBeNull();
+      expect(supabase.auth.signInWithOAuth).toHaveBeenCalledWith(
+        expect.objectContaining({
+          provider: 'google',
+        })
+      );
+    });
   });
 });

@@ -23,6 +23,7 @@ const DiaryScreen = React.lazy(() => import('../screens/DiaryScreen'));
 const DesculpaHojeScreen = React.lazy(() => import('../screens/DesculpaHojeScreen'));
 const PrivacyPolicyScreen = React.lazy(() => import('../screens/PrivacyPolicyScreen'));
 const TermsOfServiceScreen = React.lazy(() => import('../screens/TermsOfServiceScreen'));
+const MedicalDisclaimerScreen = React.lazy(() => import('../screens/MedicalDisclaimerScreen'));
 const SettingsScreen = React.lazy(() => import('../screens/SettingsScreen'));
 const AgentsStatusScreen = React.lazy(() => import('../screens/AgentsStatusScreen'));
 const ProfileScreen = React.lazy(() => import('../screens/ProfileScreen'));
@@ -260,6 +261,15 @@ export const StackNavigator = () => {
         }}
       >
         {(props) => <LazyScreen component={TermsOfServiceScreen} {...props} />}
+      </Stack.Screen>
+      <Stack.Screen
+        name="MedicalDisclaimer"
+        options={{
+          presentation: 'card',
+          animation: 'slide_from_right',
+        }}
+      >
+        {(props) => <LazyScreen component={MedicalDisclaimerScreen} {...props} />}
       </Stack.Screen>
       <Stack.Screen
         name="Settings"

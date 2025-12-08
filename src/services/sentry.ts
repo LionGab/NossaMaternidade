@@ -2,9 +2,23 @@
  * Sentry Configuration
  * Crash reporting e error tracking para produção
  * DSN configurado via variáveis de ambiente (app.json extra.sentryDsn)
+ * 
+ * ⚠️ COMPATIBILIDADE EXPO GO:
+ * - Sentry requer development build (npm run build:dev)
+ * - No Expo Go, o Sentry não será inicializado (fail-safe)
  */
 
-import * as Sentry from '@sentry/react-native';
+// Importação segura do Sentry (pode falhar no Expo Go)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let Sentry: any = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  Sentry = require('@sentry/react-native');
+} catch (error) {
+  // Sentry não disponível (Expo Go ou não instalado)
+  // Isso é esperado e não é um erro
+}
+
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
@@ -46,6 +60,14 @@ function isValidSentryDsn(dsn: string): boolean {
  * Chamado uma vez no App.tsx
  */
 export function initSentry(): void {
+  // Verificar se Sentry está disponível (não está no Expo Go)
+  if (!Sentry) {
+    if (isDevelopment) {
+      logger.debug('[Sentry] Não disponível no Expo Go - crash reporting desabilitado');
+    }
+    return;
+  }
+
   // Não inicializar em desenvolvimento sem DSN válido
   if (!SENTRY_DSN || !isValidSentryDsn(SENTRY_DSN)) {
     if (isDevelopment) {
@@ -75,12 +97,14 @@ export function initSentry(): void {
       tracesSampleRate: isDevelopment ? 0 : 0.2,
 
       // Filtros de dados sensíveis
-      beforeSend(event) {
+      beforeSend(event: unknown) {
         // Remover dados sensíveis
-        if (event.user) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const sentryEvent = event as any;
+        if (sentryEvent?.user) {
           // Manter apenas ID anônimo, sem PII
-          event.user = {
-            id: event.user.id,
+          sentryEvent.user = {
+            id: sentryEvent.user.id,
           };
         }
 
@@ -89,7 +113,7 @@ export function initSentry(): void {
           return null;
         }
 
-        return event;
+        return sentryEvent;
       },
 
       // Debug apenas em desenvolvimento
@@ -109,14 +133,21 @@ export function initSentry(): void {
  * @param error - Erro a ser capturado
  * @param context - Contexto adicional (tags, extras)
  */
+type SentrySeverityLevel = 'fatal' | 'error' | 'warning' | 'info' | 'debug';
+
 export function captureException(
   error: Error | unknown,
   context?: {
     tags?: Record<string, string>;
     extras?: Record<string, unknown>;
-    level?: Sentry.SeverityLevel;
+    level?: SentrySeverityLevel;
   }
 ): string | undefined {
+  if (!Sentry) {
+    // Sentry não disponível (Expo Go)
+    return undefined;
+  }
+
   if (!SENTRY_DSN) {
     if (isDevelopment) {
       logger.warn('[Sentry] Erro capturado (DSN não configurado)', error);
@@ -148,8 +179,13 @@ export function captureException(
  */
 export function captureMessage(
   message: string,
-  level: Sentry.SeverityLevel = 'info'
+  level: SentrySeverityLevel = 'info'
 ): string | undefined {
+  if (!Sentry) {
+    // Sentry não disponível (Expo Go)
+    return undefined;
+  }
+
   if (!SENTRY_DSN) {
     return undefined;
   }
@@ -170,6 +206,7 @@ export function captureMessage(
  * @param userId - ID do usuário (anônimo)
  */
 export function setUser(userId: string | null): void {
+  if (!Sentry) return; // Sentry não disponível (Expo Go)
   if (!SENTRY_DSN) return;
 
   try {
@@ -193,9 +230,10 @@ export function setUser(userId: string | null): void {
 export function addBreadcrumb(breadcrumb: {
   category: string;
   message: string;
-  level?: Sentry.SeverityLevel;
+  level?: SentrySeverityLevel;
   data?: Record<string, unknown>;
 }): void {
+  if (!Sentry) return; // Sentry não disponível (Expo Go)
   if (!SENTRY_DSN) return;
 
   try {
@@ -217,9 +255,11 @@ export function addBreadcrumb(breadcrumb: {
  * Wraps React component com Sentry Error Boundary
  * Para uso manual quando necessário
  */
-export const SentryErrorBoundary = Sentry.wrap;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SentryErrorBoundary = Sentry?.wrap || ((Component: any) => Component);
 
 /**
  * Exporta o módulo Sentry para uso direto quando necessário
+ * Pode ser null no Expo Go
  */
 export { Sentry };

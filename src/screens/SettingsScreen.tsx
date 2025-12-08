@@ -406,6 +406,15 @@ export default function SettingsScreen() {
           }}
         />
 
+        <SettingItem
+          icon={Shield}
+          title="Aviso Médico"
+          subtitle="Informações importantes sobre saúde"
+          onPress={() => {
+            navigation.navigate('MedicalDisclaimer' as never);
+          }}
+        />
+
         {/* Sistema / Debug */}
         <SectionTitle>Sistema</SectionTitle>
 

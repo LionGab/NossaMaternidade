@@ -136,10 +136,13 @@ npm install
    EXPO_PUBLIC_SUPABASE_FUNCTIONS_URL=sua_url_aqui/functions/v1
    ```
 
+   📖 Veja [docs/SETUP_BACKEND.md](./docs/SETUP_BACKEND.md) para guia completo de configuração do backend.
    📖 Veja [docs/setup-env.md](./docs/setup-env.md) para configuração completa.
    📖 Veja [docs/env-variables.md](./docs/env-variables.md) para mais detalhes sobre as variáveis de ambiente.
 
    **⚠️ IMPORTANTE:** O arquivo `.env` está no `.gitignore` e não será commitado.
+
+   **🔍 Validação:** Execute `npm run validate:env` para verificar se todas as variáveis estão configuradas corretamente.
 
    **🔐 Configuração Gemini (Produção):** Para produção, configure `GEMINI_API_KEY` como **SECRET** no Supabase (não no `.env`):
    - 📖 [Guia Completo](./docs/SUPABASE_GEMINI_SECRET_SETUP.md)
@@ -184,6 +187,8 @@ npm run web
 ### Nota sobre Expo Go
 
 ⚠️ **Importante**: Este projeto está configurado para funcionar com Expo Go. A nova arquitetura do React Native foi desabilitada para garantir compatibilidade. Se você precisar usar recursos que requerem desenvolvimento build customizado, use `eas build` para criar um build de desenvolvimento.
+
+📖 Veja [docs/EXPO_GO_COMPATIBILITY.md](./docs/EXPO_GO_COMPATIBILITY.md) para detalhes completos sobre compatibilidade e limitações.
 
 ### Verificação de Tipos
 
@@ -411,6 +416,7 @@ O app inclui um sistema robusto de tratamento de erros:
 
 ### Setup e Configuração
 
+- [docs/SETUP_BACKEND.md](./docs/SETUP_BACKEND.md) - ⭐ **Guia completo de configuração do backend** (Supabase, APIs de IA, Edge Functions)
 - [docs/setup-env.md](./docs/setup-env.md) - Configuração de variáveis de ambiente
 - [docs/env-variables.md](./docs/env-variables.md) - Referência de variáveis de ambiente
 - [docs/setup-expo-go.md](./docs/setup-expo-go.md) - Setup para Expo Go
