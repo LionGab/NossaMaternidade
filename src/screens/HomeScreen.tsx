@@ -49,7 +49,7 @@ import { SOSMaeFloatingButton } from '@/components/sos';
 import { guiltService } from '@/services/guiltService';
 import { bookmarkService } from '@/services/bookmarkService';
 import type { MainTabParamList, RootStackParamList } from '@/navigation/types';
-import { useTheme } from '@/theme';
+import { useTheme, useWellnessTheme } from '@/theme';
 import { getPlatformShadow } from '@/theme/platform';
 import { Tokens, ColorTokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';
@@ -67,6 +67,7 @@ const SPECIAL_CONTENT_ID = 'featured-special-content-001';
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { colors, isDark } = useTheme();
+  const wellness = useWellnessTheme(); // 🌸 Wellness Design System (Flo/Calm/Clue inspired)
   const insets = useSafeAreaInsets();
 
   const [isContentSaved, setIsContentSaved] = useState(false);
@@ -249,12 +250,12 @@ export default function HomeScreen() {
           size="2xl"
           weight="bold"
           style={{
-            color: ColorTokens.primary[500],
+            color: wellness.colors.primary[500], // 🌸 Wellness rosa suave
           }}
         >
           Olá, mãe
         </Text>
-        <Text variant="body" size="sm" style={{ color: `${ColorTokens.info[700]}B3`, lineHeight: 24 }}>
+        <Text variant="body" size="sm" style={{ color: wellness.theme.text.secondary, lineHeight: 24 }}>
           Respira um pouquinho. Estamos aqui por você.
         </Text>
       </Box>
@@ -272,7 +273,7 @@ export default function HomeScreen() {
           right: 0,
           zIndex: 40,
           borderBottomWidth: 1,
-          borderBottomColor: `${ColorTokens.info[100]}80`,
+          borderBottomColor: `${wellness.colors.primary[100]}60`,
         }}
       >
         {Platform.OS === 'ios' ? (
@@ -283,9 +284,9 @@ export default function HomeScreen() {
           >
             <LinearGradient
               colors={[
-                `${ColorTokens.info[50]}E6`,
-                `${ColorTokens.accent.oceanLight}CC`,
-                `${ColorTokens.info[50]}E6`,
+                `${wellness.colors.primary[50]}E6`, // 🌸 Wellness rosa claro
+                `${wellness.colors.secondary[100]}CC`, // 🌸 Wellness roxo suave
+                `${wellness.colors.primary[50]}E6`,
               ]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -297,9 +298,9 @@ export default function HomeScreen() {
         ) : (
           <LinearGradient
             colors={[
-              `${ColorTokens.info[50]}E6`,
-              `${ColorTokens.accent.oceanLight}CC`,
-              `${ColorTokens.info[50]}E6`,
+              `${wellness.colors.primary[50]}E6`, // 🌸 Wellness rosa claro
+              `${wellness.colors.secondary[100]}CC`, // 🌸 Wellness roxo suave
+              `${wellness.colors.primary[50]}E6`,
             ]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
@@ -715,27 +716,27 @@ export default function HomeScreen() {
           accessibilityHint="Abre o chat com a assistente virtual NathIA"
           style={{
             marginBottom: LAYOUT.sectionSpacing,
-            borderRadius: Tokens.radius['3xl'],
+            borderRadius: wellness.radius.xl, // 🌸 Wellness radius
             overflow: 'hidden',
             borderWidth: 2,
-            borderColor: `${ColorTokens.primary[200]}80`,
-            ...getPlatformShadow('md'),
+            borderColor: `${wellness.colors.primary[200]}80`,
+            ...wellness.shadows.md, // 🌸 Wellness shadow
             position: 'relative',
           }}
         >
           <LinearGradient
             colors={[
-              `${ColorTokens.primary[50]}4D`,
-              `${ColorTokens.accent.oceanLight}66`,
-              `${ColorTokens.primary[50]}4D`,
+              `${wellness.colors.primary[50]}4D`, // 🌸 Wellness rosa suave
+              `${wellness.colors.secondary[100]}66`, // 🌸 Wellness roxo claro
+              `${wellness.colors.primary[50]}4D`,
             ]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ position: 'absolute', inset: 0 }}
           />
 
-          <CardBlurEffect position="top-right" color={`${ColorTokens.primary[200]}26`} size={224} />
-          <CardBlurEffect position="bottom-right" color={`${ColorTokens.info[200]}1F`} size={176} />
+          <CardBlurEffect position="top-right" color={`${wellness.colors.primary[200]}26`} size={224} />
+          <CardBlurEffect position="bottom-right" color={`${wellness.colors.secondary[200]}1F`} size={176} />
 
           <View style={{ padding: Tokens.spacing['6'], position: 'relative' }}>
             <Box direction="row" align="center" justify="space-between" gap="4" mb="5">
@@ -747,7 +748,7 @@ export default function HomeScreen() {
                     name="NathIA"
                     fallback="N"
                     borderWidth={2}
-                    borderColor={`${ColorTokens.primary[300]}4D`}
+                    borderColor={`${wellness.colors.primary[300]}4D`} // 🌸 Wellness rosa
                     useGradientFallback
                   />
                   <View
@@ -758,7 +759,7 @@ export default function HomeScreen() {
                       width: LAYOUT.statusIndicatorSmall,
                       height: LAYOUT.statusIndicatorSmall,
                       borderRadius: LAYOUT.statusIndicatorSmall / 2,
-                      backgroundColor: ColorTokens.primary[400],
+                      backgroundColor: wellness.colors.primary[400], // 🌸 Wellness rosa
                       borderWidth: 2,
                       borderColor: colors.background.canvas,
                     }}
@@ -771,7 +772,7 @@ export default function HomeScreen() {
                     size="2xl"
                     weight="bold"
                     style={{
-                      color: ColorTokens.primary[600],
+                      color: wellness.colors.primary[600], // 🌸 Wellness rosa forte
                     }}
                   >
                     Converse com a NathIA
@@ -780,7 +781,7 @@ export default function HomeScreen() {
                     variant="primary"
                     size="sm"
                     containerStyle={{
-                      backgroundColor: ColorTokens.primary[500],
+                      backgroundColor: wellness.colors.primary[500], // 🌸 Wellness rosa main
                       borderWidth: 0,
                     }}
                   >
@@ -795,7 +796,7 @@ export default function HomeScreen() {
               <Button
                 title=""
                 onPress={handleMicClick}
-                leftIcon={<Mic size={16} color={ColorTokens.primary[600]} />}
+                leftIcon={<Mic size={16} color={wellness.colors.primary[600]} />} // 🌸 Wellness
                 variant="ghost"
                 size="md"
                 className="rounded-xl border-pink-200/50 bg-background/50 h-10 w-10"
@@ -807,7 +808,7 @@ export default function HomeScreen() {
               size="sm"
               weight="medium"
               style={{
-                color: `${ColorTokens.primary[700]}CC`,
+                color: wellness.theme.text.secondary, // 🌸 Wellness text
                 lineHeight: 24,
                 textAlign: 'center',
                 marginBottom: Tokens.spacing['5'],
@@ -884,28 +885,28 @@ export default function HomeScreen() {
         <View
           style={{
             backgroundColor: colors.background.card,
-            borderRadius: Tokens.radius['3xl'],
-            padding: Tokens.spacing['6'],
+            borderRadius: wellness.radius.xl, // 🌸 Wellness radius
+            padding: wellness.spacing[6], // 🌸 Wellness spacing
             marginBottom: LAYOUT.sectionSpacing,
             borderWidth: 1,
-            borderColor: `${ColorTokens.primary[200]}80`,
-            ...getPlatformShadow('sm'),
+            borderColor: `${wellness.colors.primary[200]}80`,
+            ...wellness.shadows.md, // 🌸 Wellness shadow
             position: 'relative',
             overflow: 'hidden',
           }}
         >
-          <CardBlurEffect position="top-right" color={`${ColorTokens.primary[100]}26`} />
-          <CardBlurEffect position="bottom-left" color={`${ColorTokens.info[100]}1F`} size={LAYOUT.blurCircleSmall} />
+          <CardBlurEffect position="top-right" color={`${wellness.colors.primary[100]}26`} />
+          <CardBlurEffect position="bottom-left" color={`${wellness.colors.secondary[100]}1F`} size={LAYOUT.blurCircleSmall} />
 
           <Box gap="6" style={{ position: 'relative' }}>
             <Box direction="row" align="center" gap="5">
               <View
                 style={{
-                  padding: Tokens.spacing['3'],
-                  borderRadius: Tokens.radius.xl,
-                  backgroundColor: `${ColorTokens.primary[50]}FF`,
+                  padding: wellness.spacing[3],
+                  borderRadius: wellness.radius.lg,
+                  backgroundColor: `${wellness.colors.primary[50]}FF`,
                   borderWidth: 1,
-                  borderColor: `${ColorTokens.primary[100]}80`,
+                  borderColor: `${wellness.colors.primary[100]}80`,
                 }}
               >
                 <Text variant="body" size="2xl">
@@ -918,7 +919,7 @@ export default function HomeScreen() {
                   size="2xl"
                   weight="bold"
                   style={{
-                    color: ColorTokens.primary[600],
+                    color: wellness.colors.primary[600], // 🌸 Wellness rosa
                   }}
                 >
                   Como você está hoje?
@@ -926,7 +927,7 @@ export default function HomeScreen() {
                 <Text
                   variant="caption"
                   size="xs"
-                  style={{ color: `${ColorTokens.primary[700]}99`, marginTop: Tokens.spacing['1.5'] }}
+                  style={{ color: wellness.theme.text.tertiary, marginTop: Tokens.spacing['1.5'] }} // 🌸 Wellness
                 >
                   Toque na opção que mais combina
                 </Text>
@@ -956,23 +957,23 @@ export default function HomeScreen() {
                   style={{
                     flex: 1,
                     minWidth: '45%',
-                    paddingVertical: Tokens.spacing['5'],
-                    paddingHorizontal: Tokens.spacing['2'],
-                    borderRadius: Tokens.radius['2xl'],
+                    paddingVertical: wellness.spacing[5],
+                    paddingHorizontal: wellness.spacing[2],
+                    borderRadius: wellness.radius.lg, // 🌸 Wellness radius
                     borderWidth: 2,
-                    borderColor: `${ColorTokens.primary[100]}80`,
+                    borderColor: `${wellness.colors.primary[100]}80`,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    minHeight: Tokens.touchTargets.min,
-                    backgroundColor: `${ColorTokens.primary[50]}FF`,
+                    minHeight: wellness.components.button.minHeight, // 🌸 Wellness touch target
+                    backgroundColor: `${wellness.colors.primary[50]}FF`,
                     opacity: emotionLoading ? 0.5 : 1,
                   }}
                   activeOpacity={0.95}
                 >
-                  <Text variant="body" size="3xl" style={{ marginBottom: Tokens.spacing['3'] }}>
+                  <Text variant="body" size="3xl" style={{ marginBottom: wellness.spacing[3] }}>
                     {mood.emoji}
                   </Text>
-                  <Text variant="body" size="sm" weight="semibold" style={{ color: ColorTokens.primary[700] }}>
+                  <Text variant="body" size="sm" weight="semibold" style={{ color: wellness.colors.primary[700] }}>
                     {mood.label}
                   </Text>
                 </TouchableOpacity>
