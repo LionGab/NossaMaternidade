@@ -4,7 +4,6 @@
  */
 
 import { Star } from 'lucide-react-native';
-import React from 'react';
 import { ScrollView } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

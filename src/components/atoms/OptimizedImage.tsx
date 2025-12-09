@@ -13,7 +13,7 @@
  */
 
 import { Image, ImageContentFit } from 'expo-image';
-import React, { memo, useState, useCallback } from 'react';
+import { memo, useState, useCallback } from 'react';
 import { View, ViewStyle, StyleSheet, ActivityIndicator, DimensionValue } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 

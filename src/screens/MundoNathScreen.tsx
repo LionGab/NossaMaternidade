@@ -16,7 +16,7 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { Play, Video as VideoIcon } from 'lucide-react-native';
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { View, ScrollView, Animated, Easing, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

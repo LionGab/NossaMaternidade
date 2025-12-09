@@ -7,7 +7,6 @@
  */
 
 import { CheckCircle2, Circle, Trophy, TrendingUp } from 'lucide-react-native';
-import React from 'react';
 import { TouchableOpacity, ActivityIndicator, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 

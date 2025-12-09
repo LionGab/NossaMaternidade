@@ -1,6 +1,6 @@
 import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { StackNavigator } from './StackNavigator';
 import type { RootStackParamList } from './types';

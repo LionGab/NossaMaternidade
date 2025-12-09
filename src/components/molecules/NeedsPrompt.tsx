@@ -8,7 +8,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { TouchableOpacity } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

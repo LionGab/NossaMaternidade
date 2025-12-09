@@ -45,23 +45,19 @@ export function HomeScreen() {
         }}
       >
         <Text
-          style={[
-            Tokens.textStyles.titleLarge,
-            {
-              color: colors.text.primary,
-              marginBottom: Tokens.spacing['1'],
-            },
-          ]}
+          style={{
+            ...Tokens.textStyles.titleLarge,
+            color: colors.text.primary,
+            marginBottom: Tokens.spacing['1'],
+          }}
         >
           Nossa Maternidade
         </Text>
         <Text
-          style={[
-            Tokens.textStyles.bodyMedium,
-            {
-              color: colors.text.secondary,
-            },
-          ]}
+          style={{
+            ...Tokens.textStyles.bodyMedium,
+            color: colors.text.secondary,
+          }}
         >
           Estamos aqui por você
         </Text>
@@ -78,13 +74,11 @@ export function HomeScreen() {
         }}
       >
         <Text
-          style={[
-            Tokens.textStyles.titleMedium,
-            {
-              color: colors.text.primary,
-              marginBottom: Tokens.spacing['4'],
-            },
-          ]}
+          style={{
+            ...Tokens.textStyles.titleMedium,
+            color: colors.text.primary,
+            marginBottom: Tokens.spacing['4'],
+          }}
         >
           Como está hoje?
         </Text>
@@ -100,24 +94,20 @@ export function HomeScreen() {
         }}
       >
         <Text
-          style={[
-            Tokens.textStyles.titleMedium,
-            {
-              color: colors.text.primary,
-              marginBottom: Tokens.spacing['1'],
-            },
-          ]}
+          style={{
+            ...Tokens.textStyles.titleMedium,
+            color: colors.text.primary,
+            marginBottom: Tokens.spacing['1'],
+          }}
         >
           Para você agora
         </Text>
         <Text
-          style={[
-            Tokens.textStyles.bodySmall,
-            {
-              color: colors.text.secondary,
-              marginBottom: Tokens.spacing['4'],
-            },
-          ]}
+          style={{
+            ...Tokens.textStyles.bodySmall,
+            color: colors.text.secondary,
+            marginBottom: Tokens.spacing['4'],
+          }}
         >
           Micro-ações que funcionam
         </Text>
@@ -131,14 +121,12 @@ export function HomeScreen() {
           drawDistance={300}
           ListEmptyComponent={() => (
             <Text
-              style={[
-                Tokens.textStyles.bodyMedium,
-                {
-                  textAlign: 'center',
-                  color: colors.text.secondary,
-                  paddingVertical: Tokens.spacing['8'],
-                },
-              ]}
+              style={{
+                ...Tokens.textStyles.bodyMedium,
+                textAlign: 'center',
+                color: colors.text.secondary,
+                paddingVertical: Tokens.spacing['8'],
+              }}
             >
               Carregando recomendações...
             </Text>

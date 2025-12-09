@@ -1,5 +1,4 @@
-import React from 'react';
-import { ShoppingBag, Award, Map, ArrowRight } from 'lucide-react';
+import { ShoppingBag, Award, Map, ArrowRight } from 'lucide-react-native';
 
 export function MundoDaNathScreen() {
   return (

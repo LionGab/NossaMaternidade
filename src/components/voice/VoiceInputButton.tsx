@@ -12,7 +12,7 @@
 
 import * as Haptics from 'expo-haptics';
 import { Mic, Square, Play, Pause, Send, X, Loader2 } from 'lucide-react-native';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { View, TouchableOpacity, Animated, Easing, StyleSheet } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

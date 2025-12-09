@@ -10,7 +10,7 @@
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ScrollView, Switch } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

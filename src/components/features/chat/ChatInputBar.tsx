@@ -10,7 +10,7 @@
 
 import * as Haptics from 'expo-haptics';
 import { Mic, Send, Paperclip, StopCircle } from 'lucide-react-native';
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import Animated, {
   useSharedValue,

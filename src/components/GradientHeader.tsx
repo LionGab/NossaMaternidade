@@ -11,7 +11,7 @@
  */
 
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { View, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

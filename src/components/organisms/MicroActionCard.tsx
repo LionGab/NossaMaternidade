@@ -40,7 +40,7 @@ export function MicroActionCard({
       {/* Ícone */}
       <View
         style={{
-          backgroundColor: colors.primary.subtle,
+          backgroundColor: colors.primary.light,
           height: 52,
           width: 52,
           borderRadius: Tokens.radius.full,
@@ -54,38 +54,32 @@ export function MicroActionCard({
       {/* Conteúdo */}
       <View style={{ flex: 1 }}>
         <Text
-          style={[
-            Tokens.textStyles.titleSmall,
-            {
-              color: colors.text.primary,
-              marginBottom: Tokens.spacing['1'],
-            },
-          ]}
+          style={{
+            ...Tokens.textStyles.titleSmall,
+            color: colors.text.primary,
+            marginBottom: Tokens.spacing['1'],
+          }}
         >
           {title}
         </Text>
 
         <Text
-          style={[
-            Tokens.textStyles.bodySmall,
-            {
-              color: colors.text.secondary,
-              marginTop: Tokens.spacing['1'],
-            },
-          ]}
+          style={{
+            ...Tokens.textStyles.bodySmall,
+            color: colors.text.secondary,
+            marginTop: Tokens.spacing['1'],
+          }}
         >
           {description}
         </Text>
 
         {duration && (
           <Text
-            style={[
-              Tokens.textStyles.bodySmall,
-              {
-                marginTop: Tokens.spacing['1'],
-                color: colors.primary.main,
-              },
-            ]}
+            style={{
+              ...Tokens.textStyles.bodySmall,
+              marginTop: Tokens.spacing['1'],
+              color: colors.primary.main,
+            }}
           >
             {duration}
           </Text>

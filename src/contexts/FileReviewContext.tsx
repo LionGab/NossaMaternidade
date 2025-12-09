@@ -3,7 +3,7 @@
  * Context global para gerenciar revisão de arquivos
  */
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 import { fileReviewService } from '@/services';
 import type { FileReview, ReviewSession, ReviewPermissions, FileChange } from '../types/fileReview';

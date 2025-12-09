@@ -10,7 +10,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles, ArrowRight } from 'lucide-react-native';
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { TouchableOpacity, Animated, Easing } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

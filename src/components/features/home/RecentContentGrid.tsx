@@ -11,7 +11,7 @@ import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Star, Play, Lock } from 'lucide-react-native';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { View, TouchableOpacity, Animated, Platform } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

@@ -12,7 +12,7 @@ import {
   CheckCircle2,
   MessageCircle,
 } from 'lucide-react-native';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import {
   ScrollView,
   TouchableOpacity,

@@ -7,7 +7,6 @@
  */
 
 import { CheckCircle2 } from 'lucide-react-native';
-import React from 'react';
 import { View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 

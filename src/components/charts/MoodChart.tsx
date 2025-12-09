@@ -18,7 +18,6 @@
  * @date 2025-11-27
  */
 
-import React from 'react';
 import { View, Dimensions, ViewStyle } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 

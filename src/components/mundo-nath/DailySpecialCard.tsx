@@ -8,7 +8,6 @@
  */
 
 import { Sparkles, Clock, ChevronRight } from 'lucide-react-native';
-import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 

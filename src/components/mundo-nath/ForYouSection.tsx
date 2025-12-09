@@ -9,7 +9,7 @@
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles, Play, Clock, Eye, ChevronRight } from 'lucide-react-native';
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { View, TouchableOpacity, ActivityIndicator, Image, StyleSheet } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

@@ -5,7 +5,7 @@
  * @version 3.0.0
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ScrollView, SafeAreaView } from 'react-native';
 
 import { ModernTokens } from '@/theme/modernTokens';

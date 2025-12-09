@@ -9,7 +9,7 @@
 
 import { Video, ResizeMode } from 'expo-av';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react-native';
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';

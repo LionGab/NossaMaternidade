@@ -11,7 +11,7 @@
 
 import * as Haptics from 'expo-haptics';
 import { Moon, Sun } from 'lucide-react-native';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { View, Animated, Easing, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

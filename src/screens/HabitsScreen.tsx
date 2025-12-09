@@ -22,7 +22,7 @@ import {
   Home,
   Shirt,
 } from 'lucide-react-native';
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,

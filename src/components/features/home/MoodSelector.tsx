@@ -10,7 +10,7 @@ import type { CompositeNavigationProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { Smile } from 'lucide-react-native';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { TouchableOpacity, View, Animated } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

@@ -5,7 +5,6 @@
 
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
 import { View, Dimensions } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

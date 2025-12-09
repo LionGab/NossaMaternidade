@@ -6,7 +6,7 @@
 
 import * as Haptics from 'expo-haptics';
 import { Play, Heart } from 'lucide-react-native';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 
 import { Badge } from '@/components/Badge';

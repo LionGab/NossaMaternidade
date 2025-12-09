@@ -5,7 +5,7 @@
 
 import * as Haptics from 'expo-haptics';
 import { Play, Pause, VolumeX } from 'lucide-react-native';
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { TouchableOpacity, Animated, Easing, View, ActivityIndicator } from 'react-native';
 
 import { Text } from '@/components/atoms/Text';

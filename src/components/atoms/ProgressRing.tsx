@@ -22,7 +22,6 @@
  * @date 2025-11-27
  */
 
-import React from 'react';
 import { View, Text, ViewStyle } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 

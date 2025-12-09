@@ -7,7 +7,7 @@
  */
 
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { View } from 'react-native';
 
 import { ColorTokens } from '@/theme/tokens';

@@ -15,7 +15,7 @@ import {
   Coffee,
   BookOpen,
 } from 'lucide-react-native';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import {
   TextInput,
   TouchableOpacity,

@@ -9,7 +9,7 @@
 
 import * as Haptics from 'expo-haptics';
 import { Heart, Loader2 } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
 // LinearGradient removido - não utilizado

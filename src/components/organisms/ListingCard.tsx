@@ -20,7 +20,6 @@
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { Heart, Star } from 'lucide-react-native';
-import React from 'react';
 import { ViewStyle, Pressable, View } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

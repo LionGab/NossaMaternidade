@@ -19,7 +19,7 @@ export function EmotionSlider({ value, onChange }: Props) {
         style={{
           height: 6,
           borderRadius: 999,
-          backgroundColor: colors.primary.subtle,
+          backgroundColor: colors.primary.light,
           marginBottom: Tokens.spacing['4'],
         }}
       />
@@ -39,7 +39,7 @@ export function EmotionSlider({ value, onChange }: Props) {
             style={{
               padding: Tokens.spacing['2'],
               borderRadius: Tokens.radius.lg,
-              backgroundColor: value === index ? colors.primary.tint : 'transparent',
+              backgroundColor: value === index ? colors.primary.light : 'transparent',
               minWidth: Tokens.touchTargets.min,
               minHeight: Tokens.touchTargets.min,
               alignItems: 'center',

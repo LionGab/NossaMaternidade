@@ -5,7 +5,6 @@
 
 import * as Haptics from 'expo-haptics';
 import { Target, Calendar } from 'lucide-react-native';
-import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';
