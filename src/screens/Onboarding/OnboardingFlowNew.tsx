@@ -47,6 +47,9 @@ import { getShadowFromToken } from '../../utils/shadowHelper';
 
 type OnboardingNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Onboarding'>;
 
+// Helper: hitSlop padrão para melhor detecção de toque em mobile
+const DEFAULT_HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
+
 export default function OnboardingFlow() {
   const navigation = useNavigation<OnboardingNavigationProp>();
   const { isDark, toggleTheme, colors } = useTheme();
@@ -131,6 +134,7 @@ export default function OnboardingFlow() {
               backgroundColor: colors.background.card,
               ...getShadowFromToken('sm', colors.text.primary),
             }}
+            hitSlop={DEFAULT_HIT_SLOP}
             accessibilityRole="button"
             accessibilityLabel="Voltar para etapa anterior"
             accessibilityHint="Retorna para a pergunta anterior do onboarding"
@@ -339,6 +343,7 @@ export default function OnboardingFlow() {
                       minHeight: 56,
                       ...getShadowFromToken('lg', colors.primary.main),
                     }}
+                    hitSlop={DEFAULT_HIT_SLOP}
                     activeOpacity={0.9}
                     accessibilityRole="button"
                     accessibilityLabel="Começar com a Nath"
@@ -433,6 +438,7 @@ export default function OnboardingFlow() {
                 opacity: formData.name ? 1 : 0.5,
                 ...(formData.name ? getShadowFromToken('md', colors.primary.main) : {}),
               }}
+              hitSlop={DEFAULT_HIT_SLOP}
               activeOpacity={0.9}
               accessibilityRole="button"
               accessibilityLabel="Continuar"
@@ -527,6 +533,7 @@ export default function OnboardingFlow() {
                       colors.text.primary
                     ),
                   }}
+                  hitSlop={DEFAULT_HIT_SLOP}
                   activeOpacity={0.8}
                   accessibilityRole="button"
                   accessibilityLabel={stage}
@@ -648,6 +655,7 @@ export default function OnboardingFlow() {
             }}
             className="w-full py-4 rounded-xl"
             style={{ backgroundColor: colors.text.primary }}
+            hitSlop={DEFAULT_HIT_SLOP}
             activeOpacity={0.9}
             accessibilityRole="button"
             accessibilityLabel="Confirmar"
@@ -706,6 +714,7 @@ export default function OnboardingFlow() {
                       : colors.background.card,
                   minHeight: isSmallScreen ? 40 : 44,
                 }}
+                hitSlop={DEFAULT_HIT_SLOP}
                 activeOpacity={0.9}
                 accessibilityRole="button"
                 accessibilityLabel={feeling}
@@ -1225,6 +1234,7 @@ export default function OnboardingFlow() {
                 backgroundColor: canProceed ? colors.primary.main : colors.border.medium,
                 opacity: canProceed ? 1 : 0.5,
               }}
+              hitSlop={DEFAULT_HIT_SLOP}
               activeOpacity={0.9}
               accessibilityRole="button"
               accessibilityLabel="Entrar na minha casa"
