@@ -162,8 +162,9 @@ export const CircularProgress = React.memo<CircularProgressProps>(({
   const colors = isDark ? ModernTokens.colors.dark : ModernTokens.colors.light;
   
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
+  // Note: radius would be used with react-native-svg for full circular progress
+  // const radius = (size - strokeWidth) / 2;
+  // const circumference = radius * 2 * Math.PI;
   
   const progressValue = useRef(new Animated.Value(0)).current;
 

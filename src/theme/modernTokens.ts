@@ -191,6 +191,20 @@ export const ModernSpacing = {
   96: 384,
 } as const;
 
+// Type helper for spacing keys that works with both numeric and string props in JSX
+// Note: In JSX, all props are strings, so we accept both numeric keys and their string equivalents
+export type SpacingKey = keyof typeof ModernSpacing | 
+  '0' | '0.5' | '1' | '1.5' | '2' | '2.5' | '3' | '3.5' | '4' | '5' | '6' | '7' | '8' | '9' | 
+  '10' | '11' | '12' | '14' | '16' | '20' | '24' | '28' | '32' | '36' | '40' | '44' | '48' | 
+  '52' | '56' | '60' | '64' | '72' | '80' | '96';
+
+// Helper function to safely get spacing value
+export const getSpacingValue = (key: SpacingKey): number => {
+  // Handle string keys by converting to number if needed
+  const numKey = typeof key === 'string' && key !== 'px' ? parseFloat(key) : key;
+  return ModernSpacing[numKey as keyof typeof ModernSpacing] ?? 0;
+};
+
 // ======================
 // 🔲 BORDER RADIUS (shadcn/ui style)
 // ======================

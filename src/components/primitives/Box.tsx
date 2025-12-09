@@ -8,7 +8,7 @@
 import React from 'react';
 import { View, ViewProps, ViewStyle } from 'react-native';
 
-import { ModernTokens } from '@/theme/modernTokens';
+import { ModernTokens, SpacingKey, getSpacingValue } from '@/theme/modernTokens';
 import { useTheme } from '@/theme/ThemeContext';
 
 export interface BoxProps extends Omit<ViewProps, 'style'> {
@@ -26,24 +26,25 @@ export interface BoxProps extends Omit<ViewProps, 'style'> {
     | 'space-around' 
     | 'space-evenly';
   wrap?: 'wrap' | 'nowrap' | 'wrap-reverse';
-  gap?: keyof typeof ModernTokens.spacing;
+  flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse';
+  gap?: SpacingKey;
 
   // Spacing
-  p?: keyof typeof ModernTokens.spacing;
-  px?: keyof typeof ModernTokens.spacing;
-  py?: keyof typeof ModernTokens.spacing;
-  pt?: keyof typeof ModernTokens.spacing;
-  pr?: keyof typeof ModernTokens.spacing;
-  pb?: keyof typeof ModernTokens.spacing;
-  pl?: keyof typeof ModernTokens.spacing;
+  p?: SpacingKey;
+  px?: SpacingKey;
+  py?: SpacingKey;
+  pt?: SpacingKey;
+  pr?: SpacingKey;
+  pb?: SpacingKey;
+  pl?: SpacingKey;
 
-  m?: keyof typeof ModernTokens.spacing;
-  mx?: keyof typeof ModernTokens.spacing;
-  my?: keyof typeof ModernTokens.spacing;
-  mt?: keyof typeof ModernTokens.spacing;
-  mr?: keyof typeof ModernTokens.spacing;
-  mb?: keyof typeof ModernTokens.spacing;
-  ml?: keyof typeof ModernTokens.spacing;
+  m?: SpacingKey;
+  mx?: SpacingKey;
+  my?: SpacingKey;
+  mt?: SpacingKey;
+  mr?: SpacingKey;
+  mb?: SpacingKey;
+  ml?: SpacingKey;
 
   // Size
   width?: number | string;
@@ -65,7 +66,7 @@ export interface BoxProps extends Omit<ViewProps, 'style'> {
 
   // Background & Colors
   bg?: 'background' | 'card' | 'muted' | 'accent' | 'primary' | 'secondary' | 'transparent';
-  borderColor?: 'border' | 'input' | 'primary' | 'muted';
+  borderColor?: 'border' | 'input' | 'primary' | 'muted' | 'secondary';
 
   // Shadow
   shadow?: keyof typeof ModernTokens.shadows;
@@ -97,6 +98,7 @@ export const Box = React.memo<BoxProps>(({
   align,
   justify,
   wrap,
+  flexWrap,
   gap,
 
   // Spacing
@@ -166,46 +168,50 @@ export const Box = React.memo<BoxProps>(({
     input: colors.input,
     primary: colors.primary,
     muted: colors.muted,
+    secondary: colors.secondary,
   };
 
-  const boxStyle: ViewStyle = {
+  const wrapValue = flexWrap || wrap;
+
+  // Build style object, casting to ViewStyle at the end
+  const boxStyleObj = {
     // Layout
     ...(flex !== undefined && { flex }),
     ...(direction && { flexDirection: direction }),
     ...(align && { alignItems: align }),
     ...(justify && { justifyContent: justify }),
-    ...(wrap && { flexWrap: wrap }),
-    ...(gap !== undefined && { gap: ModernTokens.spacing[gap] }),
+    ...(wrapValue && { flexWrap: wrapValue }),
+    ...(gap !== undefined && { gap: getSpacingValue(gap) }),
 
     // Spacing - Padding
-    ...(p !== undefined && { padding: ModernTokens.spacing[p] }),
+    ...(p !== undefined && { padding: getSpacingValue(p) }),
     ...(px !== undefined && { 
-      paddingLeft: ModernTokens.spacing[px],
-      paddingRight: ModernTokens.spacing[px],
+      paddingLeft: getSpacingValue(px),
+      paddingRight: getSpacingValue(px),
     }),
     ...(py !== undefined && { 
-      paddingTop: ModernTokens.spacing[py],
-      paddingBottom: ModernTokens.spacing[py],
+      paddingTop: getSpacingValue(py),
+      paddingBottom: getSpacingValue(py),
     }),
-    ...(pt !== undefined && { paddingTop: ModernTokens.spacing[pt] }),
-    ...(pr !== undefined && { paddingRight: ModernTokens.spacing[pr] }),
-    ...(pb !== undefined && { paddingBottom: ModernTokens.spacing[pb] }),
-    ...(pl !== undefined && { paddingLeft: ModernTokens.spacing[pl] }),
+    ...(pt !== undefined && { paddingTop: getSpacingValue(pt) }),
+    ...(pr !== undefined && { paddingRight: getSpacingValue(pr) }),
+    ...(pb !== undefined && { paddingBottom: getSpacingValue(pb) }),
+    ...(pl !== undefined && { paddingLeft: getSpacingValue(pl) }),
 
     // Spacing - Margin
-    ...(m !== undefined && { margin: ModernTokens.spacing[m] }),
+    ...(m !== undefined && { margin: getSpacingValue(m) }),
     ...(mx !== undefined && { 
-      marginLeft: ModernTokens.spacing[mx],
-      marginRight: ModernTokens.spacing[mx],
+      marginLeft: getSpacingValue(mx),
+      marginRight: getSpacingValue(mx),
     }),
     ...(my !== undefined && { 
-      marginTop: ModernTokens.spacing[my],
-      marginBottom: ModernTokens.spacing[my],
+      marginTop: getSpacingValue(my),
+      marginBottom: getSpacingValue(my),
     }),
-    ...(mt !== undefined && { marginTop: ModernTokens.spacing[mt] }),
-    ...(mr !== undefined && { marginRight: ModernTokens.spacing[mr] }),
-    ...(mb !== undefined && { marginBottom: ModernTokens.spacing[mb] }),
-    ...(ml !== undefined && { marginLeft: ModernTokens.spacing[ml] }),
+    ...(mt !== undefined && { marginTop: getSpacingValue(mt) }),
+    ...(mr !== undefined && { marginRight: getSpacingValue(mr) }),
+    ...(mb !== undefined && { marginBottom: getSpacingValue(mb) }),
+    ...(ml !== undefined && { marginLeft: getSpacingValue(ml) }),
 
     // Size
     ...(width !== undefined && { width }),
@@ -235,8 +241,13 @@ export const Box = React.memo<BoxProps>(({
     // Background
     ...(bg && { backgroundColor: bgColorMap[bg] }),
 
-    // Shadow
-    ...(shadow && ModernTokens.shadows[shadow]),
+    // Shadow - filter out web-only properties
+    ...(shadow && (() => {
+      const shadowStyle = ModernTokens.shadows[shadow] as Record<string, unknown>;
+      // Remove web-only properties
+      const { boxShadow: _boxShadow, ...nativeShadow } = shadowStyle;
+      return nativeShadow as ViewStyle;
+    })()),
 
     // Position
     ...(position && { position }),
@@ -255,6 +266,8 @@ export const Box = React.memo<BoxProps>(({
     // Custom style (highest priority)
     ...style,
   };
+
+  const boxStyle = boxStyleObj as ViewStyle;
 
   return (
     <View style={boxStyle} {...props}>

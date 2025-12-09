@@ -47,7 +47,7 @@ export const Card = React.memo<CardProps>(({
     <Box
       rounded="lg"
       p="6"
-      style={[variantStyles[variant], style]}
+      style={{ ...variantStyles[variant], ...style }}
       {...props}
     >
       {children}
@@ -58,7 +58,7 @@ export const Card = React.memo<CardProps>(({
 Card.displayName = 'Card';
 
 // Card Header
-export interface CardHeaderProps extends BoxProps {}
+export type CardHeaderProps = BoxProps;
 
 export const CardHeader = React.memo<CardHeaderProps>(({ children, ...props }) => (
   <Box direction="column" gap="1.5" mb="4" {...props}>
@@ -69,7 +69,7 @@ export const CardHeader = React.memo<CardHeaderProps>(({ children, ...props }) =
 CardHeader.displayName = 'CardHeader';
 
 // Card Title
-export interface CardTitleProps extends Omit<TextProps, 'variant'> {}
+export type CardTitleProps = Omit<TextProps, 'variant'>;
 
 export const CardTitle = React.memo<CardTitleProps>(({ children, ...props }) => (
   <Text variant="h3" {...props}>
@@ -80,7 +80,7 @@ export const CardTitle = React.memo<CardTitleProps>(({ children, ...props }) => 
 CardTitle.displayName = 'CardTitle';
 
 // Card Description
-export interface CardDescriptionProps extends Omit<TextProps, 'variant'> {}
+export type CardDescriptionProps = Omit<TextProps, 'variant'>;
 
 export const CardDescription = React.memo<CardDescriptionProps>(({ children, ...props }) => (
   <Text variant="small" color="muted" {...props}>
@@ -91,7 +91,7 @@ export const CardDescription = React.memo<CardDescriptionProps>(({ children, ...
 CardDescription.displayName = 'CardDescription';
 
 // Card Content
-export interface CardContentProps extends BoxProps {}
+export type CardContentProps = BoxProps;
 
 export const CardContent = React.memo<CardContentProps>(({ children, p = "6", pt = "0", ...props }) => (
   <Box p={p} pt={pt} {...props}>
@@ -102,7 +102,7 @@ export const CardContent = React.memo<CardContentProps>(({ children, p = "6", pt
 CardContent.displayName = 'CardContent';
 
 // Card Footer
-export interface CardFooterProps extends BoxProps {}
+export type CardFooterProps = BoxProps;
 
 export const CardFooter = React.memo<CardFooterProps>(({ children, ...props }) => (
   <Box direction="row" align="center" pt="4" {...props}>

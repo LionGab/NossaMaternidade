@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { Image, ImageProps, ViewStyle, TextStyle } from 'react-native';
+import { Image, ImageProps, ViewStyle, ImageStyle } from 'react-native';
 
 import { ModernTokens } from '@/theme/modernTokens';
 import { useTheme } from '@/theme/ThemeContext';
@@ -36,7 +36,7 @@ export interface AvatarProps {
   
   // Custom styles
   style?: ViewStyle;
-  imageStyle?: ViewStyle;
+  imageStyle?: ImageStyle;
   
   // Accessibility
   accessibilityLabel?: string;
@@ -85,7 +85,7 @@ export const Avatar = React.memo<AvatarProps>(({
     ...style,
   };
 
-  const imageStyleCombined: ViewStyle = {
+  const imageStyleCombined: ImageStyle = {
     width: '100%',
     height: '100%',
     ...imageStyle,
