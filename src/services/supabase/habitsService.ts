@@ -623,6 +623,47 @@ class HabitsService {
       return [];
     }
   }
+
+  /**
+   * Buscar micro-ações para hoje
+   * Retorna lista de micro-ações formatadas para exibição na Home
+   */
+  async getToday(): Promise<{ data: Array<{ title: string; description: string; duration?: string; icon?: string; onPress?: () => void }> | null; error: Error | null }> {
+    try {
+      const { data, error } = await supabase
+        .from('micro_actions')
+        .select('*')
+        .eq('active', true)
+        .is('deleted_at', null)
+        .order('priority', { ascending: true })
+        .order('sort_order', { ascending: true });
+
+      if (error) {
+        logger.error('Erro ao carregar micro ações', error, {
+          service: 'HabitsService',
+          action: 'getToday',
+        });
+        return { data: null, error: error as Error };
+      }
+
+      // Transformar dados do Supabase para formato esperado
+      const microActions = (data || []).map((action: { title?: string; description?: string; duration?: string; icon?: string; priority?: number }) => ({
+        title: action.title || 'Micro-ação',
+        description: action.description || '',
+        duration: action.duration,
+        icon: action.icon || '💗',
+        onPress: undefined, // Pode ser implementado depois
+      }));
+
+      return { data: microActions, error: null };
+    } catch (error) {
+      logger.error('Erro inesperado ao carregar micro ações', error, {
+        service: 'HabitsService',
+        action: 'getToday',
+      });
+      return { data: null, error: error as Error };
+    }
+  }
 }
 
 export const habitsService = new HabitsService();

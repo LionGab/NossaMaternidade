@@ -23,3 +23,4 @@ export * from './milestonesService';
 export * from './needsRewardsService';
 export * from './guiltService';
 export * from './fileReviewService';
+export * from './microActionsService';

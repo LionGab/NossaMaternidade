@@ -88,3 +88,28 @@ export {
 // 📋 Consent
 // =====================
 export { useConsent } from './useConsent';
+
+// =====================
+// 🧘 Micro-ações
+// =====================
+export {
+  useMicroActionsCatalog,
+  useMicroActionsForStage,
+  useMicroActionsForProfile,
+  useSuggestedMicroAction,
+  useInvalidateMicroActions,
+} from './useMicroActions';
+export type {
+  UseMicroActionsCatalogResult,
+  UseMicroActionsForStageResult,
+  UseMicroActionsForProfileOptions,
+  UseMicroActionsForProfileResult,
+  UseSuggestedMicroActionResult,
+} from './useMicroActions';
+
+export { useMicroActionLogger, useMicroActionTimer } from './useMicroActionLogger';
+export type {
+  UseMicroActionLoggerOptions,
+  UseMicroActionLoggerResult,
+  UseMicroActionTimerResult,
+} from './useMicroActionLogger';

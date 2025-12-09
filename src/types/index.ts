@@ -93,6 +93,29 @@ export type {
   FileReviewStatus,
 } from './fileReview';
 
+// Micro-ações
+export type {
+  MicroAction,
+  MicroActionCategory,
+  MicroActionId,
+  LifeStage,
+  UserProfileForMicroActions,
+  MicroActionFilterOptions,
+  FilteredMicroActionsResult,
+  MicroActionContext,
+  MicroActionAbandonReason,
+  MicroActionSuggestedEvent,
+  MicroActionCompletedEvent,
+  MicroActionAbandonedEvent,
+} from './microActions';
+
+export {
+  MICRO_ACTION_IDS,
+  isValidLifeStage,
+  isValidMicroActionId,
+  mapLegacyPhaseToLifeStage,
+} from './microActions';
+
 // Utility types
 export interface ApiResponse<T> {
   success: boolean;
