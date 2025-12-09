@@ -15,7 +15,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { Play, Sparkles, Video as VideoIcon } from 'lucide-react-native';
+import { Play, Video as VideoIcon } from 'lucide-react-native';
 import React, { useRef, useEffect } from 'react';
 import { View, ScrollView, Animated, Easing, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -28,7 +28,6 @@ import { Text } from '@/components/atoms/Text';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import {
   FeaturedVideo,
-  ContentCategorySection,
   ForYouSection,
   ReelsPlayer,
 } from '@/components/mundo-nath';
@@ -172,7 +171,10 @@ export default function MundoNathScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: Tokens.spacing['10'] }}
+        contentContainerStyle={{
+          // Espaço suficiente para: tab bar (~70px) + botão SOS (~134px) + padding extra
+          paddingBottom: 180
+        }}
       >
         {/* Header com gradiente Cotton Background */}
         <View style={{ position: 'relative', overflow: 'hidden' }}>
@@ -414,34 +416,21 @@ export default function MundoNathScreen() {
             />
           </Animated.View>
 
-          {/* Seção: Para Você */}
+          {/* Seção: Para Você (personalizada com IA) */}
           <Animated.View
             style={{
               opacity: animations[4].opacity,
               transform: [{ translateY: animations[4].translateY }],
             }}
           >
-            <ContentCategorySection
-              title="Para Você"
-              subtitle="Conteúdo selecionado especialmente"
-              icon={<Sparkles size={20} color={STYLE_GUIDE.primaryBlue} />}
-              items={MOCK_CONTENT_ITEMS.filter((item) => item.type !== 'reels')}
+            <ForYouSection
               onItemPress={(item) => handleContentPress(item.id)}
               onSeeAllPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                logger.info('See all pressed', { screen: 'MundoNathScreen' });
+                logger.info('See all personalized pressed', { screen: 'MundoNathScreen' });
               }}
             />
           </Animated.View>
-
-          {/* Seção: ForYouSection (personalizada com IA) */}
-          <ForYouSection
-            onItemPress={(item) => handleContentPress(item.id)}
-            onSeeAllPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              logger.info('See all personalized pressed', { screen: 'MundoNathScreen' });
-            }}
-          />
         </Box>
       </ScrollView>
     </SafeAreaView>

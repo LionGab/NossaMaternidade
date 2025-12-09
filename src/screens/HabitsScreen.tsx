@@ -298,7 +298,10 @@ export default function HabitsScreen() {
     >
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: Spacing['20'] }}
+        contentContainerStyle={{
+          // Espaço suficiente para: tab bar (~70px) + botão SOS (~134px) + padding extra
+          paddingBottom: 180
+        }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

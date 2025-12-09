@@ -155,7 +155,8 @@ export default function HomeScreenPremium() {
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingTop: Tokens.spacing['4'],
-          paddingBottom: insets.bottom + Tokens.spacing['6'],
+          // Espaço suficiente para: tab bar (~70px) + botão SOS (~134px) + padding extra
+          paddingBottom: insets.bottom + 180,
         }}
         showsVerticalScrollIndicator={false}
       >

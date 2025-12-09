@@ -11,7 +11,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { Suspense } from 'react';
-import { Platform, View, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
+import { Platform, View, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MainTabParamList } from './types';
@@ -207,7 +207,7 @@ export const TabNavigator = () => {
           tabBarIcon: ({ focused }) => (
             <View
               style={{
-                marginTop: -20, // Eleva o botão acima dos outros
+                marginTop: -40, // Eleva o botão acima dos outros
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
@@ -239,43 +239,6 @@ export const TabNavigator = () => {
               </LinearGradient>
             </View>
           ),
-          tabBarButton: (props) => {
-            const { children, onPress, accessibilityState } = props;
-            const isSelected = accessibilityState?.selected;
-            return (
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <TouchableOpacity
-                  onPress={onPress}
-                  activeOpacity={0.8}
-                  accessibilityRole="button"
-                  accessibilityState={accessibilityState}
-                  accessibilityLabel="Chat com NathIA, assistente de IA"
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {children}
-                </TouchableOpacity>
-                <Text
-                  style={{
-                    fontSize: Tokens.typography.sizes.xs,
-                    fontWeight: '700',
-                    marginTop: 4,
-                    color: isSelected ? colors.primary.main : colors.text.primary,
-                  }}
-                >
-                  NathIA
-                </Text>
-              </View>
-            );
-          },
         }}
         listeners={{
           tabPress: handleTabPress,

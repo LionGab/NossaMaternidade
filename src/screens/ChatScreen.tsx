@@ -18,9 +18,8 @@ import type { ListRenderItemInfo } from '@shopify/flash-list';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { ArrowLeft, Sparkles, Zap, MessageCircle, CheckCircle2, Menu } from 'lucide-react-native';
+import { ArrowLeft, Menu } from 'lucide-react-native';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
@@ -208,77 +207,7 @@ const TypingIndicator = React.memo(() => {
 
 TypingIndicator.displayName = 'TypingIndicator';
 
-// ======================
-// COMPONENTE: EmptyState
-// ======================
-
-interface EmptyStateProps {
-  chips: DynamicChip[];
-  onChipPress: (text: string) => void;
-}
-
-const EmptyState = React.memo(({ chips, onChipPress }: EmptyStateProps) => {
-  const { isDark } = useTheme();
-
-  return (
-    <Animated.View entering={FadeIn.duration(500)} style={styles.emptyState}>
-      {/* Avatar */}
-      <View style={styles.emptyAvatar}>
-        <Image source={{ uri: AVATAR_URL }} style={styles.emptyAvatarImage} contentFit="cover" />
-        <LinearGradient
-          colors={isDark ? ColorTokens.nathIA.gradient.dark : ColorTokens.nathIA.gradient.light}
-          style={styles.avatarBadge}
-        >
-          <Sparkles size={12} color={ColorTokens.neutral[0]} />
-        </LinearGradient>
-      </View>
-
-      {/* Nome */}
-      <Text size="2xl" weight="bold" color="primary" style={{ marginTop: Spacing['4'] }}>
-        NathIA
-      </Text>
-
-      {/* Descrição */}
-      <Text
-        color="tertiary"
-        size="md"
-        align="center"
-        style={{ marginTop: Spacing['2'], maxWidth: 260 }}
-      >
-        Sua assistente maternal. Estou aqui para te ouvir e ajudar.
-      </Text>
-
-      {/* Chips de sugestão */}
-      <View style={styles.chipsGrid}>
-        {chips.slice(0, 4).map((chip, idx) => (
-          <TouchableOpacity
-            key={`${chip.text}-${idx}`}
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              onChipPress(formatChipText(chip));
-            }}
-            style={[
-              styles.chip,
-              {
-                backgroundColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[0],
-                borderColor: isDark ? ColorTokens.neutral[700] : ColorTokens.neutral[200],
-              },
-            ]}
-            accessibilityRole="button"
-            accessibilityLabel={`Sugestão: ${chip.text}`}
-          >
-            <Text style={{ marginRight: 6 }}>{chip.emoji}</Text>
-            <Text size="sm" color="secondary" numberOfLines={1}>
-              {chip.text}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </Animated.View>
-  );
-});
-
-EmptyState.displayName = 'EmptyState';
+// EmptyState removido - agora usando layout inline moderno
 
 // ======================
 // COMPONENTE PRINCIPAL
@@ -669,238 +598,190 @@ Você não está sozinha. Há pessoas prontas para te ajudar.`,
 
         {/* Disclaimer fixo no topo */}
         <Box
-          className="px-2 py-2 border-b"
           style={{
+            paddingHorizontal: Spacing['4'],
+            paddingVertical: Spacing['2'],
             backgroundColor: isDark
-              ? `${ColorTokens.warning[900]}33`
-              : `${ColorTokens.warning[100]}CC`,
-            borderBottomColor: colors.border.medium,
+              ? `${ColorTokens.warning[900]}20`
+              : `${ColorTokens.warning[50]}`,
+            borderBottomWidth: 1,
+            borderBottomColor: isDark
+              ? `${ColorTokens.warning[700]}40`
+              : `${ColorTokens.warning[200]}`,
           }}
         >
           <Text
-            className="text-xs text-center"
+            size="xs"
+            align="center"
             style={{
-              color: isDark ? ColorTokens.warning[300] : ColorTokens.warning[800],
+              color: isDark ? ColorTokens.warning[300] : ColorTokens.warning[700],
             }}
           >
             ⚠️ NathIA é apoio emocional. Não substitui médico ou psicólogo.
           </Text>
         </Box>
 
-        {/* Header com gradiente */}
-        <Animated.View
-          style={[
-            headerAnimatedStyle,
-            {
-              paddingTop: 0, // Removido insets.top pois já está no disclaimer
-            },
-          ]}
-        >
-          <LinearGradient
-            colors={
-              isDark
-                ? [ColorTokens.cottonCandy.blue600, ColorTokens.cottonCandy.blueDark]
-                : [ColorTokens.cottonCandy.blue500, ColorTokens.cottonCandy.blueLight]
-            }
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+        {/* Header limpo e moderno */}
+        <Animated.View style={headerAnimatedStyle}>
+          <Box
             style={{
+              backgroundColor: colors.background.card,
               paddingHorizontal: Spacing['4'],
-              paddingVertical: Spacing['4'],
+              paddingTop: Spacing['3'],
+              paddingBottom: Spacing['3'],
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border.light,
             }}
           >
-            <SafeAreaView edges={[]}>
-              <View
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: Spacing['3'],
+              }}
+            >
+              <IconButton
+                icon={
+                  <ArrowLeft
+                    size={24}
+                    color={colors.text.primary}
+                  />
+                }
+                onPress={() => navigation.goBack()}
+                accessibilityLabel="Voltar"
+                variant="ghost"
+              />
+
+              <Avatar
+                size={44}
+                source={{ uri: AVATAR_URL }}
+                fallback="N"
+                borderWidth={0}
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: Spacing['3'],
-                  marginBottom: Spacing['3'],
+                  backgroundColor: ColorTokens.primary[100],
                 }}
-              >
-                <IconButton
-                  icon={
-                    <ArrowLeft
-                      size={20}
-                      color={isDark ? ColorTokens.neutral[0] : ColorTokens.neutral[900]}
-                    />
-                  }
-                  onPress={() => navigation.goBack()}
-                  accessibilityLabel="Voltar"
-                  variant="ghost"
-                />
+              />
 
-                <Avatar
-                  size={48}
-                  source={{ uri: AVATAR_URL }}
-                  fallback="N"
-                  borderWidth={2}
-                  borderColor={ColorTokens.overlay.light}
-                  style={{
-                    backgroundColor: ColorTokens.overlay.light,
-                  }}
-                />
-
-                <Box className="flex-1">
-                  <Box className="flex-row items-center gap-1">
-                    <Text
-                      className="text-base font-bold"
-                      style={{ color: isDark ? ColorTokens.neutral[0] : ColorTokens.neutral[900] }}
-                    >
-                      NathIA
-                    </Text>
-                    <CheckCircle2
-                      size={14}
-                      color={ColorTokens.success[500]}
-                      fill={ColorTokens.success[500]}
-                    />
-                  </Box>
-                  {/* Badge Online */}
-                  <Box
-                    className="flex-row items-center mt-0.5 self-start px-2 py-0.5 rounded-full"
-                    style={{
-                      backgroundColor: isDark
-                        ? ColorTokens.overlay.light
-                        : `${ColorTokens.primary[500]}1A`,
-                    }}
-                  >
-                    <Zap
-                      size={10}
-                      color={isDark ? ColorTokens.neutral[0] : ColorTokens.primary[600]}
-                    />
-                    <Text
-                      className="text-xs font-semibold ml-1"
-                      style={{
-                        color: isDark ? ColorTokens.neutral[0] : ColorTokens.primary[600],
-                      }}
-                    >
-                      Online
-                    </Text>
-                  </Box>
-                </Box>
-
-                <IconButton
-                  icon={
-                    <Menu
-                      size={20}
-                      color={isDark ? ColorTokens.neutral[0] : ColorTokens.neutral[900]}
-                    />
-                  }
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    navigation.navigate('ChatSessions');
-                  }}
-                  accessibilityLabel="Histórico de conversas"
-                  variant="ghost"
-                />
-              </View>
-
-              {/* Badges Rápido e 24/7 */}
-              <Box className="flex-row gap-2">
-                <Box
-                  className="flex-row items-center px-2.5 py-1 rounded-full"
-                  style={{
-                    backgroundColor: isDark
-                      ? ColorTokens.overlay.light
-                      : `${ColorTokens.primary[500]}1A`,
-                  }}
-                >
-                  <Zap
-                    size={12}
-                    color={isDark ? ColorTokens.neutral[0] : ColorTokens.primary[600]}
-                  />
+              <Box style={{ flex: 1 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                   <Text
-                    className="text-xs font-semibold ml-1"
-                    style={{
-                      color: isDark ? ColorTokens.neutral[0] : ColorTokens.primary[600],
-                    }}
+                    size="md"
+                    weight="bold"
+                    color="primary"
                   >
-                    Rápido
+                    NathIA
                   </Text>
-                </Box>
-                <Box
-                  className="flex-row items-center px-2.5 py-1 rounded-full"
-                  style={{
-                    backgroundColor: isDark
-                      ? ColorTokens.overlay.light
-                      : `${ColorTokens.primary[500]}1A`,
-                  }}
-                >
-                  <MessageCircle
-                    size={12}
-                    color={isDark ? ColorTokens.neutral[0] : ColorTokens.primary[600]}
+                  <View
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: ColorTokens.success[500],
+                    }}
                   />
-                  <Text
-                    className="text-xs font-semibold ml-1"
-                    style={{
-                      color: isDark ? ColorTokens.neutral[0] : ColorTokens.primary[600],
-                    }}
-                  >
-                    24/7
-                  </Text>
-                </Box>
+                </View>
+                <Text
+                  size="xs"
+                  color="tertiary"
+                >
+                  Sempre disponível para você
+                </Text>
               </Box>
-            </SafeAreaView>
-          </LinearGradient>
+
+              <IconButton
+                icon={
+                  <Menu
+                    size={24}
+                    color={colors.text.primary}
+                  />
+                }
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  navigation.navigate('ChatSessions');
+                }}
+                accessibilityLabel="Histórico de conversas"
+                variant="ghost"
+              />
+            </View>
+          </Box>
         </Animated.View>
 
         {/* Messages ou Empty State */}
         {!hasMessages && !isLoading ? (
-          <View style={{ flex: 1, paddingHorizontal: Spacing['4'], paddingTop: Spacing['6'] }}>
-            {/* Mensagem inicial da NathIA */}
-            <View style={{ flexDirection: 'row', gap: Spacing['3'], marginBottom: Spacing['4'] }}>
+          <View style={{ flex: 1, paddingHorizontal: Spacing['4'], paddingTop: Spacing['8'] }}>
+            {/* Avatar centralizado */}
+            <View style={{ alignItems: 'center', marginBottom: Spacing['6'] }}>
               <Avatar
-                size={40}
+                size={72}
                 source={{ uri: AVATAR_URL }}
                 fallback="N"
                 borderWidth={0}
-                useGradientFallback={true}
+                style={{
+                  backgroundColor: ColorTokens.primary[100],
+                  marginBottom: Spacing['3'],
+                }}
               />
-              <Box className="flex-1 gap-2">
-                <Box
-                  className="bg-card p-4 rounded-3xl border"
-                  style={{
-                    borderTopLeftRadius: Radius.lg,
-                    borderColor: colors.border.light,
-                    ...Tokens.shadows.card,
+              <Text size="lg" weight="bold" color="primary" align="center">
+                NathIA
+              </Text>
+              <Text size="sm" color="secondary" align="center" style={{ marginTop: Spacing['1'] }}>
+                Sua assistente maternal 💕
+              </Text>
+            </View>
+
+            {/* Mensagem de boas-vindas */}
+            <Box
+              style={{
+                backgroundColor: isDark ? ColorTokens.primary[900] + '20' : ColorTokens.primary[50],
+                padding: Spacing['4'],
+                borderRadius: Radius.xl,
+                marginBottom: Spacing['4'],
+                borderWidth: 1,
+                borderColor: isDark ? ColorTokens.primary[700] + '30' : ColorTokens.primary[200],
+              }}
+            >
+              <Text size="sm" color="secondary" align="center" style={{ lineHeight: 22 }}>
+                Oi, mãe! Tô aqui com você. Como você está se sentindo agora?
+              </Text>
+            </Box>
+
+            {/* Quick replies */}
+            <View style={{ gap: Spacing['2'] }}>
+              {dynamicChips.slice(0, 4).map((chip) => (
+                <TouchableOpacity
+                  key={chip.text}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    handleSend(formatChipText(chip), { clearInput: false });
                   }}
+                  activeOpacity={0.7}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: Spacing['4'],
+                    paddingVertical: Spacing['3'],
+                    borderRadius: Radius.lg,
+                    backgroundColor: colors.background.card,
+                    borderWidth: 1,
+                    borderColor: colors.border.light,
+                    ...Tokens.shadows.sm,
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Sugestão: ${chip.text}`}
                 >
-                  <Text className="text-sm" style={{ lineHeight: 20 }}>
-                    Oi, mãe. Tô aqui com você. Como você está se sentindo agora?
+                  <Text style={{ fontSize: 20, marginRight: Spacing['3'] }}>
+                    {chip.emoji}
                   </Text>
-                </Box>
-                {/* Quick replies */}
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: Spacing['2'] }}>
-                  {dynamicChips.slice(0, 4).map((chip) => (
-                    <TouchableOpacity
-                      key={chip.text}
-                      onPress={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        handleSend(formatChipText(chip), { clearInput: false });
-                      }}
-                      activeOpacity={0.7}
-                      style={{
-                        paddingHorizontal: Spacing['3'],
-                        paddingVertical: Spacing['2'],
-                        borderRadius: Radius.full,
-                        backgroundColor: isDark
-                          ? ColorTokens.neutral[800]
-                          : ColorTokens.neutral[100],
-                        borderWidth: 0,
-                      }}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Sugestão: ${chip.text}`}
-                    >
-                      <Text className="text-xs text-text-secondary mr-1">
-                        {chip.emoji}
-                      </Text>
-                      <Text className="text-xs text-text-secondary">
-                        {chip.text}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </Box>
+                  <Text size="sm" color="primary" style={{ flex: 1 }}>
+                    {chip.text}
+                  </Text>
+                  <ArrowLeft
+                    size={16}
+                    color={colors.text.tertiary}
+                    style={{ transform: [{ rotate: '180deg' }] }}
+                  />
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
         ) : (
@@ -962,12 +843,12 @@ Você não está sozinha. Há pessoas prontas para te ajudar.`,
             }}
           >
             <Text
-              className="text-sm font-semibold mb-2 text-center"
+              className="mb-2 text-sm font-semibold text-center"
             >
               💙 Você não está sozinha
             </Text>
             <Text
-              className="text-xs text-text-secondary text-center mb-3"
+              className="mb-3 text-xs text-center text-text-secondary"
             >
               Ligue agora para conversar com alguém que pode ajudar
             </Text>
@@ -978,7 +859,7 @@ Você não está sozinha. Há pessoas prontas para te ajudar.`,
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                   Linking.openURL('tel:188');
                 }}
-                className="bg-success-600 rounded-xl px-4 py-3 flex-row items-center justify-center gap-2"
+                className="flex-row items-center justify-center gap-2 px-4 py-3 bg-success-600 rounded-xl"
                 textClassName="text-sm font-bold text-white"
                 accessibilityLabel="Ligar para o CVV"
               />
@@ -997,7 +878,7 @@ Você não está sozinha. Há pessoas prontas para te ajudar.`,
               />
             </Box>
             <Text
-              className="text-xs text-text-tertiary text-center mt-3"
+              className="mt-3 text-xs text-center text-text-tertiary"
             >
               Atendimento 24h, gratuito e sigiloso
             </Text>
@@ -1046,50 +927,5 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing['6'],
-    paddingBottom: 100,
-  },
-  emptyAvatar: {
-    position: 'relative',
-  },
-  emptyAvatarImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-  },
-  avatarBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: ColorTokens.neutral[0],
-  },
-  chipsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: Spacing['2'],
-    marginTop: Spacing['8'],
-    paddingHorizontal: Spacing['2'],
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing['4'],
-    paddingVertical: Spacing['3'],
-    borderRadius: Radius.full,
-    borderWidth: 1,
-    maxWidth: '48%',
-    ...Tokens.shadows.sm,
   },
 });

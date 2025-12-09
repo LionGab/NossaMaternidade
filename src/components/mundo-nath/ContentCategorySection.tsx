@@ -104,12 +104,14 @@ export function ContentCategorySection({
         )}
       </Box>
 
-      {/* Content List */}
-      <Box gap="3">
+      {/* Content Grid (2 columns) */}
+      <View style={styles.grid}>
         {displayItems.map((item) => (
-          <ContentCard key={item.id} item={item} onPress={() => handleItemPress(item)} />
+          <View key={item.id} style={styles.gridItem}>
+            <ContentCard item={item} onPress={() => handleItemPress(item)} />
+          </View>
         ))}
-      </Box>
+      </View>
     </Box>
   );
 }
@@ -268,6 +270,15 @@ const styles = StyleSheet.create({
     gap: 2,
     paddingVertical: Tokens.spacing['2'],
     paddingHorizontal: Tokens.spacing['3'],
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: Tokens.spacing['3'],
+  },
+  gridItem: {
+    width: '48%', // 2 colunas com espaço entre elas
   },
   card: {
     borderRadius: Tokens.radius['3xl'],
