@@ -30,11 +30,8 @@ if (Platform.OS === 'web') {
         html.classList.add('light'); // Default para light
       }
     }
-  } catch (error) {
-    // Log apenas em desenvolvimento para debug
-    if (__DEV__) {
-      console.warn('[App] NativeWind darkMode config failed:', error);
-    }
+  } catch (_error) {
+    // Silently fail - não é crítico para funcionamento do app
   }
 }
 

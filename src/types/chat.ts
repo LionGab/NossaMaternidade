@@ -20,11 +20,23 @@ export type AIMode =
 
 export interface ChatMessage {
   id: string;
-  chat_id: string;
-  user_id: string;
+  conversation_id: string; // Matches database column name
+  user_id?: string; // Optional for temporary client-side messages, always present in DB
   role: MessageRole;
   content: string;
 
+  // Generic metadata (matches database JSONB column)
+  metadata?: Record<string, unknown>;
+
+  // Timestamps
+  created_at: string;
+}
+
+/**
+ * Helper interface for typed metadata access
+ * Use this to type-safely access metadata fields stored in the JSONB column
+ */
+export interface ChatMessageMetadata {
   // Metadados da IA
   model_used?: AIModel;
   ai_mode?: AIMode;
@@ -35,10 +47,6 @@ export interface ChatMessage {
   contains_crisis_keywords?: boolean;
   moderation_flagged?: boolean;
   moderation_reason?: string;
-
-  // Timestamps
-  created_at: string;
-  edited_at?: string;
 }
 
 export interface Chat {

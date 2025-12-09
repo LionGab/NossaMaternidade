@@ -15,7 +15,7 @@ import React, {
   type ReactNode,
 } from 'react';
 
-import { onboardingService } from '@/services/supabase/onboardingService';
+import { onboardingService, type OnboardingData } from '@/services/supabase/onboardingService';
 import { logger } from '@/utils/logger';
 
 import type { MotherProfile, WellnessContextType, CheckInData, WeeklyInsight } from '../types';
@@ -28,6 +28,7 @@ import { createInitialMotherProfile } from '../types';
 const STORAGE_KEYS = {
   WELLNESS_PROFILE: 'nath_wellness_profile',
   WELLNESS_CONSENT: 'nath_wellness_consent',
+  ONBOARDING_STEP: 'nath_onboarding_step',
   WELLNESS_CHECKINS: 'nath_wellness_checkins',
   ONBOARDING_INCOMPLETE: 'nath_onboarding_incomplete',
 } as const;
@@ -219,16 +220,13 @@ export function WellnessProvider({ children }: WellnessProviderProps) {
         if (!success) return false;
 
         // Marcar onboarding como completo no serviço existente
-        const onboardingData = {
-          display_name: data.name || data.display_name || '',
-          life_stage_generic: data.phase || data.life_stage_generic || '',
-          main_goals: data.wellness_goals || data.main_goals || [],
-          baseline_emotion: data.emotional_state || data.baseline_emotion || '',
-          first_focus: data.first_focus || 'emotional_care',
-          notification_opt_in: data.notification_enabled ?? data.notification_opt_in ?? true,
+        const onboardingData: Partial<OnboardingData> = {
+          fullName: data.name || data.display_name || '',
+          primaryConcerns: data.wellness_goals || data.main_goals || [],
+          completedAt: new Date().toISOString(),
         };
 
-        await onboardingService.completeOnboarding(onboardingData);
+        await onboardingService.completeOnboarding(onboardingData as OnboardingData);
 
         setIsOnboardingComplete(true);
         setCurrentOnboardingStep(12);
@@ -256,7 +254,7 @@ export function WellnessProvider({ children }: WellnessProviderProps) {
 
   const setOnboardingStep = useCallback((step: number) => {
     setCurrentOnboardingStep(step);
-    onboardingService.saveOnboardingStep(step, {}).catch((error) => {
+    AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_STEP, step.toString()).catch((error) => {
       logger.error('[WellnessContext] Erro ao salvar step', error);
     });
   }, []);

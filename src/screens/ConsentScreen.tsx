@@ -17,7 +17,7 @@ import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { useConsent, useAllConsentTerms } from '@/hooks/useConsent';
 import { useThemeColors } from '@/hooks/useTheme';
-import { consentService } from '@/services/consentService';
+import { consentService } from '@/services/supabase';
 import { Tokens } from '@/theme/tokens';
 import type { ConsentType, ConsentTermsVersion } from '@/types/consent';
 import { logger } from '@/utils/logger';

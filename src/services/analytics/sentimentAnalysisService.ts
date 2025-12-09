@@ -483,7 +483,7 @@ class SentimentAnalysisService {
   /**
    * Helper: Appends data to local history array
    */
-  private async appendToLocalHistory(key: keyof typeof this.STORAGE_KEYS, data: any) {
+  private async appendToLocalHistory(key: keyof typeof this.STORAGE_KEYS, data: unknown) {
     try {
       const existingStr = await AsyncStorage.getItem(this.STORAGE_KEYS[key]);
       const existing = existingStr ? JSON.parse(existingStr) : [];

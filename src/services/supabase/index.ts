@@ -5,11 +5,21 @@
 
 export { supabase, initSecureStorageMigration, isSupabaseReady } from './supabase';
 export * from './authService';
-export * from './profileService';
-export * from './chatService';
+
+// ProfileService - export specific to avoid conflicts
+export { profileService, type ServiceResponse as ProfileServiceResponse, type UpdateProfileData } from './profileService';
+export type { UserProfile } from '@/types/user';
+
+// ChatService - export specific to avoid conflicts
+export { chatService, type ChatConversation } from './chatService';
+export type { ChatMessage } from '@/types/chat';
+
 export * from './communityService';
 export * from './communityModerationService';
-export * from './consentService';
+
+// ConsentService - export specific to avoid conflicts
+export { consentService } from './consentService';
+
 export * from './diaryService';
 export * from './feedService';
 export * from './habitsService';

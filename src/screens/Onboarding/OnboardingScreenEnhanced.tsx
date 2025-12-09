@@ -442,12 +442,17 @@ export default function OnboardingScreenEnhanced() {
         sleep_challenges: sleepChallenges,
 
         // Step 7
-        support_system: supportSystem,
+        support_system: supportSystem.join(', '),
         partner_relationship: partnerRelationship!,
         feels_isolated: feelsIsolated!,
 
         // Step 8
-        daily_habits: dailyHabits,
+        daily_habits: [
+          dailyHabits.prenatal_vitamins ? 'prenatal_vitamins' : '',
+          dailyHabits.exercise_frequency,
+          dailyHabits.water_intake,
+          `${dailyHabits.healthy_meals} healthy meals`,
+        ].filter(Boolean),
 
         // Step 9
         stress_level: stressLevel,
@@ -467,7 +472,7 @@ export default function OnboardingScreenEnhanced() {
         interested_in_resources: interestedInResources!,
 
         // Step 13
-        preferred_language_tone: languageTone,
+        preferred_language_tone: languageTone ?? undefined,
 
         // Step 14
         goal_setting_style: goalSettingStyle!,
@@ -661,7 +666,7 @@ export default function OnboardingScreenEnhanced() {
               </Box>
               {baselineEmotion && (
                 <Box mt="6" width="100%">
-                  <Text variant="body" color="secondary" align="center" mb="3">
+                  <Text variant="body" color="secondary" align="center" style={{ marginBottom: 12 }}>
                     Com que intensidade? (1 = leve, 5 = muito intenso)
                   </Text>
                   <SliderComponent
@@ -705,7 +710,7 @@ export default function OnboardingScreenEnhanced() {
               </Box>
               {physicalChallenges.length > 0 && !physicalChallenges.includes('none') && (
                 <Box mt="6" width="100%">
-                  <Text variant="body" color="secondary" align="center" mb="3">
+                  <Text variant="body" color="secondary" align="center" style={{ marginBottom: 12 }}>
                     Nível de desconforto físico (1 = leve, 10 = muito forte)
                   </Text>
                   <SliderComponent
@@ -744,7 +749,7 @@ export default function OnboardingScreenEnhanced() {
               {sleepQuality && (
                 <>
                   <Box mt="6" width="100%">
-                    <Text variant="body" color="secondary" align="center" mb="3">
+                    <Text variant="body" color="secondary" align="center" style={{ marginBottom: 12 }}>
                       Quantas horas você dorme por noite (em média)?
                     </Text>
                     <SliderComponent
@@ -757,7 +762,7 @@ export default function OnboardingScreenEnhanced() {
                     />
                   </Box>
                   <Box mt="6" width="100%">
-                    <Text variant="body" color="secondary" align="center" mb="3">
+                    <Text variant="body" color="secondary" align="center" style={{ marginBottom: 12 }}>
                       Algum problema específico com o sono?
                     </Text>
                     <Box style={styles.optionsContainer}>
@@ -807,7 +812,7 @@ export default function OnboardingScreenEnhanced() {
               {supportSystem.length > 0 && (
                 <>
                   <Box mt="6" width="100%">
-                    <Text variant="body" color="secondary" align="center" mb="3">
+                    <Text variant="body" color="secondary" align="center" style={{ marginBottom: 12 }}>
                       Como está o relacionamento com seu/sua parceiro(a)?
                     </Text>
                     <Box style={styles.optionsContainer}>
@@ -822,7 +827,7 @@ export default function OnboardingScreenEnhanced() {
                     </Box>
                   </Box>
                   <Box mt="6" width="100%">
-                    <Text variant="body" color="secondary" align="center" mb="3">
+                    <Text variant="body" color="secondary" align="center" style={{ marginBottom: 12 }}>
                       Você se sente isolada ou sozinha?
                     </Text>
                     <Box style={styles.optionsContainer} direction="row">
@@ -855,7 +860,7 @@ export default function OnboardingScreenEnhanced() {
                 Vamos entender seus hábitos diários
               </Heading>
               <Box mt="6" width="100%">
-                <Text variant="body" color="secondary" mb="3">
+                <Text variant="body" color="secondary" style={{ marginBottom: 12 }}>
                   Você toma vitaminas pré-natais?
                 </Text>
                 <Box style={styles.optionsContainer} direction="row">
@@ -872,7 +877,7 @@ export default function OnboardingScreenEnhanced() {
                 </Box>
               </Box>
               <Box mt="6" width="100%">
-                <Text variant="body" color="secondary" mb="3">
+                <Text variant="body" color="secondary" style={{ marginBottom: 12 }}>
                   Com que frequência você se exercita?
                 </Text>
                 <Box style={styles.optionsContainer}>
@@ -889,7 +894,7 @@ export default function OnboardingScreenEnhanced() {
                 </Box>
               </Box>
               <Box mt="6" width="100%">
-                <Text variant="body" color="secondary" mb="3">
+                <Text variant="body" color="secondary" style={{ marginBottom: 12 }}>
                   Quanta água você bebe por dia?
                 </Text>
                 <Box style={styles.optionsContainer}>
@@ -904,7 +909,7 @@ export default function OnboardingScreenEnhanced() {
                 </Box>
               </Box>
               <Box mt="6" width="100%">
-                <Text variant="body" color="secondary" mb="3">
+                <Text variant="body" color="secondary" style={{ marginBottom: 12 }}>
                   Quantas refeições saudáveis você faz por dia? ({dailyHabits.healthy_meals})
                 </Text>
                 <SliderComponent
@@ -930,7 +935,7 @@ export default function OnboardingScreenEnhanced() {
                 Vamos falar sobre estresse
               </Heading>
               <Box mt="4" width="100%">
-                <Text variant="body" color="secondary" align="center" mb="3">
+                <Text variant="body" color="secondary" align="center" style={{ marginBottom: 12 }}>
                   Qual seu nível de estresse hoje? (1 = baixo, 10 = muito alto)
                 </Text>
                 <SliderComponent
@@ -942,7 +947,7 @@ export default function OnboardingScreenEnhanced() {
                 />
               </Box>
               <Box mt="6" width="100%">
-                <Text variant="body" color="secondary" mb="3">
+                <Text variant="body" color="secondary" style={{ marginBottom: 12 }}>
                   O que mais te estressa? (pode escolher vários)
                 </Text>
                 <Box style={styles.optionsContainer}>
@@ -960,7 +965,7 @@ export default function OnboardingScreenEnhanced() {
                 </Box>
               </Box>
               <Box mt="6" width="100%">
-                <Text variant="body" color="secondary" mb="3">
+                <Text variant="body" color="secondary" style={{ marginBottom: 12 }}>
                   Como você costuma lidar com o estresse?
                 </Text>
                 <Box style={styles.optionsContainer}>
@@ -1027,7 +1032,7 @@ export default function OnboardingScreenEnhanced() {
               </Box>
               {energyLevel && (
                 <Box mt="6" width="100%">
-                  <Text variant="body" color="secondary" mb="3">
+                  <Text variant="body" color="secondary" style={{ marginBottom: 12 }}>
                     Quando você se sente mais cansada?
                   </Text>
                   <Box style={styles.optionsContainer}>
@@ -1075,7 +1080,7 @@ export default function OnboardingScreenEnhanced() {
               {mentalHealthConcerns.length > 0 && (
                 <>
                   <Box mt="6" width="100%">
-                    <Text variant="body" color="secondary" mb="3">
+                    <Text variant="body" color="secondary" style={{ marginBottom: 12 }}>
                       Você já recebeu apoio profissional de saúde mental antes?
                     </Text>
                     <Box style={styles.optionsContainer} direction="row">
@@ -1092,7 +1097,7 @@ export default function OnboardingScreenEnhanced() {
                     </Box>
                   </Box>
                   <Box mt="6" width="100%">
-                    <Text variant="body" color="secondary" mb="3">
+                    <Text variant="body" color="secondary" style={{ marginBottom: 12 }}>
                       Gostaria de receber recursos de apoio à saúde mental?
                     </Text>
                     <Box style={styles.optionsContainer} direction="row">
@@ -1161,7 +1166,7 @@ export default function OnboardingScreenEnhanced() {
               {goalSettingStyle && (
                 <>
                   <Box mt="6" width="100%">
-                    <Text variant="body" color="secondary" mb="3">
+                    <Text variant="body" color="secondary" style={{ marginBottom: 12 }}>
                       Quer que eu te mande lembretes gentis para suas metas?
                     </Text>
                     <Box style={styles.optionsContainer} direction="row">
@@ -1178,7 +1183,7 @@ export default function OnboardingScreenEnhanced() {
                     </Box>
                   </Box>
                   <Box mt="6" width="100%">
-                    <Text variant="body" color="secondary" mb="3">
+                    <Text variant="body" color="secondary" style={{ marginBottom: 12 }}>
                       Quer acompanhar seu progresso ao longo do tempo?
                     </Text>
                     <Box style={styles.optionsContainer} direction="row">
@@ -1225,7 +1230,7 @@ export default function OnboardingScreenEnhanced() {
               </Box>
               {notificationOptIn === true && (
                 <Box mt="6" width="100%">
-                  <Text variant="body" color="secondary" mb="3">
+                  <Text variant="body" color="secondary" style={{ marginBottom: 12 }}>
                     Que tipo de notificações você quer receber?
                   </Text>
                   <Box style={styles.optionsContainer}>

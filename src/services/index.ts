@@ -9,8 +9,41 @@
  * - aiTools/ - Ferramentas de IA (tools, executors)
  */
 
-// Supabase Services
-export * from './supabase';
+// Supabase Services - re-export explicitly to avoid conflicts
+export {
+  supabase,
+  initSecureStorageMigration,
+  isSupabaseReady,
+  authService,
+  profileService,
+  chatService,
+  consentService,
+  diaryService,
+  feedService,
+  habitsService,
+  bookmarkService,
+  checkInService,
+  onboardingService,
+  userDataService,
+  sleepService,
+  breastfeedingInsightsService,
+  milestonesService,
+  needsRewardsService,
+  guiltService,
+  fileReviewService,
+  communityService,
+  communityModerationService
+} from './supabase';
+
+// Export types explicitly
+export type {
+  UpdateProfileData,
+  ProfileServiceResponse,
+  UserProfile,
+  ChatMessage,
+  ChatConversation,
+  OnboardingData
+} from './supabase';
 
 // AI Services
 export * from './ai';

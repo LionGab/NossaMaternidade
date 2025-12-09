@@ -18,7 +18,7 @@ import type { CompositeNavigationProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SafeAreaContainer } from '@/components/layout/SafeAreaContainer';
@@ -52,12 +52,12 @@ type NavigationProp = CompositeNavigationProp<
 
 export default function HomeScreenPremium() {
   const navigation = useNavigation<NavigationProp>();
-  const { colors } = useTheme();
+  const { colors: _colors } = useTheme();
   const insets = useSafeAreaInsets();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [streakDays, setStreakDays] = useState<number>(12);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   // Carregar perfil e stats
   useEffect(() => {

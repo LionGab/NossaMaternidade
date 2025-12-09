@@ -44,7 +44,7 @@ export const PremiumCard: React.FC<PremiumCardProps> = ({
   animationType = 'fadeIn',
   delay = 0,
   style,
-  gradientColors = COLORS.background.gradient.premium as string[],
+  gradientColors = [...COLORS.background.gradient.premium] as string[],
   hapticFeedback = true,
   fullWidth = false,
 }) => {

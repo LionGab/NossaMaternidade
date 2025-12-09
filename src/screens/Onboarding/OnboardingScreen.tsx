@@ -225,7 +225,7 @@ export default function OnboardingScreen() {
         main_goals: mainGoals,
         baseline_emotion: baselineEmotion!,
         first_focus: firstFocus!,
-        preferred_language_tone: languageTone,
+        preferred_language_tone: languageTone ?? undefined,
         notification_opt_in: notificationOptIn ?? false,
       };
 

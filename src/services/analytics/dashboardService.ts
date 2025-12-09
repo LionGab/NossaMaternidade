@@ -52,7 +52,7 @@ export interface ModerationQueueStats {
   progressPercent: number; // 0-100 (100 = fila vazia)
 }
 
-export interface FunnelStage {
+export interface FunnelStageData {
   stage: string;
   label: string;
   count: number;
@@ -299,7 +299,7 @@ class DashboardService {
     startDate?: Date,
     endDate?: Date
   ): Promise<{
-    data: FunnelStage[];
+    data: FunnelStageData[];
     error: Error | null;
   }> {
     try {
@@ -329,7 +329,7 @@ class DashboardService {
         subscription_started: 'Assinou',
       };
 
-      const stages: FunnelStage[] = (data || []).map(
+      const stages: FunnelStageData[] = (data || []).map(
         (
           row: { stage: string; total_users: number; conversion_rate: number },
           index: number,
