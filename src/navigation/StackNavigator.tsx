@@ -5,7 +5,7 @@ import { View, ActivityIndicator } from 'react-native';
 import { TabNavigator } from './TabNavigator';
 import { RootStackParamList } from './types';
 import { useAuth } from '../contexts/AuthContext';
-import { onboardingService } from '../services/onboardingService';
+import { onboardingService } from '../services/supabase';
 import { useTheme } from '../theme/ThemeContext';
 import { logger } from '../utils/logger';
 

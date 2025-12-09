@@ -31,7 +31,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuth } from '../contexts/AuthContext';
-import { userDataService } from '../services/userDataService';
+import { userDataService } from '../services/supabase';
 import { Tokens } from '../theme';
 import { useTheme } from '../theme/ThemeContext';
 import { logger } from '../utils/logger';

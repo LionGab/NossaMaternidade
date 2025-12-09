@@ -35,7 +35,7 @@ import {
   breastfeedingInsightsService,
   type DailyInsights,
   type BabyAgeGroup,
-} from '@/services/breastfeedingInsightsService';
+} from '@/services/supabase';
 import { supabase } from '@/services/supabase';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';

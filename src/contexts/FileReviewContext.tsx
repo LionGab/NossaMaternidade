@@ -5,7 +5,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-import { fileReviewService } from '../services/fileReviewService';
+import { fileReviewService } from '../services/supabase';
 import type { FileReview, ReviewSession, ReviewPermissions, FileChange } from '../types/fileReview';
 import { logger } from '../utils/logger';
 

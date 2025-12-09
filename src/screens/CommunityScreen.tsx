@@ -26,7 +26,7 @@ import { Box } from '@/components/atoms/Box';
 import { Text } from '@/components/atoms/Text';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import type { RootStackParamList } from '@/navigation/types';
-import { communityService, type CommunityPost } from '@/services/communityService';
+import { communityService, type CommunityPost } from '@/services/supabase';
 import { useTheme } from '@/theme';
 import { triggerPlatformHaptic } from '@/theme/platform';
 import {

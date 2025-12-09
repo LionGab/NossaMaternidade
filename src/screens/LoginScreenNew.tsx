@@ -29,7 +29,7 @@ import { Text } from '../components/atoms/Text';
 import { useHaptics } from '../hooks/useHaptics';
 import type { RootStackParamList } from '../navigation/types';
 import { authService } from '../services/authService';
-import { profileService } from '../services/profileService';
+import { profileService } from '../services/supabase';
 import { useTheme } from '../theme/ThemeContext';
 import { Spacing, Radius } from '../theme/tokens';
 import { logger } from '../utils/logger';

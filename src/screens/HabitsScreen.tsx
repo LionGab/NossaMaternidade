@@ -24,7 +24,7 @@ import { CreateHabitModal, HabitCard } from '@/components/habits';
 import { Box } from '@/components/atoms/Box';
 import { Text } from '@/components/atoms/Text';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { habitsService, type UserHabit } from '@/services/habitsService';
+import { habitsService, type UserHabit } from '@/services/supabase';
 import { useTheme } from '@/theme';
 import { triggerPlatformHaptic } from '@/theme/platform';
 import {

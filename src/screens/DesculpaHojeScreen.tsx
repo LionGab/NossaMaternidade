@@ -32,7 +32,7 @@ import {
   ValidationEngine,
   BadgeUnlocker,
 } from '@/components/guilt';
-import { guiltService } from '@/services/guiltService';
+import { guiltService } from '@/services/supabase';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
 import type { GuiltType, GuiltValidation, GuiltStats, Badge } from '@/types/guilt';
