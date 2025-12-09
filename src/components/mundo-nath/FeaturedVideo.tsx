@@ -12,17 +12,16 @@
  */
 
 import { Heart, Clock, Users } from 'lucide-react-native';
-import React, { useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as Haptics from 'expo-haptics';
 
 import { Badge } from '@/components/Badge';
 import { Box } from '@/components/atoms/Box';
-import { Button } from '@/components/atoms/Button';
 import { Text } from '@/components/atoms/Text';
+import { ReelsPlayer } from './ReelsPlayer';
 import { useTheme } from '@/theme';
-import { Tokens, ColorTokens } from '@/theme/tokens';
+import { Tokens, ColorTokens, Spacing } from '@/theme/tokens';
 
 interface FeaturedVideoProps {
   /** ID do vídeo do YouTube (ex: "riVUidsF2qo") */
@@ -47,23 +46,14 @@ interface FeaturedVideoProps {
 // const DEFAULT_VIDEO_ID = 'riVUidsF2qo';
 
 export function FeaturedVideo({
-  title = 'O Vídeo que Marcou o Coração de Muitas Mães',
-  description = 'Um conteúdo que tocou profundamente milhares de mães. Uma experiência emocional única e transformadora.',
+  title = 'O DIA MAIS FELIZ DA MINHA VIDA! 💙',
+  description = 'Um momento especial que marcou profundamente. Uma experiência emocional única e transformadora.',
   viewsCount = 10000,
   duration = 15,
+  videoUrl,
   onPlay,
 }: FeaturedVideoProps) {
   const { colors, isDark } = useTheme();
-  const [showVideo, setShowVideo] = useState(false);
-  const [videoLoaded, setVideoLoaded] = useState(false);
-
-  const handlePlayPress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setShowVideo(true);
-    onPlay?.();
-    // Simular carregamento
-    setTimeout(() => setVideoLoaded(true), 300);
-  };
 
   // youtubeEmbedUrl removido - WebView não disponível no momento
 
@@ -165,199 +155,38 @@ export function FeaturedVideo({
           </Text>
         </Box>
 
-        {/* Player de Vídeo */}
-        <Box
-          style={{
-            width: '100%',
-            aspectRatio: 16 / 9,
-            borderRadius: Tokens.radius['2xl'],
-            overflow: 'hidden',
-            borderWidth: 4,
-            borderColor: isDark ? ColorTokens.secondary[600] : ColorTokens.secondary[300],
-            backgroundColor: ColorTokens.neutral[900],
-          }}
-        >
-          {!showVideo ? (
-            <LinearGradient
-              colors={[
-                `${ColorTokens.secondary[100]}33`,
-                `${ColorTokens.secondary[200]}33`,
-                `${ColorTokens.accent.purple}33`,
-              ]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                position: 'relative',
-              }}
-            >
-              {/* Overlay escuro */}
-              <View
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  backgroundColor: ColorTokens.overlay.dark,
-                }}
-              />
-
-              {/* Conteúdo do thumbnail */}
-              <Box align="center" gap="3" style={{ position: 'relative', zIndex: 10 }}>
-                <Box
-                  align="center"
-                  justify="center"
-                  style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 40,
-                    backgroundColor: `${ColorTokens.neutral[0]}95`,
-                    borderWidth: 3,
-                    borderColor: isDark ? ColorTokens.secondary[300] : ColorTokens.secondary[500],
-                    ...Tokens.shadows.xl,
-                  }}
-                >
-                  <View
-                    style={{
-                      width: 0,
-                      height: 0,
-                      borderLeftWidth: 20,
-                      borderTopWidth: 14,
-                      borderBottomWidth: 14,
-                      borderLeftColor: isDark ? ColorTokens.secondary[500] : ColorTokens.secondary[500],
-                      borderTopColor: 'transparent',
-                      borderBottomColor: 'transparent',
-                      marginLeft: 6,
-                    }}
-                  />
-                </Box>
-                <Box align="center" gap="2">
-                  <Text
-                    size="sm"
-                    weight="semibold"
-                    style={{
-                      color: ColorTokens.neutral[0],
-                      textShadowColor: ColorTokens.overlay.backdrop,
-                      textShadowOffset: { width: 0, height: 1 },
-                      textShadowRadius: 4,
-                    }}
-                  >
-                    Descubra o vídeo especial
-                  </Text>
-                  <Text
-                    size="xs"
-                    style={{
-                      color: `${ColorTokens.neutral[0]}90`,
-                      textShadowColor: ColorTokens.overlay.backdrop,
-                      textShadowOffset: { width: 0, height: 1 },
-                      textShadowRadius: 4,
-                    }}
-                  >
-                    Um conteúdo que emocionou milhares de mães
-                  </Text>
-                </Box>
-                <Button
-                  title="Assistir Agora"
-                  onPress={handlePlayPress}
-                  variant="primary"
-                  size="lg"
-                  leftIcon={
-                    <View
-                      style={{
-                        width: 0,
-                        height: 0,
-                        borderLeftWidth: 8,
-                        borderTopWidth: 6,
-                        borderBottomWidth: 6,
-                        borderLeftColor: ColorTokens.neutral[0],
-                        borderTopColor: 'transparent',
-                        borderBottomColor: 'transparent',
-                        marginLeft: 2,
-                      }}
-                    />
-                  }
-                  style={{
-                    backgroundColor: isDark ? ColorTokens.secondary[600] : ColorTokens.secondary[500],
-                    borderRadius: Tokens.radius.full,
-                    ...Tokens.shadows.lg,
-                  }}
-                />
-              </Box>
-
-              {/* Badges de estatísticas no thumbnail */}
-              <Box
-                direction="row"
-                align="center"
-                justify="center"
-                gap="2"
-                style={{
-                  position: 'absolute',
-                  bottom: Tokens.spacing['3'],
-                  left: 0,
-                  right: 0,
-                  zIndex: 20,
-                }}
-              >
-                <Box
-                  direction="row"
-                  align="center"
-                  gap="1"
-                  px="3"
-                  py="2"
-                  style={{
-                    backgroundColor: `${ColorTokens.neutral[0]}95`,
-                    borderRadius: Tokens.radius.full,
-                    ...Tokens.shadows.md,
-                  }}
-                >
-                  <Heart size={14} color={ColorTokens.secondary[500]} fill={ColorTokens.secondary[500]} />
-                  <Text size="xs" weight="semibold" style={{ color: ColorTokens.neutral[800] }}>
-                    +{viewsCount.toLocaleString()} mães
-                  </Text>
-                </Box>
-                <Box
-                  direction="row"
-                  align="center"
-                  gap="1"
-                  px="3"
-                  py="2"
-                  style={{
-                    backgroundColor: `${ColorTokens.neutral[0]}95`,
-                    borderRadius: Tokens.radius.full,
-                    ...Tokens.shadows.md,
-                  }}
-                >
-                  <Clock size={14} color={ColorTokens.neutral[800]} />
-                  <Text size="xs" style={{ color: ColorTokens.neutral[800] }}>
-                    {duration} min
-                  </Text>
-                </Box>
-              </Box>
-            </LinearGradient>
-          ) : (
-            <View style={{ flex: 1 }}>
-              {!videoLoaded ? (
-                <Box
-                  align="center"
-                  justify="center"
-                  style={{
-                    flex: 1,
-                    backgroundColor: isDark ? ColorTokens.neutral[900] : ColorTokens.neutral[100],
-                  }}
-                >
-                  <ActivityIndicator size="large" color={ColorTokens.secondary[500]} />
-                  <Text size="sm" color="secondary" style={{ marginTop: Tokens.spacing['3'] }}>
-                    Carregando vídeo especial...
-                  </Text>
-                </Box>
-              ) : (
-                <View style={{ flex: 1, backgroundColor: colors.background.elevated, justifyContent: 'center', alignItems: 'center' }}>
-                  <Text size="sm" color="secondary">WebView não disponível. Instale react-native-webview.</Text>
-                </View>
-              )}
-            </View>
-          )}
-        </Box>
+        {/* Player de Vídeo - ReelsPlayer funcional */}
+        {videoUrl ? (
+          <ReelsPlayer
+            videoUrl={videoUrl}
+            title={title}
+            duration={duration ? duration * 60 : undefined}
+            views={viewsCount}
+            height={400}
+            autoPlay={false}
+            onPlay={() => {
+              onPlay?.();
+            }}
+          />
+        ) : (
+          <Box
+            style={{
+              width: '100%',
+              aspectRatio: 16 / 9,
+              borderRadius: Tokens.radius['2xl'],
+              overflow: 'hidden',
+              borderWidth: 4,
+              borderColor: isDark ? ColorTokens.secondary[600] : ColorTokens.secondary[300],
+              backgroundColor: ColorTokens.neutral[900],
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text size="sm" color="secondary" style={{ padding: Spacing['4'] }}>
+              URL do vídeo não fornecida
+            </Text>
+          </Box>
+        )}
 
         {/* Estatísticas abaixo do vídeo */}
         <Box

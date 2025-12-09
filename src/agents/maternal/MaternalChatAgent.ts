@@ -6,9 +6,8 @@
 import { MedicalModerationService, CrisisDetectionService } from '../../ai/moderation';
 import type { CrisisDetectionResult } from '../../ai/moderation';
 import { MCPResponse } from '../../mcp/types';
-import { geminiService } from '../../services/geminiService';
-import { sessionManager } from '../../services/sessionManager';
-import { sessionPersistence } from '../../services/sessionPersistence';
+import { geminiService } from '@/services';
+import { sessionManager, sessionPersistence } from '@/services';
 import { logger } from '../../utils/logger';
 import { orchestrator } from '../core/AgentOrchestrator';
 import { BaseAgent, AgentConfig, AgentContext as _AgentContext } from '../core/BaseAgent';

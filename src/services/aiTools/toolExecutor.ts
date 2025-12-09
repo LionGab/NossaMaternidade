@@ -7,10 +7,7 @@
 import type { AIToolCall, AIToolResult } from '@/types/ai';
 import { logger } from '@/utils/logger';
 
-import { checkInService } from '../checkInService';
-import { feedService } from '../feedService';
-import { habitsService } from '../habitsService';
-import { profileService } from '../profileService';
+import { checkInService, feedService, habitsService, profileService } from '@/services';
 
 class AIToolExecutor {
   /**

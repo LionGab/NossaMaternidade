@@ -3,7 +3,7 @@ import { logger } from '@/utils/logger';
 import {
   contentRecommendationService,
   type PersonalizedContent,
-} from './contentRecommendationService';
+} from '../ai';
 import { supabase } from './supabase';
 
 export type ContentType = 'video' | 'audio' | 'article' | 'reels';

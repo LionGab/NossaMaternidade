@@ -40,8 +40,9 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Avatar } from '@/components/Avatar';
 import { IconButton } from '@/components/atoms/IconButton';
 import { Text } from '@/components/atoms/Text';
+import { getRandomSessionName } from '@/constants/sessionNames';
 import type { RootStackParamList } from '@/navigation/types';
-import { chatService, ChatConversation } from '@/services/chatService';
+import { chatService, ChatConversation } from '@/services/supabase';
 import { useTheme } from '@/theme';
 import { ColorTokens, Spacing, Radius } from '@/theme/tokens';
 import { logger } from '@/utils/logger';
@@ -262,8 +263,11 @@ export default function ChatSessionsScreen() {
     logger.info('[ChatSessionsScreen] Criando nova conversa');
 
     try {
+      // Usa um nome sugerido aleatório em vez de "Nova conversa"
+      const suggestedTitle = getRandomSessionName();
+
       const newConv = await chatService.createConversation({
-        title: 'Nova conversa',
+        title: suggestedTitle,
       });
 
       if (newConv) {

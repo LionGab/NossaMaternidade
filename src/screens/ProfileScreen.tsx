@@ -25,7 +25,7 @@ import type { UserProfile } from '@/types/user';
 import { EditableAvatar } from '../components/EditableAvatar';
 import { useHaptics } from '../hooks/useHaptics';
 import type { RootStackParamList } from '../navigation/types';
-import { profileService, UpdateProfileData } from '../services/profileService';
+import { profileService, UpdateProfileData } from '@/services';
 import { useTheme, type ThemeColors } from '../theme/ThemeContext';
 import { Tokens } from '../theme/tokens';
 import { logger } from '../utils/logger';

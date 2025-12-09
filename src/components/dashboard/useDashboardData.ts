@@ -19,7 +19,7 @@ import {
   ModerationQueueStats,
   FunnelStage,
   DashboardSummary,
-} from '@/services/dashboardService';
+} from '@/services';
 import { logger } from '@/utils/logger';
 
 interface Alert {

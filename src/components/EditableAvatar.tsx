@@ -18,7 +18,7 @@ import {
   ActionSheetIOS,
 } from 'react-native';
 
-import { profileService } from '../services/profileService';
+import { profileService } from '@/services';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens } from '../theme/tokens';
 import { logger } from '../utils/logger';

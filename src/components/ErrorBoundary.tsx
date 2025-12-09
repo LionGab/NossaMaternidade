@@ -12,7 +12,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { captureException, addBreadcrumb } from '../services/sentry';
+import { captureException, addBreadcrumb } from '@/services';
 import { logger } from '../utils/logger';
 
 interface Props {

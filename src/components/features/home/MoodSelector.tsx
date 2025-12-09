@@ -16,7 +16,7 @@ import { TouchableOpacity, View, Animated } from 'react-native';
 import { Box } from '@/components/atoms/Box';
 import { Text } from '@/components/atoms/Text';
 import type { MainTabParamList, RootStackParamList } from '@/navigation/types';
-import { checkInService, type EmotionValue } from '@/services/checkInService';
+import { checkInService, type EmotionValue } from '@/services/supabase';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';

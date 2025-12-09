@@ -53,7 +53,7 @@ export const TAB_CONFIG: TabConfig[] = [
   { name: 'Home', label: 'Inicio', icon: Home },
   { name: 'MaesValentes', label: 'Maes', icon: Users },
   { name: 'Chat', label: 'NathIA', icon: Sparkles, isFab: true },
-  { name: 'MundoNath', label: 'Mundo', icon: BookOpen },
+  { name: 'MundoNath', label: 'Mundo da Nath', icon: BookOpen },
   { name: 'Habitos', label: 'Habitos', icon: Activity },
 ];
 

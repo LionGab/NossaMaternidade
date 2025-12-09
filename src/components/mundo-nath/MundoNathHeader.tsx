@@ -19,7 +19,7 @@ const HEADER_HEIGHT = 280;
 export interface MundoNathHeaderProps {
   /** URL da imagem da Nathália */
   imageUrl?: string;
-  /** Título (ex: "Mundo Naty") */
+  /** Título (ex: "Mundo da Nath") */
   title?: string;
   /** Subtítulo opcional */
   subtitle?: string;
@@ -27,7 +27,7 @@ export interface MundoNathHeaderProps {
 
 export function MundoNathHeader({
   imageUrl = 'https://i.imgur.com/tNIrNIs.jpg',
-  title = 'Mundo Naty',
+  title = 'Mundo da Nath',
   subtitle,
 }: MundoNathHeaderProps) {
   const { isDark } = useTheme();

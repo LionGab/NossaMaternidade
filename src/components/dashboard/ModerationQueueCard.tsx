@@ -13,7 +13,7 @@ import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 import { useThemeColors } from '@/hooks/useTheme';
-import type { ModerationQueueStats } from '@/services/dashboardService';
+import type { ModerationQueueStats } from '@/services';
 import { Tokens } from '@/theme/tokens';
 
 interface ModerationQueueCardProps {

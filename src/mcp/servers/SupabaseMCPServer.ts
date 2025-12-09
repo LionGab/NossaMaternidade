@@ -6,7 +6,7 @@
 
 import { SupabaseClient } from '@supabase/supabase-js';
 
-import { supabase } from '../../services/supabase';
+import { supabase } from '@/services';
 import { logger } from '../../utils/logger';
 import {
   MCPServer,

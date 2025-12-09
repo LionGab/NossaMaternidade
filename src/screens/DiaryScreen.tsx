@@ -17,8 +17,8 @@ import { Tokens, Shadows, Spacing, Typography, Radius } from '@/theme/tokens';
 
 import { Button } from '../components';
 import { useThemeColors } from '../hooks/useTheme';
-import { diaryService } from '../services/diaryService';
-import { geminiService } from '../services/geminiService';
+import { diaryService } from '@/services';
+import { geminiService } from '@/services';
 import { logger } from '../utils/logger';
 
 export default function DiaryScreen() {

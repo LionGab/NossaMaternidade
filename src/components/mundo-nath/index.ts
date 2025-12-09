@@ -4,6 +4,7 @@
  */
 
 export { MundoNathHeader, type MundoNathHeaderProps } from './MundoNathHeader';
+export { ReelsPlayer, type ReelsPlayerProps } from './ReelsPlayer';
 export { ForYouSection } from './ForYouSection';
 export { AudioWellnessCard, type AudioWellnessCardProps } from './AudioWellnessCard';
 export { AudioWellnessSection, type AudioWellnessSectionProps } from './AudioWellnessSection';

@@ -14,7 +14,7 @@
 import { ColorTokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';
 
-import { supabase } from './supabase';
+import { supabase } from '../supabase';
 
 // =============================================================================
 // TYPES

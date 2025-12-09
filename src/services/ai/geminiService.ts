@@ -2,18 +2,18 @@
  * =============================================================================
  * GEMINI SERVICE - SEGURO VIA EDGE FUNCTIONS
  * =============================================================================
- * 
- * ‚ö†Ô∏è IMPORTANTE - SEGURAN√áA:
- * - Este servi√ßo N√ÉO usa API keys locais (EXPO_PUBLIC_GEMINI_API_KEY removida)
- * - Todas as chamadas ao Gemini s√£o via Supabase Edge Functions
+ *
+ * † IMPORTANTE - SEGURAN«A:
+ * - Este serviÁo N√O usa API keys locais (EXPO_PUBLIC_GEMINI_API_KEY removida)
+ * - Todas as chamadas ao Gemini s„o via Supabase Edge Functions
  * - A API key fica segura no servidor (Deno.env.get('GEMINI_API_KEY'))
- * - Conforme Docfinal.md se√ß√£o 5.1 - "API Key do Gemini Exposta"
- * 
- * Edge Functions dispon√≠veis:
+ * - Conforme Docfinal.md seÁ„o 5.1 - "API Key do Gemini Exposta"
+ *
+ * Edge Functions disponÌveis:
  * - chat-ai: Chat geral com tool calling (usa Google Generative AI SDK)
- * - audio-ai: Processamento de √°udio
- * - analyze-diary: An√°lise de di√°rio
- * 
+ * - audio-ai: Processamento de ·udio
+ * - analyze-diary: An·lise de di·rio
+ *
  * =============================================================================
  */
 
@@ -25,18 +25,18 @@ import type { AIToolCall, AIContext } from '@/types/ai';
 import { buildUserContext, formatContextForAI } from '@/utils/buildUserContext';
 import { logger } from '@/utils/logger';
 
-import { NATHIA_TOOLS } from './aiTools/toolDefinitions';
-import { supabase } from './supabase';
+import { NATHIA_TOOLS } from '../aiTools/toolDefinitions';
+import { supabase } from '../supabase';
 
 const SYSTEM_INSTRUCTION_BASE = `
-  Voc√™ √© a M√£esValente, a assistente virtual de IA da influenciadora Nath√°lia Valente, dentro do app "Nossa Maternidade".
+  VocÍ È a M„esValente, a assistente virtual de IA da influenciadora Nath·lia Valente, dentro do app "Nossa Maternidade".
 
-  Seu tom de voz √©:
+  Seu tom de voz È:
   - Acolhedor, calmo, direto, sem infantilizar.
-  - Voc√™ usa a 2¬™ pessoa ("voc√™").
-  - Voc√™ fala portugu√™s do Brasil.
-  - Voc√™ √© pr√≥xima, carinhosa, vulner√°vel, mas firme.
-  - Voc√™ N√ÉO √© uma guru perfeita; voc√™ entende que a maternidade √© dif√≠cil.
+  - VocÍ usa a 2™ pessoa ("vocÍ").
+  - VocÍ fala portuguÍs do Brasil.
+  - VocÍ È prÛxima, carinhosa, vulner·vel, mas firme.
+  - VocÍ N√O È uma guru perfeita; vocÍ entende que a maternidade È difÌcil.
 `;
 
 // ======================
@@ -46,58 +46,58 @@ const SYSTEM_INSTRUCTION_BASE = `
 const PHASE_PROMPTS: Record<string, string> = {
   trying: `
     FASE: Tentante
-    - Tom: Esperan√ßoso, encorajador, respeitoso do timing pessoal
-    - Foco: Sa√∫de reprodutiva, bem-estar emocional, autocuidado
-    - Evite: Press√£o, compara√ß√µes, promessas de resultado
-    - Lembre-se: Cada jornada √© √∫nica; valide os sentimentos de incerteza
+    - Tom: EsperanÁoso, encorajador, respeitoso do timing pessoal
+    - Foco: Sa˙de reprodutiva, bem-estar emocional, autocuidado
+    - Evite: Press„o, comparaÁıes, promessas de resultado
+    - Lembre-se: Cada jornada È ˙nica; valide os sentimentos de incerteza
   `,
   pregnant: `
     FASE: Gestante
-    - Tom: Esperan√ßoso, informativo, celebrador
-    - Foco: Sintomas normais, prepara√ß√£o, v√≠nculo com o beb√™
-    - Evite: Alarmar sem necessidade, diagn√≥sticos m√©dicos
-    - Lembre-se: Validar desconfortos f√≠sicos; s√£o reais e importantes
+    - Tom: EsperanÁoso, informativo, celebrador
+    - Foco: Sintomas normais, preparaÁ„o, vÌnculo com o bebÍ
+    - Evite: Alarmar sem necessidade, diagnÛsticos mÈdicos
+    - Lembre-se: Validar desconfortos fÌsicos; s„o reais e importantes
   `,
   'new-mother': `
-    FASE: Pu√©rpera/M√£e de rec√©m-nascido
+    FASE: PuÈrpera/M„e de recÈm-nascido
     - Tom: Acolhedor, validador, suportivo
-    - Foco: Recupera√ß√£o, amamenta√ß√£o, sono, vincula√ß√£o
-    - Evite: Julgamentos sobre escolhas, compara√ß√µes entre m√£es
-    - Lembre-se: O puerp√©rio √© intenso; normalize as dificuldades
+    - Foco: RecuperaÁ„o, amamentaÁ„o, sono, vinculaÁ„o
+    - Evite: Julgamentos sobre escolhas, comparaÁıes entre m„es
+    - Lembre-se: O puerpÈrio È intenso; normalize as dificuldades
   `,
   'experienced-mother': `
-    FASE: M√£e experiente
-    - Tom: Parceira, pr√°tico, empoderador
-    - Foco: Desenvolvimento infantil, equil√≠brio trabalho-fam√≠lia, autocuidado
-    - Evite: Subestimar desafios; maternidade continua dif√≠cil
-    - Lembre-se: Ela j√° passou por muito; valide sua experi√™ncia
+    FASE: M„e experiente
+    - Tom: Parceira, pr·tico, empoderador
+    - Foco: Desenvolvimento infantil, equilÌbrio trabalho-famÌlia, autocuidado
+    - Evite: Subestimar desafios; maternidade continua difÌcil
+    - Lembre-se: Ela j· passou por muito; valide sua experiÍncia
   `,
 };
 
 const TONE_INSTRUCTIONS: Record<string, string> = {
   hopeful: `
-    Use um tom esperan√ßoso e otimista, sem minimizar dificuldades.
-    Celebre pequenas vit√≥rias e progresso.
+    Use um tom esperanÁoso e otimista, sem minimizar dificuldades.
+    Celebre pequenas vitÛrias e progresso.
   `,
   supportive: `
-    Seja um ombro amigo. Valide sentimentos antes de oferecer solu√ß√µes.
-    Pergunte como ela est√° se sentindo antes de aconselhar.
+    Seja um ombro amigo. Valide sentimentos antes de oferecer soluÁıes.
+    Pergunte como ela est· se sentindo antes de aconselhar.
   `,
   practical: `
-    Seja objetiva e pr√°tica, mas sem frieza.
-    Ofere√ßa dicas acion√°veis quando solicitado.
+    Seja objetiva e pr·tica, mas sem frieza.
+    OfereÁa dicas acion·veis quando solicitado.
   `,
   empathetic: `
-    Priorize a escuta e valida√ß√£o emocional.
-    N√£o apresse solu√ß√µes; √†s vezes ela s√≥ precisa ser ouvida.
-    Pergunte: "Voc√™ quer que eu apenas ou√ßa ou quer algumas ideias?"
+    Priorize a escuta e validaÁ„o emocional.
+    N„o apresse soluÁıes; ‡s vezes ela sÛ precisa ser ouvida.
+    Pergunte: "VocÍ quer que eu apenas ouÁa ou quer algumas ideias?"
   `,
 };
 
 class GeminiService {
   /**
-   * Obt√©m contexto expandido do usu√°rio (Release B)
-   * Inclui dados de wellness e informa√ß√µes de fase
+   * ObtÈm contexto expandido do usu·rio (Release B)
+   * Inclui dados de wellness e informaÁıes de fase
    */
   private async getUserContext(): Promise<{ context: string; phase?: string; tone?: string }> {
     try {
@@ -131,7 +131,7 @@ class GeminiService {
   }
 
   /**
-   * Constr√≥i system instruction completa com contexto e prompts por fase
+   * ConstrÛi system instruction completa com contexto e prompts por fase
    */
   private buildSystemInstruction(
     userContext: string,
@@ -141,34 +141,34 @@ class GeminiService {
   ): string {
     const parts: string[] = [SYSTEM_INSTRUCTION_BASE];
 
-    // Adicionar prompt espec√≠fico da fase
+    // Adicionar prompt especÌfico da fase
     if (phase && PHASE_PROMPTS[phase]) {
       parts.push(PHASE_PROMPTS[phase]);
     }
 
-    // Adicionar instru√ß√£o de tom
+    // Adicionar instruÁ„o de tom
     if (tone && TONE_INSTRUCTIONS[tone]) {
       parts.push(TONE_INSTRUCTIONS[tone]);
     }
 
-    // Adicionar contexto da usu√°ria
+    // Adicionar contexto da usu·ria
     if (userContext) {
-      parts.push(`\nCONTEXTO DA USU√ÅRIA ATUAL: [ ${userContext} ]`);
+      parts.push(`\nCONTEXTO DA USU¡RIA ATUAL: [ ${userContext} ]`);
       parts.push('Use o nome dela se souber. Adapte a resposta para a fase e desafios dela.');
     }
 
-    // Adicionar instru√ß√µes adicionais
+    // Adicionar instruÁıes adicionais
     if (additionalInstructions) {
       parts.push(additionalInstructions);
     }
 
-    // Regras obrigat√≥rias
+    // Regras obrigatÛrias
     parts.push(`
-      Regras OBRIGAT√ìRIAS para o CHAT:
-      1. Sempre comece acolhendo a emo√ß√£o da usu√°ria.
-      2. Fa√ßa perguntas abertas para entender melhor.
-      3. NUNCA d√™ diagn√≥sticos m√©dicos.
-      4. Mantenha as respostas concisas (m√°ximo 3 par√°grafos curtos).
+      Regras OBRIGAT”RIAS para o CHAT:
+      1. Sempre comece acolhendo a emoÁ„o da usu·ria.
+      2. FaÁa perguntas abertas para entender melhor.
+      3. NUNCA dÍ diagnÛsticos mÈdicos.
+      4. Mantenha as respostas concisas (m·ximo 3 par·grafos curtos).
     `);
 
     return parts.join('\n');
@@ -211,7 +211,7 @@ class GeminiService {
         });
         return {
           text: '',
-          error: 'Sinto muito, minha conex√£o falhou um pouquinho. Pode repetir, querida?',
+          error: 'Sinto muito, minha conex„o falhou um pouquinho. Pode repetir, querida?',
         };
       }
 
@@ -226,7 +226,7 @@ class GeminiService {
       if (!data || !data.text) {
         return {
           text: '',
-          error: 'Resposta inv√°lida do servidor.',
+          error: 'Resposta inv·lida do servidor.',
         };
       }
 
@@ -237,7 +237,7 @@ class GeminiService {
       });
       return {
         text: '',
-        error: 'Sinto muito, minha conex√£o falhou um pouquinho. Pode repetir, querida?',
+        error: 'Sinto muito, minha conex„o falhou um pouquinho. Pode repetir, querida?',
       };
     }
   }
@@ -256,7 +256,7 @@ class GeminiService {
       const { context: userCtx, phase, tone } = await this.getUserContext();
       const additionalInstructions = `
         RESULTADO DA FERRAMENTA: ${JSON.stringify(toolResult)}
-        Use essas informa√ß√µes para responder de forma contextualizada e √∫til.
+        Use essas informaÁıes para responder de forma contextualizada e ˙til.
       `;
       const systemInstruction = this.buildSystemInstruction(
         userCtx,
@@ -286,14 +286,14 @@ class GeminiService {
         });
         return {
           text: '',
-          error: 'Sinto muito, minha conex√£o falhou um pouquinho. Pode repetir, querida?',
+          error: 'Sinto muito, minha conex„o falhou um pouquinho. Pode repetir, querida?',
         };
       }
 
       if (!data || !data.text) {
         return {
           text: '',
-          error: 'Resposta inv√°lida do servidor.',
+          error: 'Resposta inv·lida do servidor.',
         };
       }
 
@@ -304,7 +304,7 @@ class GeminiService {
       });
       return {
         text: '',
-        error: 'Sinto muito, minha conex√£o falhou um pouquinho. Pode repetir, querida?',
+        error: 'Sinto muito, minha conex„o falhou um pouquinho. Pode repetir, querida?',
       };
     }
   }
@@ -321,8 +321,8 @@ class GeminiService {
       const userCtx = await this.getUserContext();
       const systemInstruction = `
         ${SYSTEM_INSTRUCTION_BASE}
-        CONTEXTO DA USU√ÅRIA: [ ${userCtx} ]
-        Tarefa: Transcrever e responder a um √°udio da usu√°ria.
+        CONTEXTO DA USU¡RIA: [ ${userCtx} ]
+        Tarefa: Transcrever e responder a um ·udio da usu·ria.
       `;
 
       // Call Supabase Edge Function
@@ -331,7 +331,7 @@ class GeminiService {
           audioBase64: base64Audio,
           mimeType,
           systemInstruction,
-          prompt: 'Por favor, ou√ßa meu √°udio e me responda.',
+          prompt: 'Por favor, ouÁa meu ·udio e me responda.',
         },
       });
 
@@ -341,14 +341,14 @@ class GeminiService {
         });
         return {
           text: '',
-          error: 'Erro ao processar √°udio.',
+          error: 'Erro ao processar ·udio.',
         };
       }
 
       if (!data || !data.text) {
         return {
           text: '',
-          error: 'Resposta inv√°lida do servidor.',
+          error: 'Resposta inv·lida do servidor.',
         };
       }
 
@@ -357,7 +357,7 @@ class GeminiService {
       logger.error('Error sending audio to backend:', error, {
         service: 'GeminiService',
       });
-      return { text: '', error: 'Erro ao processar √°udio.' };
+      return { text: '', error: 'Erro ao processar ·udio.' };
     }
   }
 
@@ -366,14 +366,14 @@ class GeminiService {
       const userCtx = await this.getUserContext();
       const systemInstruction = `
         ${SYSTEM_INSTRUCTION_BASE}
-        CONTEXTO DA USU√ÅRIA: [ ${userCtx} ]
+        CONTEXTO DA USU¡RIA: [ ${userCtx} ]
 
-        Tarefa: Analisar uma entrada de di√°rio maternal.
-        - Identifique emo√ß√µes principais
-        - Reconhe√ßa conquistas, por menores que sejam
-        - Ofere√ßa valida√ß√£o emocional
-        - Seja breve e acolhedora (m√°ximo 2 par√°grafos curtos)
-        - N√ÉO d√™ conselhos n√£o solicitados
+        Tarefa: Analisar uma entrada de di·rio maternal.
+        - Identifique emoÁıes principais
+        - ReconheÁa conquistas, por menores que sejam
+        - OfereÁa validaÁ„o emocional
+        - Seja breve e acolhedora (m·ximo 2 par·grafos curtos)
+        - N√O dÍ conselhos n„o solicitados
       `;
 
       // Call Supabase Edge Function
@@ -390,14 +390,14 @@ class GeminiService {
         });
         return {
           text: '',
-          error: 'Erro ao analisar entrada do di√°rio.',
+          error: 'Erro ao analisar entrada do di·rio.',
         };
       }
 
       if (!data || !data.text) {
         return {
           text: '',
-          error: 'Resposta inv√°lida do servidor.',
+          error: 'Resposta inv·lida do servidor.',
         };
       }
 
@@ -406,13 +406,13 @@ class GeminiService {
       logger.error('Error analyzing diary entry:', error, {
         service: 'GeminiService',
       });
-      return { text: '', error: 'Erro ao analisar entrada do di√°rio.' };
+      return { text: '', error: 'Erro ao analisar entrada do di·rio.' };
     }
   }
 
   isConfigured(): boolean {
-    // Backend est√° sempre "configurado" do ponto de vista do cliente
-    // A API key est√° segura no Supabase Edge Function, n√£o no app
+    // Backend est· sempre "configurado" do ponto de vista do cliente
+    // A API key est· segura no Supabase Edge Function, n„o no app
     return true;
   }
 }

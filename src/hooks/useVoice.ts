@@ -12,7 +12,7 @@
 import * as Haptics from 'expo-haptics';
 import { useState, useCallback, useEffect, useRef } from 'react';
 
-import { elevenLabsService, NATHALIA_VOICES, NATHALIA_SCRIPTS } from '@/services/elevenLabsService';
+import { elevenLabsService, NATHALIA_VOICES, NATHALIA_SCRIPTS } from '@/services/ai';
 import { logger } from '@/utils/logger';
 
 export type VoiceType = keyof typeof NATHALIA_VOICES;

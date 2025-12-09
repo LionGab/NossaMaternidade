@@ -14,11 +14,11 @@ import { View, TouchableOpacity, ActivityIndicator, Image, StyleSheet } from 're
 
 import { Box } from '@/components/atoms/Box';
 import { Text } from '@/components/atoms/Text';
+import { ReelsPlayer } from '@/components/mundo-nath/ReelsPlayer';
 import { useResponsiveDimensions } from '@/hooks/useResponsiveDimensions';
-import type { PersonalizedContent } from '@/services/contentRecommendationService';
-import { feedService } from '@/services/feedService';
+import { feedService, type PersonalizedContent } from '@/services';
 import { useTheme } from '@/theme';
-import { Tokens, ColorTokens } from '@/theme/tokens';
+import { Tokens, ColorTokens, Radius } from '@/theme/tokens';
 import type { ContentItem } from '@/types/content';
 import { logger } from '@/utils/logger';
 
@@ -244,8 +244,42 @@ function ContentCard({
   colors,
   cardWidth,
 }: ContentCardProps) {
-  const isVideo = item.type === 'video' || item.type === 'reels';
+  const isVideo = item.type === 'video';
+  const isReels = item.type === 'reels';
   const isAudio = item.type === 'audio';
+
+  // Se for reels, usar o ReelsPlayer
+  if (isReels && item.videoUrl) {
+    return (
+      <View
+        style={[
+          styles.card,
+          {
+            width: cardWidth,
+            backgroundColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[0],
+            borderRadius: Radius['2xl'],
+            overflow: 'hidden',
+            ...Tokens.shadows.lg,
+          },
+        ]}
+      >
+        <ReelsPlayer
+          videoUrl={item.videoUrl}
+          thumbnailUrl={item.thumbnailUrl || item.imageUrl}
+          title={item.title}
+          duration={typeof item.duration === 'number' ? item.duration : undefined}
+          views={item.views}
+          height={300}
+          width={cardWidth}
+          autoPlay={false}
+          onPlay={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            onPress();
+          }}
+        />
+      </View>
+    );
+  }
 
   return (
     <TouchableOpacity
@@ -324,7 +358,7 @@ function ContentCard({
               letterSpacing: 0.5,
             }}
           >
-            {item.type === 'reels' ? 'REEL' : item.type?.toUpperCase()}
+            {item.type === 'reels' ? 'REEL' : item.type === 'video' ? 'VÍDEO' : item.type?.toUpperCase()}
           </Text>
         </View>
 

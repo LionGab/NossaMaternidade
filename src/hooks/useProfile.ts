@@ -11,7 +11,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { profileService, type UpdateProfileData } from '@/services/profileService';
+import { profileService, type UpdateProfileData } from '@/services/supabase';
 import type { UserProfile } from '@/types/user';
 import { logger } from '@/utils/logger';
 

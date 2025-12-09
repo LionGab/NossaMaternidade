@@ -11,7 +11,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { checkInService, type EmotionValue, type CheckInLog } from '@/services/checkInService';
+import { checkInService, type EmotionValue, type CheckInLog } from '@/services/supabase';
 import { logger } from '@/utils/logger';
 
 // Re-export type for convenience

@@ -9,6 +9,7 @@ import React, { useCallback } from 'react';
 import { Pressable, ActivityIndicator, ViewStyle, TextStyle, Platform } from 'react-native';
 
 import { ModernTokens } from '@/theme/modernTokens';
+import { Tokens } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { Box } from './Box';
@@ -16,6 +17,7 @@ import { Text } from './Text';
 
 export type ButtonVariant = 
   | 'default' 
+  | 'primary' // Primary Action: rounded-full font-bold shadow-lg
   | 'secondary' 
   | 'destructive' 
   | 'outline' 
@@ -81,6 +83,21 @@ export const Button = React.memo<ButtonProps>(({
     };
 
     switch (variant) {
+      case 'primary':
+        return {
+          container: {
+            ...base,
+            backgroundColor: colors.primary,
+            borderColor: colors.primary,
+            borderRadius: Tokens.radius.full, // rounded-full
+            ...Tokens.shadows.lg, // shadow-lg
+          },
+          text: {
+            color: colors.primaryForeground,
+            fontWeight: Tokens.typography.weights.bold, // font-bold
+          },
+        };
+
       case 'default':
         return {
           container: {

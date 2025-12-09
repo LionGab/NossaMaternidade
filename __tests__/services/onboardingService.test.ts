@@ -6,7 +6,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { supabase, isSupabaseReady } from '../../src/services/supabase';
-import { onboardingService, type OnboardingData } from '../../src/services/onboardingService';
+import { onboardingService, type OnboardingData } from '../../src/services/supabase/onboardingService';
 
 // Mock do AsyncStorage
 jest.mock('@react-native-async-storage/async-storage', () => ({

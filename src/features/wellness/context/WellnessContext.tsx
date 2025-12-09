@@ -15,7 +15,7 @@ import React, {
   type ReactNode,
 } from 'react';
 
-import { onboardingService } from '@/services/onboardingService';
+import { onboardingService } from '@/services/supabase/onboardingService';
 import { logger } from '@/utils/logger';
 
 import type { MotherProfile, WellnessContextType, CheckInData, WeeklyInsight } from '../types';
@@ -94,6 +94,13 @@ export function WellnessProvider({ children }: WellnessProviderProps) {
       setIsProfileLoading(true);
 
       // Carregar dados em paralelo
+      // Verificar se onboardingService está disponível
+      if (!onboardingService) {
+        logger.error('[WellnessContext] onboardingService não está disponível');
+        setIsProfileLoading(false);
+        return;
+      }
+
       const [
         profileData,
         consentData,
@@ -106,8 +113,8 @@ export function WellnessProvider({ children }: WellnessProviderProps) {
         AsyncStorage.getItem(STORAGE_KEYS.WELLNESS_CONSENT),
         AsyncStorage.getItem(STORAGE_KEYS.WELLNESS_CHECKINS),
         AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_INCOMPLETE),
-        onboardingService.isOnboardingCompleted(),
-        onboardingService.getCurrentStep(),
+        onboardingService.isOnboardingCompleted().catch(() => false),
+        onboardingService.getCurrentStep().catch(() => 0),
       ]);
 
       // Profile - com parse seguro

@@ -5,8 +5,8 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import type { FileReview, FileChange, ReviewSession, ReviewPermissions } from '../types/fileReview';
-import { logger } from '../utils/logger';
+import type { FileReview, FileChange, ReviewSession, ReviewPermissions } from '@/types/fileReview';
+import { logger } from '@/utils/logger';
 
 const STORAGE_KEYS = {
   REVIEW_SESSIONS: '@file_review:sessions',

@@ -7,7 +7,7 @@ import { Session, User } from '@supabase/supabase-js';
 import { useEffect, useState, useCallback } from 'react';
 
 import { ensureValidSession } from '../middleware/sessionValidator';
-import { sessionManager } from '../services/sessionManager';
+import { sessionManager } from '@/services';
 import { logger } from '../utils/logger';
 
 export interface SessionHookResult {

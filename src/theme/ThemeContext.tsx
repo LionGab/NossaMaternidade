@@ -4,8 +4,8 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useColorScheme } from 'react-native';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { Platform, useColorScheme } from 'react-native';
 
 import { LightTheme, DarkTheme, ColorTokens } from './tokens';
 import { logger } from '../utils/logger';
@@ -121,17 +121,40 @@ export function ThemeProvider({ children, defaultMode = 'system' }: ThemeProvide
   const [mode, setModeState] = useState<ThemeMode>(defaultMode);
   const [isReady, setIsReady] = useState(false);
 
+  // Atualizar NativeWind quando o tema mudar (apenas web)
+  const updateNativeWindTheme = useCallback(() => {
+    if (Platform.OS !== 'web') return;
+
+    const activeThemeValue =
+      mode === 'system' ? (systemColorScheme === 'dark' ? 'dark' : 'light') : mode;
+
+    try {
+      // NativeWind CSS Interop runtime - dynamic require necessário para web
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const StyleSheet = require('react-native-css-interop/runtime/web/color-scheme') as {
+        set?: (theme: 'light' | 'dark') => void;
+      };
+      if (StyleSheet?.set) {
+        StyleSheet.set(activeThemeValue);
+      }
+    } catch {
+      // Ignorar erro silenciosamente se não estiver disponível
+      // NativeWind pode não estar configurado ainda
+    }
+  }, [mode, systemColorScheme]);
+
   // Carregar preferência do storage
   useEffect(() => {
     loadThemePreference();
   }, []);
 
-  // Salvar preferência no storage
+  // Salvar preferência no storage e atualizar NativeWind
   useEffect(() => {
     if (isReady) {
       saveThemePreference(mode);
+      updateNativeWindTheme();
     }
-  }, [mode, isReady]);
+  }, [mode, isReady, updateNativeWindTheme]);
 
   const loadThemePreference = async () => {
     try {

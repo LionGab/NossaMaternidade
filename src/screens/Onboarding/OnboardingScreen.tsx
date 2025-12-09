@@ -23,8 +23,9 @@ import { HapticButton } from '@/components/atoms/HapticButton';
 import { Heading } from '@/components/atoms/Heading';
 import { ProgressBar } from '@/components/atoms/ProgressBar';
 import { Text } from '@/components/atoms/Text';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import type { RootStackParamList } from '@/navigation/types';
-import { onboardingService, type OnboardingData } from '@/services/onboardingService';
+import { onboardingService, type OnboardingData } from '@/services/supabase/onboardingService';
 import { useTheme } from '@/theme';
 import { Tokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';
@@ -156,24 +157,41 @@ export default function OnboardingScreen() {
   };
 
   const canProceed = (): boolean => {
-    switch (currentStep) {
-      case 1:
-        return displayName.trim().length > 0;
-      case 2:
-        return lifeStage !== null;
-      case 3:
-        return mainGoals.length > 0 && mainGoals.length <= 3;
-      case 4:
-        return baselineEmotion !== null;
-      case 5:
-        return firstFocus !== null;
-      case 6:
-        return languageTone !== null;
-      case 7:
-        return notificationOptIn !== null;
-      default:
-        return false;
-    }
+    const result = (() => {
+      switch (currentStep) {
+        case 1:
+          return displayName.trim().length > 0;
+        case 2:
+          return lifeStage !== null;
+        case 3:
+          return mainGoals.length > 0 && mainGoals.length <= 3;
+        case 4:
+          return baselineEmotion !== null;
+        case 5:
+          return firstFocus !== null;
+        case 6:
+          return languageTone !== null;
+        case 7:
+          // Step 7 (notificações) é opcional - sempre pode prosseguir
+          return true;
+        default:
+          return false;
+      }
+    })();
+    
+    logger.debug('[OnboardingScreen] canProceed', { 
+      currentStep, 
+      result,
+      displayName: displayName.trim().length,
+      lifeStage,
+      mainGoals: mainGoals.length,
+      baselineEmotion,
+      firstFocus,
+      languageTone,
+      notificationOptIn,
+    });
+    
+    return result;
   };
 
   const toggleGoal = (goal: string) => {
@@ -187,7 +205,17 @@ export default function OnboardingScreen() {
   };
 
   const handleFinish = async () => {
-    logger.info('[OnboardingScreen] handleFinish called', { currentStep });
+    logger.info('[OnboardingScreen] handleFinish called', { 
+      currentStep,
+      displayName: displayName.trim(),
+      lifeStage,
+      mainGoals,
+      baselineEmotion,
+      firstFocus,
+      languageTone,
+      notificationOptIn,
+    });
+    
     try {
       setLoading(true);
 
@@ -201,57 +229,66 @@ export default function OnboardingScreen() {
         notification_opt_in: notificationOptIn ?? false,
       };
 
+      logger.info('[OnboardingScreen] Saving onboarding data...', { data });
       const result = await onboardingService.completeOnboarding(data);
+      logger.info('[OnboardingScreen] Onboarding save result', { result });
 
-      if (result) {
-        // Navigate to main app (Home)
+      // Sempre navegar para Main, mesmo se houver erro ao salvar
+      // O serviço sempre retorna true se salvar localmente
+      logger.info('[OnboardingScreen] Navigating to Main screen...');
+      
+      // Usar setTimeout para garantir que o estado seja atualizado antes da navegação
+      setTimeout(() => {
+        try {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
+          });
+          logger.info('[OnboardingScreen] Navigation to Main completed');
+        } catch (navError) {
+          logger.error('[OnboardingScreen] Navigation error', navError);
+          // Fallback: tentar navigate em vez de reset
+          try {
+            navigation.navigate('Main' as never);
+            logger.info('[OnboardingScreen] Fallback navigation to Main completed');
+          } catch (fallbackError) {
+            logger.error('[OnboardingScreen] Fallback navigation also failed', fallbackError);
+            Alert.alert(
+              'Erro de Navegação',
+              'Não foi possível navegar para a tela principal. Por favor, feche e abra o app novamente.',
+              [{ text: 'OK' }]
+            );
+          }
+        }
+      }, 100);
+
+      if (!result) {
+        // Se falhou ao salvar, mostrar aviso mas continuar navegação
+        logger.warn('[OnboardingScreen] Onboarding save returned false, but continuing navigation');
+        Alert.alert(
+          'Atenção',
+          'Não foi possível salvar seus dados no momento, mas você pode continuar usando o app.',
+          [{ text: 'OK' }]
+        );
+      }
+    } catch (error) {
+      logger.error('[OnboardingScreen] Failed to complete onboarding', error);
+      
+      // Mesmo com erro, tentar navegar
+      try {
         navigation.reset({
           index: 0,
           routes: [{ name: 'Main' }],
         });
-      } else {
-        // Se falhou ao salvar, oferece opção de continuar mesmo assim
+        logger.info('[OnboardingScreen] Navigation after error completed');
+      } catch (navError) {
+        logger.error('[OnboardingScreen] Navigation after error failed', navError);
         Alert.alert(
-          'Atenção',
-          'Não foi possível salvar seus dados no momento. Você pode continuar usando o app e tentar salvar depois.',
-          [
-            {
-              text: 'Tentar novamente',
-              style: 'cancel',
-              onPress: () => handleFinish(),
-            },
-            {
-              text: 'Continuar mesmo assim',
-              onPress: () => {
-                // Navega mesmo sem salvar (modo offline)
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: 'Main' }],
-                });
-              },
-            },
-          ]
+          'Erro',
+          'Ocorreu um erro ao finalizar o onboarding. Por favor, feche e abra o app novamente.',
+          [{ text: 'OK' }]
         );
       }
-    } catch (error) {
-      logger.error('Failed to complete onboarding', error, { screen: 'OnboardingScreen' });
-      Alert.alert('Erro', 'Ocorreu um erro ao finalizar o onboarding. Tente novamente.', [
-        {
-          text: 'Tentar novamente',
-          onPress: () => handleFinish(),
-        },
-        {
-          text: 'Continuar mesmo assim',
-          style: 'cancel',
-          onPress: () => {
-            // Navega mesmo com erro (modo offline)
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Main' }],
-            });
-          },
-        },
-      ]);
     } finally {
       setLoading(false);
     }
@@ -273,7 +310,12 @@ export default function OnboardingScreen() {
               <Heading level="h2" align="center" style={styles.question}>
                 Como você quer que eu te chame aqui dentro?
               </Heading>
-              <Text variant="body" color="secondary" align="center" style={styles.description}>
+              <Text 
+                variant="body" 
+                color="secondary" 
+                align="center" 
+                style={styles.description}
+              >
                 Seu apelido, nome carinhoso, ou como você preferir 💙
               </Text>
               <Box mt="6" width="100%">
@@ -331,7 +373,12 @@ export default function OnboardingScreen() {
               <Heading level="h2" align="center" style={styles.question}>
                 O que te trouxe pro Nossa Maternidade hoje?
               </Heading>
-              <Text variant="body" color="secondary" align="center" style={styles.description}>
+              <Text 
+                variant="body" 
+                color="secondary" 
+                align="center" 
+                style={styles.description}
+              >
                 Escolha até 3 opções que mais fazem sentido pra você
               </Text>
               <Box style={styles.optionsContainer} mt="6">
@@ -414,15 +461,18 @@ export default function OnboardingScreen() {
       case 7:
         return (
           <Box style={styles.stepContainer}>
-            <BellRing
-              size={48}
-              color={colors.primary.main}
-              style={{ marginBottom: Tokens.spacing['4'] }}
-            />
+            <Box mb="4" align="center">
+              <BellRing
+                size={48}
+                color={colors.primary.main}
+              />
+            </Box>
             <Heading level="h2" style={styles.question}>
               Quer que eu te lembre, de vez em quando, de cuidar de você?
             </Heading>
-            <Text style={styles.description}>Lembretes suaves, sem pressão, só pra te apoiar</Text>
+            <Text variant="body" color="secondary" style={styles.description}>
+              Lembretes suaves, sem pressão, só pra te apoiar
+            </Text>
             <Box style={styles.optionsContainer}>
               <OptionCard
                 option={{ value: 'yes', emoji: '✅', label: 'Sim, pode me lembrar' }}
@@ -449,15 +499,27 @@ export default function OnboardingScreen() {
 
   return (
     <Box style={{ ...styles.container, backgroundColor: colors.background.canvas }}>
-      {/* Progress Bar (Flo-style - animado) */}
-      <Box px="4" pt="3" pb="2">
-        <ProgressBar
-          current={currentStep}
-          total={7}
-          color={colors.primary.main}
-          height={4}
-          animated
-        />
+      {/* Header com Theme Toggle */}
+      <Box 
+        px="4" 
+        pt="3" 
+        pb="2" 
+        direction="row" 
+        align="center" 
+        justify="space-between"
+      >
+        <Box style={{ flex: 1 }}>
+          <ProgressBar
+            current={currentStep}
+            total={7}
+            color={colors.primary.main}
+            height={4}
+            animated
+          />
+        </Box>
+        <Box ml="3">
+          <ThemeToggle variant="outline" />
+        </Box>
       </Box>
 
       {/* Step Content */}

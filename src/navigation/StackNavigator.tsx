@@ -1,11 +1,12 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState, Suspense } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 
 import { TabNavigator } from './TabNavigator';
 import { RootStackParamList } from './types';
 import { useAuth } from '../contexts/AuthContext';
-import { onboardingService } from '../services/onboardingService';
+import { onboardingService } from '@/services';
 import { useTheme } from '../theme/ThemeContext';
 import { logger } from '../utils/logger';
 
@@ -62,6 +63,7 @@ const REQUIRE_AUTH = false;
 export const StackNavigator = () => {
   // ✅ Usar AuthContext em vez de duplicar lógica
   const { user, loading: authLoading } = useAuth();
+  const { isDark } = useTheme();
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [onboardingLoading, setOnboardingLoading] = useState(true);
 
@@ -153,14 +155,17 @@ export const StackNavigator = () => {
   );
 
   return (
-    <Stack.Navigator
-      initialRouteName={getInitialRouteName()}
-      screenOptions={{
-        headerShown: false,
-        animation: 'slide_from_right',
-        presentation: 'card',
-      }}
-    >
+    <>
+      {/* StatusBar global que se atualiza com o tema */}
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <Stack.Navigator
+        initialRouteName={getInitialRouteName()}
+        screenOptions={{
+          headerShown: false,
+          animation: 'slide_from_right',
+          presentation: 'card',
+        }}
+      >
       <Stack.Screen name="Splash">
         {(props) => <LazyScreen component={SplashScreenComponent} {...props} />}
       </Stack.Screen>
@@ -344,5 +349,6 @@ export const StackNavigator = () => {
         {(props) => <LazyScreen component={NotFoundScreen} {...props} />}
       </Stack.Screen>
     </Stack.Navigator>
+    </>
   );
 };

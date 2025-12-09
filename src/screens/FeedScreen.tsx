@@ -177,7 +177,7 @@ export default function FeedScreen() {
       style={[styles.container, { backgroundColor: colors.background.canvas }]}
       edges={['top']}
       accessible={true}
-      accessibilityLabel="Tela do Feed Mundo Nath"
+      accessibilityLabel="Tela do Feed Mundo da Nath"
     >
       {/* Header */}
       <View
@@ -194,9 +194,9 @@ export default function FeedScreen() {
         <Text
           style={[styles.headerTitle, { color: colors.text.primary }]}
           accessibilityRole="header"
-          accessibilityLabel="Feed de conteúdos Mundo Nath"
+          accessibilityLabel="Feed de conteúdos Mundo da Nath"
         >
-          Mundo Nath
+          Mundo da Nath
         </Text>
 
         {/* Filter chips */}

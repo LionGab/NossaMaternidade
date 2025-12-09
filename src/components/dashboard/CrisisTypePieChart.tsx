@@ -12,7 +12,7 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
 import { useThemeColors } from '@/hooks/useTheme';
-import type { CrisisTypeDistribution } from '@/services/dashboardService';
+import type { CrisisTypeDistribution } from '@/services';
 import { Tokens } from '@/theme/tokens';
 
 interface CrisisTypePieChartProps {
