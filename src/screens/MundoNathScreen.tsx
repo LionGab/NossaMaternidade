@@ -18,7 +18,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Play, Sparkles, Video as VideoIcon } from 'lucide-react-native';
 import React, { useRef, useEffect } from 'react';
 import { View, ScrollView, Animated, Easing, TouchableOpacity } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
 import { Badge } from '@/components/Badge';
@@ -125,7 +125,6 @@ function useStaggeredAnimations(itemCount: number, baseDelay = 100) {
 export default function MundoNathScreen() {
   const { isDark } = useTheme();
   const navigation = useNavigation<NavigationProp>();
-  const insets = useSafeAreaInsets();
 
   // Animações: header (0), featured card (1), reels (2), featured video (3), section header (4)
   const animations = useStaggeredAnimations(5, 120);
@@ -182,7 +181,7 @@ export default function MundoNathScreen() {
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={{
-              paddingTop: insets.top + Spacing['4'],
+              paddingTop: Spacing['4'],
               paddingBottom: Spacing['8'],
               paddingHorizontal: Spacing['6'],
             }}
@@ -191,7 +190,7 @@ export default function MundoNathScreen() {
             <View
               style={{
                 position: 'absolute',
-                top: insets.top + Spacing['4'],
+                top: Spacing['4'],
                 right: Spacing['6'],
                 zIndex: 10,
               }}

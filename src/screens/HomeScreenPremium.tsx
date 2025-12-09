@@ -154,7 +154,7 @@ export default function HomeScreenPremium() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingTop: insets.top + Tokens.spacing['4'],
+          paddingTop: Tokens.spacing['4'],
           paddingBottom: insets.bottom + Tokens.spacing['6'],
         }}
         showsVerticalScrollIndicator={false}

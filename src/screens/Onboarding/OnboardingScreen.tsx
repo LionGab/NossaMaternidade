@@ -17,6 +17,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Heart, Sparkles, BellRing } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TextInput, Animated, TouchableOpacity, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Box } from '@/components/atoms/Box';
 import { HapticButton } from '@/components/atoms/HapticButton';
@@ -498,14 +499,17 @@ export default function OnboardingScreen() {
   // ======================
 
   return (
-    <Box style={{ ...styles.container, backgroundColor: colors.background.canvas }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.background.canvas }}
+      edges={['top', 'bottom']}
+    >
       {/* Header com Theme Toggle */}
-      <Box 
-        px="4" 
-        pt="3" 
-        pb="2" 
-        direction="row" 
-        align="center" 
+      <Box
+        px="4"
+        pt="3"
+        pb="2"
+        direction="row"
+        align="center"
         justify="space-between"
       >
         <Box style={{ flex: 1 }}>
@@ -588,7 +592,7 @@ export default function OnboardingScreen() {
           {currentStep} de 7
         </Text>
       </Box>
-    </Box>
+    </SafeAreaView>
   );
 }
 

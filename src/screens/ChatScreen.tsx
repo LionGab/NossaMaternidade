@@ -41,7 +41,7 @@ import Animated, {
   FadeOut,
   Layout,
 } from 'react-native-reanimated';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
 import { VoiceMode } from '@/components/features/chat/VoiceMode';
@@ -288,7 +288,6 @@ export default function ChatScreen({ route }: { route: RouteProp<MainTabParamLis
   const navigation = useNavigation<ChatScreenNavigationProp>();
   const { colors, isDark } = useTheme();
   const { profile } = useWellness();
-  const insets = useSafeAreaInsets();
   
   // Capturar sessionId da navegação
   const sessionIdFromRoute = route?.params?.sessionId;
@@ -647,7 +646,10 @@ Você não está sozinha. Há pessoas prontas para te ajudar.`,
 
   return (
     <ErrorBoundary>
-      <View style={[styles.container, { backgroundColor: colors.background.canvas }]}>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: colors.background.canvas }}
+        edges={['top', 'left', 'right']}
+      >
         <StatusBar style={isDark ? 'light' : 'dark'} />
 
         {/* Disclaimer Modal - Fechável pelo X ou backdrop */}
@@ -673,7 +675,6 @@ Você não está sozinha. Há pessoas prontas para te ajudar.`,
               ? `${ColorTokens.warning[900]}33`
               : `${ColorTokens.warning[100]}CC`,
             borderBottomColor: colors.border.medium,
-            paddingTop: insets.top,
           }}
         >
           <Text
@@ -1002,7 +1003,7 @@ Você não está sozinha. Há pessoas prontas para te ajudar.`,
             </Text>
           </Box>
         )}
-      </View>
+      </SafeAreaView>
     </ErrorBoundary>
   );
 }
