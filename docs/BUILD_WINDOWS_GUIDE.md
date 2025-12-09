@@ -35,16 +35,32 @@ npm run build:dev
 
 ## 🚀 Opções de Build
 
-### Opção 1: Build Android Local (Recomendado para testar módulos nativos)
+### Opção 1: Build Android Local (Requer Android Studio)
 
 **Pré-requisitos:**
+
 - Android Studio instalado
-- Android SDK configurado
+- Android SDK configurado (ANDROID_HOME definido)
 - Emulador Android ou dispositivo físico conectado
+
+**⚠️ Se você receber erro "Failed to resolve the Android SDK path":**
+
+1. Instale o Android Studio: https://developer.android.com/studio
+2. Configure a variável de ambiente `ANDROID_HOME`:
+   ```powershell
+   # No PowerShell (como Admin)
+   [System.Environment]::SetEnvironmentVariable('ANDROID_HOME', 'C:\Users\SeuUsuario\AppData\Local\Android\Sdk', 'User')
+   ```
+3. Adicione ao PATH:
+   ```powershell
+   $env:Path += ";$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\tools"
+   ```
+
+**Depois de configurar:**
 
 ```bash
 # 1. Fazer prebuild (gera código nativo)
-npx expo prebuild --platform android
+npx expo prebuild --platform android --clean
 
 # 2. Rodar no Android
 npm run android
@@ -56,19 +72,23 @@ cd ..
 ```
 
 **Vantagens:**
+
 - ✅ Testa módulos nativos (como `expo-tracking-transparency`)
 - ✅ Rápido para desenvolvimento
 - ✅ Não precisa de conta Expo
 
 **Desvantagens:**
+
 - ❌ Só funciona para Android
-- ❌ Requer Android Studio
+- ❌ Requer Android Studio instalado e configurado
+- ❌ Configuração inicial pode ser trabalhosa
 
 ---
 
-### Opção 2: EAS Build na Nuvem (Recomendado para produção)
+### Opção 2: EAS Build na Nuvem (⭐ RECOMENDADO - Mais Simples)
 
 **Pré-requisitos:**
+
 - Conta Expo (gratuita)
 - Login no EAS CLI
 
@@ -87,26 +107,35 @@ npm run build:dev:ios
 ```
 
 **Vantagens:**
+
 - ✅ Funciona para iOS e Android
 - ✅ Não precisa de macOS para iOS
-- ✅ Builds otimizados
+- ✅ Não precisa de Android Studio/SDK local
+- ✅ Builds otimizados e prontos para instalação
 - ✅ Simulador iOS disponível
+- ✅ Mais simples de configurar
 
 **Desvantagens:**
-- ❌ Requer conta Expo
-- ❌ Builds levam alguns minutos
-- ❌ Pode ter limites na conta gratuita
+
+- ❌ Requer conta Expo (gratuita)
+- ❌ Builds levam alguns minutos (5-15 min)
+- ❌ Pode ter limites na conta gratuita (mas suficiente para desenvolvimento)
+
+**⚠️ Aviso sobre metro.config.js:**
+Quando o EAS perguntar "Would you like to abort?" sobre o metro.config.js, responda **`n` (não)**. O arquivo está correto e o build funcionará normalmente.
 
 ---
 
 ### Opção 3: Expo Go (Apenas para desenvolvimento rápido)
 
 **Quando usar:**
+
 - Desenvolvimento rápido de UI
 - Testes de navegação
 - Prototipagem
 
 **Limitações:**
+
 - ❌ Módulos nativos **NÃO funcionam** (como `expo-tracking-transparency`)
 - ❌ Alguns plugins não estão disponíveis
 
@@ -124,6 +153,7 @@ npm start
 ## 🧪 Testando o Tracking Transparency
 
 ### No Expo Go
+
 O módulo retornará `'unavailable'` sem quebrar o app. Isso é esperado.
 
 ### Em Development Build (Android Local)
@@ -174,6 +204,7 @@ npx expo prebuild --clean
 ## 🔧 Troubleshooting
 
 ### Erro: "EAS CLI not found"
+
 ```bash
 # Instalar dependências
 npm install
@@ -183,10 +214,12 @@ npm run build:dev:android
 ```
 
 ### Erro: "Cannot find native module"
+
 - ✅ **Corrigido!** O `trackingService.ts` agora trata isso graciosamente
 - Se ainda ocorrer, faça prebuild: `npx expo prebuild --clean`
 
 ### Build Android falha
+
 ```bash
 # Limpar cache do Gradle
 cd android
@@ -198,6 +231,7 @@ npx expo prebuild --clean --platform android
 ```
 
 ### Build iOS falha (na nuvem)
+
 - Verifique se está logado: `npx eas-cli whoami`
 - Verifique configuração: `npx eas-cli build:configure`
 - Veja logs: `npx eas-cli build:view [BUILD_ID]`
@@ -223,4 +257,3 @@ npx expo prebuild --clean --platform android
 ---
 
 **Última atualização:** 2025-01-27
-

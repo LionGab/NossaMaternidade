@@ -11,6 +11,7 @@ if (Platform.OS === 'web') {
 
 // Configurar NativeWind dark mode para 'class' em vez de 'media'
 // Isso permite controle manual do tema via JavaScript
+// ⚠️ CRÍTICO: Deve ser executado ANTES de qualquer outro código que use NativeWind
 if (Platform.OS === 'web') {
   try {
     // NativeWind CSS Interop runtime - dynamic require necessário para web
@@ -18,12 +19,22 @@ if (Platform.OS === 'web') {
     const StyleSheet = require('react-native-css-interop/runtime/web/color-scheme') as {
       setFlag?: (flag: string, value: string) => void;
     };
+    // ✅ Configurar darkMode como 'class' ANTES de qualquer MutationObserver ser ativado
     if (StyleSheet?.setFlag) {
       StyleSheet.setFlag('darkMode', 'class');
     }
-  } catch {
-    // Ignorar erro silenciosamente se não estiver disponível
-    // NativeWind pode não estar configurado ainda
+    // ✅ Também configurar classe inicial no HTML para evitar race condition
+    if (typeof document !== 'undefined') {
+      const html = document.documentElement;
+      if (!html.classList.contains('light') && !html.classList.contains('dark')) {
+        html.classList.add('light'); // Default para light
+      }
+    }
+  } catch (error) {
+    // Log apenas em desenvolvimento para debug
+    if (__DEV__) {
+      console.warn('[App] NativeWind darkMode config failed:', error);
+    }
   }
 }
 

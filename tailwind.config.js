@@ -2,6 +2,7 @@
 module.exports = {
   content: ['./App.{js,jsx,ts,tsx}', './src/**/*.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
+  darkMode: 'class', // ✅ Configurar dark mode como 'class' para controle manual
   theme: {
     extend: {
       colors: {

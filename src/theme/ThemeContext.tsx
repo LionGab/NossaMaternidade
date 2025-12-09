@@ -121,25 +121,25 @@ export function ThemeProvider({ children, defaultMode = 'system' }: ThemeProvide
   const [mode, setModeState] = useState<ThemeMode>(defaultMode);
   const [isReady, setIsReady] = useState(false);
 
-  // Atualizar NativeWind quando o tema mudar (apenas web)
-  const updateNativeWindTheme = useCallback(() => {
+  // Atualizar classe CSS do documento quando o tema mudar (apenas web)
+  // NativeWind usa darkMode: 'class' (configurado em tailwind.config.js)
+  // Não chamar APIs do react-native-css-interop diretamente - causa conflito
+  const updateDocumentTheme = useCallback(() => {
     if (Platform.OS !== 'web') return;
 
     const activeThemeValue =
       mode === 'system' ? (systemColorScheme === 'dark' ? 'dark' : 'light') : mode;
 
     try {
-      // NativeWind CSS Interop runtime - dynamic require necessário para web
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const StyleSheet = require('react-native-css-interop/runtime/web/color-scheme') as {
-        set?: (theme: 'light' | 'dark') => void;
-      };
-      if (StyleSheet?.set) {
-        StyleSheet.set(activeThemeValue);
+      // Aplicar tema via classe no elemento HTML
+      // NativeWind detecta automaticamente quando darkMode: 'class'
+      if (typeof document !== 'undefined') {
+        const html = document.documentElement;
+        html.classList.remove('light', 'dark');
+        html.classList.add(activeThemeValue);
       }
     } catch {
-      // Ignorar erro silenciosamente se não estiver disponível
-      // NativeWind pode não estar configurado ainda
+      // Ignorar erro silenciosamente
     }
   }, [mode, systemColorScheme]);
 
@@ -148,13 +148,13 @@ export function ThemeProvider({ children, defaultMode = 'system' }: ThemeProvide
     loadThemePreference();
   }, []);
 
-  // Salvar preferência no storage e atualizar NativeWind
+  // Salvar preferência no storage e atualizar tema no documento
   useEffect(() => {
     if (isReady) {
       saveThemePreference(mode);
-      updateNativeWindTheme();
+      updateDocumentTheme();
     }
-  }, [mode, isReady, updateNativeWindTheme]);
+  }, [mode, isReady, updateDocumentTheme]);
 
   const loadThemePreference = async () => {
     try {

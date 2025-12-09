@@ -11,12 +11,17 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { Suspense } from 'react';
-import { View, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
+import { Platform, View, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MainTabParamList } from './types';
 // 🚀 LAZY LOADING: Screens principais carregadas sob demanda
-const HomeScreen = React.lazy(() => import('../screens/HomeScreenMaesValentes'));
+// ⚠️ TEMPORÁRIO: Import direto no web para evitar erro de lazy loading do Metro bundler
+// TODO: Reativar lazy loading quando Metro bundler estiver estável no web
+import HomeScreenPremiumDirect from '../screens/HomeScreenPremium';
+const HomeScreen = Platform.OS === 'web'
+  ? React.lazy(() => Promise.resolve({ default: HomeScreenPremiumDirect }))
+  : React.lazy(() => import('../screens/HomeScreenPremium'));
 const CommunityScreen = React.lazy(() => import('../screens/CommunityScreen'));
 const ChatScreen = React.lazy(() => import('../screens/ChatScreen'));
 const MundoNathScreen = React.lazy(() => import('../screens/MundoNathScreen'));
@@ -86,8 +91,8 @@ export const TabNavigator = () => {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: true, // ✅ Garantir labels visíveis
-        tabBarActiveTintColor: colors.primary.main,
-        tabBarInactiveTintColor: isDark ? colors.text.tertiary : ColorTokens.neutral[500],
+        tabBarActiveTintColor: '#FF8BA3', // rosa_acento premium
+        tabBarInactiveTintColor: isDark ? colors.text.tertiary : '#6DA9E499', // azul_acento com opacidade ~0.6
         tabBarStyle: {
           height: 70 + insets.bottom, // Aumentado para acomodar labels
           paddingBottom: insets.bottom + 8,
@@ -161,7 +166,7 @@ export const TabNavigator = () => {
               color={color}
               strokeWidth={focused ? 2.5 : 2}
               accessibilityLabel="Ícone de início"
-              accessibilityHint="Navega para a tela inicial do aplicativo"
+              {...(Platform.OS !== 'web' && { accessibilityHint: 'Navega para a tela inicial do aplicativo' })}
             />
           ),
         }}
@@ -183,7 +188,7 @@ export const TabNavigator = () => {
               color={color}
               strokeWidth={focused ? 2.5 : 2}
               accessibilityLabel="Ícone de comunidade de mães"
-              accessibilityHint="Navega para a comunidade Mães Valentes"
+              {...(Platform.OS !== 'web' && { accessibilityHint: 'Navega para a comunidade Mães Valentes' })}
             />
           ),
         }}
@@ -290,7 +295,7 @@ export const TabNavigator = () => {
               color={color}
               strokeWidth={focused ? 2.5 : 2}
               accessibilityLabel="Ícone de conteúdo e feed"
-              accessibilityHint="Navega para o Mundo da Nath, conteúdo e feed"
+              {...(Platform.OS !== 'web' && { accessibilityHint: 'Navega para o Mundo da Nath, conteúdo e feed' })}
             />
           ),
         }}
@@ -313,7 +318,7 @@ export const TabNavigator = () => {
               strokeWidth={focused ? 2.5 : 2}
               fill={focused ? color : 'transparent'}
               accessibilityLabel="Ícone de meus cuidados"
-              accessibilityHint="Navega para a tela de meus cuidados e bem-estar"
+              {...(Platform.OS !== 'web' && { accessibilityHint: 'Navega para a tela de meus cuidados e bem-estar' })}
             />
           ),
         }}
