@@ -1471,11 +1471,20 @@ export const CardSizes = {
 } as const;
 
 // ======================
+// 🌸 WELLNESS DESIGN SYSTEM INTEGRATION
+// ======================
+
+import { WellnessDesignSystem } from './wellnessDesign';
+
+// ======================
 // 📦 DEFAULT EXPORT
 // ======================
 
 /**
  * Tokens consolidados - use este objeto para acessar todos os tokens
+ *
+ * ⭐ NOVO: Agora inclui WellnessDesignSystem para design premium
+ * inspirado em Flo, Calm, Clue, I am
  */
 export const Tokens = {
   colors: ColorTokens,
@@ -1513,6 +1522,9 @@ export const Tokens = {
   isMediumDevice,
   isLargeDevice,
   isTablet,
+
+  // ⭐ WELLNESS DESIGN SYSTEM - Premium design inspirado em Flo, Calm, Clue
+  wellness: WellnessDesignSystem,
 } as const;
 
 export default Tokens;

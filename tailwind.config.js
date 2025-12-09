@@ -6,6 +6,56 @@ module.exports = {
     extend: {
       colors: {
         // ========================================
+        // 🌸 Wellness Design System v3.0
+        // Inspirado em Flo, Calm, Clue, I am
+        // ========================================
+
+        // Wellness Primary - Rosa Maternal Suave
+        wellness: {
+          50: '#FFF5F7',   // Quase branco com toque rosa
+          100: '#FFE4EB',  // Rosa muito claro
+          200: '#FFC9D9',  // Rosa suave
+          300: '#FFA8C0',  // Rosa médio-claro
+          400: '#FF87AA',  // Rosa médio
+          500: '#FF6B9D',  // Rosa principal ⭐
+          600: '#F24C83',  // Rosa vibrante
+          700: '#D93A6D',  // Rosa profundo
+          800: '#B8295A',  // Rosa escuro
+          900: '#8B1E45',  // Rosa muito escuro
+          DEFAULT: '#FF6B9D',
+        },
+
+        // Wellness Secondary - Roxo Sereno
+        'wellness-purple': {
+          50: '#F5F3FF',   // Lavanda muito claro
+          100: '#EDE9FE',  // Lavanda claro
+          200: '#DDD6FE',  // Roxo muito suave
+          300: '#C4B5FD',  // Roxo suave
+          400: '#A78BFA',  // Roxo médio ⭐
+          500: '#8B5CF6',  // Roxo vibrante
+          600: '#7C3AED',  // Roxo profundo
+          700: '#6D28D9',  // Roxo escuro
+          800: '#5B21B6',  // Roxo muito escuro
+          900: '#4C1D95',  // Roxo quase preto
+          DEFAULT: '#A78BFA',
+        },
+
+        // Wellness Accent - Azul Confiança
+        'wellness-blue': {
+          50: '#F0F9FF',   // Azul céu muito claro
+          100: '#E0F2FE',  // Azul céu claro
+          200: '#BAE6FD',  // Azul suave
+          300: '#7DD3FC',  // Azul médio-claro
+          400: '#38BDF8',  // Azul médio ⭐
+          500: '#0EA5E9',  // Azul vibrante
+          600: '#0284C7',  // Azul profundo
+          700: '#0369A1',  // Azul escuro
+          800: '#075985',  // Azul muito escuro
+          900: '#0C4A6E',  // Azul quase preto
+          DEFAULT: '#38BDF8',
+        },
+
+        // ========================================
         // Nossa Maternidade Design System v2.0
         // Baseado no design do site de produção
         // ========================================
