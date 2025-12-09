@@ -19,7 +19,7 @@ import { Text } from '@/components/atoms/Text';
 import { useTheme } from '@/theme';
 import { Tokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';
-import type { CommunityPost } from '@/services/communityService';
+import type { CommunityPost } from '@/services/supabase';
 
 interface PostCardProps {
   /** Dados do post */

@@ -17,7 +17,7 @@ import { SkeletonCard } from '@/components/atoms/Skeleton';
 import { Text } from '@/components/atoms/Text';
 import { ScreenLayout } from '@/components/templates/ScreenLayout';
 import type { RootStackParamList } from '@/navigation/types';
-import { feedService, type ContentItem } from '@/services/feedService';
+import { feedService, type ContentItem } from '@/services/supabase';
 import { useTheme } from '@/theme';
 import { Tokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';

@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import { Loading } from '../components';
 import { ensureValidSession } from '../middleware/sessionValidator';
-import { sessionManager } from '../services/sessionManager';
+import { sessionManager } from '../services/storage';
 import { supabase, isSupabaseReady } from '../services/supabase';
 import { logger } from '../utils/logger';
 

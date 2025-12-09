@@ -7,10 +7,10 @@ import { useState, useEffect, useCallback } from 'react';
 
 import type { UserContext } from '@/agents/maternal/MaternalChatAgent';
 import { useAgents } from '@/contexts/AgentsContext';
-import { checkInService, type EmotionValue } from '@/services/checkInService';
-import { profileService } from '@/services/profileService';
-import { sessionManager } from '@/services/sessionManager';
-import { sleepService } from '@/services/sleepService';
+import { checkInService, type EmotionValue } from '@/services/supabase';
+import { profileService } from '@/services/supabase';
+import { sessionManager } from '@/services/storage';
+import { sleepService } from '@/services/supabase';
 import type { UserProfile } from '@/types/user';
 import { logger } from '@/utils/logger';
 

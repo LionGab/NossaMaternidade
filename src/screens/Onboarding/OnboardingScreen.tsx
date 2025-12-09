@@ -24,7 +24,7 @@ import { Heading } from '@/components/atoms/Heading';
 import { ProgressBar } from '@/components/atoms/ProgressBar';
 import { Text } from '@/components/atoms/Text';
 import type { RootStackParamList } from '@/navigation/types';
-import { onboardingService, type OnboardingData } from '@/services/onboardingService';
+import { onboardingService, type OnboardingData } from '@/services/supabase';
 import { useTheme } from '@/theme';
 import { Tokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';

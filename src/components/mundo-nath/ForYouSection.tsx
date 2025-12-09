@@ -15,8 +15,8 @@ import { View, TouchableOpacity, ActivityIndicator, Image, StyleSheet } from 're
 import { Box } from '@/components/atoms/Box';
 import { Text } from '@/components/atoms/Text';
 import { useResponsiveDimensions } from '@/hooks/useResponsiveDimensions';
-import type { PersonalizedContent } from '@/services/contentRecommendationService';
-import { feedService } from '@/services/feedService';
+import type { PersonalizedContent } from '@/services/ai';
+import { feedService } from '@/services/supabase';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
 import type { ContentItem } from '@/types/content';

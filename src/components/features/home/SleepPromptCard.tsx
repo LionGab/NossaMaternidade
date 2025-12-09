@@ -13,7 +13,7 @@ import { Box } from '@/components/atoms/Box';
 import { Button } from '@/components/atoms/Button';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
-import { sleepService } from '@/services/sleepService';
+import { sleepService } from '@/services/supabase';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';

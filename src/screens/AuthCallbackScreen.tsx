@@ -18,7 +18,7 @@ import { Box } from '../components/atoms/Box';
 import { Heading } from '../components/atoms/Heading';
 import { Text } from '../components/atoms/Text';
 import type { RootStackParamList } from '../navigation/types';
-import { profileService } from '../services/profileService';
+import { profileService } from '../services/supabase';
 import { supabase } from '../services/supabase';
 import { useTheme } from '../theme/ThemeContext';
 import { logger } from '../utils/logger';

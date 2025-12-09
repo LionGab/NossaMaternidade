@@ -15,7 +15,7 @@ import React, {
   type ReactNode,
 } from 'react';
 
-import { onboardingService } from '@/services/onboardingService';
+import { onboardingService } from '@/services/supabase';
 import { logger } from '@/utils/logger';
 
 import type { MotherProfile, WellnessContextType, CheckInData, WeeklyInsight } from '../types';

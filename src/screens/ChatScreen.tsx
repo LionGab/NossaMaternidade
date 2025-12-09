@@ -58,8 +58,8 @@ import { useWellness } from '../features/wellness';
 import { useHasConsent } from '../hooks/useConsent';
 import type { RouteProp } from '@react-navigation/native';
 import type { RootStackParamList, MainTabParamList } from '../navigation/types';
-import { chatService, ChatMessage } from '../services/chatService';
-import { profileService } from '../services/profileService';
+import { chatService, ChatMessage } from '../services/supabase';
+import { profileService } from '../services/supabase';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens, ColorTokens } from '../theme/tokens';
 import {

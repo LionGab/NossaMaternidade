@@ -41,7 +41,7 @@ import { Avatar } from '@/components/Avatar';
 import { IconButton } from '@/components/atoms/IconButton';
 import { Text } from '@/components/atoms/Text';
 import type { RootStackParamList } from '@/navigation/types';
-import { chatService, ChatConversation } from '@/services/chatService';
+import { chatService, ChatConversation } from '@/services/supabase';
 import { useTheme } from '@/theme';
 import { ColorTokens, Spacing, Radius } from '@/theme/tokens';
 import { logger } from '@/utils/logger';
