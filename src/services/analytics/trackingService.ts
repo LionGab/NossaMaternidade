@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as TrackingTransparency from 'expo-tracking-transparency';
 import { Platform } from 'react-native';
 
 import { logger } from '@/utils/logger';
@@ -14,7 +13,54 @@ export type TrackingStatus =
   | 'not-determined';
 
 /**
+ * Tipo para o módulo expo-tracking-transparency
+ */
+type TrackingTransparencyModule = {
+  getTrackingPermissionsAsync: () => Promise<{ status: string }>;
+  requestTrackingPermissionsAsync: () => Promise<{ status: string }>;
+};
+
+/**
+ * Verifica se o módulo expo-tracking-transparency está disponível
+ * Retorna null se não estiver disponível (Expo Go, web, etc.)
+ * 
+ * Usa require() com try-catch para evitar erro se módulo não estiver disponível
+ */
+function getTrackingTransparencyModule(): TrackingTransparencyModule | null {
+  // Verificar plataforma primeiro
+  if (Platform.OS !== 'ios') {
+    return null;
+  }
+
+  try {
+    // Tentar carregar o módulo nativo
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const module = require('expo-tracking-transparency') as TrackingTransparencyModule;
+    
+    // Verificar se o módulo tem as funções necessárias
+    if (
+      typeof module.getTrackingPermissionsAsync === 'function' &&
+      typeof module.requestTrackingPermissionsAsync === 'function'
+    ) {
+      return module;
+    }
+    
+    return null;
+  } catch (error) {
+    // Módulo não disponível (Expo Go, web, ou não instalado corretamente)
+    logger.warn('Módulo expo-tracking-transparency não disponível', {
+      platform: Platform.OS,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  }
+}
+
+/**
  * Serviço para gerenciar App Tracking Transparency (iOS 14.5+)
+ * 
+ * IMPORTANTE: Este módulo requer um development build ou produção build.
+ * Não funciona no Expo Go devido à necessidade de código nativo.
  */
 class TrackingService {
   /**
@@ -25,8 +71,14 @@ class TrackingService {
       return 'unavailable';
     }
 
+    const module = getTrackingTransparencyModule();
+    if (!module) {
+      logger.warn('Tracking Transparency não disponível - use development build ou produção build');
+      return 'unavailable';
+    }
+
     try {
-      const { status } = await TrackingTransparency.getTrackingPermissionsAsync();
+      const { status } = await module.getTrackingPermissionsAsync();
       return status as TrackingStatus;
     } catch (error) {
       logger.error('Erro ao verificar status de tracking', error);
@@ -43,6 +95,12 @@ class TrackingService {
       return 'unavailable';
     }
 
+    const module = getTrackingTransparencyModule();
+    if (!module) {
+      logger.warn('Tracking Transparency não disponível - use development build ou produção build');
+      return 'unavailable';
+    }
+
     try {
       // Verificar se já perguntamos antes
       const alreadyAsked = await AsyncStorage.getItem(TRACKING_PERMISSION_ASKED_KEY);
@@ -52,7 +110,7 @@ class TrackingService {
       }
 
       // Solicitar permissão
-      const { status } = await TrackingTransparency.requestTrackingPermissionsAsync();
+      const { status } = await module.requestTrackingPermissionsAsync();
 
       // Marcar como já perguntado
       await AsyncStorage.setItem(TRACKING_PERMISSION_ASKED_KEY, 'true');
