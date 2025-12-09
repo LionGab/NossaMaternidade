@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: Tokens.radius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: ColorTokens.overlay.light, // ✅ Refactored from hardcoded rgba
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Tokens.spacing['1'],
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: ColorTokens.overlay.light, // ✅ Refactored from hardcoded rgba
     paddingVertical: Tokens.spacing['1'],
     paddingHorizontal: Tokens.spacing['2'],
     borderRadius: Tokens.radius.full,
@@ -300,12 +300,13 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   subtitle: {
-    color: 'rgba(255, 255, 255, 0.95)',
+    color: ColorTokens.nathIA.text.light, // ✅ Refactored from hardcoded rgba(255,255,255,0.95)
     marginBottom: Tokens.spacing['2'],
     lineHeight: 20,
   },
   question: {
-    color: 'rgba(255, 255, 255, 0.85)',
+    color: ColorTokens.nathIA.text.light, // ✅ Refactored from hardcoded rgba(255,255,255,0.85)
+    opacity: 0.85, // Maintain same visual effect
     fontStyle: 'italic',
     lineHeight: 20,
     marginTop: Tokens.spacing['1'],
