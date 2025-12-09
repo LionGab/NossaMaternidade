@@ -1,0 +1,27 @@
+{
+  "cursor.ai.model": "claude-3.5-sonnet",
+  "cursor.ai.temperature": 0.3,
+  "cursor.composer.enabled": true,
+  "cursor.composer.autoApply": false,
+  "cursor.contextWindow.maxTokens": 100000,
+  "cursor.alwaysInclude": [
+    "tsconfig.json",
+    "package.json",
+    "tailwind.config.js",
+    "src/theme/tokens.ts",
+    "src/types/index.ts",
+    ".cursorrules"
+  ],
+  "cursor.ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.expo/**",
+    "**/.expo-shared/**",
+    "**/coverage/**",
+    "**/assets/screenshots/**",
+    "**/store-metadata/**"
+  ],
+  "cursor.privacy.enableTelemetry": false
+}
+

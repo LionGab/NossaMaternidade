@@ -1,57 +1,58 @@
-# .cursorignore - Otimização de Contexto para Claude no Cursor
-# Este arquivo reduz 30-50% do uso de tokens ao excluir arquivos desnecessários
+# .cursorignore - Reduz contexto e protege segredos
 
-# Dependências e builds
+# Dependências, builds e caches
 node_modules/
 .git/
 dist/
 build/
 coverage/
-.next/
-.cache/
 .expo/
+.expo-shared/
+.cache/
+.next/
+.turbo/
 
-# Lock files (raramente precisam contexto)
+# Locks (quase nunca necessários para contexto)
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-# Logs e temporários
+# Logs, temporários e SO
 *.log
 *.tmp
 .DS_Store
+
+# Segredos e env
+.env
+.env.*
 .env.local
-.env.*.local
 
-# Arquivos compilados/minificados
-*.min.js
-*.bundle.js
-*.chunk.js
-*.map
-
-# Assets grandes (raramente precisam contexto)
-*.svg
+# Assets grandes
+assets/screenshots/
+assets/images/
+assets/**/raw/
+store-metadata/
+public/assets/
 *.png
 *.jpg
 *.jpeg
 *.gif
-*.ico
 *.webp
-public/assets/
-assets/images/
+*.ico
+*.mp4
+*.mov
+*.svg
 
-# Documentação gerada e arquivos grandes
+# Documentação pesada
 docs/archive/
 *.pdf
 
-# Específico do projeto Nossa Maternidade
+# Supabase e ferramentas
 supabase/.temp/
 __tests__/coverage/
 maestro/
-store-metadata/
 
-# Arquivos de configuração que não precisam contexto
+# Configs que raramente precisam contexto
 *.code-workspace
 sentry.properties
 cloudbuild.yaml
-
