@@ -63,9 +63,13 @@ export function EmpathyAudioPlayer({
   useEffect(() => {
     // Placeholder: preparar para integração futura
     // Quando houver serviço de áudio, carregar aqui
+    
+    // Capture ref value for cleanup (ESLint react-hooks/exhaustive-deps)
+    const currentSound = soundRef.current;
+    
     return () => {
-      if (soundRef.current) {
-        soundRef.current.unloadAsync().catch(() => {});
+      if (currentSound) {
+        currentSound.unloadAsync().catch(() => {});
       }
     };
   }, [sentiment, message]);

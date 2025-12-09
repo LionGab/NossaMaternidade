@@ -41,6 +41,24 @@ export function AudioGuide({
   const [duration, setDuration] = useState(0);
   const soundRef = useRef<Audio.Sound | null>(null);
 
+  // Store stable ref for onEnded callback
+  const onEndedRef = useRef(onEnded);
+  useEffect(() => {
+    onEndedRef.current = onEnded;
+  }, [onEnded]);
+
+  // Store refs for volume state (shouldn't trigger audio reload)
+  const volumeRef = useRef(volume);
+  const isMutedRef = useRef(isMuted);
+  
+  useEffect(() => {
+    volumeRef.current = volume;
+  }, [volume]);
+  
+  useEffect(() => {
+    isMutedRef.current = isMuted;
+  }, [isMuted]);
+
   useEffect(() => {
     if (!trackUrl) return;
 
@@ -55,7 +73,7 @@ export function AudioGuide({
 
         const { sound: newSound } = await Audio.Sound.createAsync(
           { uri: trackUrl },
-          { shouldPlay: autoPlay, volume: isMuted ? 0 : volume },
+          { shouldPlay: autoPlay, volume: isMutedRef.current ? 0 : volumeRef.current },
           (status) => {
             if (status.isLoaded) {
               setCurrentTime(status.positionMillis / 1000);
@@ -63,7 +81,7 @@ export function AudioGuide({
 
               if (status.didJustFinish) {
                 setIsPlaying(false);
-                onEnded?.();
+                onEndedRef.current?.();
               }
             }
           }
@@ -84,7 +102,7 @@ export function AudioGuide({
         sound.unloadAsync().catch(() => {});
       }
     };
-  }, [trackUrl, autoPlay, onEnded]);
+  }, [trackUrl, autoPlay]);
 
   useEffect(() => {
     if (soundRef.current) {

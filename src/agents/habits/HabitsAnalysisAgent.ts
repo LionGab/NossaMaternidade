@@ -330,6 +330,7 @@ export class HabitsAnalysisAgent extends BaseAgent {
     // Calcular best streak (melhor sequência de qualquer período)
     let bestStreak = 0;
     let tempStreak = 0;
+    let previousDate: Date | null = null;
 
     // Ordenar por data crescente para calcular best streak
     const sortedDays = [...days].sort(
@@ -346,10 +347,30 @@ export class HabitsAnalysisAgent extends BaseAgent {
       }
 
       if (day.completed) {
-        tempStreak++;
+        if (previousDate === null) {
+          // Primeiro dia completado
+          tempStreak = 1;
+        } else {
+          // Verificar se é consecutivo (diferença de 1 dia)
+          const daysDiff = Math.floor(
+            (dayDate.getTime() - previousDate.getTime()) / (1000 * 60 * 60 * 24)
+          );
+          
+          if (daysDiff === 1) {
+            // Consecutivo, incrementar streak
+            tempStreak++;
+          } else if (daysDiff > 1) {
+            // Gap maior que 1 dia, reiniciar streak
+            tempStreak = 1;
+          }
+          // Se daysDiff === 0, mesmo dia (não deveria acontecer após dedup), ignorar
+        }
+        previousDate = dayDate;
         bestStreak = Math.max(bestStreak, tempStreak);
       } else {
+        // Dia não completado, reiniciar streak
         tempStreak = 0;
+        previousDate = dayDate;
       }
     }
 
