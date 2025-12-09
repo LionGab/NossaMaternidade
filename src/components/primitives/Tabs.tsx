@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Pressable, Animated, ViewStyle, TextStyle, ScrollView } from 'react-native';
+import { Pressable, Animated, ViewStyle, TextStyle, ScrollView, LayoutChangeEvent } from 'react-native';
 
 import { ModernTokens } from '@/theme/modernTokens';
 import { useTheme } from '@/theme/ThemeContext';
@@ -127,7 +127,7 @@ export const Tabs = React.memo<TabsProps>(({
     };
   };
 
-  const handleTabLayout = (tabId: string, event: any) => {
+  const handleTabLayout = (tabId: string, event: LayoutChangeEvent) => {
     const { x, width } = event.nativeEvent.layout;
     setTabLayouts(prev => ({ ...prev, [tabId]: { x, width } }));
   };

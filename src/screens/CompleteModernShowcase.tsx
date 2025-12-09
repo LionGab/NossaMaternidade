@@ -15,8 +15,6 @@ import {
   Box,
   Text,
   H1,
-  H2,
-  H3,
   P,
   Muted,
   Button,
@@ -25,7 +23,6 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
   Input,
   Badge,
   Avatar,
@@ -41,7 +38,6 @@ import {
   Dialog,
   AlertDialog,
   Accordion,
-  Chip,
   ChipGroup,
 } from '@/components/primitives';
 

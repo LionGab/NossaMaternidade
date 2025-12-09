@@ -66,6 +66,7 @@ export const Skeleton = React.memo<SkeletonProps>(({
         animation.stop();
       };
     }
+    return undefined;
   }, [animated, animatedValue]);
 
   const opacity = animated
@@ -83,9 +84,10 @@ export const Skeleton = React.memo<SkeletonProps>(({
         ? ModernTokens.radius[rounded]
         : 0;
 
+  const finalWidth = circle && typeof height === 'number' ? height : width;
   const containerStyle: ViewStyle = {
-    width: circle && typeof height === 'number' ? height : width,
-    height,
+    width: typeof finalWidth === 'number' ? finalWidth : undefined,
+    height: typeof height === 'number' ? height : undefined,
     borderRadius,
     backgroundColor: colors.muted,
     ...style,
@@ -100,7 +102,7 @@ Skeleton.displayName = 'Skeleton';
 
 // Convenience components for common skeletons
 
-export const SkeletonText = ({ lines = 3, spacing = 8, ...props }: { lines?: number; spacing?: number } & Partial<SkeletonProps>) => (
+export const SkeletonText = ({ lines = 3, spacing: _spacing = 8, ...props }: { lines?: number; spacing?: number } & Partial<SkeletonProps>) => (
   <Box gap="2">
     {Array.from({ length: lines }).map((_, index) => (
       <Skeleton
@@ -122,18 +124,18 @@ export const SkeletonAvatar = ({ size = 40, ...props }: { size?: number } & Part
   />
 );
 
-export const SkeletonCard = ({ ...props }: Partial<SkeletonProps>) => (
+export const SkeletonCard = () => (
   <Box
-    p="4"
+    p={4}
     rounded="lg"
     borderWidth={1}
     borderColor="border"
     bg="card"
   >
-    <Box direction="row" align="center" gap="3" mb="3">
+    <Box direction="row" align="center" gap={3} mb={3}>
       <SkeletonAvatar size={40} />
       <Box flex={1}>
-        <Skeleton height={16} width="60%" mb="2" />
+        <Skeleton height={16} width="60%" style={{ marginBottom: 8 }} />
         <Skeleton height={12} width="40%" />
       </Box>
     </Box>

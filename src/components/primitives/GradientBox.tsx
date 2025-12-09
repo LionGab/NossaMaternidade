@@ -14,10 +14,10 @@ import { ModernTokens } from '@/theme/modernTokens';
 import { Box, BoxProps } from './Box';
 
 export interface GradientBoxProps extends Omit<BoxProps, 'bg'> {
-  colors: string[];
+  colors?: readonly string[] | string[];
   start?: { x: number; y: number };
   end?: { x: number; y: number };
-  locations?: number[];
+  locations?: readonly [number, number, ...number[]] | null;
   preset?: keyof typeof ModernTokens.gradients.maternal | keyof typeof ModernTokens.gradients.functional;
 }
 
@@ -32,11 +32,15 @@ export const GradientBox = React.memo<GradientBoxProps>(({
   ...props
 }) => {
   // Use preset colors if provided
-  const colors = preset 
+  const presetColors = preset 
     ? (ModernTokens.gradients.maternal[preset as keyof typeof ModernTokens.gradients.maternal] ||
-       ModernTokens.gradients.functional[preset as keyof typeof ModernTokens.gradients.functional] ||
-       colorsProp)
-    : colorsProp;
+       ModernTokens.gradients.functional[preset as keyof typeof ModernTokens.gradients.functional])
+    : null;
+  
+  // Convert readonly arrays to mutable arrays for LinearGradient
+  const colors = presetColors 
+    ? ([...presetColors] as [string, string, ...string[]])
+    : (colorsProp ? [...colorsProp] as [string, string, ...string[]] : ['#E91E63', '#9C27B0'] as [string, string]);
 
   return (
     <LinearGradient
@@ -58,7 +62,7 @@ GradientBox.displayName = 'GradientBox';
 // Preset gradient components for common use cases
 export const MaternalGradient: React.FC<{ children: React.ReactNode; style?: ViewStyle }> = ({ children, style }) => (
   <GradientBox
-    colors={ModernTokens.gradients.maternal.primary}
+    colors={[...ModernTokens.gradients.maternal.primary]}
     start={{ x: 0, y: 0 }}
     end={{ x: 1, y: 1 }}
     style={style}
@@ -69,7 +73,7 @@ export const MaternalGradient: React.FC<{ children: React.ReactNode; style?: Vie
 
 export const SuccessGradient: React.FC<{ children: React.ReactNode; style?: ViewStyle }> = ({ children, style }) => (
   <GradientBox
-    colors={ModernTokens.gradients.functional.success}
+    colors={[...ModernTokens.gradients.functional.success]}
     start={{ x: 0, y: 0 }}
     end={{ x: 1, y: 0 }}
     style={style}
@@ -80,7 +84,7 @@ export const SuccessGradient: React.FC<{ children: React.ReactNode; style?: View
 
 export const SunsetGradient: React.FC<{ children: React.ReactNode; style?: ViewStyle }> = ({ children, style }) => (
   <GradientBox
-    colors={ModernTokens.gradients.maternal.sunset}
+    colors={[...ModernTokens.gradients.maternal.sunset]}
     start={{ x: 0, y: 0 }}
     end={{ x: 1, y: 1 }}
     style={style}
@@ -91,7 +95,7 @@ export const SunsetGradient: React.FC<{ children: React.ReactNode; style?: ViewS
 
 export const OceanGradient: React.FC<{ children: React.ReactNode; style?: ViewStyle }> = ({ children, style }) => (
   <GradientBox
-    colors={ModernTokens.gradients.maternal.ocean}
+    colors={[...ModernTokens.gradients.maternal.ocean]}
     start={{ x: 0, y: 0 }}
     end={{ x: 0, y: 1 }}
     style={style}

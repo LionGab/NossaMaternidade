@@ -6,7 +6,7 @@
  */
 
 import React, { useRef, useEffect } from 'react';
-import { Modal, Pressable, Animated, ViewStyle, Platform } from 'react-native';
+import { Modal, Pressable, Animated, ViewStyle } from 'react-native';
 
 import { ModernTokens } from '@/theme/modernTokens';
 import { useTheme } from '@/theme/ThemeContext';
@@ -76,7 +76,7 @@ export const Dialog = React.memo<DialogProps>(({
     }
   }, [isOpen, scaleValue, opacityValue]);
 
-  const sizeConfig = {
+  const sizeConfig: Record<string, { maxWidth: number | string }> = {
     sm: { maxWidth: 400 },
     md: { maxWidth: 500 },
     lg: { maxWidth: 700 },
@@ -86,9 +86,9 @@ export const Dialog = React.memo<DialogProps>(({
   const dialogStyle: ViewStyle = {
     backgroundColor: colors.card,
     borderRadius: ModernTokens.radius.lg,
-    ...sizeConfig[size],
-    width: '90%',
-    maxHeight: '80%',
+    maxWidth: typeof sizeConfig[size].maxWidth === 'number' ? sizeConfig[size].maxWidth : undefined,
+    width: '90%' as const,
+    maxHeight: '80%' as const,
     ...ModernTokens.shadows['2xl'],
     ...style,
   };

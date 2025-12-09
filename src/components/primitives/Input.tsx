@@ -56,12 +56,12 @@ export const Input = React.memo<InputProps>(({
   const colors = isDark ? ModernTokens.colors.dark : ModernTokens.colors.light;
   const [isFocused, setIsFocused] = useState(false);
 
-  const handleFocus = (e: any) => {
+  const handleFocus: TextInputProps['onFocus'] = (e) => {
     setIsFocused(true);
     onFocus?.(e);
   };
 
-  const handleBlur = (e: any) => {
+  const handleBlur: TextInputProps['onBlur'] = (e) => {
     setIsFocused(false);
     onBlur?.(e);
   };
@@ -127,16 +127,16 @@ export const Input = React.memo<InputProps>(({
 
   return (
     <Box 
-      style={[baseContainerStyle, containerStyle]}
+      style={{ ...baseContainerStyle, ...containerStyle }}
     >
       {leftIcon && (
-        <Box mr="2">
+        <Box mr={2}>
           {leftIcon}
         </Box>
       )}
       
       <TextInput
-        style={[baseInputStyle, inputStyle]}
+        style={{ ...baseInputStyle, ...inputStyle }}
         placeholderTextColor={colors.mutedForeground}
         editable={!disabled}
         onFocus={handleFocus}
@@ -150,7 +150,7 @@ export const Input = React.memo<InputProps>(({
       />
       
       {rightIcon && (
-        <Box ml="2">
+        <Box ml={2}>
           {rightIcon}
         </Box>
       )}

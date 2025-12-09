@@ -113,9 +113,9 @@ export const Chip = React.memo<ChipProps>(({
 
   if (!onPress && !onDelete) {
     return (
-      <Box style={[containerStyle, disabled && { opacity: 0.5 }, style]}>
+      <Box style={{ ...containerStyle, ...(disabled && { opacity: 0.5 }), ...style }}>
         {leftIcon && <Box>{leftIcon}</Box>}
-        <Text style={[textStyleCombined, textStyle]}>{label}</Text>
+        <Text style={{ ...textStyleCombined, ...textStyle }}>{label}</Text>
       </Box>
     );
   }
@@ -124,12 +124,12 @@ export const Chip = React.memo<ChipProps>(({
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      style={({ pressed }) => [
-        containerStyle,
-        disabled && { opacity: 0.5 },
-        pressed && { opacity: 0.7 },
-        style,
-      ]}
+      style={({ pressed }) => ({
+        ...containerStyle,
+        ...(disabled && { opacity: 0.5 }),
+        ...(pressed && { opacity: 0.7 }),
+        ...style,
+      })}
       accessible={true}
       accessibilityRole={onPress ? 'button' : 'text'}
       accessibilityState={{ selected, disabled }}
@@ -137,25 +137,23 @@ export const Chip = React.memo<ChipProps>(({
     >
       {leftIcon && <Box>{leftIcon}</Box>}
       
-      <Text style={[textStyleCombined, textStyle]}>{label}</Text>
+      <Text style={{ ...textStyleCombined, ...textStyle }}>{label}</Text>
       
       {onDelete && (
         <Pressable
           onPress={onDelete}
           hitSlop={4}
-          style={({ pressed }) => [
-            {
-              width: iconSize,
-              height: iconSize,
-              borderRadius: iconSize / 2,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: selected 
-                ? 'rgba(255, 255, 255, 0.2)' 
-                : 'rgba(0, 0, 0, 0.1)',
-            },
-            pressed && { opacity: 0.5 },
-          ]}
+          style={({ pressed }) => ({
+            width: iconSize,
+            height: iconSize,
+            borderRadius: iconSize / 2,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: selected 
+              ? 'rgba(255, 255, 255, 0.2)' 
+              : 'rgba(0, 0, 0, 0.1)',
+            ...(pressed && { opacity: 0.5 }),
+          })}
         >
           <Text 
             style={{ 

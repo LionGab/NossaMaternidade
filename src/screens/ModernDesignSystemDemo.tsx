@@ -12,7 +12,6 @@ import { ModernTokens } from '@/theme/modernTokens';
 
 import {
   Box,
-  Text,
   H1,
   H2,
   H3,

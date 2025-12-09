@@ -11,8 +11,6 @@ import { Pressable, Animated, ViewStyle } from 'react-native';
 import { ModernTokens } from '@/theme/modernTokens';
 import { useTheme } from '@/theme/ThemeContext';
 
-import { Box } from './Box';
-
 export interface SwitchProps {
   value: boolean;
   onValueChange?: (value: boolean) => void;

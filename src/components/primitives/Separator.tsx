@@ -81,7 +81,7 @@ export const Separator = React.memo<SeparatorProps>(({
   if (label && isHorizontal) {
     return (
       <Box style={containerStyle}>
-        <Box style={[lineStyle, { flex: 1 }]} />
+        <Box style={{ ...lineStyle, flex: 1 }} />
         <Text 
           size="sm" 
           color="muted"
@@ -91,16 +91,16 @@ export const Separator = React.memo<SeparatorProps>(({
         >
           {label}
         </Text>
-        <Box style={[lineStyle, { flex: 1 }]} />
+        <Box style={{ ...lineStyle, flex: 1 }} />
       </Box>
     );
   }
 
   return (
     <Box
-      style={[lineStyle, containerStyle]}
+      style={{ ...lineStyle, ...containerStyle }}
       accessible={!decorative}
-      accessibilityRole={decorative ? 'none' : 'separator'}
+      accessibilityRole={decorative ? undefined : 'adjustable'}
     />
   );
 });

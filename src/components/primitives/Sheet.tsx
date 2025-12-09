@@ -13,7 +13,6 @@ import {
   PanResponder,
   Dimensions,
   ViewStyle,
-  Platform,
 } from 'react-native';
 
 import { ModernTokens } from '@/theme/modernTokens';
