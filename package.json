@@ -112,6 +112,7 @@
     "expo-splash-screen": "~31.0.11",
     "expo-status-bar": "~3.0.8",
     "expo-tracking-transparency": "~6.0.7",
+    "expo-updates": "^29.0.15",
     "immer": "^11.0.1",
     "lucide-react-native": "^0.554.0",
     "nativewind": "^4.2.1",
@@ -147,6 +148,7 @@
     "@typescript-eslint/typescript-estree": "^8.48.1",
     "babel-preset-expo": "^54.0.7",
     "dotenv": "^16.6.1",
+    "eas-cli": "^12.0.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
@@ -166,8 +168,7 @@
     "tailwindcss": "^3.4.18",
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
-    "typescript": "~5.9.2",
-    "eas-cli": "^12.0.0"
+    "typescript": "~5.9.2"
   },
   "private": true
 }

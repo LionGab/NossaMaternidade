@@ -47,6 +47,10 @@ module.exports = {
       enabled: true,
       checkAutomatically: 'ON_LOAD',
       fallbackToCacheTimeout: 30000,
+      url: 'https://u.expo.dev/ceee9479-e404-47b8-bc37-4f913c18f270',
+    },
+    runtimeVersion: {
+      policy: 'appVersion',
     },
     assetBundlePatterns: ['**/*'],
     ios: {
