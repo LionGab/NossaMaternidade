@@ -1,7 +1,7 @@
 // hooks/useOnboardingStorage.ts
 import { useCallback } from 'react';
 
-import { profileService } from '@/services/profileService';
+import { profileService } from '@/services/supabase';
 import { supabase, isSupabaseReady } from '@/services/supabase';
 import { UserProfile } from '@/types';
 import { logger } from '@/utils/logger';

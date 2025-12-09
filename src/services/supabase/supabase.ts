@@ -6,7 +6,7 @@ import { logger } from '@/utils/logger';
 import {
   supabaseSecureStorage,
   migrateSupabaseSessionToSecureStore,
-} from '../utils/supabaseSecureStorage';
+} from '../../utils/supabaseSecureStorage';
 
 // Get Supabase URL and anon key from Expo config or environment
 const supabaseUrl =

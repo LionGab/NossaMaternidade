@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { logger } from '@/utils/logger';
 
-import { retentionService } from './analytics/retentionService';
+import { retentionService } from '../analytics';
 
 export type NeedValue = 'descanso' | 'apoio-emocional' | 'organizacao' | 'conexao';
 

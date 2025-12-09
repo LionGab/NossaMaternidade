@@ -3,9 +3,9 @@
  * Persiste e recupera sessões de chat no Supabase
  */
 
-import { supabase } from './supabase';
-import { ChatSession, ChatMessage } from '../agents/maternal/MaternalChatAgent';
-import { logger } from '../utils/logger';
+import { supabase } from '../supabase';
+import type { ChatSession, ChatMessage } from '@/agents/maternal/MaternalChatAgent';
+import { logger } from '@/utils/logger';
 
 export interface PersistedChatSession {
   conversation_id: string;

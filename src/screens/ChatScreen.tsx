@@ -58,8 +58,8 @@ import { useWellness } from '../features/wellness';
 import { useHasConsent } from '../hooks/useConsent';
 import type { RouteProp } from '@react-navigation/native';
 import type { RootStackParamList, MainTabParamList } from '../navigation/types';
-import { chatService, ChatMessage } from '../services/chatService';
-import { profileService } from '../services/profileService';
+import { chatService, ChatMessage } from '@/services';
+import { profileService } from '@/services';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens, ColorTokens } from '../theme/tokens';
 import {
@@ -696,7 +696,11 @@ Você não está sozinha. Há pessoas prontas para te ajudar.`,
           ]}
         >
           <LinearGradient
-            colors={isDark ? ColorTokens.nathIA.gradient.dark : ColorTokens.nathIA.gradient.light}
+            colors={
+              isDark
+                ? [ColorTokens.cottonCandy.blue600, ColorTokens.cottonCandy.blueDark]
+                : [ColorTokens.cottonCandy.blue500, ColorTokens.cottonCandy.blueLight]
+            }
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{

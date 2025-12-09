@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import { StackNavigator } from './StackNavigator';
 import type { RootStackParamList } from './types';
 import { AuthProvider } from '../contexts/AuthContext';
-import { supabase } from '../services/supabase';
+import { supabase } from '@/services';
 import { logger } from '../utils/logger';
 import { networkMonitor } from '../utils/networkMonitor';
 

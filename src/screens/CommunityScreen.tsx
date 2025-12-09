@@ -7,26 +7,18 @@
  * Refatorado para usar componentes separados (CreatePostModal, PostCard).
  */
 
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Plus, Users, Grid } from 'lucide-react-native';
-import React, { useState, useCallback, useEffect } from 'react';
+import { Users, MessageCircle } from 'lucide-react-native';
+import React, { useState, useCallback } from 'react';
 import {
   TouchableOpacity,
   ScrollView,
-  View,
   RefreshControl,
-  ActivityIndicator,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Avatar } from '@/components/Avatar';
-import { CreatePostModal, PostCard } from '@/components/community';
 import { Box } from '@/components/atoms/Box';
 import { Text } from '@/components/atoms/Text';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import type { RootStackParamList } from '@/navigation/types';
-import { communityService, type CommunityPost } from '@/services/communityService';
 import { useTheme } from '@/theme';
 import { triggerPlatformHaptic } from '@/theme/platform';
 import {
@@ -37,170 +29,17 @@ import {
 } from '@/theme/tokens';
 import { logger } from '@/utils/logger';
 
-type FilterType = 'Todos' | 'Dicas' | 'Desabafos' | 'Dúvidas' | 'Humor';
-
-type CommunityNavigationProp = NativeStackNavigationProp<RootStackParamList>;
-
 export default function CommunityScreen() {
   const { colors, isDark } = useTheme();
-  useNavigation<CommunityNavigationProp>();
-  const [selectedFilter, setSelectedFilter] = useState<FilterType>('Todos');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [posts, setPosts] = useState<CommunityPost[]>([]);
-  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [likingPostId, setLikingPostId] = useState<string | null>(null);
-  const [_page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-
-  const filters: FilterType[] = ['Todos', 'Dicas', 'Desabafos', 'Dúvidas', 'Humor'];
-
-  // Carregar posts
-  const loadPosts = useCallback(async (pageNum = 0, reset = false) => {
-    try {
-      if (reset) {
-        setLoading(true);
-      }
-
-      const newPosts = await communityService.getPosts(pageNum, 20);
-
-      if (reset) {
-        setPosts(newPosts);
-      } else {
-        setPosts((prev) => [...prev, ...newPosts]);
-      }
-
-      setHasMore(newPosts.length === 20);
-      setPage(pageNum);
-    } catch (error) {
-      logger.error('[CommunityScreen] Erro ao carregar posts', error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
-
-  // Carregar posts iniciais
-  useEffect(() => {
-    loadPosts(0, true);
-  }, [loadPosts]);
 
   // Refresh
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
-    loadPosts(0, true);
-  }, [loadPosts]);
-
-  // Load more (função disponível mas não usada atualmente no FlatList)
-  // const handleLoadMore = useCallback(() => {
-  //   if (!loading && hasMore && !refreshing) {
-  //     loadPosts(page + 1, false);
-  //   }
-  // }, [loading, hasMore, refreshing, page, loadPosts]);
-
-  const handleFilterPress = (filter: FilterType) => {
-    triggerPlatformHaptic('selection');
-    setSelectedFilter(filter);
-    // TODO: Filtrar posts por categoria quando backend suportar
-    logger.info('[CommunityScreen] Filter changed', { filter });
-  };
-
-  const handleCreatePost = () => {
-    triggerPlatformHaptic('buttonPress');
-    logger.info('[CommunityScreen] Criar Post pressionado');
-    setIsCreateModalOpen(true);
-  };
-
-  const handleCreatePostSubmit = useCallback(
-    async (postData: {
-      title?: string;
-      content: string;
-      category?: string;
-      is_anonymous?: boolean;
-      image_url?: string;
-    }) => {
-      try {
-        // TODO: Adicionar suporte a title, category, is_anonymous no communityService
-        // Por enquanto, usando apenas content e image_url
-        const result = await communityService.createPost({
-          content: postData.content,
-          image_uri: postData.image_url,
-          // tags: postData.category ? [postData.category] : undefined, // Usar tags como categoria temporariamente
-        });
-
-        if (result) {
-          logger.info('[CommunityScreen] Post criado com sucesso', { postId: result.id });
-          // Recarregar posts
-          await loadPosts(0, true);
-          setIsCreateModalOpen(false);
-          triggerPlatformHaptic('success');
-        } else {
-          logger.error('[CommunityScreen] Erro ao criar post');
-          triggerPlatformHaptic('error');
-        }
-      } catch (error) {
-        logger.error('[CommunityScreen] Erro ao criar post', error);
-        triggerPlatformHaptic('error');
-      }
-    },
-    [loadPosts]
-  );
-
-  const handleViewFeed = () => {
-    triggerPlatformHaptic('buttonPress');
-    logger.info('[CommunityScreen] Ver Feed pressionado');
-    // Scroll para o topo (se houver ref do ScrollView)
-  };
-
-  const handleToggleLike = useCallback(
-    async (postId: string) => {
-      if (likingPostId) return;
-
-      triggerPlatformHaptic('buttonPress');
-      setLikingPostId(postId);
-
-      try {
-        const newLikedState = await communityService.togglePostLike(postId);
-
-        // Atualizar estado local
-        setPosts((prev) =>
-          prev.map((post) =>
-            post.id === postId
-              ? {
-                  ...post,
-                  is_liked_by_user: newLikedState,
-                  likes_count: newLikedState
-                    ? (post.likes_count || 0) + 1
-                    : Math.max(0, (post.likes_count || 0) - 1),
-                }
-              : post
-          )
-        );
-
-        logger.info('[CommunityScreen] Like toggled', { postId, liked: newLikedState });
-      } catch (error) {
-        logger.error('[CommunityScreen] Erro ao curtir post', error);
-      } finally {
-        setLikingPostId(null);
-      }
-    },
-    [likingPostId]
-  );
-
-  const handleCommentPost = (postId: string) => {
-    triggerPlatformHaptic('buttonPress');
-    logger.info('[CommunityScreen] Comentários pressionado', { postId });
-    // TODO: Navegar para tela de comentários quando disponível
-  };
-
-  const handlePostMenu = (postId: string) => {
-    triggerPlatformHaptic('buttonPress');
-    logger.info('[CommunityScreen] Menu do post pressionado', { postId });
-    // TODO: Mostrar menu de opções (editar, deletar, reportar)
-  };
-
-  // Filtrar posts (temporário, até backend suportar)
-  const filteredPosts = posts; // TODO: Filtrar por selectedFilter quando backend suportar
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
 
   return (
     <SafeAreaView
@@ -218,230 +57,186 @@ export default function CommunityScreen() {
         {/* Header Section */}
         <Box
           bg="card"
-          px="4"
-          pt="4"
+          px="6"
+          pt="6"
           pb="6"
           style={{
             borderBottomWidth: 1,
             borderBottomColor: colors.border.light,
           }}
         >
-          {/* Avatar + Info */}
-          <Box direction="row" align="center" gap="3" mb="4">
-            <Avatar
-              size={64}
-              source={{ uri: 'https://i.imgur.com/OLdeyD6.jpg' }}
-              fallback="MV"
-              borderWidth={2}
-              borderColor={colors.secondary.main}
-              useGradientFallback={true}
-            />
-            <Box flex={1}>
+          <Text size="2xl" weight="bold" style={{ marginBottom: Spacing['2'] }}>
+            Comunidade
+          </Text>
+        </Box>
+
+        {/* Cards Principais - Clube da Mãe e Fórum de Dúvidas */}
+        <Box px="6" pt="6" gap="4">
+          {/* Card: Clube da Mãe */}
+          <TouchableOpacity
+            onPress={() => {
+              triggerPlatformHaptic('buttonPress');
+              logger.info('[CommunityScreen] Clube da Mãe pressionado');
+              // TODO: Navegar para tela de grupos quando disponível
+            }}
+            activeOpacity={0.95}
+            style={{
+              backgroundColor: isDark ? ColorTokens.primary[900] : ColorTokens.primary[50],
+              borderRadius: Radius['3xl'],
+              padding: Spacing['6'],
+              borderWidth: 1,
+              borderColor: isDark ? ColorTokens.primary[700] : ColorTokens.primary[200],
+              ...Tokens.shadows.card,
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Clube da Mãe"
+            accessibilityHint="Entre nos grupos exclusivos e troque experiências com outras mães"
+          >
+            <Box align="center" gap="4">
+              {/* Ícone */}
               <View
                 style={{
-                  backgroundColor: `${ColorTokens.primary[500]}33`,
-                  paddingHorizontal: Spacing['2.5'],
-                  paddingVertical: Spacing['1'],
+                  width: 64,
+                  height: 64,
                   borderRadius: Radius.full,
-                  marginBottom: Spacing['2'],
-                  alignSelf: 'flex-start',
+                  backgroundColor: isDark ? ColorTokens.primary[800] : ColorTokens.primary[100],
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                <Text size="xs" weight="semibold" style={{ color: colors.primary.main }}>
-                  ✨ MÃESVALENTES
-                </Text>
+                <Users size={32} color={ColorTokens.primary[500]} />
               </View>
-              <Text size="2xl" weight="bold" style={{ marginBottom: Spacing['0.5'] }}>
-                Comunidade
-              </Text>
-              <Text size="sm" color="tertiary">
-                Mãe ajuda mãe 💜
-              </Text>
-            </Box>
-            <ThemeToggle variant="outline" />
-          </Box>
 
-          {/* Botões de Ação */}
-          <Box direction="row" gap="2">
-            <TouchableOpacity
-              onPress={handleCreatePost}
-              activeOpacity={0.8}
+              {/* Título */}
+              <Text size="xl" weight="bold" style={{ color: colors.text.primary }}>
+                Clube da Mãe
+              </Text>
+
+              {/* Descrição */}
+              <Text
+                size="sm"
+                color="secondary"
+                align="center"
               style={{
-                flex: 1,
-                backgroundColor: colors.primary.main,
-                minHeight: Tokens.touchTargets.min,
-                paddingVertical: Spacing['3'],
-                paddingHorizontal: Spacing['4'],
-                borderRadius: Radius.xl,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: Spacing['2'],
-              }}
-              accessibilityRole="button"
-              accessibilityLabel="Criar Post"
-              accessibilityHint="Toque para criar um novo post na comunidade"
-            >
-              <Plus size={16} color={ColorTokens.neutral[0]} />
-              <Text size="sm" weight="semibold" style={{ color: ColorTokens.neutral[0] }}>
-                Criar Post
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={handleViewFeed}
-              activeOpacity={0.8}
-              style={{
-                backgroundColor: 'transparent',
-                borderWidth: 1,
-                borderColor: colors.secondary.main,
-                minHeight: Tokens.touchTargets.min,
-                paddingVertical: Spacing['3'],
-                paddingHorizontal: Spacing['4'],
-                borderRadius: Radius.xl,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: Spacing['2'],
-              }}
-              accessibilityRole="button"
-              accessibilityLabel="Ver Feed"
-              accessibilityHint="Toque para ver o feed completo da comunidade"
-            >
-              <Grid size={16} color={colors.secondary.main} />
-              <Text size="sm" weight="semibold" style={{ color: colors.secondary.main }}>
-                Ver Feed
-              </Text>
-            </TouchableOpacity>
-          </Box>
-        </Box>
-
-        {/* Categories */}
-        <Box px="4" pt="4" pb="2">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: Spacing['2'] }}
-          >
-            {filters.map((category) => (
-              <TouchableOpacity
-                key={category}
-                onPress={() => handleFilterPress(category)}
-                activeOpacity={0.7}
-                accessibilityRole="button"
-                accessibilityLabel={`Filtrar por ${category}`}
-                accessibilityState={{ selected: selectedFilter === category }}
-                style={{
-                  paddingHorizontal: Spacing['4'],
-                  paddingVertical: Spacing['2'],
-                  borderRadius: Radius.full,
-                  backgroundColor:
-                    selectedFilter === category
-                      ? colors.primary.main
-                      : isDark
-                        ? ColorTokens.neutral[800]
-                        : ColorTokens.neutral[100],
-                  borderWidth: selectedFilter === category ? 0 : 1,
-                  borderColor: colors.border.medium,
+                  maxWidth: 280,
+                  lineHeight: 20,
                 }}
               >
+                Entre nos grupos exclusivos e troque experiências com outras mães.
+              </Text>
+
+              {/* Botão */}
+            <TouchableOpacity
+                onPress={(e) => {
+                  e.stopPropagation();
+                  triggerPlatformHaptic('buttonPress');
+                  logger.info('[CommunityScreen] Acessar Grupos pressionado');
+                }}
+              activeOpacity={0.8}
+              style={{
+                  backgroundColor: ColorTokens.primary[500],
+                paddingVertical: Spacing['3'],
+                  paddingHorizontal: Spacing['6'],
+                borderRadius: Radius.xl,
+                  minHeight: Tokens.touchTargets.min,
+                  width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              accessibilityRole="button"
+                accessibilityLabel="Acessar Grupos"
+            >
+                <Text size="sm" weight="bold" style={{ color: ColorTokens.neutral[0] }}>
+                  Acessar Grupos
+              </Text>
+            </TouchableOpacity>
+          </Box>
+          </TouchableOpacity>
+
+          {/* Card: Fórum de Dúvidas */}
+          <TouchableOpacity
+            onPress={() => {
+              triggerPlatformHaptic('buttonPress');
+              logger.info('[CommunityScreen] Fórum de Dúvidas pressionado');
+              // TODO: Navegar para tela de fórum quando disponível
+            }}
+            activeOpacity={0.95}
+            style={{
+              backgroundColor: isDark ? ColorTokens.info[900] : ColorTokens.info[50],
+              borderRadius: Radius['3xl'],
+              padding: Spacing['6'],
+              borderWidth: 1,
+              borderColor: isDark ? ColorTokens.info[700] : ColorTokens.info[200],
+              ...Tokens.shadows.card,
+            }}
+                accessibilityRole="button"
+            accessibilityLabel="Fórum de Dúvidas"
+            accessibilityHint="Pergunte e responda dúvidas de outras mães da comunidade"
+          >
+            <Box align="center" gap="4">
+              {/* Ícone */}
+              <View
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: Radius.full,
+                  backgroundColor: isDark ? ColorTokens.info[800] : ColorTokens.info[100],
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <MessageCircle size={32} color={ColorTokens.info[500]} />
+              </View>
+
+              {/* Título */}
+              <Text size="xl" weight="bold" style={{ color: colors.text.primary }}>
+                Fórum de Dúvidas
+              </Text>
+
+              {/* Descrição */}
                 <Text
                   size="sm"
-                  weight={selectedFilter === category ? 'semibold' : 'medium'}
+                color="secondary"
+                align="center"
                   style={{
-                    color:
-                      selectedFilter === category ? ColorTokens.neutral[0] : colors.text.primary,
+                  maxWidth: 280,
+                  lineHeight: 20,
                   }}
                 >
-                  {category}
+                Pergunte e responda dúvidas de outras mães da comunidade.
                 </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </Box>
 
-        {/* Loading State */}
-        {loading && posts.length === 0 && (
-          <Box py="12" align="center">
-            <ActivityIndicator size="large" color={colors.primary.main} />
-            <Text size="sm" color="secondary" style={{ marginTop: Spacing['3'] }}>
-              Carregando posts...
-            </Text>
-          </Box>
-        )}
-
-        {/* Empty State */}
-        {!loading && posts.length === 0 && (
-          <Box py="12" align="center" px="4">
-            <Box
-              p="5"
-              rounded="full"
-              style={{
-                backgroundColor: isDark ? ColorTokens.secondary[900] : ColorTokens.secondary[100],
-                marginBottom: Spacing['4'],
-              }}
-            >
-              <Users size={40} color={colors.secondary.main} />
-            </Box>
-            <Text size="lg" weight="bold" style={{ color: colors.text.primary, marginBottom: Spacing['2'] }}>
-              Nenhum post ainda
-            </Text>
-            <Text size="sm" color="secondary" style={{ marginBottom: Spacing['4'], textAlign: 'center' }}>
-              Seja a primeira a compartilhar algo com a comunidade!
-            </Text>
-            <TouchableOpacity
-              onPress={handleCreatePost}
+              {/* Botão */}
+              <TouchableOpacity
+                onPress={(e) => {
+                  e.stopPropagation();
+                  triggerPlatformHaptic('buttonPress');
+                  logger.info('[CommunityScreen] Ver Fórum pressionado');
+                }}
               activeOpacity={0.8}
               style={{
-                backgroundColor: colors.primary.main,
+                  backgroundColor: ColorTokens.info[500],
                 paddingVertical: Spacing['3'],
                 paddingHorizontal: Spacing['6'],
                 borderRadius: Radius.xl,
-                flexDirection: 'row',
+                  minHeight: Tokens.touchTargets.min,
+                  width: '100%',
                 alignItems: 'center',
-                gap: Spacing['2'],
+                  justifyContent: 'center',
               }}
               accessibilityRole="button"
-              accessibilityLabel="Criar primeiro post"
+                accessibilityLabel="Ver Fórum"
             >
-              <Plus size={16} color={ColorTokens.neutral[0]} />
-              <Text size="sm" weight="semibold" style={{ color: ColorTokens.neutral[0] }}>
-                Criar primeiro post
+                <Text size="sm" weight="bold" style={{ color: ColorTokens.neutral[0] }}>
+                  Ver Fórum
               </Text>
             </TouchableOpacity>
           </Box>
-        )}
-
-        {/* Lista de Posts */}
-        {!loading && posts.length > 0 && (
-          <Box pt="4" px="4">
-            {filteredPosts.map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                isLiking={likingPostId === post.id}
-                onLike={handleToggleLike}
-                onComment={handleCommentPost}
-                onMenu={handlePostMenu}
-              />
-            ))}
-
-            {/* Load More Indicator */}
-            {hasMore && (
-              <Box py="4" align="center">
-                <ActivityIndicator size="small" color={colors.primary.main} />
+          </TouchableOpacity>
               </Box>
-            )}
-          </Box>
-        )}
+
       </ScrollView>
 
-      {/* Modal Criar Post */}
-      <CreatePostModal
-        visible={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onCreatePost={handleCreatePostSubmit}
-      />
     </SafeAreaView>
   );
 }

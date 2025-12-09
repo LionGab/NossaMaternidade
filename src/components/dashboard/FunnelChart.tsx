@@ -12,7 +12,7 @@ import React, { memo, useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 import { useThemeColors } from '@/hooks/useTheme';
-import type { FunnelStage } from '@/services/dashboardService';
+import type { FunnelStage } from '@/services';
 import { Tokens } from '@/theme/tokens';
 
 interface FunnelChartProps {

@@ -23,7 +23,7 @@ import { HapticButton } from '@/components/atoms/HapticButton';
 import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import type { RootStackParamList } from '@/navigation/types';
-import { feedService, type ContentItem } from '@/services/feedService';
+import { feedService, type ContentItem } from '@/services/supabase';
 import { useTheme } from '@/theme';
 import { Spacing, Radius, ColorTokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';

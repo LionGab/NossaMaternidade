@@ -1,10 +1,14 @@
 // Core Components
-export { Button, type ButtonProps } from './Button';
+// ✅ Usando versões de atoms/ quando disponível (mais modernas e completas)
+export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from './atoms/Button';
+export { Card, type CardProps, type CardVariant, type CardPadding } from './atoms/Card';
+export { ProgressIndicator, type ProgressIndicatorProps } from './atoms/ProgressIndicator';
+export { OptimizedImage, type ImagePriority, type ImageCachePolicy } from './atoms/OptimizedImage';
+
+// Componentes que não têm versão em atoms/ - manter na raiz
 export { Input, type InputProps } from './Input';
-export { Card, type CardProps, type CardVariant } from './Card';
 export { Modal, type ModalProps } from './Modal';
 export { Loading, type LoadingProps } from './Loading';
-export { ProgressIndicator, type ProgressIndicatorProps } from './ProgressIndicator';
 export { OnboardingCard, type OnboardingCardProps } from './OnboardingCard';
 export { Avatar, type AvatarProps } from './Avatar';
 export { Logo, type LogoProps } from './Logo';
@@ -50,10 +54,9 @@ export {
 } from './FloatingTabBar';
 export { BabyTrackerCard, type BabyTrackerCardProps } from './BabyTrackerCard';
 
-// Atomic Components (formerly primitives)
-export { H1, H2, H3 } from './atoms/Heading';
-export { Text, Body, Caption } from './atoms/Text';
-export { Box } from './atoms/Box';
-export { Stack } from './atoms/Stack';
-export { Row } from './atoms/Row';
-export { Container } from './atoms/Container';
+// ⭐ Cotton Candy Tech Blue Version Components
+export { CottonCandyCard, type CottonCandyCardProps } from './CottonCandyCard';
+export { CottonCandyButton, type CottonCandyButtonProps } from './CottonCandyButton';
+
+// Atomic Components - Re-exportar de atoms/ para facilitar imports
+export * from './atoms';

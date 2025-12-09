@@ -3,8 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import { Loading } from '../components';
 import { ensureValidSession } from '../middleware/sessionValidator';
-import { sessionManager } from '../services/sessionManager';
-import { supabase, isSupabaseReady } from '../services/supabase';
+import { sessionManager, supabase, isSupabaseReady } from '@/services';
 import { logger } from '../utils/logger';
 
 interface AuthContextType {
@@ -26,9 +25,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Verificar se sessionManager está disponível antes de inicializar
+    if (!sessionManager) {
+      logger.error('[AuthContext] sessionManager não está disponível');
+      setLoading(false);
+      return;
+    }
+
     // Inicializar session manager
     sessionManager.initialize().catch((error) => {
       logger.error('[AuthContext] Erro ao inicializar session manager', error);
+      setLoading(false);
     });
 
     // Escutar mudanças do session manager

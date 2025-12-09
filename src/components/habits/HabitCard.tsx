@@ -17,7 +17,7 @@ import { Text } from '@/components/atoms/Text';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';
-import type { UserHabit } from '@/services/habitsService';
+import type { UserHabit } from '@/services/supabase';
 
 interface HabitCardProps {
   /** Dados do hábito do usuário */

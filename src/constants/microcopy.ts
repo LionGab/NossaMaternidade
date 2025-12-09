@@ -112,7 +112,7 @@ export const Community = {
 // ======================
 
 export const Content = {
-  title: 'Mundo Nath',
+  title: 'Mundo da Nath',
   subtitle: 'Conteúdo pensado para você',
   emptyState: 'Estamos preparando conteúdos especiais para você...',
   filters: {

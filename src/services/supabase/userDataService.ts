@@ -8,10 +8,10 @@ import type { UserProfile } from '@/types/user';
 import { consentManager } from '@/core/security/ConsentManager';
 import { chatService, ChatConversation, ChatMessage } from './chatService';
 import { profileService } from './profileService';
-import { sessionManager } from './sessionManager';
+import { sessionManager } from '../storage';
 import { supabase } from './supabase';
-import { logger } from '../utils/logger';
-import { clearAllLocalData } from '../utils/localStorageCleanup';
+import { logger } from '@/utils/logger';
+import { clearAllLocalData } from '@/utils/localStorageCleanup';
 
 // Supabase database types
 interface SupabaseHabit {

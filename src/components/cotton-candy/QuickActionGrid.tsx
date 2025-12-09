@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 56,
     height: 56,
-    borderRadius: 16,
+    borderRadius: 20, // rounded-2xl (20px)
     alignItems: 'center',
     justifyContent: 'center',
     // Shadow

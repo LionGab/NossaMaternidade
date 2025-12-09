@@ -29,9 +29,9 @@ export const BottomNav: React.FC<BottomNavProps> = ({ style }) => {
 
   const navItems = [
     { icon: Home, label: 'Início', path: 'Home' },
-    { icon: Users, label: 'Comunidade', path: 'MaesValentes' },
+    { icon: Users, label: 'MãesValentes', path: 'MaesValentes' },
     { icon: MessageCircle, label: 'NathIA', path: 'Chat' },
-    { icon: Sparkles, label: 'Mundo Naty', path: 'MundoNath' },
+    { icon: Sparkles, label: 'Mundo da Nath', path: 'MundoNath' },
     { icon: Heart, label: 'Meus Cuidados', path: 'Habitos' },
   ];
 
@@ -41,11 +41,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({ style }) => {
     left: 0,
     right: 0,
     backgroundColor: colors.background.card,
+    borderTopLeftRadius: Tokens.radius['3xl'], // ⭐ Cotton Candy: rounded-3xl
+    borderTopRightRadius: Tokens.radius['3xl'], // ⭐ Cotton Candy: rounded-3xl
     borderTopWidth: 1,
     borderTopColor: colors.border.light,
-    paddingBottom: Math.max(insets.bottom, Tokens.spacing['2']),
-    paddingTop: Tokens.spacing['2'],
-    paddingHorizontal: Tokens.spacing['2'],
+    paddingBottom: Math.max(insets.bottom, Tokens.spacing['3']),
+    paddingTop: Tokens.spacing['3'], // ⭐ Cotton Candy: increased padding
+    paddingHorizontal: Tokens.spacing['4'],
     zIndex: Tokens.zIndex.sticky,
     ...getPlatformShadow('xl'),
     ...style,

@@ -31,7 +31,7 @@ try {
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-import { logger } from '../utils/logger';
+import { logger } from '@/utils/logger';
 
 // Configuração do Sentry
 const SENTRY_DSN =

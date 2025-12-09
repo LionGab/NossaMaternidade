@@ -12,7 +12,7 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 
 import { useThemeColors } from '@/hooks/useTheme';
-import type { CrisisDailyStats } from '@/services/dashboardService';
+import type { CrisisDailyStats } from '@/services';
 import { Tokens } from '@/theme/tokens';
 
 interface CrisisLineChartProps {

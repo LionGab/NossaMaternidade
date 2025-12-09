@@ -1,9 +1,7 @@
 import type { AIContext } from '@/types/ai';
 import { logger } from '@/utils/logger';
 
-import { aiClient } from './aiClient';
-import { aiRouter } from './aiRouter';
-import { geminiService } from './geminiService';
+import { aiClient, aiRouter, geminiService } from '../ai';
 import { supabase } from './supabase';
 
 export interface ChatConversation {
@@ -321,7 +319,7 @@ class ChatService {
 
         // Importar executor de tools
         try {
-          const { aiToolExecutor } = await import('./aiTools');
+          const { aiToolExecutor } = await import('../aiTools');
           const toolResult = await aiToolExecutor.executeTool(routerResponse.tool_call, userId);
 
           // Obter resposta final com resultado da tool

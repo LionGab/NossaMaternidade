@@ -18,8 +18,8 @@ import { Box } from '../components/atoms/Box';
 import { Heading } from '../components/atoms/Heading';
 import { Text } from '../components/atoms/Text';
 import type { RootStackParamList } from '../navigation/types';
-import { profileService } from '../services/profileService';
-import { supabase } from '../services/supabase';
+import { profileService } from '@/services';
+import { supabase } from '@/services';
 import { useTheme } from '../theme/ThemeContext';
 import { logger } from '../utils/logger';
 

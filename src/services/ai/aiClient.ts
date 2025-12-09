@@ -7,7 +7,7 @@ import { resolveModel, type LlmProfile } from '@/ai/llmConfig';
 import type { AIModel, AIContext, ChatAIResponse } from '@/types/ai';
 import { logger } from '@/utils/logger';
 
-import { supabase } from './supabase';
+import { supabase } from '../supabase';
 
 /**
  * Cliente unificado para chamadas de IA

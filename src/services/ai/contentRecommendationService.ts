@@ -21,7 +21,7 @@ import type { ContentItem as DataContentItem } from '@/types/content';
 import { buildUserContext, type ExpandedUserContext } from '@/utils/buildUserContext';
 import { logger } from '@/utils/logger';
 
-import { supabase } from './supabase';
+import { supabase } from '../supabase';
 
 // ======================
 // TIPOS

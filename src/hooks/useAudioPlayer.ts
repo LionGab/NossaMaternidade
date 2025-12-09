@@ -12,7 +12,7 @@ import {
   elevenLabsService,
   NATHALIA_VOICES,
   type VoiceSettings,
-} from '@/services/elevenLabsService';
+} from '@/services/ai';
 import { logger } from '@/utils/logger';
 
 // ======================

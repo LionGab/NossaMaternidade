@@ -6,8 +6,8 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-import { supabase } from './supabase';
-import { logger } from '../utils/logger';
+import { supabase } from '../supabase';
+import { logger } from '@/utils/logger';
 
 /**
  * Get Cloud Run backend URL based on environment

@@ -9,13 +9,14 @@
  */
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { Suspense } from 'react';
-import { View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MainTabParamList } from './types';
 // 🚀 LAZY LOADING: Screens principais carregadas sob demanda
-const HomeScreen = React.lazy(() => import('../screens/HomeScreen'));
+const HomeScreen = React.lazy(() => import('../screens/HomeScreenMaesValentes'));
 const CommunityScreen = React.lazy(() => import('../screens/CommunityScreen'));
 const ChatScreen = React.lazy(() => import('../screens/ChatScreen'));
 const MundoNathScreen = React.lazy(() => import('../screens/MundoNathScreen'));
@@ -101,8 +102,9 @@ export const TabNavigator = () => {
         },
         tabBarLabelStyle: {
           fontSize: Tokens.typography.sizes.xs,
-          fontWeight: '600', // Mais legível
-          marginTop: 2,
+          fontWeight: '600',
+          marginTop: 4,
+          marginBottom: 0,
         },
         tabBarIconStyle: {
           marginTop: 2,
@@ -115,6 +117,7 @@ export const TabNavigator = () => {
         tabBarButton: (props) => {
           const { children, style, accessibilityState, onPress, testID } = props;
           const isSelected = accessibilityState?.selected;
+          // Apenas aplicar estilo customizado, não interferir na renderização dos labels
           return (
             <TouchableOpacity
               testID={testID ?? undefined}
@@ -129,11 +132,11 @@ export const TabNavigator = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexDirection: 'column',
-                  paddingVertical: Tokens.spacing['2'],
-                  paddingHorizontal: Tokens.spacing['3'],
+                  paddingVertical: Tokens.spacing['1'],
+                  paddingHorizontal: Tokens.spacing['2'],
                   borderRadius: Tokens.radius.xl,
                   ...(isSelected && {
-                    backgroundColor: `${colors.primary.main}1A`, // primary/10
+                    backgroundColor: `${colors.primary.main}1A`,
                   }),
                 },
               ]}
@@ -172,8 +175,8 @@ export const TabNavigator = () => {
         name="MaesValentes"
         component={CommunityScreenWrapper}
         options={{
-          tabBarLabel: 'Mães Valente',
-          tabBarAccessibilityLabel: 'Comunidade Mães Valentes',
+          tabBarLabel: 'MãesValentes',
+          tabBarAccessibilityLabel: 'MãesValentes, comunidade de mães',
           tabBarIcon: ({ color, focused }) => (
             <Users
               size={20}
@@ -189,22 +192,85 @@ export const TabNavigator = () => {
         }}
       />
 
-      {/* 💬 Tab 3: NathIA */}
+      {/* 💬 Tab 3: NathIA - Botão destacado (FAB) */}
       <Tab.Screen
         name="Chat"
         component={ChatScreenWrapper}
         options={{
           tabBarLabel: 'NathIA',
           tabBarAccessibilityLabel: 'Chat com NathIA, assistente de IA',
-          tabBarIcon: ({ color, focused }) => (
-            <MessageCircle
-              size={20}
-              color={color}
-              strokeWidth={focused ? 2.5 : 2}
-              accessibilityLabel="Ícone de assistente de IA"
-              accessibilityHint="Navega para o chat com NathIA, assistente de IA"
-            />
+          tabBarIcon: ({ focused }) => (
+            <View
+              style={{
+                marginTop: -20, // Eleva o botão acima dos outros
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <LinearGradient
+                colors={
+                  focused
+                    ? [ColorTokens.primary[500], ColorTokens.secondary[500]]
+                    : [ColorTokens.accent.ocean, ColorTokens.accent.oceanDeep]
+                }
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 32,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  ...getShadowFromToken('xl', ColorTokens.neutral[900]),
+                  elevation: 12,
+                }}
+              >
+                <MessageCircle
+                  size={28}
+                  color={ColorTokens.neutral[0]}
+                  strokeWidth={2.5}
+                  fill={focused ? ColorTokens.neutral[0] : 'transparent'}
+                />
+              </LinearGradient>
+            </View>
           ),
+          tabBarButton: (props) => {
+            const { children, onPress, accessibilityState } = props;
+            const isSelected = accessibilityState?.selected;
+            return (
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <TouchableOpacity
+                  onPress={onPress}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityState={accessibilityState}
+                  accessibilityLabel="Chat com NathIA, assistente de IA"
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {children}
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    fontSize: Tokens.typography.sizes.xs,
+                    fontWeight: '700',
+                    marginTop: 4,
+                    color: isSelected ? colors.primary.main : colors.text.primary,
+                  }}
+                >
+                  NathIA
+                </Text>
+              </View>
+            );
+          },
         }}
         listeners={{
           tabPress: handleTabPress,

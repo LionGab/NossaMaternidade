@@ -9,7 +9,7 @@
  * - Alertas de limite de custo
  */
 
-import { supabase } from '../../services/supabase';
+import { supabase } from '@/services';
 import { logger } from '../../utils/logger';
 import { LlmProfile, LlmProvider, estimateCost } from '../llmConfig';
 

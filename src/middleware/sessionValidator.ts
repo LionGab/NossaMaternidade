@@ -5,7 +5,7 @@
 
 import { Session, AuthError } from '@supabase/supabase-js';
 
-import { supabase, isSupabaseReady } from '../services/supabase';
+import { supabase, isSupabaseReady } from '@/services';
 import { logger } from '../utils/logger';
 
 export interface ValidationResult {

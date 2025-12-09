@@ -55,8 +55,8 @@ import { Text } from '@/components/atoms/Text';
 
 import { useWellness } from '../features/wellness';
 import type { RootStackParamList, MainTabParamList } from '../navigation/types';
-import { chatService, ChatMessage } from '../services/chatService';
-import { profileService } from '../services/profileService';
+import { chatService, ChatMessage } from '@/services';
+import { profileService } from '@/services';
 import { useTheme } from '../theme/ThemeContext';
 import { Tokens, ColorTokens } from '../theme/tokens';
 import {

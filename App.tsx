@@ -8,6 +8,25 @@ if (Platform.OS !== 'web') {
 if (Platform.OS === 'web') {
   require('./src/styles/global.css');
 }
+
+// Configurar NativeWind dark mode para 'class' em vez de 'media'
+// Isso permite controle manual do tema via JavaScript
+if (Platform.OS === 'web') {
+  try {
+    // NativeWind CSS Interop runtime - dynamic require necessário para web
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const StyleSheet = require('react-native-css-interop/runtime/web/color-scheme') as {
+      setFlag?: (flag: string, value: string) => void;
+    };
+    if (StyleSheet?.setFlag) {
+      StyleSheet.setFlag('darkMode', 'class');
+    }
+  } catch {
+    // Ignorar erro silenciosamente se não estiver disponível
+    // NativeWind pode não estar configurado ainda
+  }
+}
+
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from './src/components';
@@ -15,7 +34,7 @@ import { AgentsProvider } from './src/contexts/AgentsContext';
 import { QueryProvider } from './src/contexts/QueryProvider';
 import { WellnessProvider } from './src/features/wellness';
 import { Navigation } from './src/navigation';
-import { initSentry } from './src/services/sentry';
+import { initSentry } from '@/services';
 import { ThemeProvider } from './src/theme/ThemeContext';
 
 // Inicializar Sentry antes de qualquer componente
