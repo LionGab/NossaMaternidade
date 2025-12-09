@@ -527,14 +527,26 @@ export default function OnboardingScreen() {
       </Box>
 
       {/* Step Content */}
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {renderStepContent()}
       </ScrollView>
 
-      {/* Navigation Buttons */}
-      <Box px="4" pb="4" direction="row">
-        {currentStep > 1 && (
-          <Box mr="3">
+      {/* Bottom Section - Fixed */}
+      <Box>
+        {/* Navigation Buttons */}
+        <Box
+          px="6"
+          py="4"
+          direction="row"
+          justify={currentStep === 1 ? "center" : "space-between"}
+          width="100%"
+          align="center"
+        >
+          {currentStep > 1 && (
             <HapticButton
               variant="outline"
               size="lg"
@@ -543,12 +555,10 @@ export default function OnboardingScreen() {
             >
               Voltar
             </HapticButton>
-          </Box>
-        )}
+          )}
 
-        <Box style={{ flex: currentStep === 1 ? 1 : undefined }}>
           <HapticButton
-            variant="primary"
+            variant="tertiary"
             size="lg"
             onPress={() => {
               logger.info('[OnboardingScreen] Button pressed', {
@@ -565,7 +575,7 @@ export default function OnboardingScreen() {
             }}
             disabled={!canProceed() || loading}
             loading={loading}
-            fullWidth={currentStep === 1}
+            style={currentStep === 1 ? { width: '100%' } : { minWidth: 100 }}
             accessibilityLabel={
               currentStep === 7 ? 'Finalizar onboarding e começar a usar o app' : 'Próximo passo'
             }
@@ -578,19 +588,19 @@ export default function OnboardingScreen() {
             {loading ? 'Salvando...' : currentStep === 7 ? 'Começar!' : 'Próximo'}
           </HapticButton>
         </Box>
-      </Box>
 
-      {/* Step Counter */}
-      <Box
-        pb="4"
-        align="center"
-        accessibilityRole="text"
-        accessibilityLabel={`Passo ${currentStep} de 7`}
-        accessibilityHint="Indicador de progresso do onboarding"
-      >
-        <Text variant="small" color="tertiary" align="center">
-          {currentStep} de 7
-        </Text>
+        {/* Step Counter */}
+        <Box
+          pb="4"
+          align="center"
+          accessibilityRole="text"
+          accessibilityLabel={`Passo ${currentStep} de 7`}
+          accessibilityHint="Indicador de progresso do onboarding"
+        >
+          <Text variant="small" color="tertiary" align="center">
+            {currentStep} de 7
+          </Text>
+        </Box>
       </Box>
     </SafeAreaView>
   );
@@ -689,15 +699,15 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   scrollContent: {
-    flexGrow: 1,
     padding: Tokens.spacing['6'],
+    minHeight: '100%',
   },
   stepContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
     paddingHorizontal: Tokens.spacing['4'],
+    paddingVertical: Tokens.spacing['8'],
   },
   question: {
     marginBottom: Tokens.spacing['4'],

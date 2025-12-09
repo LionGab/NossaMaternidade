@@ -28,7 +28,7 @@ import { HapticPatterns, triggerHaptic } from '../../theme/haptics';
 import { useTheme } from '../../theme/ThemeContext';
 import { logger } from '../../utils/logger';
 
-export type HapticButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+export type HapticButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'outline' | 'ghost';
 export type HapticButtonSize = 'sm' | 'md' | 'lg';
 
 export interface HapticButtonProps {
@@ -87,7 +87,7 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
   accessibilityHint,
   accessibilityState,
 }) => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
   const isWeb = Platform.OS === 'web';
   // Hook chamado incondicionalmente para evitar erro de rules-of-hooks
@@ -134,10 +134,14 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
       case 'primary':
         return {
           container: {
-            backgroundColor: disabled ? colors.text.disabled : colors.primary.main,
+            backgroundColor: disabled
+              ? colors.text.disabled
+              : isDark
+                ? colors.primary.main  // Tema escuro: rosa vibrante
+                : colors.primary.dark, // Tema claro: rosa escuro
           },
           text: {
-            color: colors.raw.neutral[0],
+            color: colors.text.inverse,
           },
         };
       case 'secondary':
@@ -147,6 +151,23 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
           },
           text: {
             color: colors.raw.neutral[0],
+          },
+        };
+      case 'tertiary':
+        return {
+          container: {
+            backgroundColor: disabled
+              ? colors.text.disabled
+              : isDark
+                ? colors.raw.neutral[900]  // Tema escuro: preto
+                : colors.raw.neutral[0],   // Tema claro: branco
+          },
+          text: {
+            color: disabled
+              ? colors.text.tertiary
+              : isDark
+                ? colors.raw.neutral[0]    // Tema escuro: texto branco
+                : colors.raw.neutral[900], // Tema claro: texto preto
           },
         };
       case 'outline':
@@ -261,7 +282,11 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
           color={
             variant === 'outline' || variant === 'ghost'
               ? colors.primary.main
-              : colors.raw.neutral[0]
+              : variant === 'tertiary'
+                ? isDark
+                  ? colors.raw.neutral[0]    // Tema escuro: branco
+                  : colors.raw.neutral[900]  // Tema claro: preto
+                : colors.raw.neutral[0]
           }
         />
       ) : (
