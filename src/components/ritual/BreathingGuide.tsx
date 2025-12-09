@@ -78,6 +78,7 @@ export function BreathingGuide({
   }, [isActive, config]);
 
   // Animações baseadas na fase
+  // Note: scale and opacity are Reanimated SharedValues, they don't need to be in deps
   useEffect(() => {
     if (!isActive) {
       cancelAnimation(scale);
@@ -100,7 +101,8 @@ export function BreathingGuide({
       });
       opacity.value = withTiming(0.6, { duration: config.exhaleDuration * 1000 });
     }
-  }, [phase, isActive, config, scale, opacity]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- scale and opacity are stable SharedValues
+  }, [phase, isActive, config]);
 
   // Timer para mudança de fase
   useEffect(() => {

@@ -8,13 +8,22 @@
  * - No Expo Go, o Sentry não será inicializado (fail-safe)
  */
 
+// Tipo para o módulo Sentry (importação dinâmica por compatibilidade com Expo Go)
+interface SentryModule {
+  init: (options: Record<string, unknown>) => void;
+  captureException: (error: unknown, context?: Record<string, unknown>) => string;
+  captureMessage: (message: string, level: string) => string;
+  setUser: (user: { id: string } | null) => void;
+  addBreadcrumb: (breadcrumb: Record<string, unknown>) => void;
+  wrap: <T>(component: T) => T;
+}
+
 // Importação segura do Sentry (pode falhar no Expo Go)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let Sentry: any = null;
+let Sentry: SentryModule | null = null;
 try {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  Sentry = require('@sentry/react-native');
-} catch (error) {
+  Sentry = require('@sentry/react-native') as SentryModule;
+} catch {
   // Sentry não disponível (Expo Go ou não instalado)
   // Isso é esperado e não é um erro
 }
@@ -97,15 +106,12 @@ export function initSentry(): void {
       tracesSampleRate: isDevelopment ? 0 : 0.2,
 
       // Filtros de dados sensíveis
-      beforeSend(event: unknown) {
+      beforeSend(event: Record<string, unknown>) {
         // Remover dados sensíveis
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const sentryEvent = event as any;
-        if (sentryEvent?.user) {
+        const userObj = event?.user as { id?: string } | undefined;
+        if (userObj?.id) {
           // Manter apenas ID anônimo, sem PII
-          sentryEvent.user = {
-            id: sentryEvent.user.id,
-          };
+          event.user = { id: userObj.id };
         }
 
         // Não enviar erros de desenvolvimento
@@ -113,7 +119,7 @@ export function initSentry(): void {
           return null;
         }
 
-        return sentryEvent;
+        return event;
       },
 
       // Debug apenas em desenvolvimento
@@ -255,8 +261,7 @@ export function addBreadcrumb(breadcrumb: {
  * Wraps React component com Sentry Error Boundary
  * Para uso manual quando necessário
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const SentryErrorBoundary = Sentry?.wrap || ((Component: any) => Component);
+export const SentryErrorBoundary = Sentry?.wrap || (<T>(Component: T): T => Component);
 
 /**
  * Exporta o módulo Sentry para uso direto quando necessário

@@ -20,13 +20,19 @@ jest.mock('../../src/services/geminiService', () => ({
 jest.mock('../../src/services/sessionManager', () => ({
   sessionManager: {
     getState: jest.fn(),
+    setChatSessionId: jest.fn(),
+    getChatSessionId: jest.fn(),
+    getCurrentUser: jest.fn(),
+    getAuthSession: jest.fn(),
   },
 }));
 
 jest.mock('../../src/services/sessionPersistence', () => ({
   sessionPersistence: {
-    saveSession: jest.fn(),
-    loadSession: jest.fn(),
+    saveChatSession: jest.fn().mockImplementation(() => Promise.resolve(true)),
+    loadChatSession: jest.fn().mockImplementation(() => Promise.resolve(null)),
+    listConversations: jest.fn().mockImplementation(() => Promise.resolve([])),
+    deleteConversation: jest.fn().mockImplementation(() => Promise.resolve(true)),
   },
 }));
 

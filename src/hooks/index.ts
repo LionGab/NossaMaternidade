@@ -56,3 +56,35 @@ export { useOnboardingFlow } from './useOnboardingFlow';
 // ⏳ Loading & State
 // =====================
 export { useLoadingWithTimeout } from './useLoadingWithTimeout';
+
+// =====================
+// 👤 Profile (React Query)
+// =====================
+export {
+  useProfile,
+  useProfileById,
+  useUpdateProfile,
+  useUploadAvatar,
+  useDeleteAvatar,
+  useOnboardingStatus,
+  useCompleteOnboarding,
+  useUpdateOnboardingStep,
+  profileKeys,
+} from './useProfile';
+
+// =====================
+// 💛 Emotions (React Query)
+// =====================
+export {
+  useTodayEmotion,
+  useEmotionHistory,
+  useWeeklyEmotionSummary,
+  useSaveEmotion,
+  useEmotionCheckIn,
+  emotionKeys,
+} from './useEmotions';
+
+// =====================
+// 📋 Consent
+// =====================
+export { useConsent } from './useConsent';

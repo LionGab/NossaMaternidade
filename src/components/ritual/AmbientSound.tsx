@@ -41,6 +41,24 @@ export function AmbientSound({ config, onConfigChange }: AmbientSoundProps) {
   const [isPlaying, setIsPlaying] = useState(config.enabled && config.type !== 'white_noise');
   const soundRef = useRef<Audio.Sound | null>(null);
 
+  // Store refs for values that shouldn't trigger reload
+  const isPlayingRef = useRef(isPlaying);
+  const volumeRef = useRef(config.volume);
+  const enabledRef = useRef(config.enabled);
+  
+  // Keep refs updated
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+  
+  useEffect(() => {
+    volumeRef.current = config.volume;
+  }, [config.volume]);
+  
+  useEffect(() => {
+    enabledRef.current = config.enabled;
+  }, [config.enabled]);
+
   useEffect(() => {
     if (config.type === 'white_noise' || !config.enabled) {
       if (soundRef.current) {
@@ -65,8 +83,8 @@ export function AmbientSound({ config, onConfigChange }: AmbientSoundProps) {
         const { sound: newSound } = await Audio.Sound.createAsync(
           { uri: url },
           {
-            shouldPlay: config.enabled && isPlaying,
-            volume: config.volume,
+            shouldPlay: enabledRef.current && isPlayingRef.current,
+            volume: volumeRef.current,
             isLooping: true,
           }
         );
@@ -85,7 +103,7 @@ export function AmbientSound({ config, onConfigChange }: AmbientSoundProps) {
         sound.unloadAsync().catch(() => {});
       }
     };
-  }, [config.type]);
+  }, [config.type, config.enabled]);
 
   useEffect(() => {
     if (soundRef.current) {

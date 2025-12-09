@@ -1,4 +1,19 @@
 // hooks/useOnboardingFlow.ts
+/**
+ * Hook para gerenciar o fluxo de onboarding com 10 perguntas criteriosas
+ *
+ * Fluxo das 10 perguntas:
+ * 1. Welcome - Boas-vindas
+ * 2. Nome - Como quer ser chamada
+ * 3. Fase - Estágio da maternidade
+ * 4. Timeline - Detalhes da fase (semanas/idade)
+ * 5. Emoção - Estado emocional atual
+ * 6. Saúde Física - Desafios físicos
+ * 7. Sono - Qualidade e desafios do sono
+ * 8. Apoio - Rede de suporte
+ * 9. Objetivos - Metas com o app
+ * 10. Termos - Aceite e preferências
+ */
 import { useReducer, useCallback, useMemo } from 'react';
 
 import { UserProfile, UserStage } from '@/types/user';
@@ -24,7 +39,7 @@ type OnboardingAction =
   | { type: 'SET_STEP'; step: number }
   | { type: 'LOAD_PROFILE'; profile: UserProfile };
 
-const TOTAL_STEPS = 9;
+const TOTAL_STEPS = 10;
 
 const initialState: OnboardingState = {
   step: 1,
@@ -170,21 +185,25 @@ export const useOnboardingFlow = () => {
       switch (stepNumber) {
         case 1: // Welcome - sempre válido
           return true;
-        case 2: // Name
-          return !!state.formData.name;
-        case 3: // Stage
+        case 2: // Nome - obrigatório
+          return !!state.formData.name && state.formData.name.trim().length >= 2;
+        case 3: // Fase da maternidade - obrigatório
           return !!state.formData.stage;
-        case 4: // Timeline (pode ser pulado)
+        case 4: // Timeline (semanas/idade) - pode ser pulado se não aplicável
           return true;
-        case 5: // Challenge
-          return !!state.formData.biggestChallenge;
-        case 6: // Support
-          return !!state.formData.supportLevel;
-        case 7: // Emotion
+        case 5: // Estado emocional - obrigatório
           return !!state.formData.currentFeeling;
-        case 8: // Need
-          return !!state.formData.primaryNeed;
-        case 9: // Terms
+        case 6: // Saúde física - pelo menos um desafio selecionado ou "nenhum"
+          return (
+            !!state.formData.physical_challenges && state.formData.physical_challenges.length > 0
+          );
+        case 7: // Sono - pelo menos um desafio selecionado ou "durmo bem"
+          return !!state.formData.sleep_challenges && state.formData.sleep_challenges.length > 0;
+        case 8: // Rede de apoio - obrigatório
+          return !!state.formData.supportLevel;
+        case 9: // Objetivos - pelo menos um objetivo selecionado
+          return !!state.formData.wellness_goals && state.formData.wellness_goals.length > 0;
+        case 10: // Termos - ambos aceitos
           return state.termsAccepted && state.privacyAccepted;
         default:
           return false;
