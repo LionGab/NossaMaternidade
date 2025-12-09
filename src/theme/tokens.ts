@@ -1471,14 +1471,28 @@ export const CardSizes = {
 } as const;
 
 // ======================
+// 🌸 WELLNESS DESIGN SYSTEM INTEGRATION
+// ======================
+
+import { WellnessDesignSystem } from './wellnessDesign';
+
+// ======================
 // 📦 DEFAULT EXPORT
 // ======================
 
 /**
- * Tokens consolidados - use este objeto para acessar todos os tokens
+ * Tokens consolidados - Sistema híbrido (Base + Wellness)
  *
- * ⭐ Este é o ÚNICO design system oficial
- * See: /docs/DESIGN_SYSTEM.md para documentação completa
+ * OPÇÃO 1 - Base System (atual):
+ * - ColorTokens, LightTheme, DarkTheme
+ * - Sistema Material Design baseado
+ *
+ * OPÇÃO 2 - Wellness System (premium Flo/Calm/Clue):
+ * - Tokens.wellness.colors
+ * - Tokens.wellness.light / dark
+ * - Design inspirado em apps wellness
+ *
+ * Use Tokens.wellness.* para design premium
  */
 export const Tokens = {
   colors: ColorTokens,
@@ -1516,6 +1530,9 @@ export const Tokens = {
   isMediumDevice,
   isLargeDevice,
   isTablet,
+
+  // 🌸 WELLNESS DESIGN SYSTEM - Premium Flo/Calm/Clue inspired
+  wellness: WellnessDesignSystem,
 } as const;
 
 export default Tokens;

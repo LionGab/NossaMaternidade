@@ -253,4 +253,34 @@ export function useThemedStyles<T>(createStyles: (colors: ThemeColors) => T): T 
   return createStyles(colors);
 }
 
+/**
+ * Hook para usar Wellness Design System
+ * Design premium inspirado em Flo, Calm, Clue
+ *
+ * @example
+ * const wellness = useWellnessTheme();
+ * <View style={{
+ *   backgroundColor: wellness.theme.background.primary,
+ *   padding: wellness.spacing[4]
+ * }}>
+ */
+export function useWellnessTheme() {
+  const { isDark } = useTheme();
+
+  // Lazy import to avoid circular dependency
+  const { Tokens } = require('./tokens');
+
+  return {
+    colors: Tokens.wellness.colors,
+    theme: isDark ? Tokens.wellness.dark : Tokens.wellness.light,
+    typography: Tokens.wellness.typography,
+    spacing: Tokens.wellness.spacing,
+    radius: Tokens.wellness.radius,
+    shadows: Tokens.wellness.shadows,
+    animations: Tokens.wellness.animations,
+    components: Tokens.wellness.components,
+    isDark,
+  };
+}
+
 export default ThemeContext;

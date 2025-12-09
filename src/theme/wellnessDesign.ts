@@ -1,21 +1,16 @@
 /**
- * ⚠️ DEPRECATED - DO NOT USE THIS FILE
+ * 🌸 Wellness Design System - Nossa Maternidade
  *
- * This file was created as an experiment but is NOT being used in the codebase.
- * 641 lines of DEAD CODE.
+ * Design premium inspirado nos melhores apps de wellness feminino:
+ * - Flo (period tracking) - Cores suaves rosa/roxo, tipografia clara
+ * - Calm (meditation) - Paleta serena, gradientes suaves
+ * - Clue (cycle tracking) - Design minimalista, cores funcionais
+ * - I am (affirmations) - Tipografia impactante, cores vibrantes
  *
- * ✅ USE INSTEAD: /src/theme/tokens.ts
- * See: /docs/DESIGN_SYSTEM.md for official design system
- *
- * This file will be removed in a future version.
- *
- * @deprecated Use /src/theme/tokens.ts instead
- * @version 1.0.0 (DEPRECATED)
+ * @version 1.0.0
+ * @status ACTIVE - Sistema de design alternativo premium
  * @author Nossa Maternidade Design Team
  */
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// @ts-nocheck - File is deprecated and will be removed
 
 import { Platform } from 'react-native';
 
