@@ -1,4 +1,19 @@
 // components/onboarding/OnboardingFlow.tsx
+/**
+ * OnboardingFlow - Fluxo completo de onboarding com 10 perguntas criteriosas
+ *
+ * Fluxo das 10 perguntas:
+ * 1. Welcome - Boas-vindas
+ * 2. Nome - Como quer ser chamada
+ * 3. Fase - Estágio da maternidade
+ * 4. Timeline - Detalhes da fase (semanas/idade)
+ * 5. Emoção - Estado emocional atual
+ * 6. Saúde Física - Desafios físicos
+ * 7. Sono - Qualidade e desafios do sono
+ * 8. Apoio - Rede de suporte
+ * 9. Objetivos - Metas com o app
+ * 10. Termos - Aceite e preferências
+ */
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -8,14 +23,15 @@ import { useOnboardingFlow } from '@/hooks/useOnboardingFlow';
 import { useOnboardingStorage } from '@/hooks/useOnboardingStorage';
 import { useResponsive } from '@/hooks/useResponsive';
 import type { RootStackParamList } from '@/navigation/types';
-import { UserStage, UserEmotion, UserChallenge, UserSupport } from '@/types/user';
+import { UserStage, UserEmotion, UserSupport } from '@/types/user';
 import { logger } from '@/utils/logger';
 
 // Steps
-import { ChallengeStep } from './steps/ChallengeStep';
 import { FeelingStep } from './steps/FeelingStep';
+import { GoalsStep, type WellnessGoal } from './steps/GoalsStep';
 import { NameStep } from './steps/NameStep';
-import { NeedStep } from './steps/NeedStep';
+import { PhysicalHealthStep, type PhysicalChallenge } from './steps/PhysicalHealthStep';
+import { SleepQualityStep, type SleepChallenge } from './steps/SleepQualityStep';
 import { StageStep } from './steps/StageStep';
 import { SupportStep } from './steps/SupportStep';
 import { TermsStep } from './steps/TermsStep';
@@ -122,6 +138,50 @@ export default function OnboardingFlow() {
     }
   }, [canProceed, formData, saveUserProfile, saveAcceptanceTimestamps, navigation, TOTAL_STEPS]);
 
+  // Helpers para toggle de arrays (devem vir antes do early return!)
+  const handleTogglePhysicalChallenge = useCallback(
+    (challenge: PhysicalChallenge) => {
+      const current = formData.physical_challenges || [];
+      if (challenge === 'nenhum') {
+        updateData('physical_challenges', ['nenhum']);
+      } else {
+        const filtered = current.filter((c) => c !== 'nenhum');
+        const newChallenges = filtered.includes(challenge)
+          ? filtered.filter((c) => c !== challenge)
+          : [...filtered, challenge];
+        updateData('physical_challenges', newChallenges);
+      }
+    },
+    [formData.physical_challenges, updateData]
+  );
+
+  const handleToggleSleepChallenge = useCallback(
+    (challenge: SleepChallenge) => {
+      const current = formData.sleep_challenges || [];
+      if (challenge === 'durmo_bem') {
+        updateData('sleep_challenges', ['durmo_bem']);
+      } else {
+        const filtered = current.filter((c) => c !== 'durmo_bem');
+        const newChallenges = filtered.includes(challenge)
+          ? filtered.filter((c) => c !== challenge)
+          : [...filtered, challenge];
+        updateData('sleep_challenges', newChallenges);
+      }
+    },
+    [formData.sleep_challenges, updateData]
+  );
+
+  const handleToggleGoal = useCallback(
+    (goal: WellnessGoal) => {
+      const current = formData.wellness_goals || [];
+      const newGoals = current.includes(goal)
+        ? current.filter((g) => g !== goal)
+        : [...current, goal];
+      updateData('wellness_goals', newGoals);
+    },
+    [formData.wellness_goals, updateData]
+  );
+
   // Loading state
   if (isLoading) {
     return (
@@ -131,12 +191,12 @@ export default function OnboardingFlow() {
     );
   }
 
-  // Renderiza step atual
+  // Renderiza step atual - 10 perguntas criteriosas
   switch (step) {
-    case 1:
+    case 1: // Welcome
       return <WelcomeStep onNext={nextStep} isSmallScreen={isSmallScreen} />;
 
-    case 2:
+    case 2: // Nome
       return (
         <NameStep
           name={formData.name}
@@ -150,7 +210,7 @@ export default function OnboardingFlow() {
         />
       );
 
-    case 3:
+    case 3: // Fase da maternidade
       return (
         <StageStep
           stage={formData.stage}
@@ -165,7 +225,7 @@ export default function OnboardingFlow() {
         />
       );
 
-    case 4:
+    case 4: // Timeline (semanas/idade)
       return (
         <TimelineStep
           stage={formData.stage}
@@ -183,7 +243,7 @@ export default function OnboardingFlow() {
         />
       );
 
-    case 5:
+    case 5: // Estado emocional
       return (
         <FeelingStep
           currentFeeling={formData.currentFeeling}
@@ -197,13 +257,11 @@ export default function OnboardingFlow() {
         />
       );
 
-    case 6:
+    case 6: // Saúde física
       return (
-        <ChallengeStep
-          biggestChallenge={formData.biggestChallenge}
-          onSelectChallenge={(challenge) =>
-            updateData('biggestChallenge', challenge as UserChallenge)
-          }
+        <PhysicalHealthStep
+          selectedChallenges={formData.physical_challenges || []}
+          onToggleChallenge={handleTogglePhysicalChallenge}
           onNext={nextStep}
           onBack={prevStep}
           step={step}
@@ -213,7 +271,21 @@ export default function OnboardingFlow() {
         />
       );
 
-    case 7:
+    case 7: // Qualidade do sono
+      return (
+        <SleepQualityStep
+          selectedChallenges={formData.sleep_challenges || []}
+          onToggleChallenge={handleToggleSleepChallenge}
+          onNext={nextStep}
+          onBack={prevStep}
+          step={step}
+          totalSteps={TOTAL_STEPS}
+          progress={progress}
+          isSmallScreen={isSmallScreen}
+        />
+      );
+
+    case 8: // Rede de apoio
       return (
         <SupportStep
           supportLevel={formData.supportLevel}
@@ -227,11 +299,11 @@ export default function OnboardingFlow() {
         />
       );
 
-    case 8:
+    case 9: // Objetivos
       return (
-        <NeedStep
-          primaryNeed={formData.primaryNeed}
-          onSelectNeed={(need) => updateData('primaryNeed', need)}
+        <GoalsStep
+          selectedGoals={formData.wellness_goals || []}
+          onToggleGoal={handleToggleGoal}
           onNext={nextStep}
           onBack={prevStep}
           step={step}
@@ -241,11 +313,11 @@ export default function OnboardingFlow() {
         />
       );
 
-    case 9:
+    case 10: // Termos e preferências
       return (
         <TermsStep
           name={formData.name}
-          biggestChallenge={formData.biggestChallenge}
+          biggestChallenge={formData.wellness_goals?.[0]}
           termsAccepted={termsAccepted}
           privacyAccepted={privacyAccepted}
           notificationsEnabled={formData.notificationsEnabled || false}

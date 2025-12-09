@@ -522,9 +522,12 @@ export class MaternalChatAgent extends BaseAgent {
       sessionManager.setChatSessionId(this.currentSession.id);
 
       // Persistir no Supabase (em background, não bloquear)
-      sessionPersistence.saveChatSession(this.currentSession).catch((error) => {
-        logger.error('[MaternalChatAgent] Erro ao persistir sessão', error);
-      });
+      const savePromise = sessionPersistence.saveChatSession(this.currentSession);
+      if (savePromise && typeof savePromise.catch === 'function') {
+        savePromise.catch((error) => {
+          logger.error('[MaternalChatAgent] Erro ao persistir sessão', error);
+        });
+      }
     }
   }
 

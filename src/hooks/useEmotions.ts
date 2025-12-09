@@ -11,8 +11,11 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { checkInService, type EmotionValue, type EmotionRecord } from '@/services/checkInService';
+import { checkInService, type EmotionValue, type CheckInLog } from '@/services/checkInService';
 import { logger } from '@/utils/logger';
+
+// Re-export type for convenience
+export type { EmotionValue, CheckInLog };
 
 // Query keys centralizadas
 export const emotionKeys = {
@@ -44,8 +47,8 @@ export function useTodayEmotion() {
 export function useEmotionHistory(days: number = 7) {
   return useQuery({
     queryKey: emotionKeys.history(days),
-    queryFn: async (): Promise<EmotionRecord[]> => {
-      const history = await checkInService.getEmotionHistory(days);
+    queryFn: async (): Promise<CheckInLog[]> => {
+      const history = await checkInService.getCheckInHistory(days);
       return history;
     },
     staleTime: 5 * 60 * 1000, // 5 minutos
@@ -61,7 +64,7 @@ export function useWeeklyEmotionSummary() {
   return useQuery({
     queryKey: emotionKeys.weekly(),
     queryFn: async () => {
-      const history = await checkInService.getEmotionHistory(7);
+      const history = await checkInService.getCheckInHistory(7);
       
       // Calcular resumo
       const emotionCounts: Record<EmotionValue, number> = {
@@ -72,7 +75,7 @@ export function useWeeklyEmotionSummary() {
         ansiosa: 0,
       };
       
-      history.forEach((record) => {
+      history.forEach((record: CheckInLog) => {
         if (record.emotion in emotionCounts) {
           emotionCounts[record.emotion]++;
         }
@@ -97,7 +100,7 @@ export function useWeeklyEmotionSummary() {
 /**
  * Calcula streak de check-ins consecutivos
  */
-function calculateStreak(history: EmotionRecord[]): number {
+function calculateStreak(history: CheckInLog[]): number {
   if (history.length === 0) return 0;
   
   // Ordenar por data decrescente
@@ -134,11 +137,11 @@ export function useSaveEmotion() {
 
   return useMutation({
     mutationFn: async (emotion: EmotionValue) => {
-      const result = await checkInService.saveEmotion(emotion);
-      if (!result.success) {
-        throw new Error(result.error || 'Erro ao salvar emoção');
+      const success = await checkInService.logEmotion(emotion);
+      if (!success) {
+        throw new Error('Erro ao salvar emoção');
       }
-      return { emotion, ...result };
+      return { emotion, success };
     },
     onSuccess: (data) => {
       // Atualizar cache imediatamente (optimistic update)

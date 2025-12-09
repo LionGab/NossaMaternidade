@@ -85,6 +85,6 @@ export {
 } from './useEmotions';
 
 // =====================
-// 📋 Consent (React Query)
+// 📋 Consent
 // =====================
-export { useConsent, useAcceptConsent, consentKeys } from './useConsent';
+export { useConsent } from './useConsent';

@@ -29,10 +29,10 @@ jest.mock('../../src/services/sessionManager', () => ({
 
 jest.mock('../../src/services/sessionPersistence', () => ({
   sessionPersistence: {
-    saveChatSession: jest.fn().mockResolvedValue(true),
-    loadChatSession: jest.fn().mockResolvedValue(null),
-    listConversations: jest.fn().mockResolvedValue([]),
-    deleteConversation: jest.fn().mockResolvedValue(true),
+    saveChatSession: jest.fn().mockImplementation(() => Promise.resolve(true)),
+    loadChatSession: jest.fn().mockImplementation(() => Promise.resolve(null)),
+    listConversations: jest.fn().mockImplementation(() => Promise.resolve([])),
+    deleteConversation: jest.fn().mockImplementation(() => Promise.resolve(true)),
   },
 }));
 

@@ -83,7 +83,7 @@ export type EmotionValueSchema = (typeof emotionValues)[number];
 
 export const emotionCheckInSchema = z.object({
   emotion: z.enum(emotionValues, {
-    errorMap: () => ({ message: 'Selecione uma emoção válida' }),
+    message: 'Selecione uma emoção válida',
   }),
   notes: z.string().max(500, 'Notas muito longas (máximo 500 caracteres)').optional(),
 });
@@ -94,17 +94,20 @@ export type EmotionCheckInFormData = z.infer<typeof emotionCheckInSchema>;
 // 📋 HÁBITOS
 // ======================
 
+const habitCategories = ['saude', 'autocuidado', 'bebe', 'sono', 'alimentacao', 'exercicio'] as const;
+const habitFrequencies = ['daily', 'weekly', 'custom'] as const;
+
 export const habitSchema = z.object({
   name: z
     .string()
     .min(2, 'Nome do hábito deve ter no mínimo 2 caracteres')
     .max(100, 'Nome muito longo'),
   description: z.string().max(300, 'Descrição muito longa').optional(),
-  category: z.enum(['saude', 'autocuidado', 'bebe', 'sono', 'alimentacao', 'exercicio'], {
-    errorMap: () => ({ message: 'Selecione uma categoria válida' }),
+  category: z.enum(habitCategories, {
+    message: 'Selecione uma categoria válida',
   }),
-  frequency: z.enum(['daily', 'weekly', 'custom'], {
-    errorMap: () => ({ message: 'Selecione uma frequência válida' }),
+  frequency: z.enum(habitFrequencies, {
+    message: 'Selecione uma frequência válida',
   }),
   targetDays: z.array(z.number().min(0).max(6)).optional(),
   reminderTime: z
