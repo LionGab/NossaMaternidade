@@ -7,7 +7,6 @@
  * ✅ Passo 2: Box.tsx híbrido (className + props)
  */
 
-import React from 'react';
 import { Box } from '@/components/atoms/Box';
 import { Text } from '@/components/atoms/Text';
 

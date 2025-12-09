@@ -11,7 +11,7 @@
  */
 
 import { Image } from 'expo-image';
-import React, { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { View, FlatList, StyleSheet, Dimensions, ViewToken } from 'react-native';
 import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
 

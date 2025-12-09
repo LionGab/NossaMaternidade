@@ -15,7 +15,7 @@ import {
   Pause,
   SkipForward,
 } from 'lucide-react-native';
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   ScrollView,

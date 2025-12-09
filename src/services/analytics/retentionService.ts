@@ -49,7 +49,7 @@ export interface UserSession {
  * Estágios do funnel de conversão
  * Ordem: download → onboarding → aha_moment → engagement → retention
  */
-export type FunnelStage =
+export type FunnelStageType =
   | 'app_opened' // Abriu o app pela primeira vez
   | 'onboarding_started' // Começou onboarding
   | 'onboarding_profile' // Preencheu perfil
@@ -66,7 +66,7 @@ export type FunnelStage =
 
 export interface FunnelEvent {
   user_id: string;
-  stage: FunnelStage;
+  stage: FunnelStageType;
   timestamp: string;
   metadata?: Record<string, unknown>;
   dropoff_reason?: string; // Se abandonou, por quê?
@@ -74,8 +74,8 @@ export interface FunnelEvent {
 
 export interface FunnelMetrics {
   totalUsers: number;
-  stageConversions: Record<FunnelStage, { count: number; percentage: number }>;
-  dropoffPoints: { stage: FunnelStage; count: number; topReasons: string[] }[];
+  stageConversions: Record<FunnelStageType, { count: number; percentage: number }>;
+  dropoffPoints: { stage: FunnelStageType; count: number; topReasons: string[] }[];
   conversionRate: number; // % que chegou ao aha_moment
   activationRate: number; // % que completou onboarding E teve aha_moment
 }
@@ -372,7 +372,7 @@ class RetentionService {
    */
   async trackFunnelEvent(
     userId: string,
-    stage: FunnelStage,
+    stage: FunnelStageType,
     metadata?: Record<string, unknown>,
     dropoffReason?: string
   ): Promise<void> {
@@ -416,7 +416,7 @@ class RetentionService {
    * Track "Aha Moment" - momento que usuária percebe valor
    * Crítico para retenção D3+
    */
-  private async trackAhaMoment(userId: string, ahaMomentType: FunnelStage): Promise<void> {
+  private async trackAhaMoment(userId: string, ahaMomentType: FunnelStageType): Promise<void> {
     try {
       // Verificar se já teve aha moment antes
       const { data: existing } = await supabase
@@ -468,19 +468,19 @@ class RetentionService {
       }
 
       // Agrupar por usuário e calcular estágio mais avançado
-      const userStages = new Map<string, Set<FunnelStage>>();
+      const userStages = new Map<string, Set<FunnelStageType>>();
 
       for (const event of events) {
         if (!userStages.has(event.user_id)) {
           userStages.set(event.user_id, new Set());
         }
-        userStages.get(event.user_id)!.add(event.stage as FunnelStage);
+        userStages.get(event.user_id)!.add(event.stage as FunnelStageType);
       }
 
       const totalUsers = userStages.size;
 
       // Contar usuários em cada estágio
-      const stageCounts: Record<FunnelStage, number> = {
+      const stageCounts: Record<FunnelStageType, number> = {
         app_opened: 0,
         onboarding_started: 0,
         onboarding_profile: 0,
@@ -503,18 +503,18 @@ class RetentionService {
       }
 
       // Calcular conversões
-      const stageConversions: Record<FunnelStage, { count: number; percentage: number }> =
-        {} as Record<FunnelStage, { count: number; percentage: number }>;
+      const stageConversions: Record<FunnelStageType, { count: number; percentage: number }> =
+        {} as Record<FunnelStageType, { count: number; percentage: number }>;
 
       for (const [stage, count] of Object.entries(stageCounts)) {
-        stageConversions[stage as FunnelStage] = {
+        stageConversions[stage as FunnelStageType] = {
           count,
           percentage: totalUsers > 0 ? Math.round((count / totalUsers) * 100) : 0,
         };
       }
 
       // Identificar pontos de dropoff
-      const funnelOrder: FunnelStage[] = [
+      const funnelOrder: FunnelStageType[] = [
         'app_opened',
         'onboarding_started',
         'onboarding_complete',
@@ -522,7 +522,7 @@ class RetentionService {
         'first_week_active',
       ];
 
-      const dropoffPoints: { stage: FunnelStage; count: number; topReasons: string[] }[] = [];
+      const dropoffPoints: { stage: FunnelStageType; count: number; topReasons: string[] }[] = [];
 
       for (let i = 0; i < funnelOrder.length - 1; i++) {
         const currentStage = funnelOrder[i];
@@ -590,7 +590,7 @@ class RetentionService {
     userId: string,
     step: 'started' | 'profile' | 'baby' | 'complete'
   ): Promise<void> {
-    const stageMap: Record<string, FunnelStage> = {
+    const stageMap: Record<string, FunnelStageType> = {
       started: 'onboarding_started',
       profile: 'onboarding_profile',
       baby: 'onboarding_baby',
@@ -604,7 +604,7 @@ class RetentionService {
    * Helper: Track primeiro uso de feature (aha moment)
    */
   async trackFirstUse(userId: string, feature: 'nathia' | 'tracker' | 'community'): Promise<void> {
-    const stageMap: Record<string, FunnelStage> = {
+    const stageMap: Record<string, FunnelStageType> = {
       nathia: 'aha_moment_nathia',
       tracker: 'aha_moment_tracker',
       community: 'aha_moment_community',

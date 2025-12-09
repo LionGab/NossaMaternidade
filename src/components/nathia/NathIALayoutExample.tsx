@@ -8,7 +8,6 @@
  */
 
 import { MessageCircle, Sparkles, Heart, Play } from 'lucide-react-native';
-import React from 'react';
 
 import { Badge } from '@/components/Badge';
 import { Box } from '@/components/atoms/Box';

@@ -4,9 +4,10 @@
  */
 
 import type { UserProfile } from '@/types/user';
+import type { ChatMessage } from '@/types/chat';
 
 import { consentManager } from '@/core/security/ConsentManager';
-import { chatService, ChatConversation, ChatMessage } from './chatService';
+import { chatService, ChatConversation } from './chatService';
 import { profileService } from './profileService';
 import { sessionManager } from '../storage';
 import { supabase } from './supabase';

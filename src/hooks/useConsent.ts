@@ -5,7 +5,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { consentService } from '@/services/consentService';
+import { consentService } from '@/services/supabase';
 import type {
   ConsentType,
   ActiveConsent,

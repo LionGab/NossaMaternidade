@@ -4,7 +4,7 @@
  * Mobile-First para iOS/Android
  */
 
-import React, {
+import {
   createContext,
   useContext,
   useEffect,

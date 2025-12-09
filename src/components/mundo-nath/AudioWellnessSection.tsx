@@ -201,17 +201,15 @@ export function AudioWellnessSection({
     const currentProgress = currentAudio?.id === item.id ? progress : 0;
 
     return (
-      <View style={{ marginBottom: Tokens.spacing['3'] }}>
-        <AudioWellnessCard
-          audio={item}
-          variant="compact"
-          isPlaying={isCurrentlyPlaying}
-          isLoading={isCurrentlyLoading}
-          progress={currentProgress}
-          onPlay={handlePlay}
-          onPause={handlePause}
-        />
-      </View>
+      <AudioWellnessCard
+        audio={item}
+        variant="compact"
+        isPlaying={isCurrentlyPlaying}
+        isLoading={isCurrentlyLoading}
+        progress={currentProgress}
+        onPlay={handlePlay}
+        onPause={handlePause}
+      />
     );
   };
 
@@ -275,7 +273,7 @@ export function AudioWellnessSection({
         </View>
       )}
 
-      {/* Other Audios List */}
+      {/* Other Audios Grid (2 columns) */}
       {otherAudios.length > 0 && (
         <View style={styles.listContainer}>
           <Text
@@ -286,9 +284,13 @@ export function AudioWellnessSection({
             Mais {CATEGORY_TABS.find((c) => c.id === selectedCategory)?.label || 'Áudios'}
           </Text>
 
-          {otherAudios.map((audio) => (
-            <View key={audio.id}>{renderAudioCard({ item: audio })}</View>
-          ))}
+          <View style={styles.audioGrid}>
+            {otherAudios.map((audio) => (
+              <View key={audio.id} style={styles.audioGridItem}>
+                {renderAudioCard({ item: audio })}
+              </View>
+            ))}
+          </View>
         </View>
       )}
 
@@ -442,6 +444,16 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     marginTop: Tokens.spacing['2'],
+  },
+  audioGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: Tokens.spacing['3'],
+  },
+  audioGridItem: {
+    width: '48%', // 2 colunas com espaço entre elas
+    marginBottom: Tokens.spacing['3'],
   },
 
   // Mini Player

@@ -13,7 +13,7 @@
  */
 
 import { Image, ImageContentFit } from 'expo-image';
-import React, { memo, useState, useCallback } from 'react';
+import { memo, useState, useCallback } from 'react';
 import { View, ViewStyle, StyleSheet, ActivityIndicator, DimensionValue } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
@@ -23,6 +23,12 @@ import { useThemeColors } from '@/hooks/useTheme';
 // ======================
 // TIPOS
 // ======================
+
+/** Prioridade de carregamento da imagem */
+export type ImagePriority = 'low' | 'normal' | 'high';
+
+/** Política de cache da imagem */
+export type ImageCachePolicy = 'none' | 'disk' | 'memory' | 'memory-disk';
 
 export interface OptimizedImageProps {
   /** URL da imagem */
@@ -56,10 +62,10 @@ export interface OptimizedImageProps {
   showSkeleton?: boolean;
 
   /** Prioridade de carregamento */
-  priority?: 'low' | 'normal' | 'high';
+  priority?: ImagePriority;
 
   /** Política de cache */
-  cachePolicy?: 'none' | 'disk' | 'memory' | 'memory-disk';
+  cachePolicy?: ImageCachePolicy;
 
   /** Duração da transição (ms) */
   transition?: number;

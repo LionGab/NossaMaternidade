@@ -11,7 +11,6 @@
 
 import * as Haptics from 'expo-haptics';
 import { Search, SlidersHorizontal } from 'lucide-react-native';
-import React from 'react';
 import { View, TouchableOpacity, StyleSheet, ViewStyle, Text } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 

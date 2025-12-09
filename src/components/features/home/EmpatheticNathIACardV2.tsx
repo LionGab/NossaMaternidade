@@ -12,7 +12,7 @@
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MessageCircle, Heart } from 'lucide-react-native';
-import React, { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import { View, TouchableOpacity, StyleSheet, Animated, Easing } from 'react-native';
 
 import { Text } from '@/components/atoms/Text';

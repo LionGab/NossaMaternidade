@@ -5,7 +5,6 @@
  * iOS/Android Store Ready
  */
 
-import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 

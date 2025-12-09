@@ -8,7 +8,6 @@
  */
 
 import { Users, Heart } from 'lucide-react-native';
-import React from 'react';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 

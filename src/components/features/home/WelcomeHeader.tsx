@@ -6,7 +6,6 @@
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { Sun, Moon } from 'lucide-react-native';
-import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

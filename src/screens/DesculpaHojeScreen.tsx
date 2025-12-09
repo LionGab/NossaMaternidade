@@ -15,7 +15,7 @@
 import { useNavigation } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { ArrowLeft, Share2, CheckCircle2 } from 'lucide-react-native';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,

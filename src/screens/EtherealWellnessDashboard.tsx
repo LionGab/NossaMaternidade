@@ -16,12 +16,10 @@
  */
 
 import * as Haptics from 'expo-haptics';
-import { BlurView } from 'expo-blur';
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  ScrollView,
   Pressable,
   Dimensions,
   StyleSheet,
@@ -38,19 +36,18 @@ import Animated, {
   withDelay,
   interpolate,
   Extrapolate,
-  runOnJS,
   useAnimatedScrollHandler,
   FadeIn,
   FadeInDown,
   SlideInRight,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Circle, Path, G } from 'react-native-svg';
-import { Heart, Moon, Sun, Activity, Droplet, Wind, Plus } from 'lucide-react-native';
+import Svg, { Circle, G } from 'react-native-svg';
+import { Heart, Moon, Activity, Droplet, Wind, Plus } from 'lucide-react-native';
 
 import { useTheme } from '@/theme';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH, height: _SCREEN_HEIGHT } = Dimensions.get('window');
 
 // ═══════════════════════════════════════════════════════════════
 // DESIGN TOKENS - ETHEREAL WELLNESS PALETTE
@@ -807,7 +804,7 @@ export const EtherealWellnessDashboard: React.FC = () => {
 
         {/* Mood Selector */}
         <Animated.View entering={FadeInDown.delay(500).springify()}>
-          <MoodSelector onMoodSelect={(mood) => console.log(mood)} />
+          <MoodSelector onMoodSelect={(_mood) => {}} />
         </Animated.View>
 
         {/* Habits Section */}

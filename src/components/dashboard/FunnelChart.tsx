@@ -8,15 +8,15 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 import { useThemeColors } from '@/hooks/useTheme';
-import type { FunnelStage } from '@/services';
+import type { FunnelStageData } from '@/services';
 import { Tokens } from '@/theme/tokens';
 
 interface FunnelChartProps {
-  data: FunnelStage[];
+  data: FunnelStageData[];
   title?: string;
 }
 

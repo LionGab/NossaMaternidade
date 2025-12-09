@@ -7,7 +7,7 @@
  */
 
 import * as Haptics from 'expo-haptics';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 
 import { Text } from '@/components/atoms/Text';

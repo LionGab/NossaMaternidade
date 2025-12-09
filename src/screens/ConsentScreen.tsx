@@ -8,7 +8,7 @@
  */
 
 import { Shield, CheckCircle2, XCircle, Info, ChevronRight } from 'lucide-react-native';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { ScrollView, Alert, Platform, View, StyleSheet } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';
@@ -17,7 +17,7 @@ import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { useConsent, useAllConsentTerms } from '@/hooks/useConsent';
 import { useThemeColors } from '@/hooks/useTheme';
-import { consentService } from '@/services/consentService';
+import { consentService } from '@/services/supabase';
 import { Tokens } from '@/theme/tokens';
 import type { ConsentType, ConsentTermsVersion } from '@/types/consent';
 import { logger } from '@/utils/logger';

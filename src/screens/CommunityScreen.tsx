@@ -8,7 +8,7 @@
  */
 
 import { Users, MessageCircle } from 'lucide-react-native';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import {
   TouchableOpacity,
   ScrollView,
@@ -49,7 +49,10 @@ export default function CommunityScreen() {
     >
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: Spacing['20'] }}
+        contentContainerStyle={{
+          // Espaço suficiente para: tab bar (~70px) + botão SOS (~134px) + padding extra
+          paddingBottom: 180
+        }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary.main} />
         }

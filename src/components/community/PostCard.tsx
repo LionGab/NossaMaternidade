@@ -8,7 +8,6 @@
  */
 
 import { MoreVertical, Heart, MessageCircle } from 'lucide-react-native';
-import React from 'react';
 import { TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import * as Haptics from 'expo-haptics';

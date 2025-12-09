@@ -13,7 +13,7 @@
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Heart, Sparkles, Sun } from 'lucide-react-native';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { TouchableOpacity, View, TextInput, StyleSheet } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

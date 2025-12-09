@@ -10,7 +10,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { Heart, MessageCircle, Users, ArrowRight } from 'lucide-react-native';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { View, TouchableOpacity, Animated } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

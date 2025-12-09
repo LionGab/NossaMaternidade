@@ -8,7 +8,7 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Eye, EyeOff, Lock, CheckCircle } from 'lucide-react-native';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { View, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

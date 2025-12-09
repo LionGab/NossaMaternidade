@@ -11,7 +11,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles, Play, Clock, Star } from 'lucide-react-native';
-import React, { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { Pressable, Animated, Easing, View, useWindowDimensions, Platform } from 'react-native';
 
 import { Text } from '@/components/atoms/Text';

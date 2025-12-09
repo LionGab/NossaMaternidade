@@ -15,7 +15,7 @@ import {
   HelpCircle,
   Laugh,
 } from 'lucide-react-native';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import {
   View,
   TextInput,

@@ -13,8 +13,9 @@ import { supabase } from './supabase';
 const ONBOARDING_KEY = '@onboarding_completed';
 
 export interface OnboardingData {
-  userId: string;
+  userId?: string;
   fullName?: string;
+  display_name?: string;
   dueDate?: string;
   babyName?: string;
   weeks?: number;
@@ -24,6 +25,31 @@ export interface OnboardingData {
   preferred_language_tone?: string;
   support_system?: string;
   daily_habits?: string[];
+  life_stage_generic?: string;
+  main_goals?: string[];
+  baseline_emotion?: string;
+  first_focus?: string;
+  notification_opt_in?: boolean;
+  sleep_quality?: string;
+  sleep_hours?: number;
+  sleep_challenges?: string[];
+  physical_challenges?: string[];
+  physical_pain_level?: number;
+  emotion_intensity?: number;
+  partner_relationship?: string;
+  feels_isolated?: boolean;
+  stress_level?: number;
+  stress_triggers?: string[];
+  coping_mechanisms?: string[];
+  energy_level?: string;
+  fatigue_pattern?: string;
+  mental_health_concerns?: string[];
+  previous_mental_health_support?: boolean;
+  interested_in_resources?: boolean;
+  goal_setting_style?: string;
+  wants_reminders?: boolean;
+  wants_progress_tracking?: boolean;
+  notification_preferences?: Record<string, boolean>;
 }
 
 class OnboardingService {
@@ -89,7 +115,9 @@ class OnboardingService {
         return { error };
       }
 
-      await this.markOnboardingComplete(data.userId);
+      if (data.userId) {
+        await this.markOnboardingComplete(data.userId);
+      }
       return { error: null };
     } catch (error) {
       logger.error('[OnboardingService] Erro inesperado ao salvar dados', { error });

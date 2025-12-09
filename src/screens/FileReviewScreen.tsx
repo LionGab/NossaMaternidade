@@ -5,7 +5,6 @@
 
 import * as Haptics from 'expo-haptics';
 import { CheckCircle2, FileText, ChevronRight, Check, X, Settings } from 'lucide-react-native';
-import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

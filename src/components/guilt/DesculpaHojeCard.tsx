@@ -14,7 +14,6 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Heart, Sparkles } from 'lucide-react-native';
-import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

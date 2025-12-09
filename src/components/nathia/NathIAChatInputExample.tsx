@@ -4,7 +4,7 @@
  * Demonstra como usar o NathIAChatInput em uma tela de chat
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ScrollView } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

@@ -173,7 +173,7 @@ export const NathWorldSection: React.FC<NathWorldSectionProps> = ({ onViewAll, o
 };
 
 const CARD_WIDTH = 280;
-const CARD_HEIGHT = 140;
+const CARD_HEIGHT = 160; // Aumentado de 140 para 160
 
 const styles = StyleSheet.create({
   container: {
@@ -196,6 +196,7 @@ const styles = StyleSheet.create({
   },
   cardsContainer: {
     paddingHorizontal: Tokens.spacing['5'],
+    paddingRight: Tokens.spacing['5'], // Garantir padding à direita para mostrar último card
     gap: Tokens.spacing['4'],
   },
   cardContainer: {
@@ -218,12 +219,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Tokens.spacing['2'],
     paddingVertical: Tokens.spacing['0.5'],
     borderRadius: Tokens.radius.md,
+    zIndex: 10, // Garantir que badge fique acima
   },
   badgeText: {
     color: '#FFFFFF',
   },
   cardContent: {
     height: '100%',
+    paddingTop: Tokens.spacing['6'], // Adicionar espaço no topo para não sobrepor a badge
   },
   tag: {
     paddingHorizontal: Tokens.spacing['2'],

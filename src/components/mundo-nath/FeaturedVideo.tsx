@@ -12,7 +12,6 @@
  */
 
 import { Heart, Clock, Users } from 'lucide-react-native';
-import React from 'react';
 import { View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 

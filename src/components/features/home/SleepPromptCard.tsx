@@ -6,7 +6,7 @@
 import Slider from '@react-native-community/slider';
 import * as Haptics from 'expo-haptics';
 import { Moon } from 'lucide-react-native';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, View } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

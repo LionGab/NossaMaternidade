@@ -3,7 +3,6 @@
  * "Como você tá hoje?" → Bem, Triste, Ansiosa, Cansada, Calma
  */
 
-import React from 'react';
 import { TouchableOpacity } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

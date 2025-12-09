@@ -7,7 +7,7 @@
  */
 
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react-native';
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View } from 'react-native';
 import { Audio } from 'expo-av';
 

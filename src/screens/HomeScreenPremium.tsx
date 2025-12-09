@@ -17,8 +17,8 @@ import { useNavigation } from '@react-navigation/native';
 import type { CompositeNavigationProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SafeAreaContainer } from '@/components/layout/SafeAreaContainer';
@@ -52,12 +52,12 @@ type NavigationProp = CompositeNavigationProp<
 
 export default function HomeScreenPremium() {
   const navigation = useNavigation<NavigationProp>();
-  const { colors } = useTheme();
+  const { colors: _colors } = useTheme();
   const insets = useSafeAreaInsets();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [streakDays, setStreakDays] = useState<number>(12);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   // Carregar perfil e stats
   useEffect(() => {
@@ -154,8 +154,9 @@ export default function HomeScreenPremium() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingTop: insets.top + Tokens.spacing['4'],
-          paddingBottom: insets.bottom + Tokens.spacing['6'],
+          paddingTop: Tokens.spacing['4'],
+          // Espaço suficiente para: tab bar (~70px) + botão SOS (~134px) + padding extra
+          paddingBottom: insets.bottom + 180,
         }}
         showsVerticalScrollIndicator={false}
       >

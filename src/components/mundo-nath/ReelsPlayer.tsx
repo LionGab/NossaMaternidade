@@ -9,7 +9,7 @@
 
 import { Video, ResizeMode } from 'expo-av';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react-native';
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -46,7 +46,6 @@ export interface ReelsPlayerProps {
 
 export function ReelsPlayer({
   videoUrl,
-  thumbnailUrl,
   title,
   duration,
   views,
@@ -57,7 +56,7 @@ export function ReelsPlayer({
   height = 400,
   width,
 }: ReelsPlayerProps) {
-  const { colors, isDark } = useTheme();
+  const { isDark } = useTheme();
   const videoRef = useRef<Video>(null);
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [isMuted, setIsMuted] = useState(false);

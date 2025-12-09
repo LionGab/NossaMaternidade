@@ -9,7 +9,7 @@
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles, Play, Clock, Eye, ChevronRight } from 'lucide-react-native';
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { View, TouchableOpacity, ActivityIndicator, Image, StyleSheet } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';
@@ -39,7 +39,7 @@ interface ForYouSectionProps {
 
 export function ForYouSection({ onItemPress, onSeeAllPress }: ForYouSectionProps) {
   const { colors, isDark } = useTheme();
-  const { cardWidth, cardGap } = useResponsiveDimensions();
+  const { cardWidth } = useResponsiveDimensions();
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState<PersonalizedContent | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -206,7 +206,7 @@ export function ForYouSection({ onItemPress, onSeeAllPress }: ForYouSectionProps
       )}
 
       {/* Content Grid (2 columns) */}
-      <View style={[styles.grid, { gap: cardGap }]}>
+      <View style={styles.grid}>
         {content.forYou.slice(0, 4).map((item, index) => (
           <ContentCard
             key={item.id}
@@ -461,11 +461,14 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: Tokens.spacing['4'], // Espaçamento vertical entre linhas
   },
   card: {
     borderRadius: Tokens.radius.xl,
     overflow: 'hidden',
     ...Tokens.shadows.sm,
+    marginBottom: Tokens.spacing['3'], // Fallback para React Native que não suporta rowGap
   },
   thumbnailContainer: {
     width: '100%',

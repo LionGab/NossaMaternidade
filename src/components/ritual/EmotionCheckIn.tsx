@@ -8,7 +8,7 @@
 
 import * as Haptics from 'expo-haptics';
 import { Heart, Sparkles } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';

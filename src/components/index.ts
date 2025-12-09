@@ -9,7 +9,6 @@ export { OptimizedImage, type ImagePriority, type ImageCachePolicy } from './ato
 export { Input, type InputProps } from './Input';
 export { Modal, type ModalProps } from './Modal';
 export { Loading, type LoadingProps } from './Loading';
-export { OnboardingCard, type OnboardingCardProps } from './OnboardingCard';
 export { Avatar, type AvatarProps } from './Avatar';
 export { Logo, type LogoProps } from './Logo';
 export { CommentItem } from './CommentItem';

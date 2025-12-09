@@ -14,28 +14,23 @@ import {
   Trophy,
   Flame,
   TrendingUp,
-  Sparkles,
   Zap,
   Calendar,
   Droplet,
-  Moon,
   Coffee,
-  BookOpen,
   Activity,
   Home,
   Shirt,
-  ChevronRight,
 } from 'lucide-react-native';
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
-  StyleSheet,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
 import { Badge } from '@/components/Badge';
@@ -132,7 +127,6 @@ const QUICK_CREATE_HABITS = [
 
 export default function HabitsScreen() {
   const { colors, isDark } = useTheme();
-  const insets = useSafeAreaInsets();
 
   const [habits, setHabits] = useState<UserHabit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -304,7 +298,10 @@ export default function HabitsScreen() {
     >
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: Spacing['20'] }}
+        contentContainerStyle={{
+          // Espaço suficiente para: tab bar (~70px) + botão SOS (~134px) + padding extra
+          paddingBottom: 180
+        }}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -451,7 +448,7 @@ export default function HabitsScreen() {
             <Box direction="row" flexWrap="wrap" gap="2">
               {QUICK_CREATE_HABITS.map((quickHabit) => {
                 const Icon = quickHabit.icon;
-                const alreadyExists = habits.some((h) => h.habit.name === quickHabit.name);
+                const alreadyExists = habits.some((h) => h.habit?.name === quickHabit.name);
 
                 return (
                   <TouchableOpacity
@@ -548,7 +545,7 @@ export default function HabitsScreen() {
                   position: 'relative',
                 }}
               >
-                <Text size="4xl" weight="bold" style={{ color: colors.primary.main }}>
+                <Text size="3xl" weight="bold" style={{ color: colors.primary.main }}>
                   {stats.completedToday}
                 </Text>
                 <Text size="sm" color="tertiary">

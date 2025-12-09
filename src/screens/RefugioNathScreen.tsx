@@ -1,5 +1,5 @@
 import { Play, Pause, Wind, Moon, Heart, Volume2, Timer, Sparkles } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

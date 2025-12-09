@@ -12,7 +12,6 @@
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CheckCircle2, Users, Sparkles } from 'lucide-react-native';
-import React from 'react';
 import { View } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';

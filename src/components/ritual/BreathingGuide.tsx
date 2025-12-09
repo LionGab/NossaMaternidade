@@ -9,7 +9,7 @@
 
 import * as Haptics from 'expo-haptics';
 import { Wind } from 'lucide-react-native';
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View } from 'react-native';
 import Animated, {
   useSharedValue,

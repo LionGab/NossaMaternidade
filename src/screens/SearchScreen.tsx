@@ -6,7 +6,7 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Search, X, ArrowLeft } from 'lucide-react-native';
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { FlatList, Keyboard, TextInput, Platform } from 'react-native';
 
 import { ListingCard, type ListingCardProps } from '@/components/organisms/ListingCard';

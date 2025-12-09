@@ -22,7 +22,7 @@ import {
   AlertCircle,
   CheckCircle,
 } from 'lucide-react-native';
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ScrollView, TouchableOpacity, Alert, ActionSheetIOS, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 

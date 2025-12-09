@@ -17,7 +17,7 @@ import {
   CrisisTypeDistribution,
   CVVClickStats,
   ModerationQueueStats,
-  FunnelStage,
+  FunnelStageData,
   DashboardSummary,
 } from '@/services';
 import { logger } from '@/utils/logger';
@@ -37,7 +37,7 @@ interface DashboardData {
   typeDistribution: CrisisTypeDistribution[];
   cvvStats: CVVClickStats | null;
   moderationStats: ModerationQueueStats | null;
-  funnelStats: FunnelStage[];
+  funnelStats: FunnelStageData[];
   alerts: Alert[];
 
   // Estado
@@ -78,7 +78,7 @@ export function useDashboardData(options: UseDashboardDataOptions = {}): Dashboa
   const [typeDistribution, setTypeDistribution] = useState<CrisisTypeDistribution[]>([]);
   const [cvvStats, setCvvStats] = useState<CVVClickStats | null>(null);
   const [moderationStats, setModerationStats] = useState<ModerationQueueStats | null>(null);
-  const [funnelStats, setFunnelStats] = useState<FunnelStage[]>([]);
+  const [funnelStats, setFunnelStats] = useState<FunnelStageData[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);

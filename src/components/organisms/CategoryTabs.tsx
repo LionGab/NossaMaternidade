@@ -15,7 +15,6 @@
 
 import * as Haptics from 'expo-haptics';
 import type { LucideIcon } from 'lucide-react-native';
-import React from 'react';
 import { ScrollView, ViewStyle } from 'react-native';
 
 import { Box } from '@/components/atoms/Box';
