@@ -4,7 +4,10 @@ if (Platform.OS !== 'web') {
   require('react-native-reanimated');
 }
 
-import './global.css';
+// Importar CSS apenas na web (NativeWind não precisa de importação explícita no mobile)
+if (Platform.OS === 'web') {
+  require('./src/styles/global.css');
+}
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from './src/components';

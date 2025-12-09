@@ -185,6 +185,13 @@ export class MaternalChatAgent extends BaseAgent {
   }
 
   /**
+   * Retorna a sessão atual (método público para testes)
+   */
+  getCurrentSession(): ChatSession | null {
+    return this.currentSession;
+  }
+
+  /**
    * Processa uma mensagem do usuário
    */
   async process(input: ProcessInput, _options?: ProcessOptions): Promise<ChatMessage> {

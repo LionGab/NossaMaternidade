@@ -168,6 +168,72 @@ module.exports = {
         'nath-pink': '#D93025',
 
         // ========================================
+        // Cotton Candy Tech Theme (Nathália Valente v12)
+        // iOS/Android Store Ready - Pink & Blue
+        // ========================================
+
+        // Cotton Candy Pink (Main Brand)
+        'cotton-pink': {
+          50: '#FFF0F5',
+          100: '#FFE4EC',
+          200: '#FFC9D9',
+          300: '#FF9DBF',
+          400: '#FF4D9F',
+          500: '#FF0080', // MAIN Brand Accent ⭐
+          600: '#E6007A',
+          700: '#CC006D',
+          800: '#B3005F',
+          900: '#800044',
+          DEFAULT: '#FF0080',
+        },
+
+        // Cotton Candy Blue (Trust & Action)
+        'cotton-blue': {
+          50: '#F0F7FF',
+          100: '#E0EFFF',
+          200: '#C2DFFF',
+          300: '#85BFFF',
+          400: '#3399FF',
+          500: '#0070F3', // MAIN Trust Color ⭐
+          600: '#0061D9',
+          700: '#0052BF',
+          800: '#0043A6',
+          900: '#00348C',
+          DEFAULT: '#0070F3',
+        },
+
+        // Cotton Candy Backgrounds
+        'cotton-bg': {
+          soft: '#FDF4F9', // App Background ⭐
+          white: '#FFFFFF',
+          'gradient-start': '#FFF0F5',
+          'gradient-end': '#F0F7FF',
+        },
+
+        // Cotton Candy Gradients (CSS classes)
+        // Use: bg-gradient-to-b from-cotton-bg-gradient-start to-cotton-bg-gradient-end
+
+        // Cotton Candy Categories
+        'cotton-cat': {
+          diario: '#FCE7F3',
+          'diario-text': '#EC4899',
+          saude: '#DBEAFE',
+          'saude-text': '#3B82F6',
+          dicas: '#FEF3C7',
+          'dicas-text': '#CA8A04',
+          enxoval: '#F3E8FF',
+          'enxoval-text': '#9333EA',
+          alimentacao: '#DCFCE7',
+          'alimentacao-text': '#22C55E',
+          autocuidado: '#FFF0F5',
+          'autocuidado-text': '#FF4D8C',
+          treino: '#DBEAFE',
+          'treino-text': '#0099FF',
+          bemestar: '#F3E8FF',
+          'bemestar-text': '#9D4EDD',
+        },
+
+        // ========================================
         // Flo Design System - Azul & Rosa
         // Adaptado do Flo Pregnancy Mode
         // ========================================

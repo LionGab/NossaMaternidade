@@ -61,6 +61,7 @@
     "fix:virtualization": "pwsh -ExecutionPolicy Bypass -File scripts/fix-docker-virtualization.ps1",
     "validate:platform": "ts-node scripts/validate-platform-design.ts",
     "validate:pre-deploy": "ts-node scripts/validate-pre-deploy.ts",
+    "validate:production": "node scripts/validate-production-readiness.js",
     "design:refactor": "ts-node scripts/design-refactor.ts",
     "design:validate": "ts-node scripts/design-refactor.ts --validate",
     "validate": "npm run type-check && npm run validate:design && npm run validate:env || echo '⚠️  validate:env falhou (arquivo .env pode não existir)' && npm run lint || echo '⚠️  lint falhou'",
@@ -69,7 +70,12 @@
     "web:tunnel": "pwsh -ExecutionPolicy Bypass -File scripts/start-web-with-tunnel.ps1",
     "precommit": "npm run validate:design && npm run type-check && npm run lint",
     "setup:hooks": "node scripts/setup-hooks.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "cleanup:local": "pwsh -ExecutionPolicy Bypass -File scripts/cleanup-local.ps1",
+    "cleanup:local:bash": "bash scripts/cleanup-local.sh",
+    "list:todos": "npx tsx scripts/list-todos.ts",
+    "list:deprecated": "npx tsx scripts/list-deprecated.ts",
+    "fix:console-logs": "npx tsx scripts/fix-console-logs.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.0",

@@ -300,6 +300,57 @@ class HabitsService {
   }
 
   /**
+   * Logar hábito para uma data específica (wrapper para compatibilidade com testes)
+   */
+  async logHabit(userHabitId: string, date: string): Promise<{ data: HabitLog | null; error: unknown } | null> {
+    try {
+      const userId = await this.getCurrentUserId();
+      if (!userId) return null;
+
+      // Verificar se já foi completado na data especificada
+      const { data: existing } = await supabase
+        .from('habit_logs')
+        .select('*')
+        .eq('user_habit_id', userHabitId)
+        .eq('completed_at', date)
+        .maybeSingle();
+
+      if (existing) {
+        return { data: existing as HabitLog, error: null };
+      }
+
+      const { data, error } = await supabase
+        .from('habit_logs')
+        .insert({
+          user_habit_id: userHabitId,
+          completed_at: date,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        logger.error('Erro ao logar hábito', error, {
+          service: 'HabitsService',
+          action: 'logHabit',
+          userHabitId,
+          date,
+        });
+        return { data: null, error };
+      }
+
+      return { data: data as HabitLog, error: null };
+    } catch (error) {
+      logger.error('Erro inesperado ao logar hábito', error, {
+        service: 'HabitsService',
+        action: 'logHabit',
+        userHabitId,
+        date,
+      });
+      return { data: null, error };
+    }
+  }
+
+  /**
    * Desmarcar hábito de hoje
    */
   async uncompleteHabit(userHabitId: string): Promise<boolean> {

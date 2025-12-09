@@ -28,23 +28,27 @@ describe('ProjectHealthAgent', () => {
   });
 
   describe('process', () => {
-    it('should generate health report with all checks', async () => {
-      const report = await agent.process({
-        checkBugs: true,
-        checkConfig: true,
-        checkQuality: true,
-      });
+    it(
+      'should generate health report with all checks',
+      async () => {
+        const report = await agent.process({
+          checkBugs: true,
+          checkConfig: true,
+          checkQuality: true,
+        });
 
-      expect(report).toBeDefined();
-      expect(report.timestamp).toBeDefined();
-      expect(report.overallScore).toBeGreaterThanOrEqual(0);
-      expect(report.overallScore).toBeLessThanOrEqual(100);
-      expect(typeof report.readyForDeploy).toBe('boolean');
-      expect(report.bugs).toBeDefined();
-      expect(report.config).toBeDefined();
-      expect(report.quality).toBeDefined();
-      expect(Array.isArray(report.recommendations)).toBe(true);
-    });
+        expect(report).toBeDefined();
+        expect(report.timestamp).toBeDefined();
+        expect(report.overallScore).toBeGreaterThanOrEqual(0);
+        expect(report.overallScore).toBeLessThanOrEqual(100);
+        expect(typeof report.readyForDeploy).toBe('boolean');
+        expect(report.bugs).toBeDefined();
+        expect(report.config).toBeDefined();
+        expect(report.quality).toBeDefined();
+        expect(Array.isArray(report.recommendations)).toBe(true);
+      },
+      120000 // 2 minutos - este teste executa type-check e lint reais
+    );
 
     it('should generate report with only bug checks', async () => {
       const report = await agent.process({

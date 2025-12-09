@@ -32,57 +32,83 @@ interface HabitCardProps {
 
 /**
  * Obtém configuração visual do hábito baseado no nome
+ * Usando cores do Cotton Candy Theme (Nathália Valente v12)
  */
 function getHabitConfig(habit: UserHabit) {
   const name = (habit.custom_name || habit.habit?.name || '').toLowerCase();
+  const cc = ColorTokens.cottonCandy;
 
-  // Mapeamento por nome
+  // Mapeamento por nome com cores Cotton Candy
   if (name.includes('água') || name.includes('hidrata')) {
     return {
-      iconColor: ColorTokens.info[500],
-      bgColor: `${ColorTokens.info[500]}20`,
-      borderColor: ColorTokens.info[500],
+      iconColor: cc.catSaudeText,
+      bgColor: cc.catSaude,
+      borderColor: cc.catSaudeText,
       category: 'Saúde',
     };
   }
   if (name.includes('sono') || name.includes('dormir') || name.includes('descanso')) {
     return {
-      iconColor: ColorTokens.accent.purple,
-      bgColor: `${ColorTokens.accent.purple}20`,
-      borderColor: ColorTokens.accent.purple,
+      iconColor: cc.catBemestarText,
+      bgColor: cc.catBemestar,
+      borderColor: cc.catBemestarText,
       category: 'Bem-estar',
+    };
+  }
+  if (name.includes('banho') || name.includes('skincare') || name.includes('pele')) {
+    return {
+      iconColor: cc.catAutocuidadoText,
+      bgColor: cc.catAutocuidado,
+      borderColor: cc.catAutocuidadoText,
+      category: 'Autocuidado',
     };
   }
   if (name.includes('autocuidado') || name.includes('cuidado') || name.includes('momento')) {
     return {
-      iconColor: ColorTokens.secondary[500],
-      bgColor: `${ColorTokens.secondary[500]}20`,
-      borderColor: ColorTokens.secondary[500],
-      category: 'Bem-estar',
+      iconColor: cc.catDiarioText,
+      bgColor: cc.catDiario,
+      borderColor: cc.catDiarioText,
+      category: 'Diário',
     };
   }
-  if (name.includes('respir') || name.includes('paz') || name.includes('medita')) {
+  if (name.includes('respir') || name.includes('paz') || name.includes('medita') || name.includes('afirm')) {
     return {
-      iconColor: ColorTokens.warning[500],
-      bgColor: `${ColorTokens.warning[500]}20`,
-      borderColor: ColorTokens.warning[500],
+      iconColor: cc.catDicasText,
+      bgColor: cc.catDicas,
+      borderColor: cc.catDicasText,
       category: 'Mental',
     };
   }
   if (name.includes('ler') || name.includes('leitura') || name.includes('livro')) {
     return {
-      iconColor: ColorTokens.success[500],
-      bgColor: `${ColorTokens.success[500]}20`,
-      borderColor: ColorTokens.success[500],
+      iconColor: cc.catAlimentacaoText,
+      bgColor: cc.catAlimentacao,
+      borderColor: cc.catAlimentacaoText,
       category: 'Crescimento',
     };
   }
+  if (name.includes('treino') || name.includes('exerc') || name.includes('yoga')) {
+    return {
+      iconColor: cc.catTreinoText,
+      bgColor: cc.catTreino,
+      borderColor: cc.catTreinoText,
+      category: 'Treino',
+    };
+  }
+  if (name.includes('aliment') || name.includes('comer') || name.includes('comida')) {
+    return {
+      iconColor: cc.catAlimentacaoText,
+      bgColor: cc.catAlimentacao,
+      borderColor: cc.catAlimentacaoText,
+      category: 'Alimentação',
+    };
+  }
 
-  // Default
+  // Default - Cotton Candy Pink
   return {
-    iconColor: ColorTokens.secondary[500],
-    bgColor: `${ColorTokens.secondary[500]}20`,
-    borderColor: ColorTokens.secondary[500],
+    iconColor: cc.pink,
+    bgColor: cc.pink50,
+    borderColor: cc.pink,
     category: 'Bem-estar',
   };
 }

@@ -1,5 +1,8 @@
+import type { AIContext } from '@/types/ai';
 import { logger } from '@/utils/logger';
 
+import { aiClient } from './aiClient';
+import { aiRouter } from './aiRouter';
 import { geminiService } from './geminiService';
 import { supabase } from './supabase';
 
@@ -267,8 +270,8 @@ class ChatService {
   }
 
   /**
-   * Obter resposta da IA usando geminiService diretamente
-   * Simplificado para robustez - usa Edge Function do Supabase
+   * Obter resposta da IA usando aiRouter com fallback automático
+   * Integra múltiplos providers (Gemini, GPT-4o, Claude) com roteamento inteligente
    */
   private async getAIResponse(history: ChatMessage[], userMessage: string): Promise<string> {
     try {
@@ -277,36 +280,49 @@ class ChatService {
         return 'Desculpe, não consegui identificar você. Pode fazer login novamente?';
       }
 
-      // Converter histórico para formato esperado pelo geminiService
+      // Converter histórico para formato esperado
       const aiHistory = history
         .filter((msg) => msg.role !== 'system')
         .slice(-20) // Últimas 20 mensagens para contexto
         .map((msg) => ({
-          role: msg.role as 'user' | 'model' | 'assistant',
+          role: msg.role === 'user' ? ('user' as const) : ('assistant' as const),
           text: msg.content,
         }));
 
-      logger.info('[ChatService] Enviando mensagem para IA', {
+      logger.info('[ChatService] Enviando mensagem para IA via router', {
         messageLength: userMessage.length,
         historyLength: aiHistory.length,
       });
 
-      // Usar geminiService diretamente (mais robusto)
-      const { text, error, toolCall } = await geminiService.sendMessage(
+      // Criar contexto para o router
+      const context: AIContext = {
+        user_id: userId,
+        name: undefined, // Pode ser preenchido do perfil se necessário
+        phase: undefined, // Pode ser preenchido do perfil se necessário
+        pregnancy_week: undefined, // Pode ser preenchido do perfil se necessário
+      };
+
+      // Usar aiRouter para rotear com fallback automático
+      const routerResponse = await aiRouter.route(
         userMessage,
-        aiHistory,
-        undefined, // context adicional opcional
-        true // enableTools
+        context,
+        async (model, msg, ctx) => {
+          // Função que o router usa para chamar IA
+          return await aiClient.call(model, msg, ctx, aiHistory);
+        }
       );
 
-      // Se há um tool call, processar
-      if (toolCall) {
-        logger.info('[ChatService] Tool call recebido', { tool: toolCall.name });
+      // Verificar tool call
+      if (routerResponse.tool_call) {
+        logger.info('[ChatService] Tool call recebido via router', {
+          tool: routerResponse.tool_call.name,
+          model: routerResponse.model_used,
+        });
 
         // Importar executor de tools
         try {
           const { aiToolExecutor } = await import('./aiTools');
-          const toolResult = await aiToolExecutor.executeTool(toolCall, userId);
+          const toolResult = await aiToolExecutor.executeTool(routerResponse.tool_call, userId);
 
           // Obter resposta final com resultado da tool
           const { text: finalText, error: finalError } =
@@ -325,10 +341,14 @@ class ChatService {
         }
       }
 
-      if (error) {
-        logger.warn('[ChatService] Erro da IA:', { error });
-        return error; // geminiService já retorna mensagem amigável
+      // Verificar erro na resposta do router
+      if (!routerResponse.success || routerResponse.error) {
+        logger.warn('[ChatService] Erro da IA:', { error: routerResponse.error });
+        return routerResponse.message || routerResponse.error || 'Ops, algo deu errado. Pode tentar novamente?';
       }
+
+      // Obter texto da resposta
+      const text = routerResponse.message;
 
       if (!text) {
         return 'Hmm, não consegui formular uma resposta. Pode repetir de outra forma?';

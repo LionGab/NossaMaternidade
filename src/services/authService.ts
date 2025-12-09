@@ -136,6 +136,30 @@ class AuthService {
   }
 
   /**
+   * Login com OAuth provider (wrapper genérico)
+   */
+  async signInWithOAuth(provider: 'google' | 'apple'): Promise<{ data: unknown; error: AuthError | null }> {
+    if (provider === 'google') {
+      const result = await this.signInWithGoogle();
+      return {
+        data: result.data ?? null,
+        error: result.error ?? null,
+      };
+    }
+    if (provider === 'apple') {
+      const result = await this.signInWithApple();
+      return {
+        data: result.data ?? null,
+        error: result.error ?? null,
+      };
+    }
+    return {
+      data: null,
+      error: { name: 'AuthError', message: `Provider ${provider} não suportado` } as AuthError,
+    };
+  }
+
+  /**
    * Login com Apple
    */
   async signInWithApple() {

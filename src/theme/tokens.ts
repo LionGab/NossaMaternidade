@@ -180,6 +180,57 @@ export const ColorTokens = {
     indigo: '#6366F1', // Indigo 500 - thinking mode
   },
 
+  // ⭐ Cotton Candy Theme (Nathália Valente v12)
+  // Design System iOS/Android Store Ready
+  cottonCandy: {
+    // Primary Pink - Brand Accent
+    pink: '#FF0080',
+    pinkDark: '#E6007A',
+    pinkLight: '#FF4D9F',
+    pink50: '#FFF0F5',
+    pink100: '#FFE4EC',
+    pink200: '#FFC9D9',
+    pink300: '#FF9DBF',
+    pink400: '#FF4D9F',
+    pink500: '#FF0080',
+    pink600: '#E6007A',
+
+    // Trust Blue - Action Color
+    blue: '#0070F3',
+    blueDark: '#0061D9',
+    blueLight: '#00C6FF',
+    blue50: '#F0F7FF',
+    blue100: '#E0EFFF',
+    blue200: '#C2DFFF',
+    blue300: '#85BFFF',
+    blue400: '#3399FF',
+    blue500: '#0070F3',
+    blue600: '#0061D9',
+
+    // Backgrounds
+    bgSoft: '#FDF4F9',
+    bgGradientStart: '#FFF0F5',
+    bgGradientEnd: '#F0F7FF',
+
+    // Category Colors (habits/content)
+    catDiario: '#FCE7F3',
+    catDiarioText: '#EC4899',
+    catSaude: '#DBEAFE',
+    catSaudeText: '#3B82F6',
+    catDicas: '#FEF3C7',
+    catDicasText: '#CA8A04',
+    catEnxoval: '#F3E8FF',
+    catEnxovalText: '#9333EA',
+    catAlimentacao: '#DCFCE7',
+    catAlimentacaoText: '#22C55E',
+    catAutocuidado: '#FFF0F5',
+    catAutocuidadoText: '#FF4D8C',
+    catTreino: '#DBEAFE',
+    catTreinoText: '#0099FF',
+    catBemestar: '#F3E8FF',
+    catBemestarText: '#9D4EDD',
+  },
+
   // Overlay System - For semi-transparent backgrounds
   overlay: {
     light: 'rgba(255, 255, 255, 0.25)', // Light overlay for dark backgrounds
