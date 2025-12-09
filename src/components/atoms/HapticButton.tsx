@@ -109,22 +109,37 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
   }, [isWeb, isFocused, colors.primary.main]);
 
   const handlePress = useCallback(() => {
+    logger.debug('[HapticButton] handlePress called', {
+      disabled,
+      loading,
+      onPress: !!onPress,
+      onPressType: typeof onPress,
+    });
+
     if (disabled || loading) {
       logger.debug('[HapticButton] Press blocked', { disabled, loading });
       return;
     }
 
-    logger.debug('[HapticButton] Press triggered', { onPress: !!onPress });
+    logger.info('[HapticButton] Press triggered - executing haptic and onPress', {
+      onPress: !!onPress,
+      disableHaptic,
+    });
 
     if (!disableHaptic) {
       triggerHaptic(HapticPatterns.buttonPress);
     }
 
     if (onPress) {
-      logger.debug('[HapticButton] Calling onPress');
-      onPress();
+      logger.info('[HapticButton] Calling onPress function');
+      try {
+        onPress();
+        logger.info('[HapticButton] onPress completed successfully');
+      } catch (error) {
+        logger.error('[HapticButton] Error in onPress', error);
+      }
     } else {
-      logger.warn('[HapticButton] onPress is undefined');
+      logger.warn('[HapticButton] onPress is undefined or null');
     }
   }, [disabled, loading, disableHaptic, onPress]);
 
@@ -233,6 +248,8 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
       disabled={disabled || loading}
       onFocus={isWeb ? handleFocus : undefined}
       onBlur={isWeb ? handleBlur : undefined}
+      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+      pressRetentionOffset={{ top: 20, bottom: 20, left: 20, right: 20 }}
       style={({ pressed }) => [
         styles.container,
         sizeStyles.container,
@@ -265,7 +282,7 @@ export const HapticButton: React.FC<HapticButtonProps> = ({
           }
         />
       ) : (
-        <View style={styles.content}>
+        <View style={styles.content} pointerEvents="none">
           {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
           {typeof children === 'string' ? (
             <Text style={[styles.text, sizeStyles.text, variantStyles.text, textStyle]}>

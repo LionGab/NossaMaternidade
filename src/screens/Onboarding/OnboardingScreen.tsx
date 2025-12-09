@@ -461,14 +461,32 @@ export default function OnboardingScreen() {
       </Box>
 
       {/* Step Content */}
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        scrollEnabled={true}
+      >
         {renderStepContent()}
       </ScrollView>
 
       {/* Navigation Buttons */}
-      <Box px="4" pb="4" direction="row">
+      <Box
+        px="4"
+        pb="4"
+        direction="row"
+        style={{
+          backgroundColor: colors.background.canvas,
+          borderTopWidth: 1,
+          borderTopColor: colors.border.light,
+          paddingTop: Tokens.spacing['4'],
+          zIndex: 10,
+          elevation: 10,
+        }}
+        pointerEvents="box-none"
+      >
         {currentStep > 1 && (
-          <Box mr="3">
+          <Box mr="3" pointerEvents="auto">
             <HapticButton
               variant="outline"
               size="lg"
@@ -480,7 +498,10 @@ export default function OnboardingScreen() {
           </Box>
         )}
 
-        <Box style={{ flex: currentStep === 1 ? 1 : undefined }}>
+        <Box
+          style={{ flex: currentStep === 1 ? 1 : undefined, minWidth: currentStep > 1 ? 200 : undefined }}
+          pointerEvents="auto"
+        >
           <HapticButton
             variant="primary"
             size="lg"
@@ -551,6 +572,7 @@ function OptionCard({ option, selected, onPress, multiSelect }: OptionCardProps)
       accessibilityLabel={option.label}
       accessibilityHint={selected ? 'Selecionado. Toque para desmarcar' : 'Toque para selecionar'}
       accessibilityState={{ selected }}
+      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       style={{
         ...styles.optionCard,
         backgroundColor: selected ? colors.primary.main : colors.background.card,
