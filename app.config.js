@@ -164,6 +164,14 @@ module.exports = {
       stripePublishableKey: process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY || '',
       oneSignalAppId: process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID || '',
       sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN || '',
+      // MCP Release Ops - Tokens ficam APENAS no servidor (Supabase Edge Functions)
+      // ⚠️ NUNCA usar EXPO_PUBLIC_* para tokens privados (são incluídos no bundle do app!)
+      // Tokens de deploy (Sentry, App Store Connect, Google Play) devem estar apenas em:
+      // 1. Variáveis de ambiente do EAS Build (eas.json secrets)
+      // 2. Variáveis de ambiente das Edge Functions (Deno.env)
+      sentryOrgSlug: process.env.EXPO_PUBLIC_SENTRY_ORG_SLUG || 'nossa-maternidade',
+      sentryProjectSlug: process.env.EXPO_PUBLIC_SENTRY_PROJECT_SLUG || 'nossa-maternidade-mobile',
+      googlePlayPackageName: process.env.EXPO_PUBLIC_GOOGLE_PLAY_PACKAGE_NAME || 'com.nossamaternidade.app',
       // Feature flags
       enableAIFeatures: process.env.EXPO_PUBLIC_ENABLE_AI_FEATURES === 'true' || false,
       enableGamification: process.env.EXPO_PUBLIC_ENABLE_GAMIFICATION === 'true' || false,
