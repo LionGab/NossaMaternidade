@@ -1,138 +1,169 @@
-import { useState, useCallback } from 'react';
-import { View } from 'react-native';
-import { ScreenLayout } from '@/components/templates/ScreenLayout';
-import { Text } from '@/components/primitives/Text';
-import { Tokens } from '@/theme/tokens';
-import { useThemeColors } from '@/hooks/useTheme';
-import { EmotionSlider } from '@/components/molecules/EmotionSlider';
-import { MicroActionCard } from '@/components/organisms/MicroActionCard';
-import { useHabitsToday } from '@/hooks/useHabits';
-import { FlashList } from '@shopify/flash-list';
+/**
+ * HomeScreen - Tela Principal (Home) Moderna e Modular
+ *
+ * Design System completo com:
+ * - Componentes modulares reutilizáveis
+ * - NathIACard (avatar + áudio/texto)
+ * - VibeTrackerCard (tabs + slider + emojis)
+ * - ProjetoAfricaCard (vídeo com overlay)
+ * - HomeFooter (branding)
+ * - Gradiente de fundo
+ * - Navegação para Chat, MundoNath, etc.
+ *
+ * @version 3.0.0
+ * @date 2025-12-10
+ */
+
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { useNavigation } from '@react-navigation/native';
+import type { CompositeNavigationProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useCallback, useState } from 'react';
+import { ScrollView, StyleSheet, Alert } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { SafeAreaContainer } from '@/components/layout/SafeAreaContainer';
+import { SOSMaeFloatingButton } from '@/components/sos';
+import { NathIACard } from '@/components/home/NathIACard';
+import { VibeTrackerCard, type VibeData } from '@/components/home/VibeTrackerCard';
+import { ProjetoAfricaCard } from '@/components/home/ProjetoAfricaCard';
+import { HomeFooter } from '@/components/home/HomeFooter';
+import type { MainTabParamList, RootStackParamList } from '@/navigation/types';
 import { logger } from '@/utils/logger';
+import { Tokens } from '@/theme/tokens';
 
-export function HomeScreen() {
-  const colors = useThemeColors();
-  const [emotion, setEmotion] = useState<number>(4); // índice inicial (feliz)
-  const { data: habits, error } = useHabitsToday();
+// Paleta de cores do gradiente
+const GRADIENT_COLORS = {
+  top: '#FDF9FB', // Rosa suave
+  bottom: '#F3F7FF', // Azul suave
+};
 
-  if (error) {
-    logger.error('Falha ao carregar hábitos do dia', error);
-  }
+type NavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, 'Home'>,
+  NativeStackNavigationProp<RootStackParamList>
+>;
 
-  const renderItem = useCallback(
-    ({ item }: { item: { title: string; description: string; duration?: string; icon?: string; onPress?: () => void } }) => {
-      return (
-        <MicroActionCard
-          title={item.title}
-          description={item.description}
-          duration={item.duration}
-          icon={item.icon}
-          onPress={item.onPress}
-        />
+export default function HomeScreen() {
+  const navigation = useNavigation<NavigationProp>();
+  const insets = useSafeAreaInsets();
+
+  const [isSavingVibe, setIsSavingVibe] = useState(false);
+
+  // Handlers
+  const handleAudioPress = useCallback(() => {
+    logger.info('[HomeScreen] Audio button pressed');
+    navigation.navigate('Chat', {
+      sessionId: undefined,
+      startRecording: true,
+      context: 'welcome',
+    });
+  }, [navigation]);
+
+  const handleTextPress = useCallback(() => {
+    logger.info('[HomeScreen] Text button pressed');
+    navigation.navigate('Chat', {
+      sessionId: undefined,
+      context: 'welcome',
+    });
+  }, [navigation]);
+
+  const handleViewLastConversation = useCallback(() => {
+    logger.info('[HomeScreen] View last conversation pressed');
+    navigation.navigate('Chat', {
+      sessionId: undefined,
+      context: 'welcome',
+      showHistory: true,
+    });
+  }, [navigation]);
+
+  const handleSaveVibe = useCallback(async (data: VibeData) => {
+    logger.info('[HomeScreen] Saving vibe data', { data });
+    setIsSavingVibe(true);
+
+    try {
+      // Simular salvamento (substituir por chamada real ao Supabase)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      logger.info('[HomeScreen] Vibe saved successfully', { data });
+      Alert.alert(
+        'Vibe Salva!',
+        `Seu humor de ${data.vibeLevel}% ${data.emoji} foi registrado com sucesso.`,
+        [{ text: 'OK', style: 'default' }]
       );
-    },
-    []
-  );
+    } catch (error) {
+      logger.error('[HomeScreen] Error saving vibe', error);
+      Alert.alert('Erro', 'Não foi possível salvar seu humor. Tente novamente.');
+    } finally {
+      setIsSavingVibe(false);
+    }
+  }, []);
+
+  const handlePlayProjectVideo = useCallback(() => {
+    logger.info('[HomeScreen] Play Projeto África video');
+    // Se não tiver videoUrl no ProjetoAfricaCard, este handler será chamado
+    // Pode navegar para uma tela específica ou abrir modal
+    navigation.navigate('MundoNath');
+  }, [navigation]);
 
   return (
-    <ScreenLayout>
-      {/* Header */}
-      <View
-        style={{
-          paddingHorizontal: Tokens.spacing['5'],
-          paddingTop: Tokens.spacing['4'],
-          paddingBottom: Tokens.spacing['6'],
+    <SafeAreaContainer edges={['top']} backgroundColor={GRADIENT_COLORS.top}>
+      {/* Background Gradient */}
+      <LinearGradient
+        colors={[GRADIENT_COLORS.top, GRADIENT_COLORS.bottom]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Content */}
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingTop: Tokens.spacing['6'],
+          // Espaço para: tab bar (~70px) + botão SOS (~134px) + padding extra
+          paddingBottom: insets.bottom + 200,
         }}
+        showsVerticalScrollIndicator={false}
       >
-        <Text
-          style={{
-            ...Tokens.textStyles.titleLarge,
-            color: colors.text.primary,
-            marginBottom: Tokens.spacing['1'],
-          }}
-        >
-          Nossa Maternidade
-        </Text>
-        <Text
-          style={{
-            ...Tokens.textStyles.bodyMedium,
-            color: colors.text.secondary,
-          }}
-        >
-          Estamos aqui por você
-        </Text>
-      </View>
-
-      {/* BLOCO 01 — CHECK-IN EMOCIONAL */}
-      <View
-        style={{
-          backgroundColor: colors.background.card,
-          padding: Tokens.spacing['6'],
-          borderRadius: Tokens.radius.xl,
-          marginHorizontal: Tokens.spacing['5'],
-          marginBottom: Tokens.spacing['6'],
-        }}
-      >
-        <Text
-          style={{
-            ...Tokens.textStyles.titleMedium,
-            color: colors.text.primary,
-            marginBottom: Tokens.spacing['4'],
-          }}
-        >
-          Como está hoje?
-        </Text>
-
-        <EmotionSlider value={emotion} onChange={setEmotion} />
-      </View>
-
-      {/* BLOCO 02 — MICRO-AÇÕES */}
-      <View
-        style={{
-          paddingHorizontal: Tokens.spacing['5'],
-          marginBottom: Tokens.spacing['4'],
-        }}
-      >
-        <Text
-          style={{
-            ...Tokens.textStyles.titleMedium,
-            color: colors.text.primary,
-            marginBottom: Tokens.spacing['1'],
-          }}
-        >
-          Para você agora
-        </Text>
-        <Text
-          style={{
-            ...Tokens.textStyles.bodySmall,
-            color: colors.text.secondary,
-            marginBottom: Tokens.spacing['4'],
-          }}
-        >
-          Micro-ações que funcionam
-        </Text>
-      </View>
-
-      <View style={{ flex: 1, paddingHorizontal: Tokens.spacing['5'] }}>
-        <FlashList
-          data={habits ?? []}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => item.title + index}
-          drawDistance={300}
-          ListEmptyComponent={() => (
-            <Text
-              style={{
-                ...Tokens.textStyles.bodyMedium,
-                textAlign: 'center',
-                color: colors.text.secondary,
-                paddingVertical: Tokens.spacing['8'],
-              }}
-            >
-              Carregando recomendações...
-            </Text>
-          )}
+        {/* NathIA Card */}
+        <NathIACard
+          onAudioPress={handleAudioPress}
+          onTextPress={handleTextPress}
+          onViewLastConversation={handleViewLastConversation}
+          lastConversation="Ontem às 14:30"
+          aiName="NathIA"
+          description="Sua bestie de bolso, sempre pronta pra te ouvir"
         />
-      </View>
-    </ScreenLayout>
+
+        {/* Vibe Tracker Card */}
+        <VibeTrackerCard
+          onSave={handleSaveVibe}
+          initialPeriod={0}
+          initialVibeLevel={50}
+          initialEmoji="🙂"
+          isSaving={isSavingVibe}
+        />
+
+        {/* Projeto África Card */}
+        <ProjetoAfricaCard
+          title="Projeto África"
+          description="Conheça o impacto da nossa comunidade no continente africano"
+          imageUrl="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800"
+          videoUrl={undefined} // Se tiver URL de vídeo, colocar aqui
+          onPlayPress={handlePlayProjectVideo}
+          height={280}
+        />
+
+        {/* Footer */}
+        <HomeFooter
+          message="Feito com amor para mães que fazem a diferença"
+          showIcons
+        />
+      </ScrollView>
+
+      {/* SOS Mãe Floating Button */}
+      <SOSMaeFloatingButton />
+    </SafeAreaContainer>
   );
 }
