@@ -8,6 +8,9 @@ export { GoogleAIMCPServer, googleAIMCP } from './GoogleAIMCPServer';
 export { OpenAIMCPServer, openAIMCP } from './OpenAIMCPServer';
 export { AnthropicMCPServer, anthropicMCP } from './AnthropicMCPServer';
 export { AnalyticsMCPServer, analyticsMCP } from './AnalyticsMCPServer';
+export { SentryMCPServer, sentryMCP } from './SentryMCPServer';
+export { AppStoreConnectMCPServer, appStoreConnectMCP } from './AppStoreConnectMCPServer';
+export { GooglePlayConsoleMCPServer, googlePlayConsoleMCP } from './GooglePlayConsoleMCPServer';
 // Servidores MCP que usam módulos Node.js (fs, path) não são exportados aqui
 // porque não estão disponíveis no React Native. Estes servidores devem ser usados
 // apenas em scripts de build, CI/CD ou Edge Functions.
@@ -32,6 +35,9 @@ export type {
   SupabaseMCPMethods,
   GoogleAIMCPMethods,
   AnalyticsMCPMethods,
+  SentryMCPMethods,
+  AppStoreConnectMCPMethods,
+  GooglePlayConsoleMCPMethods,
   // DesignTokensValidationMCPMethods,
   // CodeQualityMCPMethods,
   // AccessibilityMCPMethods,

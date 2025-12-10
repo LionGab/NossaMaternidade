@@ -77,7 +77,10 @@
     "cleanup:local:bash": "bash scripts/cleanup-local.sh",
     "list:todos": "npx tsx scripts/list-todos.ts",
     "list:deprecated": "npx tsx scripts/list-deprecated.ts",
-    "fix:console-logs": "npx tsx scripts/fix-console-logs.ts"
+    "fix:console-logs": "npx tsx scripts/fix-console-logs.ts",
+    "test:release-ops": "node scripts/test-mcp-simple.js",
+    "check:env-config": "npx tsx src/scripts/checkEnvConfig.ts",
+    "test:mcp": "node scripts/test-mcp-simple.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.0",

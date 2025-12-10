@@ -26,6 +26,9 @@ import {
   openAIMCP,
   anthropicMCP,
   analyticsMCP,
+  sentryMCP,
+  appStoreConnectMCP,
+  googlePlayConsoleMCP,
   createMCPRequest,
   MCPServer,
 } from '../../mcp/servers';
@@ -141,6 +144,30 @@ export class AgentOrchestrator {
         priority: 40,
         tags: ['ai', 'chat', 'claude', 'fallback'],
         description: 'Anthropic Claude como fallback para chat',
+      },
+      {
+        name: 'sentry',
+        factory: () => sentryMCP,
+        deferLoading: true,
+        priority: 60,
+        tags: ['monitoring', 'crashes', 'release-health', 'production'],
+        description: 'Sentry para monitoramento de crashes e saúde de release',
+      },
+      {
+        name: 'appstoreconnect',
+        factory: () => appStoreConnectMCP,
+        deferLoading: true,
+        priority: 55,
+        tags: ['store', 'ios', 'app-store', 'reviews', 'production'],
+        description: 'App Store Connect para builds, reviews e status de release iOS',
+      },
+      {
+        name: 'googleplayconsole',
+        factory: () => googlePlayConsoleMCP,
+        deferLoading: true,
+        priority: 55,
+        tags: ['store', 'android', 'play-store', 'tracks', 'production'],
+        description: 'Google Play Console para tracks, ANRs e status de release Android',
       },
     ];
 

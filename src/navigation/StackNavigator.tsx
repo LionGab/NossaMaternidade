@@ -14,7 +14,7 @@ import { logger } from '../utils/logger';
 const SplashScreenComponent = React.lazy(() =>
   import('../screens/SplashScreen').then((m) => ({ default: m.default }))
 );
-const LoginScreenNew = React.lazy(() => import('../screens/LoginScreenNew'));
+const LoginScreen = React.lazy(() => import('../screens/LoginScreen'));
 const AuthCallbackScreen = React.lazy(() => import('../screens/AuthCallbackScreen'));
 const ResetPasswordScreen = React.lazy(() => import('../screens/ResetPasswordScreen'));
 const OnboardingScreen = React.lazy(() => import('../screens/Onboarding/OnboardingScreen'));
@@ -170,7 +170,7 @@ export const StackNavigator = () => {
         {(props) => <LazyScreen component={SplashScreenComponent} {...props} />}
       </Stack.Screen>
       <Stack.Screen name="Auth">
-        {(props) => <LazyScreen component={LoginScreenNew} {...props} />}
+        {(props) => <LazyScreen component={LoginScreen} {...props} />}
       </Stack.Screen>
       <Stack.Screen name="AuthCallback">
         {(props) => <LazyScreen component={AuthCallbackScreen} {...props} />}

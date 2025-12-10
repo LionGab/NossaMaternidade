@@ -62,6 +62,7 @@
 | [EXPO_GO_COMPATIBILITY.md](./EXPO_GO_COMPATIBILITY.md) | Compatibilidade Expo Go |
 | [CONFIGURAR_MCP_CURSOR.md](./CONFIGURAR_MCP_CURSOR.md) | Configurar MCP no Cursor |
 | [MCP_DEEPLINKS.md](./MCP_DEEPLINKS.md) | Deeplinks MCP |
+| [GEMINI_CLI_EXTENSION.md](./GEMINI_CLI_EXTENSION.md) | Gemini CLI Extension (IDE Companion) |
 
 ### 🧪 Testes
 | Documento | Descrição |

@@ -171,6 +171,35 @@ export interface PromptTestingMCPMethods {
   'prompt.validate.all': { promptPath: string; provider?: 'gemini' | 'openai' | 'anthropic' };
 }
 
+// Tipos específicos para Sentry MCP
+export interface SentryMCPMethods {
+  'release.list': { limit?: number };
+  'release.get': { version: string };
+  'release.getCurrent': Record<string, never>;
+  'crash.listTop': { release?: string; limit?: number };
+  'crash.getIssue': { issueId: string };
+  'health.getReleaseHealth': { release: string; since?: string };
+  'health.checkCrashRate': { release: string; threshold?: number };
+}
+
+// Tipos específicos para App Store Connect MCP
+export interface AppStoreConnectMCPMethods {
+  'build.list': { appId: string; filter?: { version?: string; processingState?: string } };
+  'build.get': { buildId: string };
+  'review.getStatus': { appId: string; version?: string };
+  'rating.getAppStoreRatings': { appId: string; sinceDate?: string };
+  'version.list': { appId: string };
+  'version.get': { versionId: string };
+}
+
+// Tipos específicos para Google Play Console MCP
+export interface GooglePlayConsoleMCPMethods {
+  'track.list': { packageName?: string };
+  'anr.getStats': { packageName?: string; versionCode?: string };
+  'dataSafety.getIssues': { packageName?: string };
+  'release.getStatus': { packageName?: string; track?: string };
+}
+
 // Union de todos os methods
 export type AllMCPMethods = SupabaseMCPMethods &
   GoogleAIMCPMethods &
@@ -179,7 +208,10 @@ export type AllMCPMethods = SupabaseMCPMethods &
   CodeQualityMCPMethods &
   AccessibilityMCPMethods &
   MobileOptimizationMCPMethods &
-  PromptTestingMCPMethods;
+  PromptTestingMCPMethods &
+  SentryMCPMethods &
+  AppStoreConnectMCPMethods &
+  GooglePlayConsoleMCPMethods;
 
 // Union type de todos os métodos
 export type MCPMethod = keyof AllMCPMethods;

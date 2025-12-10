@@ -77,3 +77,12 @@ export {
 //   QualityMetrics,
 //   HealthCheckOptions,
 // } from './health/types';
+
+// 🚀 Release Operations Agent
+export { ReleaseOpsAgent, releaseOpsAgent } from './release/ReleaseOpsAgent';
+export type {
+  ReleaseReadinessReport,
+  StoreStatusSummary,
+  CriticalCrash,
+  ReleaseOpsInput,
+} from './release/ReleaseOpsAgent';
