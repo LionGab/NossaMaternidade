@@ -80,7 +80,8 @@
     "fix:console-logs": "npx tsx scripts/fix-console-logs.ts",
     "test:release-ops": "node scripts/test-mcp-simple.js",
     "check:env-config": "npx tsx src/scripts/checkEnvConfig.ts",
-    "test:mcp": "node scripts/test-mcp-simple.js"
+    "test:mcp": "node scripts/test-mcp-simple.js",
+    "keep-all": "npx tsx scripts/keep-all.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.0",
