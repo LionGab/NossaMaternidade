@@ -81,7 +81,10 @@
     "test:release-ops": "node scripts/test-mcp-simple.js",
     "check:env-config": "npx tsx src/scripts/checkEnvConfig.ts",
     "test:mcp": "node scripts/test-mcp-simple.js",
-    "keep-all": "npx tsx scripts/keep-all.ts"
+    "keep-all": "npx tsx scripts/keep-all.ts",
+    "commit": "npx tsx scripts/auto-commit.ts",
+    "commit:push": "npx tsx scripts/auto-commit.ts --push",
+    "commit:skip": "npx tsx scripts/auto-commit.ts --skip-validation"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.0",
