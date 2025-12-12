@@ -808,7 +808,7 @@ export default function ChatScreen() {
         <AIDisclaimerModal
           visible={showDisclaimer}
           onAccept={handleAcceptDisclaimer}
-          onDismiss={undefined}
+          onDismiss={() => navigation.goBack()}
         />
 
         {/* Header minimalista - Estilo ChatGPT */}

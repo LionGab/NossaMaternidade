@@ -45,14 +45,22 @@ export const AIDisclaimerModal: React.FC<AIDisclaimerModalProps> = ({
   };
 
   return (
-    <Modal visible={visible} onClose={handleDismiss} title="" fullScreen={false}>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{
-          padding: Spacing['6'],
-        }}
-        showsVerticalScrollIndicator={false}
-      >
+    <Modal
+      visible={visible}
+      onClose={handleDismiss}
+      title=""
+      fullScreen={true}
+      showCloseButton={true}
+    >
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            padding: Spacing['6'],
+            paddingBottom: Spacing['6'] + 84, // espaço pro footer fixo
+          }}
+          showsVerticalScrollIndicator={false}
+        >
         {/* Header elegante */}
         <Box align="center" mb="6">
           <View
@@ -417,36 +425,6 @@ export const AIDisclaimerModal: React.FC<AIDisclaimerModalProps> = ({
           </Text>
         </View>
 
-        {/* Botão de aceite - Redesenhado */}
-        <HapticButton
-          onPress={handleAccept}
-          variant="primary"
-          style={{
-            minHeight: 52,
-            borderRadius: Radius.full,
-            shadowColor: colors.primary.main,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 4,
-          }}
-          accessibilityLabel="Entendi e aceito continuar"
-          accessibilityHint="Aceita os termos e fecha o aviso"
-        >
-          <Text
-            size="md"
-            weight="semibold"
-            align="center"
-            style={{
-              color: colors.text.inverse,
-              fontSize: 15,
-              letterSpacing: 0.2,
-            }}
-          >
-            Entendi e aceito continuar
-          </Text>
-        </HapticButton>
-
         {/* Link para mais informações */}
         <View style={{ marginTop: Spacing['4'], alignItems: 'center' }}>
           <Text
@@ -461,7 +439,53 @@ export const AIDisclaimerModal: React.FC<AIDisclaimerModalProps> = ({
             Ao continuar, você confirma que leu e compreendeu este aviso.
           </Text>
         </View>
-      </ScrollView>
+        </ScrollView>
+
+        {/* Footer fixo com CTA sempre visível */}
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            paddingHorizontal: Spacing['6'],
+            paddingTop: Spacing['3'],
+            paddingBottom: Spacing['4'],
+            backgroundColor: colors.background.card,
+            borderTopWidth: 1,
+            borderTopColor: colors.border.light,
+          }}
+        >
+          <HapticButton
+            onPress={handleAccept}
+            variant="primary"
+            style={{
+              minHeight: 52,
+              borderRadius: Radius.full,
+              shadowColor: colors.primary.main,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 4,
+            }}
+            accessibilityLabel="Entendi e aceito continuar"
+            accessibilityHint="Aceita os termos e fecha o aviso"
+          >
+            <Text
+              size="md"
+              weight="semibold"
+              align="center"
+              style={{
+                color: colors.text.inverse,
+                fontSize: 15,
+                letterSpacing: 0.2,
+              }}
+            >
+              Entendi e aceito continuar
+            </Text>
+          </HapticButton>
+        </View>
+      </View>
     </Modal>
   );
 };
