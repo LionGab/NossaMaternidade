@@ -213,27 +213,13 @@ export const TabNavigator = () => {
         options={{
           tabBarLabel: 'NathIA',
           tabBarAccessibilityLabel: 'Chat com NathIA, assistente de IA',
-          tabBarIcon: ({ focused }) => {
-            // Quando focado: FAB grande elevado
-            // Quando não focado: ícone normal (mesmo nível das outras tabs)
-            const isFAB = focused;
-            const size = isFAB ? 64 : 20;
-            const iconSize = isFAB ? 28 : 20;
-            const marginTop = isFAB ? -40 : 0;
+          tabBarIcon: ({ focused, color }) => {
+            // ✅ iOS UX: NathIA deve ser sempre visível como FAB central
+            // (antes só ficava “FAB” quando focada, parecendo que a aba sumiu).
+            const size = 64;
+            const iconSize = 28;
+            const marginTop = -40;
 
-            if (!isFAB) {
-              // Ícone simples quando não focado (ex: quando está na Home)
-              return (
-                <MessageCircle
-                  size={iconSize}
-                  color={SOFT_PASTEL.tabInactive}
-                  strokeWidth={2}
-                  accessibilityLabel="Ícone de chat com NathIA"
-                />
-              );
-            }
-
-            // FAB elevado quando focado
             return (
               <View
                 style={{
@@ -243,7 +229,11 @@ export const TabNavigator = () => {
                 }}
               >
                 <LinearGradient
-                  colors={[SOFT_PASTEL.pink, SOFT_PASTEL.purple]}
+                  colors={
+                    focused
+                      ? [SOFT_PASTEL.pink, SOFT_PASTEL.purple]
+                      : [`${SOFT_PASTEL.pink}`, `${SOFT_PASTEL.purple}`]
+                  }
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={{
@@ -254,6 +244,8 @@ export const TabNavigator = () => {
                     justifyContent: 'center',
                     ...getShadowFromToken('xl', ColorTokens.neutral[900]),
                     elevation: 12,
+                    borderWidth: focused ? 0 : 2,
+                    borderColor: focused ? 'transparent' : `${color}40`,
                   }}
                 >
                   <MessageCircle
@@ -261,6 +253,7 @@ export const TabNavigator = () => {
                     color={ColorTokens.neutral[0]}
                     strokeWidth={2.5}
                     fill={ColorTokens.neutral[0]}
+                    accessibilityLabel="Ícone de chat com NathIA"
                   />
                 </LinearGradient>
               </View>
