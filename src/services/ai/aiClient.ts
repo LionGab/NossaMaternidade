@@ -7,6 +7,7 @@ import { resolveModel, type LlmProfile } from '@/ai/llmConfig';
 import type { AIModel, AIContext, ChatAIResponse } from '@/types/ai';
 import { logger } from '@/utils/logger';
 
+import { buildSystemInstruction } from './buildSystemInstruction';
 import { supabase } from '../supabase';
 
 /**
@@ -40,6 +41,17 @@ class AIClient {
       // Mapear para Edge Function apropriada
       const edgeFunction = this.getEdgeFunction(config.provider);
 
+      // Construir system instruction com prompt fixo + contexto
+      // Usar try-catch para garantir que erros não quebrem o fluxo
+      let systemInstruction: string;
+      try {
+        systemInstruction = buildSystemInstruction(context);
+      } catch (error) {
+        logger.error('[AIClient] Erro ao construir system instruction', error);
+        // Fallback mínimo para garantir que o chat continue funcionando
+        systemInstruction = 'Você é NathIA, uma assistente maternal empática e acolhedora.';
+      }
+
       // Preparar payload
       const payload = {
         message,
@@ -47,6 +59,7 @@ class AIClient {
           role: h.role === 'user' ? 'user' : 'model',
           parts: [{ text: h.text }],
         })),
+        systemInstruction,
         model: config.modelName,
         temperature: config.temperature,
         maxTokens: config.maxTokens,

@@ -19,7 +19,23 @@ if [ $TS_RESULT -ne 0 ]; then
 fi
 echo "✅ TypeScript passou"
 
-# 2. Lint-staged (arquivos modificados)
+# 2. Validar sincronização do prompt NathIA (se arquivos relacionados foram modificados)
+echo ""
+echo "🤖 Validando prompt NathIA..."
+if git diff --cached --name-only | grep -q "nathiaSystemPrompt.ts"; then
+  npm run validate:nathia-prompt --silent
+  if [ $? -ne 0 ]; then
+    echo "⚠️  Prompt NathIA não está sincronizado!"
+    echo "💡 Execute 'npm run sync:nathia-prompt' antes de commitar"
+    echo "   (Commit não bloqueado, mas sincronize antes de fazer push)"
+  else
+    echo "✅ Prompt NathIA sincronizado"
+  fi
+else
+  echo "⏭️  Nenhuma alteração no prompt NathIA"
+fi
+
+# 3. Lint-staged (arquivos modificados)
 echo ""
 echo "🧹 Executando lint nos arquivos staged..."
 npx lint-staged --quiet

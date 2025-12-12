@@ -5,6 +5,8 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { GoogleGenerativeAI } from 'npm:@google/generative-ai@0.24.1';
+import { NATHIA_SYSTEM_PROMPT } from '../_shared/nathiaSystemPrompt.ts';
+import { edgeLogger } from '../_shared/logger.ts';
 
 // CORS Configuration
 // Em produção, restringir às origens permitidas
@@ -57,6 +59,11 @@ interface ChatRequest {
     parts: Array<{ text: string }>;
   }>;
   systemInstruction?: string;
+  model?: string;
+  temperature?: number;
+  maxTokens?: number;
+  topP?: number;
+  topK?: number;
 }
 
 serve(async (req) => {
@@ -80,7 +87,16 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { message, history = [], systemInstruction }: ChatRequest = await req.json();
+    const {
+      message,
+      history = [],
+      systemInstruction,
+      model: requestedModel,
+      temperature,
+      maxTokens,
+      topP,
+      topK,
+    }: ChatRequest = await req.json();
 
     if (!message) {
       return new Response(JSON.stringify({ error: 'Message is required' }), {
@@ -89,11 +105,13 @@ serve(async (req) => {
       });
     }
 
+    const finalModelName = requestedModel || GEMINI_MODEL;
+
     // Inicializar Gemini
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
     const model = genAI.getGenerativeModel({
-      model: GEMINI_MODEL,
-      systemInstruction: systemInstruction || 'Você é uma assistente maternal empática.',
+      model: finalModelName,
+      systemInstruction: systemInstruction || NATHIA_SYSTEM_PROMPT,
     });
 
     // Iniciar chat com histórico
@@ -101,10 +119,10 @@ serve(async (req) => {
     const chat = model.startChat({
       history: history,
       generationConfig: {
-        temperature: 0.85, // Expressividade sem perder coerência
-        topP: 0.95,
-        topK: 40,
-        maxOutputTokens: 500, // Respostas concisas para chat mobile
+        temperature: typeof temperature === 'number' ? temperature : 0.85, // Expressividade sem perder coerência
+        topP: typeof topP === 'number' ? topP : 0.95,
+        topK: typeof topK === 'number' ? topK : 40,
+        maxOutputTokens: typeof maxTokens === 'number' ? maxTokens : 500, // Respostas concisas para chat mobile
         stopSequences: [],
       },
     });
@@ -114,28 +132,31 @@ serve(async (req) => {
     const response = await result.response;
     const text = response.text();
 
-    console.log('[chat-ai] Success:', {
+    edgeLogger.info('[chat-ai] Success', {
       messageLength: message.length,
       responseLength: text.length,
       historySize: history.length,
+      model: finalModelName,
     });
 
     return new Response(
       JSON.stringify({
         text,
-        model: GEMINI_MODEL,
+        model: finalModelName,
         tokensUsed: response.usageMetadata?.totalTokenCount || 0,
+        tokens_used: response.usageMetadata?.totalTokenCount || 0,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
-  } catch (error: any) {
-    console.error('[chat-ai] Error:', error);
+  } catch (error: unknown) {
+    edgeLogger.error('[chat-ai] Error', error);
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
     return new Response(
       JSON.stringify({
-        error: error.message || 'Internal server error',
-        details: error.toString(),
+        error: errorMessage,
+        details: String(error),
       }),
       {
         status: 500,

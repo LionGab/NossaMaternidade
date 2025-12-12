@@ -293,12 +293,22 @@ class ChatService {
       };
 
       // Usar aiRouter para rotear com fallback automático
+      // Wrapper de segurança para garantir que erros não quebrem o fluxo
       const routerResponse = await aiRouter.route(
         userMessage,
         context,
         async (model, msg, ctx) => {
-          // Função que o router usa para chamar IA
-          return await aiClient.call(model, msg, ctx, aiHistory);
+          try {
+            // Função que o router usa para chamar IA
+            return await aiClient.call(model, msg, ctx, aiHistory);
+          } catch (error) {
+            logger.error('[ChatService] Erro ao chamar aiClient', error, {
+              model,
+              messageLength: msg.length,
+            });
+            // Retornar resposta de erro estruturada
+            throw error;
+          }
         }
       );
 

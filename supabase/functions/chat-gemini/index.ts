@@ -7,6 +7,7 @@
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { edgeLogger } from '../_shared/logger.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,7 +32,7 @@ serve(async (req: Request) => {
     // 🔐 Chave segura no servidor - NUNCA vai para o app!
     const GEMINI_KEY = Deno.env.get('GEMINI_API_KEY');
     if (!GEMINI_KEY) {
-      console.error('GEMINI_API_KEY não configurada');
+      edgeLogger.error('[chat-gemini] GEMINI_API_KEY não configurada');
       throw new Error('Configuração de IA inválida');
     }
 
@@ -75,7 +76,7 @@ serve(async (req: Request) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Erro Gemini:', errorData);
+      edgeLogger.error('[chat-gemini] Erro Gemini', errorData);
       throw new Error(errorData.error?.message || 'Erro na API Gemini');
     }
 
@@ -96,8 +97,8 @@ serve(async (req: Request) => {
         },
       }
     );
-  } catch (error) {
-    console.error('Erro na função chat-gemini:', error);
+  } catch (error: unknown) {
+    edgeLogger.error('[chat-gemini] Erro na função', error);
 
     return new Response(
       JSON.stringify({
