@@ -87,28 +87,32 @@ class OnboardingService {
    */
   async saveOnboardingData(data: OnboardingData): Promise<{ error: Error | null }> {
     try {
-      // Converter arrays para strings se necessário (para campos que esperam string)
-      const supportSystemValue = Array.isArray(data.support_system) 
-        ? data.support_system.join(', ') 
-        : data.support_system;
-      
-      const dailyHabitsValue = Array.isArray(data.daily_habits)
-        ? data.daily_habits
-        : data.daily_habits;
+      if (!data.userId) {
+        return { error: new Error('userId é obrigatório para salvar onboarding') };
+      }
 
-      const { error } = await supabase.from('user_profile').upsert({
-        user_id: data.userId,
-        full_name: data.fullName,
-        due_date: data.dueDate,
-        baby_name: data.babyName,
-        pregnancy_weeks: data.weeks,
-        has_partner: data.hasPartner,
-        primary_concerns: data.primaryConcerns,
-        preferred_language_tone: data.preferred_language_tone ?? undefined,
-        support_system: supportSystemValue ?? undefined,
-        daily_habits: dailyHabitsValue ?? undefined,
-        updated_at: new Date().toISOString(),
-      });
+      // Persistir no schema atual (tabela profiles) — alinhado com profileService.getCurrentProfile()
+      // OBS: manter apenas campos existentes na tabela para evitar falhas silenciosas.
+      const { error } = await supabase.from('profiles').upsert(
+        {
+          id: data.userId,
+          full_name: data.fullName ?? undefined,
+          display_name: data.display_name ?? undefined,
+          pregnancy_week: data.weeks ?? undefined,
+          baby_name: data.babyName ?? undefined,
+
+          // Campos do onboarding rápido
+          life_stage_generic: data.life_stage_generic ?? undefined,
+          main_goals: data.main_goals ?? undefined,
+          baseline_emotion: data.baseline_emotion ?? undefined,
+          first_focus: data.first_focus ?? undefined,
+          preferred_language_tone: data.preferred_language_tone ?? undefined,
+          notification_opt_in: data.notification_opt_in ?? undefined,
+
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'id' }
+      );
 
       if (error) {
         logger.error('[OnboardingService] Erro ao salvar dados', { error });
@@ -157,11 +161,21 @@ class OnboardingService {
    */
   async completeOnboarding(data?: Partial<OnboardingData>): Promise<{ success: boolean; error?: Error }> {
     try {
-      // Se dados foram fornecidos, salvar primeiro
-      if (data && data.userId) {
-        const saveResult = await this.saveOnboardingData(data as OnboardingData);
-        if (saveResult.error) {
-          return { success: false, error: saveResult.error };
+      // Se dados foram fornecidos, salvar primeiro (preenchendo userId automaticamente se ausente)
+      if (data) {
+        const resolvedData: OnboardingData = { ...(data as OnboardingData) };
+        if (!resolvedData.userId) {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          if (user) resolvedData.userId = user.id;
+        }
+
+        if (resolvedData.userId) {
+          const saveResult = await this.saveOnboardingData(resolvedData);
+          if (saveResult.error) {
+            return { success: false, error: saveResult.error };
+          }
         }
       }
 

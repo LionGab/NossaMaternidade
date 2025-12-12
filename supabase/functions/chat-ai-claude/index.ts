@@ -5,6 +5,8 @@
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { NATHIA_SYSTEM_PROMPT } from '../_shared/nathiaSystemPrompt.ts';
+import { edgeLogger } from '../_shared/logger.ts';
 
 // CORS Configuration
 const ALLOWED_ORIGINS = [
@@ -104,16 +106,8 @@ serve(async (req) => {
     // Mensagem atual
     messages.push({ role: 'user', content: message });
 
-    // System instruction
-    const systemPrompt =
-      systemInstruction ||
-      `Você é NathIA, uma assistente maternal empática e acolhedora.
-
-IMPORTANTE: Se detectar sinais de crise emocional, ideação suicida ou auto-lesão:
-1. Responda com empatia e acolhimento
-2. Sempre inclua recursos de ajuda: CVV (188), SAMU (192)
-3. Não minimize os sentimentos da usuária
-4. Encoraje buscar ajuda profissional`;
+    // System instruction (usar prompt canônico se não vier do client)
+    const systemPrompt = systemInstruction || NATHIA_SYSTEM_PROMPT;
 
     // Chamar Anthropic API
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -142,7 +136,7 @@ IMPORTANTE: Se detectar sinais de crise emocional, ideação suicida ou auto-les
     const outputTokens = data.usage?.output_tokens || 0;
     const tokensUsed = inputTokens + outputTokens;
 
-    console.log('[chat-ai-claude] Success:', {
+    edgeLogger.info('[chat-ai-claude] Success', {
       messageLength: message.length,
       responseLength: text.length,
       tokensUsed,
@@ -153,6 +147,7 @@ IMPORTANTE: Se detectar sinais de crise emocional, ideação suicida ou auto-les
         text,
         model: CLAUDE_MODEL,
         tokensUsed,
+        tokens_used: tokensUsed,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -160,7 +155,7 @@ IMPORTANTE: Se detectar sinais de crise emocional, ideação suicida ou auto-les
     );
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-    console.error('[chat-ai-claude] Error:', error);
+    edgeLogger.error('[chat-ai-claude] Error', error);
     return new Response(
       JSON.stringify({
         error: errorMessage,

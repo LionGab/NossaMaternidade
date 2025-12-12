@@ -5,6 +5,8 @@
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { NATHIA_SYSTEM_PROMPT } from '../_shared/nathiaSystemPrompt.ts';
+import { edgeLogger } from '../_shared/logger.ts';
 
 // CORS Configuration
 const ALLOWED_ORIGINS = [
@@ -95,21 +97,9 @@ serve(async (req) => {
     // Converter histórico para formato OpenAI
     const messages: Array<{ role: string; content: string }> = [];
 
-    // System instruction
-    if (systemInstruction) {
-      messages.push({ role: 'system', content: systemInstruction });
-    } else {
-      messages.push({
-        role: 'system',
-        content: `Você é NathIA, uma assistente maternal empática e acolhedora.
-
-IMPORTANTE: Se detectar sinais de crise emocional, ideação suicida ou auto-lesão:
-1. Responda com empatia e acolhimento
-2. Sempre inclua recursos de ajuda: CVV (188), SAMU (192)
-3. Não minimize os sentimentos da usuária
-4. Encoraje buscar ajuda profissional`,
-      });
-    }
+    // System instruction (usar prompt canônico se não vier do client)
+    const finalSystemInstruction = systemInstruction || NATHIA_SYSTEM_PROMPT;
+    messages.push({ role: 'system', content: finalSystemInstruction });
 
     // Histórico
     for (const msg of history) {
@@ -145,7 +135,7 @@ IMPORTANTE: Se detectar sinais de crise emocional, ideação suicida ou auto-les
     const text = data.choices?.[0]?.message?.content || '';
     const tokensUsed = data.usage?.total_tokens || 0;
 
-    console.log('[chat-ai-openai] Success:', {
+    edgeLogger.info('[chat-ai-openai] Success', {
       messageLength: message.length,
       responseLength: text.length,
       tokensUsed,
@@ -156,6 +146,7 @@ IMPORTANTE: Se detectar sinais de crise emocional, ideação suicida ou auto-les
         text,
         model: OPENAI_MODEL,
         tokensUsed,
+        tokens_used: tokensUsed,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -163,7 +154,7 @@ IMPORTANTE: Se detectar sinais de crise emocional, ideação suicida ou auto-les
     );
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-    console.error('[chat-ai-openai] Error:', error);
+    edgeLogger.error('[chat-ai-openai] Error', error);
     return new Response(
       JSON.stringify({
         error: errorMessage,

@@ -31,7 +31,6 @@ import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';
 
-import { Box } from './Box';
 import { Text } from './Text';
 
 export interface ChatBubbleProps {
@@ -54,7 +53,7 @@ export interface ChatBubbleProps {
 }
 
 export const ChatBubble: React.FC<ChatBubbleProps> = React.memo(
-  ({ role, content, timestamp, avatar, isLatest = false, onReaction, index = 0, style }) => {
+  ({ role, content, timestamp: _timestamp, avatar, isLatest = false, onReaction, index = 0, style }) => {
     const { colors, isDark } = useTheme();
     const isUser = role === 'user';
 
@@ -70,12 +69,6 @@ export const ChatBubble: React.FC<ChatBubbleProps> = React.memo(
       onReaction?.(type);
     };
 
-    // Formatar timestamp
-    const formattedTime = new Date(timestamp).toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
     return (
       <Animated.View
         entering={entering}
@@ -86,7 +79,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = React.memo(
         accessibilityLabel={isUser ? `Você disse: ${content}` : `NathIA respondeu: ${content}`}
         accessibilityHint={isUser ? 'Sua mensagem' : 'Resposta da NathIA'}
       >
-        {/* Avatar (apenas IA) */}
+        {/* Avatar (apenas IA) - Estilo ChatGPT */}
         {!isUser && avatar && (
           <View style={styles.avatarContainer}>
             <Image
@@ -95,80 +88,70 @@ export const ChatBubble: React.FC<ChatBubbleProps> = React.memo(
               contentFit="cover"
               transition={200}
             />
-            {isLatest && (
-              <View style={[styles.onlineDot, { backgroundColor: colors.status.success }]} />
-            )}
           </View>
         )}
 
-        {/* Bubble */}
+        {/* Bubble - Estilo ChatGPT/Claude */}
         <View
           style={[
             styles.bubble,
             {
               backgroundColor: isUser
-                ? colors.primary.main
-                : Tokens.colors.chat.aiBubble.bg[isDark ? 'dark' : 'light'],
-              borderColor: isUser
-                ? 'transparent'
-                : Tokens.colors.chat.aiBubble.border[isDark ? 'dark' : 'light'],
-              borderBottomRightRadius: isUser ? Tokens.radius.sm : Tokens.radius.xl,
-              borderBottomLeftRadius: isUser ? Tokens.radius.xl : Tokens.radius.sm,
+                ? (isDark ? ColorTokens.primary[600] : colors.primary.main)
+                : isDark
+                  ? ColorTokens.neutral[800]
+                  : ColorTokens.neutral[100],
+              borderBottomRightRadius: isUser ? 4 : 18,
+              borderBottomLeftRadius: isUser ? 18 : 4,
             },
           ]}
         >
           {/* Conteúdo */}
           <Text
             style={{
-              color: isUser ? colors.text.inverse : colors.text.primary,
-              ...Tokens.textStyles.bodyMedium,
+              color: isUser ? ColorTokens.neutral[0] : colors.text.primary,
+              fontSize: 15,
+              lineHeight: 22,
+              letterSpacing: 0.1,
             }}
           >
             {content}
           </Text>
 
-          {/* Timestamp */}
-          <Text
-            size="xs"
-            style={{
-              marginTop: Tokens.spacing['1'],
-              color: isUser
-                ? Tokens.colors.chat.timestamp.text.light
-                : Tokens.colors.chat.timestamp.text[isDark ? 'dark' : 'light'],
-              opacity: 0.9, // WCAG AAA: Contraste melhorado
-            }}
-          >
-            {formattedTime}
-          </Text>
-
-          {/* Reações (apenas IA + latest) */}
+          {/* Reações (apenas IA + latest) - Estilo ChatGPT */}
           {!isUser && isLatest && onReaction && (
-            <Box direction="row" mt="2" gap="2">
+            <View style={{ flexDirection: 'row', marginTop: Tokens.spacing['3'], gap: Tokens.spacing['2'] }}>
               <TouchableOpacity
                 onPress={() => handleReaction('helpful')}
                 style={[
                   styles.reactionButton,
-                  { backgroundColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[100] },
+                  {
+                    backgroundColor: 'transparent',
+                    borderWidth: 1,
+                    borderColor: isDark ? ColorTokens.neutral[700] : ColorTokens.neutral[300],
+                  },
                 ]}
                 accessibilityRole="button"
                 accessibilityLabel="Marcar como útil"
-                accessibilityHint="Toque duas vezes para indicar que esta resposta foi útil"
               >
-                <ThumbsUp size={14} color={colors.text.secondary} />
+                <ThumbsUp size={16} color={colors.text.secondary} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => handleReaction('not-helpful')}
                 style={[
                   styles.reactionButton,
-                  { backgroundColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[100] },
+                  {
+                    backgroundColor: 'transparent',
+                    borderWidth: 1,
+                    borderColor: isDark ? ColorTokens.neutral[700] : ColorTokens.neutral[300],
+                  },
                 ]}
                 accessibilityRole="button"
                 accessibilityLabel="Marcar como não útil"
-                accessibilityHint="Toque duas vezes para indicar que esta resposta não foi útil"
               >
-                <ThumbsDown size={14} color={colors.text.secondary} />
+                <ThumbsDown size={16} color={colors.text.secondary} />
               </TouchableOpacity>
-            </Box>
+            </View>
           )}
         </View>
       </Animated.View>
@@ -181,38 +164,30 @@ ChatBubble.displayName = 'ChatBubble';
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    marginBottom: Tokens.spacing['3'],
-    paddingHorizontal: Tokens.spacing['2'],
+    marginBottom: Tokens.spacing['4'],
+    paddingHorizontal: Tokens.spacing['4'],
+    alignItems: 'flex-end',
   },
   avatarContainer: {
     position: 'relative',
-    marginRight: Tokens.spacing['2'],
+    marginRight: Tokens.spacing['3'],
+    marginBottom: 2,
   },
   avatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+  },
+  bubble: {
+    maxWidth: '75%',
+    paddingHorizontal: Tokens.spacing['4'],
+    paddingVertical: Tokens.spacing['3'],
+    borderRadius: 18,
+  },
+  reactionButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-  },
-  onlineDot: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: ColorTokens.neutral[0],
-  },
-  bubble: {
-    maxWidth: '80%',
-    padding: Tokens.spacing['3'],
-    borderRadius: Tokens.radius.xl,
-    borderWidth: 1,
-  },
-  reactionButton: {
-    width: Tokens.touchTargets.min,
-    height: Tokens.touchTargets.min,
-    borderRadius: Tokens.radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },

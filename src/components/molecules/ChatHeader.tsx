@@ -23,8 +23,7 @@
 
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowLeft, Sparkles, CheckCircle, Zap, Brain } from 'lucide-react-native';
+import { ArrowLeft, Sparkles, Zap, Brain } from 'lucide-react-native';
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 
@@ -57,7 +56,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   onBack,
   onModeChange,
 }) => {
-  const { isDark } = useTheme();
+  const { isDark, colors } = useTheme();
   const [avatarError, setAvatarError] = React.useState(false);
 
   const handleModePress = (mode: AIMode) => {
@@ -71,20 +70,21 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     onBack();
   };
 
-  // Usar gradiente suave (warm cyan) do Design System
-  const gradientColors = isDark ? ColorTokens.nathIA.warm.dark : ColorTokens.nathIA.warm.light;
-
   return (
-    <LinearGradient
-      colors={gradientColors}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.header}
+    <View
+      style={[
+        styles.header,
+        {
+          backgroundColor: isDark ? ColorTokens.neutral[900] : ColorTokens.neutral[0],
+          borderBottomWidth: 1,
+          borderBottomColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[200],
+        },
+      ]}
     >
-      {/* Top Bar: Back + Avatar + Info */}
+      {/* Top Bar: Back + Avatar + Info - Estilo ChatGPT */}
       <Box direction="row" align="center" style={{ zIndex: 1 }}>
         <IconButton
-          icon={<ArrowLeft size={20} color={ColorTokens.nathIA.text.light} />}
+          icon={<ArrowLeft size={22} color={isDark ? ColorTokens.neutral[0] : ColorTokens.neutral[900]} />}
           onPress={handleBack}
           accessibilityLabel="Voltar para tela anterior"
           variant="ghost"
@@ -101,8 +101,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                 onError={() => setAvatarError(true)}
               />
             ) : (
-              <View style={[styles.avatar, styles.avatarFallback]}>
-                <Sparkles size={18} color={ColorTokens.nathIA.text.light} />
+              <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: colors.primary.main }]}>
+                <Sparkles size={18} color={ColorTokens.neutral[0]} />
               </View>
             )}
 
@@ -113,147 +113,204 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             )}
           </View>
 
-          {/* Nome e status */}
+          {/* Nome e status - Minimalista */}
           <Box ml="3">
-            <Text size="lg" weight="bold" style={{ color: ColorTokens.nathIA.text.light }}>
+            <Text
+              size="lg"
+              weight="semibold"
+              style={{
+                color: isDark ? ColorTokens.neutral[0] : ColorTokens.neutral[900],
+                fontSize: 17,
+                letterSpacing: -0.2,
+              }}
+            >
               NathIA
             </Text>
-            <Box direction="row" align="center" mt="0.5">
-              <CheckCircle size={12} color={ColorTokens.nathIA.text.light} />
-              <Text
-                size="xs"
-                style={{
-                  color: ColorTokens.nathIA.text.light,
-                  marginLeft: 4,
-                }}
-              >
-                {isOnline ? 'Online • Pronta para conversar' : 'Offline'}
-              </Text>
-            </Box>
+            {isOnline && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+                <View
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: 3,
+                    backgroundColor: ColorTokens.success[500],
+                    marginRight: 6,
+                  }}
+                />
+                <Text
+                  size="xs"
+                  style={{
+                    color: isDark ? ColorTokens.neutral[400] : ColorTokens.neutral[600],
+                    fontSize: 12,
+                  }}
+                >
+                  Online
+                </Text>
+              </View>
+            )}
           </Box>
         </View>
       </Box>
 
-      {/* Mode Selector */}
+      {/* Mode Selector - Estilo ChatGPT (pills discretas) */}
       <View style={styles.modeSelector}>
-        {/* Modo Rápido */}
         <TouchableOpacity
           onPress={() => handleModePress('flash')}
-          style={[styles.modeButton, chatMode === 'flash' && styles.modeButtonActive]}
+          style={[
+            styles.modeButton,
+            {
+              backgroundColor: chatMode === 'flash'
+                ? isDark
+                  ? ColorTokens.neutral[700]
+                  : ColorTokens.neutral[200]
+                : 'transparent',
+            },
+          ]}
           accessibilityRole="button"
           accessibilityState={{ selected: chatMode === 'flash' }}
           accessibilityLabel="Modo rápido"
-          accessibilityHint="Respostas rápidas e diretas da NathIA"
         >
           <Zap
-            size={12}
-            color={ColorTokens.nathIA.text.light}
-            style={{ opacity: chatMode === 'flash' ? 1 : 0.75 }}
+            size={14}
+            color={
+              chatMode === 'flash'
+                ? isDark
+                  ? ColorTokens.neutral[0]
+                  : ColorTokens.neutral[900]
+                : isDark
+                  ? ColorTokens.neutral[400]
+                  : ColorTokens.neutral[500]
+            }
           />
           <Text
             size="xs"
-            weight="bold"
+            weight={chatMode === 'flash' ? 'semibold' : 'medium'}
             style={{
-              color: ColorTokens.nathIA.text.light,
-              opacity: chatMode === 'flash' ? 1 : 0.75,
-              marginLeft: 4,
+              color:
+                chatMode === 'flash'
+                  ? isDark
+                    ? ColorTokens.neutral[0]
+                    : ColorTokens.neutral[900]
+                  : isDark
+                    ? ColorTokens.neutral[400]
+                    : ColorTokens.neutral[500],
+              marginLeft: 6,
+              fontSize: 13,
             }}
           >
             Rápido
           </Text>
         </TouchableOpacity>
 
-        {/* Modo Profundo */}
         <TouchableOpacity
           onPress={() => handleModePress('deep')}
-          style={[styles.modeButton, chatMode === 'deep' && styles.modeButtonActive]}
+          style={[
+            styles.modeButton,
+            {
+              backgroundColor: chatMode === 'deep'
+                ? isDark
+                  ? ColorTokens.neutral[700]
+                  : ColorTokens.neutral[200]
+                : 'transparent',
+            },
+          ]}
           accessibilityRole="button"
           accessibilityState={{ selected: chatMode === 'deep' }}
           accessibilityLabel="Modo profundo"
-          accessibilityHint="Análises detalhadas e reflexivas da NathIA"
         >
           <Brain
-            size={12}
-            color={ColorTokens.nathIA.text.light}
-            style={{ opacity: chatMode === 'deep' ? 1 : 0.75 }}
+            size={14}
+            color={
+              chatMode === 'deep'
+                ? isDark
+                  ? ColorTokens.neutral[0]
+                  : ColorTokens.neutral[900]
+                : isDark
+                  ? ColorTokens.neutral[400]
+                  : ColorTokens.neutral[500]
+            }
           />
           <Text
             size="xs"
-            weight="bold"
+            weight={chatMode === 'deep' ? 'semibold' : 'medium'}
             style={{
-              color: ColorTokens.nathIA.text.light,
-              opacity: chatMode === 'deep' ? 1 : 0.75,
-              marginLeft: 4,
+              color:
+                chatMode === 'deep'
+                  ? isDark
+                    ? ColorTokens.neutral[0]
+                    : ColorTokens.neutral[900]
+                  : isDark
+                    ? ColorTokens.neutral[400]
+                    : ColorTokens.neutral[500],
+              marginLeft: 6,
+              fontSize: 13,
             }}
           >
             Profundo
           </Text>
         </TouchableOpacity>
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   header: {
     paddingHorizontal: Tokens.spacing['4'],
-    paddingVertical: Tokens.spacing['3'],
-    paddingBottom: Tokens.spacing['4'],
+    paddingTop: Tokens.spacing['3'],
+    paddingBottom: Tokens.spacing['3'],
   },
   headerInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: Tokens.spacing['2'],
+    flex: 1,
   },
   avatarContainer: {
     position: 'relative',
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: ColorTokens.nathIA.text.light + '66', // 40% opacity
+    width: 36,
+    height: 36,
+    borderRadius: 18,
   },
   avatarFallback: {
-    backgroundColor: ColorTokens.nathIA.text.light + '33', // 20% opacity
     alignItems: 'center',
     justifyContent: 'center',
   },
   onlineIndicator: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+    bottom: -1,
+    right: -1,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
     backgroundColor: ColorTokens.neutral[0],
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: ColorTokens.neutral[0],
   },
   onlineDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: ColorTokens.success[400],
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: ColorTokens.success[500],
   },
   modeSelector: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: Tokens.spacing['3'],
     gap: Tokens.spacing['2'],
+    paddingBottom: Tokens.spacing['2'],
   },
   modeButton: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Tokens.spacing['3'],
-    paddingVertical: Tokens.spacing['2.5'],
+    paddingVertical: Tokens.spacing['2'],
     borderRadius: Tokens.radius.full,
-    backgroundColor: ColorTokens.nathIA.text.light + '1A', // 10% opacity
-    minHeight: Tokens.touchTargets.min, // WCAG AAA: 44pt mínimo
-  },
-  modeButtonActive: {
-    backgroundColor: ColorTokens.nathIA.text.light + '40', // 25% opacity
+    minHeight: 36,
   },
 });
 

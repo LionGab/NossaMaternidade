@@ -21,7 +21,7 @@
 
 import * as Haptics from 'expo-haptics';
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 
 import { Text } from '@/components/atoms/Text';
 import { useTheme } from '@/theme';
@@ -46,7 +46,7 @@ export const ChatSuggestionChips: React.FC<ChatSuggestionChipsProps> = ({
   const { isDark } = useTheme();
 
   const handlePress = (chip: DynamicChip) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     // Formatar texto com emoji
     const formattedText = `${chip.emoji} ${chip.text}`;
@@ -61,18 +61,33 @@ export const ChatSuggestionChips: React.FC<ChatSuggestionChipsProps> = ({
   };
 
   // Ordenar por prioridade e limitar
-  const visibleChips = chips.sort((a, b) => a.priority - b.priority).slice(0, maxChips);
+  const visibleChips = [...chips].sort((a, b) => a.priority - b.priority).slice(0, maxChips);
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        gap: Tokens.spacing['2'],
+        paddingHorizontal: Tokens.spacing['4'],
+      }}
+    >
       {visibleChips.map((chip, idx) => (
         <TouchableOpacity
-          key={`${chip.text}-${idx}`}
+          key={`${chip.category}-${chip.text}-${idx}`}
           onPress={() => handlePress(chip)}
+          activeOpacity={0.7}
           style={[
-            styles.chip,
             {
-              backgroundColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[100],
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingHorizontal: Tokens.spacing['4'],
+              paddingVertical: Tokens.spacing['3'],
+              borderRadius: 999,
+              borderWidth: 1,
+              minHeight: 44, // iOS touch target mínimo (WCAG/Apple HIG)
+              backgroundColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[50],
               borderColor: isDark ? ColorTokens.neutral[700] : ColorTokens.neutral[200],
             },
           ]}
@@ -80,8 +95,15 @@ export const ChatSuggestionChips: React.FC<ChatSuggestionChipsProps> = ({
           accessibilityLabel={`Sugestão: ${chip.text}`}
           accessibilityHint="Toque duas vezes para enviar esta mensagem para a NathIA"
         >
-          <Text style={{ marginRight: 4, fontSize: 16 }}>{chip.emoji}</Text>
-          <Text size="sm" color="secondary" weight="medium">
+          <Text style={{ marginRight: 6, fontSize: 16 }}>{chip.emoji}</Text>
+          <Text
+            size="sm"
+            style={{
+              color: isDark ? ColorTokens.neutral[200] : ColorTokens.neutral[700],
+              fontSize: 14,
+              letterSpacing: 0.1,
+            }}
+          >
             {chip.text}
           </Text>
         </TouchableOpacity>
@@ -89,25 +111,5 @@ export const ChatSuggestionChips: React.FC<ChatSuggestionChipsProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: Tokens.spacing['2'],
-    marginTop: Tokens.spacing['6'],
-    paddingHorizontal: Tokens.spacing['4'],
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Tokens.spacing['3'],
-    paddingVertical: Tokens.spacing['2.5'],
-    borderRadius: Tokens.radius.full,
-    borderWidth: 1,
-    minHeight: Tokens.touchTargets.min, // WCAG AAA: 44pt mínimo
-  },
-});
 
 export default ChatSuggestionChips;

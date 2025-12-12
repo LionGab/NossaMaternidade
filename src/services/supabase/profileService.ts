@@ -23,10 +23,12 @@ export interface AvatarUploadResponse {
 
 export interface UpdateProfileData {
   full_name?: string;
+  display_name?: string | null;
   avatar_url?: string | null;
   phone?: string;
   motherhood_stage?: string;
   pregnancy_week?: number;
+  baby_age_months?: number;
   baby_birth_date?: string;
   baby_name?: string;
   baby_gender?: string;
@@ -36,6 +38,18 @@ export interface UpdateProfileData {
   theme?: string;
   language?: string;
   notifications_enabled?: boolean;
+  notification_opt_in?: boolean;
+  life_stage_generic?: 'pregnant' | 'has_children' | 'trying' | 'caregiver' | 'self_care' | null;
+  main_goals?: string[];
+  baseline_emotion?: 'bem' | 'triste' | 'ansiosa' | 'cansada' | 'calma' | null;
+  first_focus?:
+    | 'emotional_care'
+    | 'organization'
+    | 'reduce_fatigue'
+    | 'community'
+    | 'content'
+    | null;
+  preferred_language_tone?: 'friendly' | 'direct' | 'mentor' | null;
   onboarding_completed?: boolean;
   onboarding_step?: number;
 }

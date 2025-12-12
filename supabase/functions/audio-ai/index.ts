@@ -5,6 +5,8 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { GoogleGenerativeAI } from 'npm:@google/generative-ai@0.24.1';
+import { NATHIA_SYSTEM_PROMPT } from '../_shared/nathiaSystemPrompt.ts';
+import { edgeLogger } from '../_shared/logger.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -50,7 +52,7 @@ serve(async (req) => {
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '');
     const model = genAI.getGenerativeModel({
       model: GEMINI_MODEL,
-      systemInstruction: systemInstruction || 'Você é uma assistente maternal empática.',
+      systemInstruction: systemInstruction || NATHIA_SYSTEM_PROMPT,
     });
 
     // Preparar partes do conteúdo (áudio + prompt)
@@ -71,7 +73,7 @@ serve(async (req) => {
     const response = await result.response;
     const text = response.text();
 
-    console.log('[audio-ai] Success:', {
+    edgeLogger.info('[audio-ai] Success', {
       mimeType,
       responseLength: text.length,
     });
@@ -81,17 +83,19 @@ serve(async (req) => {
         text,
         model: GEMINI_MODEL,
         tokensUsed: response.usageMetadata?.totalTokenCount || 0,
+        tokens_used: response.usageMetadata?.totalTokenCount || 0,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
-  } catch (error: any) {
-    console.error('[audio-ai] Error:', error);
+  } catch (error: unknown) {
+    edgeLogger.error('[audio-ai] Error', error);
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
     return new Response(
       JSON.stringify({
-        error: error.message || 'Internal server error',
-        details: error.toString(),
+        error: errorMessage,
+        details: String(error),
       }),
       {
         status: 500,

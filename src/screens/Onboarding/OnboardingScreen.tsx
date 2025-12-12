@@ -1,20 +1,20 @@
 /**
- * OnboardingScreen - 1ª Experiência (5-7 Perguntas)
+ * OnboardingScreen - 1ª Experiência (4 Perguntas)
  * Promessa: Configuração rápida e emocional para personalizar o app
  *
  * Fluxo:
  * 1. Nome/Apelido (identidade emocional)
  * 2. Fase de vida (mãe ou não mãe)
- * 3. Motivo de entrada (job-to-be-done, multi-select)
- * 4. Estado emocional base
- * 5. Prioridade nº 1
- * 6. Estilo de fala da IA (opcional)
- * 7. Notificações (opcional)
+ * 3. Detalhe rápido da fase (condicional, 1 passo)
+ * 4. Motivo de entrada (job-to-be-done, multi-select)
+ *
+ * Itens movidos para progressive profiling (pós-primeiro valor):
+ * - Emoção base, foco #1, tom da IA, notificações
  */
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Heart, Sparkles, BellRing } from 'lucide-react-native';
+import { Heart, Sparkles, Baby } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TextInput, Animated, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -37,7 +37,7 @@ import { logger } from '@/utils/logger';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Onboarding'>;
 
-type OnboardingStep = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+type OnboardingStep = 1 | 2 | 3 | 4;
 
 interface OptionButton {
   value: string;
@@ -65,11 +65,10 @@ export default function OnboardingScreen() {
   // Form data
   const [displayName, setDisplayName] = useState('');
   const [lifeStage, setLifeStage] = useState<string | null>(null);
+  const [stageDetail, setStageDetail] = useState<string | null>(null);
+  const [pregnancyWeeks, setPregnancyWeeks] = useState<number | null>(null);
+  const [babyAgeMonths, setBabyAgeMonths] = useState<number | null>(null);
   const [mainGoals, setMainGoals] = useState<string[]>([]);
-  const [baselineEmotion, setBaselineEmotion] = useState<string | null>(null);
-  const [firstFocus, setFirstFocus] = useState<string | null>(null);
-  const [languageTone, setLanguageTone] = useState<string | null>(null);
-  const [notificationOptIn, setNotificationOptIn] = useState<boolean | null>(null);
 
   // ======================
   // 🎨 OPTIONS
@@ -83,7 +82,7 @@ export default function OnboardingScreen() {
     { value: 'self_care', emoji: '💆', label: 'Tô aqui mais por mim mesma' },
   ];
 
-  const mainGoalsOptions: OptionButton[] = [
+  const baseMainGoalsOptions: OptionButton[] = [
     { value: 'mental_health', emoji: '🧠', label: 'Cuidar da mente e das emoções' },
     { value: 'routine', emoji: '📅', label: 'Organizar minha rotina e hábitos' },
     { value: 'support', emoji: '💬', label: 'Ter um lugar pra desabafar sem julgamentos' },
@@ -92,34 +91,28 @@ export default function OnboardingScreen() {
     { value: 'curiosity', emoji: '✨', label: 'Só curiosidade, quero ver como funciona' },
   ];
 
-  const emotionOptions: OptionButton[] = [
-    { value: 'bem', emoji: '😊', label: 'Bem, no geral' },
-    { value: 'triste', emoji: '😢', label: 'Triste / sensível' },
-    { value: 'ansiosa', emoji: '😰', label: 'Ansiosa / acelerada' },
-    { value: 'cansada', emoji: '😴', label: 'Muito cansada / esgotada' },
-    { value: 'calma', emoji: '😌', label: 'Calma, mas querendo cuidar mais de mim' },
-  ];
-
-  const focusOptions: OptionButton[] = [
-    { value: 'emotional_care', emoji: '💙', label: 'Cuidar melhor de mim emocionalmente' },
-    { value: 'organization', emoji: '🧩', label: 'Me organizar (rotina, tarefas, vida)' },
-    { value: 'reduce_fatigue', emoji: '😴', label: 'Me sentir menos cansada / sobrecarregada' },
-    { value: 'community', emoji: '👥', label: 'Me sentir menos sozinha' },
-    { value: 'content', emoji: '📚', label: 'Receber conteúdos certos pra minha fase' },
-  ];
-
-  const toneOptions: OptionButton[] = [
-    { value: 'friendly', emoji: '🤎', label: 'Bem acolhedora, tipo amiga' },
-    { value: 'direct', emoji: '🧠', label: 'Com carinho, mas direta ao ponto' },
-    { value: 'mentor', emoji: '📋', label: 'Mais séria e organizada, quase como uma mentora' },
-  ];
+  const stageDetailOptionsByLifeStage: Record<string, OptionButton[]> = {
+    pregnant: [
+      { value: 'weeks_1_12', emoji: '🌱', label: '1–12 semanas' },
+      { value: 'weeks_13_26', emoji: '🌿', label: '13–26 semanas' },
+      { value: 'weeks_27_42', emoji: '🌸', label: '27–42 semanas' },
+    ],
+    has_children: [
+      { value: 'baby_newborn', emoji: '🍼', label: 'Recém-nascido' },
+      { value: 'baby_0_3', emoji: '👶', label: '0–3 meses' },
+      { value: 'baby_4_6', emoji: '🧸', label: '4–6 meses' },
+      { value: 'baby_7_12', emoji: '🧩', label: '7–12 meses' },
+      { value: 'baby_13_24', emoji: '🚼', label: '1–2 anos' },
+      { value: 'baby_25_plus', emoji: '🌟', label: '3+ anos' },
+    ],
+  };
 
   // ======================
   // 🔄 HANDLERS
   // ======================
 
   const handleNext = () => {
-    if (currentStep < 7) {
+    if (currentStep < 4) {
       // Animate fade out
       Animated.timing(fadeAnim, {
         toValue: 0,
@@ -135,7 +128,6 @@ export default function OnboardingScreen() {
         }).start();
       });
     }
-    // Note: Step 7 now calls handleFinish directly via onPress
   };
 
   const handleBack = () => {
@@ -165,16 +157,12 @@ export default function OnboardingScreen() {
         case 2:
           return lifeStage !== null;
         case 3:
-          return mainGoals.length > 0 && mainGoals.length <= 3;
-        case 4:
-          return baselineEmotion !== null;
-        case 5:
-          return firstFocus !== null;
-        case 6:
-          return languageTone !== null;
-        case 7:
-          // Step 7 (notificações) é opcional - sempre pode prosseguir
+          // Step 3 é condicional. Para fases sem detalhe, pode prosseguir.
+          if (lifeStage === 'pregnant') return pregnancyWeeks !== null;
+          if (lifeStage === 'has_children') return babyAgeMonths !== null;
           return true;
+        case 4:
+          return mainGoals.length > 0 && mainGoals.length <= 3;
         default:
           return false;
       }
@@ -186,13 +174,26 @@ export default function OnboardingScreen() {
       displayName: displayName.trim().length,
       lifeStage,
       mainGoals: mainGoals.length,
-      baselineEmotion,
-      firstFocus,
-      languageTone,
-      notificationOptIn,
+      pregnancyWeeks,
+      babyAgeMonths,
     });
     
     return result;
+  };
+
+  const getMainGoalsOptions = (): OptionButton[] => {
+    // Adicionar opções “maternidade real” apenas quando fizer sentido (sem poluir)
+    const extra: OptionButton[] = [];
+    if (lifeStage === 'has_children') {
+      extra.push(
+        { value: 'baby_sleep', emoji: '😴', label: 'Sono do bebê / rotina do bebê' },
+        { value: 'feeding', emoji: '🍼', label: 'Amamentação / alimentação' }
+      );
+    }
+    if (lifeStage === 'pregnant') {
+      extra.push({ value: 'feeding', emoji: '🍼', label: 'Amamentação / alimentação (me preparar)' });
+    }
+    return [...extra, ...baseMainGoalsOptions];
   };
 
   const toggleGoal = (goal: string) => {
@@ -201,6 +202,8 @@ export default function OnboardingScreen() {
     } else {
       if (mainGoals.length < 3) {
         setMainGoals([...mainGoals, goal]);
+      } else {
+        Alert.alert('Limite de escolhas', 'Você pode escolher até 3 opções.');
       }
     }
   };
@@ -210,11 +213,10 @@ export default function OnboardingScreen() {
       currentStep,
       displayName: displayName.trim(),
       lifeStage,
+      stageDetail,
+      pregnancyWeeks,
+      babyAgeMonths,
       mainGoals,
-      baselineEmotion,
-      firstFocus,
-      languageTone,
-      notificationOptIn,
     });
     
     try {
@@ -224,10 +226,9 @@ export default function OnboardingScreen() {
         display_name: displayName.trim(),
         life_stage_generic: lifeStage!,
         main_goals: mainGoals,
-        baseline_emotion: baselineEmotion!,
-        first_focus: firstFocus!,
-        preferred_language_tone: languageTone ?? undefined,
-        notification_opt_in: notificationOptIn ?? false,
+        preferred_language_tone: 'friendly',
+        notification_opt_in: false,
+        weeks: pregnancyWeeks ?? undefined,
       };
 
       logger.info('[OnboardingScreen] Saving onboarding data...', { data });
@@ -263,7 +264,7 @@ export default function OnboardingScreen() {
         }
       }, 100);
 
-      if (!result) {
+      if (!result.success) {
         // Se falhou ao salvar, mostrar aviso mas continuar navegação
         logger.warn('[OnboardingScreen] Onboarding save returned false, but continuing navigation');
         Alert.alert(
@@ -359,7 +360,13 @@ export default function OnboardingScreen() {
                     key={option.value}
                     option={option}
                     selected={lifeStage === option.value}
-                    onPress={() => setLifeStage(option.value)}
+                    onPress={() => {
+                      setLifeStage(option.value);
+                      // Resetar detalhe ao trocar fase
+                      setStageDetail(null);
+                      setPregnancyWeeks(null);
+                      setBabyAgeMonths(null);
+                    }}
                   />
                 ))}
               </Box>
@@ -371,19 +378,81 @@ export default function OnboardingScreen() {
         return (
           <Animated.View style={{ opacity: fadeAnim, width: '100%' }}>
             <Box style={styles.stepContainer}>
+              <Box mb="6" align="center">
+                <Baby size={56} color={colors.primary.main} />
+              </Box>
+              <Heading level="h2" align="center" style={styles.question}>
+                Só pra eu acertar melhor…
+              </Heading>
+              <Text variant="body" color="secondary" align="center" style={styles.description}>
+                {lifeStage === 'pregnant'
+                  ? 'Em que período da gestação você está?'
+                  : lifeStage === 'has_children'
+                    ? 'Qual a idade do(a) mais novo(a)?'
+                    : 'Você pode pular esse passo.'}
+              </Text>
+
+              <Box style={styles.optionsContainer} mt="6">
+                {(lifeStage && stageDetailOptionsByLifeStage[lifeStage]
+                  ? stageDetailOptionsByLifeStage[lifeStage]
+                  : [
+                      { value: 'skip', emoji: '➡️', label: 'Continuar' },
+                    ]
+                ).map((option) => (
+                  <OptionCard
+                    key={option.value}
+                    option={option}
+                    selected={stageDetail === option.value || (option.value === 'skip' && stageDetail === null)}
+                    onPress={() => {
+                      setStageDetail(option.value === 'skip' ? null : option.value);
+                      if (lifeStage === 'pregnant') {
+                        const weeks =
+                          option.value === 'weeks_1_12'
+                            ? 8
+                            : option.value === 'weeks_13_26'
+                              ? 20
+                              : option.value === 'weeks_27_42'
+                                ? 32
+                                : null;
+                        setPregnancyWeeks(weeks);
+                      }
+                      if (lifeStage === 'has_children') {
+                        const months =
+                          option.value === 'baby_newborn'
+                            ? 0
+                            : option.value === 'baby_0_3'
+                              ? 2
+                              : option.value === 'baby_4_6'
+                                ? 5
+                                : option.value === 'baby_7_12'
+                                  ? 9
+                                  : option.value === 'baby_13_24'
+                                    ? 18
+                                    : option.value === 'baby_25_plus'
+                                      ? 36
+                                      : null;
+                        setBabyAgeMonths(months);
+                      }
+                    }}
+                  />
+                ))}
+              </Box>
+            </Box>
+          </Animated.View>
+        );
+
+      case 4:
+        return (
+          <Animated.View style={{ opacity: fadeAnim, width: '100%' }}>
+            <Box style={styles.stepContainer}>
               <Heading level="h2" align="center" style={styles.question}>
                 O que te trouxe pro Nossa Maternidade hoje?
               </Heading>
-              <Text 
-                variant="body" 
-                color="secondary" 
-                align="center" 
-                style={styles.description}
-              >
+              <Text variant="body" color="secondary" align="center" style={styles.description}>
                 Escolha até 3 opções que mais fazem sentido pra você
               </Text>
               <Box style={styles.optionsContainer} mt="6">
-                {mainGoalsOptions.map((option) => (
+                {getMainGoalsOptions().map((option) => (
                   <OptionCard
                     key={option.value}
                     option={option}
@@ -400,93 +469,6 @@ export default function OnboardingScreen() {
               </Box>
             </Box>
           </Animated.View>
-        );
-
-      case 4:
-        return (
-          <Box style={styles.stepContainer}>
-            <Heading level="h2" style={styles.question}>
-              E nos últimos dias, você tem se sentido mais…
-            </Heading>
-            <Box style={styles.optionsContainer}>
-              {emotionOptions.map((option) => (
-                <OptionCard
-                  key={option.value}
-                  option={option}
-                  selected={baselineEmotion === option.value}
-                  onPress={() => setBaselineEmotion(option.value)}
-                />
-              ))}
-            </Box>
-          </Box>
-        );
-
-      case 5:
-        return (
-          <Box style={styles.stepContainer}>
-            <Heading level="h2" style={styles.question}>
-              Se eu pudesse te ajudar em uma coisa primeiro, qual seria?
-            </Heading>
-            <Box style={styles.optionsContainer}>
-              {focusOptions.map((option) => (
-                <OptionCard
-                  key={option.value}
-                  option={option}
-                  selected={firstFocus === option.value}
-                  onPress={() => setFirstFocus(option.value)}
-                />
-              ))}
-            </Box>
-          </Box>
-        );
-
-      case 6:
-        return (
-          <Box style={styles.stepContainer}>
-            <Heading level="h2" style={styles.question}>
-              Como você prefere que eu fale com você?
-            </Heading>
-            <Box style={styles.optionsContainer}>
-              {toneOptions.map((option) => (
-                <OptionCard
-                  key={option.value}
-                  option={option}
-                  selected={languageTone === option.value}
-                  onPress={() => setLanguageTone(option.value)}
-                />
-              ))}
-            </Box>
-          </Box>
-        );
-
-      case 7:
-        return (
-          <Box style={styles.stepContainer}>
-            <Box mb="4" align="center">
-              <BellRing
-                size={48}
-                color={colors.primary.main}
-              />
-            </Box>
-            <Heading level="h2" style={styles.question}>
-              Quer que eu te lembre, de vez em quando, de cuidar de você?
-            </Heading>
-            <Text variant="body" color="secondary" style={styles.description}>
-              Lembretes suaves, sem pressão, só pra te apoiar
-            </Text>
-            <Box style={styles.optionsContainer}>
-              <OptionCard
-                option={{ value: 'yes', emoji: '✅', label: 'Sim, pode me lembrar' }}
-                selected={notificationOptIn === true}
-                onPress={() => setNotificationOptIn(true)}
-              />
-              <OptionCard
-                option={{ value: 'no', emoji: '🤚', label: 'Por enquanto não' }}
-                selected={notificationOptIn === false}
-                onPress={() => setNotificationOptIn(false)}
-              />
-            </Box>
-          </Box>
         );
 
       default:
@@ -515,7 +497,7 @@ export default function OnboardingScreen() {
         <Box style={{ flex: 1 }}>
           <ProgressBar
             current={currentStep}
-            total={7}
+            total={4}
             color={colors.primary.main}
             height={4}
             animated
@@ -531,6 +513,7 @@ export default function OnboardingScreen() {
         style={{ flex: 1 }}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {renderStepContent()}
       </ScrollView>
@@ -565,7 +548,7 @@ export default function OnboardingScreen() {
                 currentStep,
                 canProceed: canProceed(),
               });
-              if (currentStep === 7) {
+              if (currentStep === 4) {
                 logger.info('[OnboardingScreen] Calling handleFinish');
                 handleFinish();
               } else {
@@ -577,15 +560,15 @@ export default function OnboardingScreen() {
             loading={loading}
             style={currentStep === 1 ? { width: '100%' } : { minWidth: 100 }}
             accessibilityLabel={
-              currentStep === 7 ? 'Finalizar onboarding e começar a usar o app' : 'Próximo passo'
+              currentStep === 4 ? 'Finalizar onboarding e começar a usar o app' : 'Próximo passo'
             }
             accessibilityHint={
-              currentStep === 7
+              currentStep === 4
                 ? 'Salva seus dados e navega para a tela principal'
                 : 'Avança para o próximo passo do onboarding'
             }
           >
-            {loading ? 'Salvando...' : currentStep === 7 ? 'Começar!' : 'Próximo'}
+            {loading ? 'Salvando...' : currentStep === 4 ? 'Começar!' : 'Próximo'}
           </HapticButton>
         </Box>
 
@@ -594,11 +577,11 @@ export default function OnboardingScreen() {
           pb="4"
           align="center"
           accessibilityRole="text"
-          accessibilityLabel={`Passo ${currentStep} de 7`}
+          accessibilityLabel={`Passo ${currentStep} de 4`}
           accessibilityHint="Indicador de progresso do onboarding"
         >
           <Text variant="small" color="tertiary" align="center">
-            {currentStep} de 7
+            {currentStep} de 4
           </Text>
         </Box>
       </Box>
