@@ -611,99 +611,100 @@ export const ColorTokens = {
  * ⭐ COTTON CANDY TECH BLUE VERSION - Primary Theme
  */
 export const LightTheme = {
-  // Backgrounds - Cotton Candy Tech
+  // Backgrounds - Soft Pastel (Calm/Flo/Clue inspired)
   background: {
-    canvas: ColorTokens.cottonCandy.bgSoft, // #FDF4F9 - App Background (Rosa suave)
-    beige: '#F5F5F5', // Cinza muito claro
-    warm: '#FFF5F7', // Rosa muito suave
-    peach: '#FCE4EC', // Rosa claro
-    card: '#FFFFFF', // Branco puro para cards
-    elevated: '#FFFFFF', // Superfícies elevadas
-    input: '#F5F5F5', // Input background
+    // Base
+    canvas: '#FFFBFD', // Fundo clean com leve blush (soft pastel)
+    beige: '#F6F7FB', // Neutro frio (mais “Calm”)
+    warm: '#FFF6FA', // Warm blush
+    peach: '#FFF1F6', // Peach/blush muito suave
+    card: '#FFFFFF',
+    elevated: '#FFFFFF',
+    input: '#F6F7FB',
     overlay: 'rgba(0, 0, 0, 0.5)',
     gradient: {
-      primary: [ColorTokens.cottonCandy.pink, ColorTokens.cottonCandy.blue] as const, // Pink → Blue gradient
-      soft: [ColorTokens.cottonCandy.bgGradientStart, ColorTokens.cottonCandy.bgGradientEnd] as const, // Cotton gradient
-      warm: ['#FFFFFF', '#FFF5F7'], // Branco → Rosa suave
-      header: [ColorTokens.cottonCandy.pink400, ColorTokens.cottonCandy.blue400] as const, // Cotton Candy header
-      // ⭐ NathIA gradient - Cotton Candy version
-      nathIA: [ColorTokens.cottonCandy.pinkLight, ColorTokens.cottonCandy.blueLight] as const,
+      // Pink → Blue (soft, “Flo vibe”)
+      primary: ['#FFB8D9', '#B8D4FF'] as const,
+      // Soft background gradient (header/background highlights)
+      soft: ['#FFF8FC', '#F0F7FF'] as const,
+      warm: ['#FFFFFF', '#FFF6FA'] as const,
+      // Header: blush → lavender → powder blue
+      header: ['#FFB8D9', '#D9B8FF', '#B8D4FF'] as const,
+      // NathIA: soft pink → soft blue (clean)
+      nathIA: ['#FFB8D9', '#B8D4FF'] as const,
     },
   },
 
-  // Text - Cores de texto (Cotton Candy)
+  // Text - Clean & readable
   text: {
-    primary: ColorTokens.neutral[900], // #171717 - Texto escuro principal
-    secondary: ColorTokens.neutral[700], // #404040 - Texto secundário
-    tertiary: ColorTokens.neutral[500], // #737373 - Texto terciário
-    disabled: ColorTokens.neutral[400], // #A3A3A3 - Texto desabilitado
-    placeholder: ColorTokens.neutral[400], // #A3A3A3 - Placeholder
-    inverse: '#FFFFFF', // Texto em fundos escuros
-    link: ColorTokens.cottonCandy.pink, // #FF0080 - Links em Cotton Candy pink
-    success: ColorTokens.semantic.success, // #22C55E - Verde success
-    warning: ColorTokens.semantic.warning, // #CA8A04 - Amarelo warning
-    error: ColorTokens.semantic.error, // #EF4444 - Vermelho error
-    info: ColorTokens.cottonCandy.blue, // #0070F3 - Azul Cotton Candy
+    primary: '#1F2937', // slate-ish
+    secondary: '#475569',
+    tertiary: '#64748B',
+    disabled: '#94A3B8',
+    placeholder: '#94A3B8',
+    inverse: '#FFFFFF',
+    link: '#FF6B9D', // soft pink link
+    success: ColorTokens.semantic.success,
+    warning: ColorTokens.semantic.warning,
+    error: ColorTokens.semantic.error,
+    info: '#5B8DEF', // soft “trust blue”
   },
 
-  // Borders - Cotton Candy
+  // Borders - Subtle, calm
   border: {
-    light: 'rgba(0, 0, 0, 0.08)',
-    medium: ColorTokens.neutral[200], // #E5E5E5
-    dark: 'rgba(0, 0, 0, 0.16)',
-    focus: ColorTokens.cottonCandy.pink, // #FF0080 - Cotton Candy pink focus
-    error: ColorTokens.semantic.error, // #EF4444
-    success: ColorTokens.semantic.success, // #22C55E
+    light: 'rgba(15, 23, 42, 0.08)',
+    medium: 'rgba(15, 23, 42, 0.14)',
+    dark: 'rgba(15, 23, 42, 0.22)',
+    focus: '#FF6B9D',
+    error: ColorTokens.semantic.error,
+    success: ColorTokens.semantic.success,
   },
 
-  // Primary - Cotton Candy Pink ⭐ COTTON CANDY
+  // Primary - Soft Pink (brand)
   primary: {
-    main: ColorTokens.cottonCandy.pink, // #FF0080 - Brand Accent
-    light: ColorTokens.cottonCandy.pinkLight, // #FF4D9F - Lighter variant
-    dark: ColorTokens.cottonCandy.pinkDark, // #E6007A - Pressed state
-    gradient: [ColorTokens.cottonCandy.pinkLight, ColorTokens.cottonCandy.pink, ColorTokens.cottonCandy.pinkDark] as const,
-    // Rosa (compatibilidade)
+    main: '#FF6B9D', // Pink (soft but still brand)
+    light: '#FFB8D9',
+    dark: '#E64B86',
+    gradient: ['#FFB8D9', '#FF6B9D', '#E64B86'] as const,
     pink: {
-      main: ColorTokens.cottonCandy.pink, // #FF0080
-      light: ColorTokens.cottonCandy.pinkLight, // #FF4D9F
-      dark: ColorTokens.cottonCandy.pinkDark, // #E6007A
-      gradient: [ColorTokens.cottonCandy.pinkLight, ColorTokens.cottonCandy.pink] as const,
+      main: '#FF6B9D',
+      light: '#FFB8D9',
+      dark: '#E64B86',
+      gradient: ['#FFB8D9', '#FF6B9D'] as const,
     },
   },
 
-  // Secondary - Cotton Candy Blue ⭐ COTTON CANDY
+  // Secondary - Soft Blue (trust/action)
   secondary: {
-    main: ColorTokens.cottonCandy.blue, // #0070F3 - Trust & Action
-    light: ColorTokens.cottonCandy.blueLight, // #00C6FF - Gradient end
-    dark: ColorTokens.cottonCandy.blueDark, // #0061D9 - Pressed state
-    gradient: [ColorTokens.cottonCandy.blueLight, ColorTokens.cottonCandy.blue, ColorTokens.cottonCandy.blueDark] as const,
+    main: '#5B8DEF',
+    light: '#B8D4FF',
+    dark: '#2F6FE8',
+    gradient: ['#B8D4FF', '#5B8DEF', '#2F6FE8'] as const,
   },
 
-  // Status colors - Cotton Candy Semantic
+  // Status colors
   status: {
-    success: ColorTokens.semantic.success, // #22C55E - Green-500
-    warning: ColorTokens.semantic.warning, // #CA8A04 - Yellow-600
-    error: ColorTokens.semantic.error, // #EF4444 - Red-500
-    info: ColorTokens.cottonCandy.blue, // #0070F3 - Cotton Candy Blue
+    success: ColorTokens.semantic.success,
+    warning: ColorTokens.semantic.warning,
+    error: ColorTokens.semantic.error,
+    info: '#5B8DEF',
   },
 
-  // Gradients - Cotton Candy Tech
+  // Gradients - Soft Pastel
   gradients: {
-    success: [ColorTokens.semantic.success, '#16A34A'] as const, // Green gradient
-    warning: [ColorTokens.semantic.warning, '#A16207'] as const, // Amber gradient
-    error: [ColorTokens.semantic.error, '#DC2626'] as const, // Red gradient
-    info: [ColorTokens.cottonCandy.blueLight, ColorTokens.cottonCandy.blue] as const, // Cotton Blue gradient
-    maternal: [ColorTokens.cottonCandy.pinkLight, ColorTokens.cottonCandy.pink] as const, // Cotton Pink gradient
-    spiritual: [ColorTokens.cottonCandy.blue, ColorTokens.cottonCandy.pink] as const, // Cotton Blue → Pink
-    // ⭐ Header gradient (COTTON CANDY: pink → blue)
-    header: [ColorTokens.cottonCandy.pink400, ColorTokens.cottonCandy.blue400] as const, // Pink → Blue
-    nathIA: [ColorTokens.cottonCandy.pinkLight, ColorTokens.cottonCandy.blueLight] as const, // Cotton NathIA gradient
-    // Gradientes adicionais - Cotton Candy
-    hero: [ColorTokens.cottonCandy.pink, ColorTokens.cottonCandy.blue] as const, // Hero banner Cotton
-    wellness: [ColorTokens.semantic.success, '#10B981'] as const, // Verde wellness
-    premium: [ColorTokens.cottonCandy.pink, ColorTokens.cottonCandy.blue] as const, // Premium Cotton
-    card: ['#FFFFFF', ColorTokens.cottonCandy.bgSoft] as const, // Card subtle gradient
-    search: ['#FFFFFF', '#F5F5F5'] as const, // Search pill gradient
+    success: [ColorTokens.semantic.success, '#16A34A'] as const,
+    warning: [ColorTokens.semantic.warning, '#A16207'] as const,
+    error: [ColorTokens.semantic.error, '#DC2626'] as const,
+    info: ['#B8D4FF', '#5B8DEF'] as const,
+    maternal: ['#FFB8D9', '#FF6B9D'] as const,
+    spiritual: ['#D9B8FF', '#5B8DEF'] as const,
+    header: ['#FFB8D9', '#D9B8FF', '#B8D4FF'] as const,
+    nathIA: ['#FFB8D9', '#B8D4FF'] as const,
+    hero: ['#FFB8D9', '#FFF0F7', '#F0F7FF'] as const,
+    wellness: [ColorTokens.semantic.success, '#10B981'] as const,
+    premium: ['#FFB8D9', '#B8D4FF'] as const,
+    card: ['#FFFFFF', '#F6F7FB'] as const,
+    search: ['#FFFFFF', '#F6F7FB'] as const,
   },
 
   // Tertiary colors (Verde/Success)
@@ -720,69 +721,68 @@ export const LightTheme = {
  * ⭐ ATUALIZADO: Design baseado nos screenshots (Rosa/Magenta + Roxo)
  */
 export const DarkTheme = {
-  // Backgrounds - Escuro premium
+  // Backgrounds - Soft Pastel Dark (clean, low-saturation)
   background: {
-    canvas: '#121212', // Material Dark background
-    card: '#1E1E1E', // Card escuro
-    elevated: '#2D2D2D', // Superfície elevada
-    surface: '#1A1A1A', // Superfície alternativa
-    input: '#2D2D2D', // Input background
+    canvas: '#0B1020',
+    card: '#111A2E',
+    elevated: '#18233D',
+    surface: '#0F172A',
+    input: '#111A2E',
     overlay: 'rgba(0, 0, 0, 0.7)',
     gradient: {
-      primary: ColorTokens.header.gradient.dark, // pink-500 → rose-500 → purple-600 (PADRONIZADO)
-      soft: ['#1E1E1E', '#2D2D2D'], // Cards gradient
-      card: ['#1E1E1E', '#252525'], // Card gradient
-      header: ColorTokens.header.gradient.dark, // Header gradient dark (PADRONIZADO)
-      nathIA: ColorTokens.header.gradient.dark, // NathIA gradient dark (PADRONIZADO)
+      primary: ['#FF7BB3', '#7FB2FF'] as const,
+      soft: ['#111A2E', '#0B1020'] as const,
+      card: ['#111A2E', '#18233D'] as const,
+      header: ['#FF7BB3', '#B9A8FF', '#7FB2FF'] as const,
+      nathIA: ['#FF7BB3', '#7FB2FF'] as const,
     },
   },
 
-  // Text - Cores de texto dark mode
+  // Text - Dark mode readable
   text: {
-    primary: '#FFFFFF', // Branco puro
-    secondary: '#E0E0E0', // Cinza claro (Material Grey 300)
-    tertiary: '#BDBDBD', // Cinza médio (Material Grey 400)
-    disabled: '#757575', // Cinza desabilitado (Material Grey 600)
-    placeholder: '#9E9E9E', // Placeholder (Material Grey 500)
-    inverse: '#121212', // Texto em fundos claros
-    link: '#F48FB1', // Links em rosa claro
-    success: '#81C784', // Verde claro (Material Green 300)
-    warning: '#FFD54F', // Amarelo claro (Material Amber 300)
-    error: '#EF5350', // Vermelho claro (Material Red 400)
-    info: '#64B5F6', // Azul claro (Material Blue 300)
+    primary: '#F8FAFC',
+    secondary: '#CBD5E1',
+    tertiary: '#94A3B8',
+    disabled: '#64748B',
+    placeholder: '#94A3B8',
+    inverse: '#0B1020',
+    link: '#FF7BB3',
+    success: '#81C784',
+    warning: '#FFD54F',
+    error: '#EF5350',
+    info: '#7FB2FF',
   },
 
-  // Borders - Dark mode
+  // Borders - Dark mode subtle
   border: {
-    light: 'rgba(255, 255, 255, 0.08)',
-    medium: '#424242', // Material Grey 800
-    dark: 'rgba(255, 255, 255, 0.16)',
-    focus: '#F06292', // Rosa light focus
-    error: '#EF5350', // Vermelho light
-    success: '#81C784', // Verde light
+    light: 'rgba(148, 163, 184, 0.18)',
+    medium: 'rgba(148, 163, 184, 0.26)',
+    dark: 'rgba(148, 163, 184, 0.34)',
+    focus: '#FF7BB3',
+    error: '#EF5350',
+    success: '#81C784',
   },
 
-  // Primary - Rosa Light (Dark mode)
+  // Primary - Soft Pink (Dark)
   primary: {
-    main: '#F06292', // Rosa light (melhor contraste em dark mode)
-    light: '#F48FB1', // Rosa mais claro
-    dark: '#EC407A', // Rosa médio
-    gradient: ['#F48FB1', '#F06292', '#EC407A'], // Rosa light gradient
-    // Rosa (compatibilidade)
+    main: '#FF7BB3',
+    light: '#FFB8D9',
+    dark: '#FF5C9C',
+    gradient: ['#FFB8D9', '#FF7BB3', '#FF5C9C'] as const,
     pink: {
-      main: '#F06292', // Rosa light
-      light: '#F48FB1', // Rosa mais claro
-      dark: '#EC407A', // Rosa médio
-      gradient: ['#F48FB1', '#F06292', '#EC407A'], // Rosa light gradient
+      main: '#FF7BB3',
+      light: '#FFB8D9',
+      dark: '#FF5C9C',
+      gradient: ['#FFB8D9', '#FF7BB3', '#FF5C9C'] as const,
     },
   },
 
-  // Secondary - Roxo Light (Dark mode)
+  // Secondary - Soft Blue (Dark)
   secondary: {
-    main: '#BA68C8', // Roxo light (dark mode friendly)
-    light: '#CE93D8', // Roxo mais claro
-    dark: '#AB47BC', // Roxo médio
-    gradient: ['#CE93D8', '#BA68C8', '#AB47BC'], // Roxo light gradient
+    main: '#7FB2FF',
+    light: '#B8D4FF',
+    dark: '#5B8DEF',
+    gradient: ['#B8D4FF', '#7FB2FF', '#5B8DEF'] as const,
   },
 
   // Status colors - lighter for dark mode
@@ -793,18 +793,17 @@ export const DarkTheme = {
     info: '#64B5F6', // Material Blue 300
   },
 
-  // Gradients - brighter for dark mode
+  // Gradients - Dark
   gradients: {
     success: ['#A5D6A7', '#81C784', '#66BB6A'], // Green light gradient
     warning: ['#FFE082', '#FFD54F', '#FFCA28'], // Amber light gradient
     error: ['#EF9A9A', '#EF5350', '#E57373'], // Red light gradient
-    info: ['#90CAF9', '#64B5F6', '#42A5F5'], // Blue light gradient
-    maternal: ['#F48FB1', '#F06292', '#EC407A'], // Rosa light gradient
-    spiritual: ['#CE93D8', '#BA68C8', '#AB47BC'], // Roxo light gradient
-    // Header gradient dark (PADRONIZADO)
-    header: ColorTokens.header.gradient.dark, // pink-500 → rose-500 → purple-600
-    nathIA: ColorTokens.header.gradient.dark, // NathIA gradient dark (PADRONIZADO)
-    hero: ColorTokens.header.gradient.dark, // Hero gradient dark (PADRONIZADO)
+    info: ['#B8D4FF', '#7FB2FF', '#5B8DEF'] as const,
+    maternal: ['#FFB8D9', '#FF7BB3', '#FF5C9C'] as const,
+    spiritual: ['#B9A8FF', '#7FB2FF', '#5B8DEF'] as const,
+    header: ['#FF7BB3', '#B9A8FF', '#7FB2FF'] as const,
+    nathIA: ['#FF7BB3', '#7FB2FF'] as const,
+    hero: ['#FF7BB3', '#111A2E', '#7FB2FF'] as const,
     // Warm gradient
     warm: ['#FFD54F', '#FFCA28', '#FFC107'] as const, // Warm amber gradient
   },

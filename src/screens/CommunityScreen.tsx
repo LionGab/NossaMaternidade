@@ -44,25 +44,8 @@ import { communityService } from '@/services/supabase/communityService';
 import type { CommunityPost, FeaturedPost } from '@/types/community';
 import { STATUS_LABELS } from '@/types/community';
 import { Spacing, Radius } from '@/theme/tokens';
-import { SoftPastelTheme, SoftPastelBackgrounds } from '@/theme/softPastelTheme';
+import { useTheme } from '@/hooks/useTheme';
 import { logger } from '@/utils/logger';
-
-// Cores SoftPastel
-const COLORS = {
-  background: SoftPastelBackgrounds.canvas,
-  backgroundGradientEnd: '#F0F7FF',
-  card: '#FFFFFF',
-  cardAlt: '#FDF9FB',
-  pink: SoftPastelTheme.colors.pink,
-  purple: SoftPastelTheme.colors.purple,
-  blue: SoftPastelTheme.colors.blue,
-  mint: SoftPastelTheme.colors.mint,
-  accent: '#FF6B9D',
-  accentLight: '#FFE4EC',
-  textDark: '#3A2E2E',
-  textMuted: '#6A5450',
-  border: 'rgba(0,0,0,0.06)',
-};
 
 // Categorias do fórum (+ filtro "Meus posts")
 const FORUM_CATEGORIES = [
@@ -72,16 +55,30 @@ const FORUM_CATEGORIES = [
   { id: 'my-posts', label: 'Meus posts', icon: User }, // NOVO: Filtro de posts do usuário
 ];
 
-// Grupos fixos (mock - depois conectar ao backend)
-const COMMUNITY_GROUPS = [
-  { id: '1', name: 'Mães de Primeira Viagem', members: 1234, emoji: '👶', color: COLORS.pink },
-  { id: '2', name: 'Amamentação & Apoio', members: 856, emoji: '🤱', color: COLORS.purple },
-  { id: '3', name: 'Sono do Bebê', members: 2103, emoji: '😴', color: COLORS.blue },
-  { id: '4', name: 'Saúde Mental Materna', members: 1567, emoji: '💜', color: COLORS.mint },
-];
-
 export default function CommunityScreen() {
   const insets = useSafeAreaInsets();
+  const { colors, isDark } = useTheme();
+
+  // Paleta local (derivada do ThemeContext)
+  const UI = {
+    background: colors.background.canvas,
+    card: colors.background.card,
+    cardAlt: colors.background.beige ?? colors.background.card,
+    accent: colors.primary.main,
+    accentLight: `${colors.primary.light}33`,
+    text: colors.text.primary,
+    textMuted: colors.text.secondary,
+    border: colors.border.light,
+    gradientHeader: colors.background.gradient.header ?? colors.background.gradient.soft,
+  } as const;
+
+  // Grupos fixos (mock - depois conectar ao backend)
+  const COMMUNITY_GROUPS = [
+    { id: '1', name: 'Mães de Primeira Viagem', members: 1234, emoji: '👶', color: colors.primary.light },
+    { id: '2', name: 'Amamentação & Apoio', members: 856, emoji: '🤱', color: colors.secondary.light },
+    { id: '3', name: 'Sono do Bebê', members: 2103, emoji: '😴', color: colors.secondary.main },
+    { id: '4', name: 'Saúde Mental Materna', members: 1567, emoji: '💜', color: colors.status.success },
+  ] as const;
 
   // State
   const [posts, setPosts] = useState<CommunityPost[]>([]);
@@ -223,12 +220,12 @@ export default function CommunityScreen() {
         <TouchableOpacity
           activeOpacity={0.95}
           style={{
-            backgroundColor: COLORS.card,
+            backgroundColor: UI.card,
             borderRadius: Radius['3xl'],
             padding: Spacing['5'],
             marginBottom: Spacing['4'],
             borderWidth: 1,
-            borderColor: COLORS.border,
+            borderColor: UI.border,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.06,
@@ -243,11 +240,11 @@ export default function CommunityScreen() {
                 width: 48,
                 height: 48,
                 borderRadius: 24,
-                backgroundColor: COLORS.accentLight,
+                backgroundColor: UI.accentLight,
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderWidth: 2,
-                borderColor: `${COLORS.accent}30`,
+                borderColor: `${UI.accent}30`,
               }}
             >
               {item.author?.avatar_url ? (
@@ -257,7 +254,7 @@ export default function CommunityScreen() {
                   contentFit="cover"
                 />
               ) : (
-                <Text style={{ fontSize: 18, fontWeight: '700', color: COLORS.accent }}>
+                <Text style={{ fontSize: 18, fontWeight: '700', color: UI.accent }}>
                   {item.author?.full_name?.[0] || 'M'}
                 </Text>
               )}
@@ -268,7 +265,7 @@ export default function CommunityScreen() {
                   style={{
                     fontSize: 15,
                     fontWeight: '600',
-                    color: COLORS.textDark,
+                    color: UI.text,
                     letterSpacing: -0.1,
                   }}
                 >
@@ -292,7 +289,7 @@ export default function CommunityScreen() {
                   </View>
                 )}
               </View>
-              <Text style={{ fontSize: 13, color: COLORS.textMuted }}>
+              <Text style={{ fontSize: 13, color: UI.textMuted }}>
                 {new Date(item.created_at).toLocaleDateString('pt-BR', {
                   day: 'numeric',
                   month: 'short',
@@ -305,7 +302,7 @@ export default function CommunityScreen() {
           <Text
             style={{
               fontSize: 15,
-              color: COLORS.textDark,
+              color: UI.text,
               lineHeight: 24,
               marginBottom: Spacing['4'],
               letterSpacing: 0.1,
@@ -361,20 +358,20 @@ export default function CommunityScreen() {
                 paddingVertical: Spacing['2'],
                 paddingHorizontal: Spacing['3'],
                 borderRadius: Radius.full,
-                backgroundColor: item.is_liked_by_user ? `${COLORS.accent}15` : 'transparent',
+                backgroundColor: item.is_liked_by_user ? `${UI.accent}15` : 'transparent',
               }}
             >
               <Heart
                 size={22}
-                color={item.is_liked_by_user ? COLORS.accent : COLORS.textMuted}
-                fill={item.is_liked_by_user ? COLORS.accent : 'none'}
+                color={item.is_liked_by_user ? UI.accent : UI.textMuted}
+                fill={item.is_liked_by_user ? UI.accent : 'none'}
                 strokeWidth={2.5}
               />
               <Text
                 style={{
                   fontSize: 14,
                   fontWeight: '600',
-                  color: item.is_liked_by_user ? COLORS.accent : COLORS.textMuted,
+                  color: item.is_liked_by_user ? UI.accent : UI.textMuted,
                 }}
               >
                 {item.likes_count}
@@ -392,8 +389,8 @@ export default function CommunityScreen() {
                 borderRadius: Radius.full,
               }}
             >
-              <MessageCircle size={22} color={COLORS.textMuted} strokeWidth={2.5} />
-              <Text style={{ fontSize: 14, fontWeight: '600', color: COLORS.textMuted }}>
+              <MessageCircle size={22} color={UI.textMuted} strokeWidth={2.5} />
+              <Text style={{ fontSize: 14, fontWeight: '600', color: UI.textMuted }}>
                 {item.comments_count}
               </Text>
             </TouchableOpacity>
@@ -405,12 +402,12 @@ export default function CommunityScreen() {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
-      <StatusBar style="dark" />
+    <View style={{ flex: 1, backgroundColor: UI.background }}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       {/* Background Gradient */}
       <LinearGradient
-        colors={[SoftPastelBackgrounds.soft, COLORS.backgroundGradientEnd]}
+        colors={UI.gradientHeader as [string, string, ...string[]]}
         style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 200 }}
       />
 
@@ -421,7 +418,7 @@ export default function CommunityScreen() {
           paddingBottom: insets.bottom + 180,
         }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.accent} />
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={UI.accent} />
         }
       >
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
@@ -431,7 +428,7 @@ export default function CommunityScreen() {
               style={{
                 fontSize: 32,
                 fontWeight: '700',
-                color: COLORS.textDark,
+                color: UI.text,
                 letterSpacing: -0.5,
                 lineHeight: 38,
                 marginBottom: Spacing['1'],
@@ -442,7 +439,7 @@ export default function CommunityScreen() {
             <Text
               style={{
                 fontSize: 15,
-                color: COLORS.textMuted,
+                color: UI.textMuted,
                 lineHeight: 22,
                 marginBottom: Spacing['4'],
               }}
@@ -455,13 +452,13 @@ export default function CommunityScreen() {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: COLORS.card,
+                backgroundColor: UI.card,
                 paddingVertical: Spacing['2.5'],
                 paddingHorizontal: Spacing['4'],
                 borderRadius: Radius.full,
                 alignSelf: 'flex-start',
                 borderWidth: 1,
-                borderColor: COLORS.border,
+                borderColor: UI.border,
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 1 },
                 shadowOpacity: 0.05,
@@ -480,7 +477,7 @@ export default function CommunityScreen() {
                   borderColor: '#FFFFFF',
                 }}
               />
-              <Text style={{ fontSize: 14, fontWeight: '600', color: COLORS.textDark }}>
+              <Text style={{ fontSize: 14, fontWeight: '600', color: UI.text }}>
                 {onlineCount.toLocaleString()} mães online
               </Text>
             </View>
@@ -515,7 +512,7 @@ export default function CommunityScreen() {
                 style={{
                   fontSize: 18,
                   fontWeight: '700',
-                  color: COLORS.textDark,
+                  color: UI.text,
                   letterSpacing: -0.2,
                 }}
               >
@@ -526,7 +523,7 @@ export default function CommunityScreen() {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 }}
               >
-                <Text style={{ fontSize: 14, fontWeight: '600', color: COLORS.accent }}>Ver todos</Text>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: UI.accent }}>Ver todos</Text>
               </TouchableOpacity>
             </View>
 
@@ -542,11 +539,11 @@ export default function CommunityScreen() {
                   activeOpacity={0.9}
                   style={{
                     width: 160,
-                    backgroundColor: COLORS.card,
+                    backgroundColor: UI.card,
                     borderRadius: Radius['2xl'],
                     padding: Spacing['5'],
                     borderWidth: 1,
-                    borderColor: COLORS.border,
+                    borderColor: UI.border,
                     shadowColor: '#000',
                     shadowOffset: { width: 0, height: 2 },
                     shadowOpacity: 0.06,
@@ -573,7 +570,7 @@ export default function CommunityScreen() {
                     style={{
                       fontSize: 14,
                       fontWeight: '600',
-                      color: COLORS.textDark,
+                      color: UI.text,
                       marginBottom: Spacing['1'],
                       letterSpacing: -0.1,
                     }}
@@ -581,7 +578,7 @@ export default function CommunityScreen() {
                   >
                     {group.name}
                   </Text>
-                  <Text style={{ fontSize: 12, color: COLORS.textMuted }}>
+                  <Text style={{ fontSize: 12, color: UI.textMuted }}>
                     {group.members.toLocaleString()} membros
                   </Text>
                 </TouchableOpacity>
@@ -593,11 +590,11 @@ export default function CommunityScreen() {
           <View style={{ paddingHorizontal: Spacing['6'], marginBottom: Spacing['6'] }}>
             <View
               style={{
-                backgroundColor: COLORS.card,
+                backgroundColor: UI.card,
                 borderRadius: Radius['3xl'],
                 padding: Spacing['5'],
                 borderWidth: 1,
-                borderColor: COLORS.border,
+                borderColor: UI.border,
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.06,
@@ -609,7 +606,7 @@ export default function CommunityScreen() {
                 style={{
                   fontSize: 16,
                   fontWeight: '600',
-                  color: COLORS.textDark,
+                  color: UI.text,
                   marginBottom: Spacing['4'],
                   letterSpacing: -0.1,
                 }}
@@ -621,7 +618,7 @@ export default function CommunityScreen() {
                   value={newPostText}
                   onChangeText={setNewPostText}
                   placeholder="O que você está pensando?"
-                  placeholderTextColor={COLORS.textMuted}
+                  placeholderTextColor={UI.textMuted}
                   multiline
                   style={{
                     flex: 1,
@@ -629,12 +626,12 @@ export default function CommunityScreen() {
                     borderRadius: Radius.xl,
                     padding: Spacing['4'],
                     fontSize: 15,
-                    color: COLORS.textDark,
+                    color: UI.text,
                     maxHeight: 120,
                     minHeight: 52,
                     lineHeight: 22,
                     borderWidth: 1,
-                    borderColor: COLORS.border,
+                    borderColor: UI.border,
                   }}
                 />
                 <TouchableOpacity
@@ -645,10 +642,10 @@ export default function CommunityScreen() {
                     width: 52,
                     height: 52,
                     borderRadius: 26,
-                    backgroundColor: newPostText.trim() ? COLORS.accent : '#E5E5E5',
+                    backgroundColor: newPostText.trim() ? UI.accent : '#E5E5E5',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    shadowColor: newPostText.trim() ? COLORS.accent : 'transparent',
+                    shadowColor: newPostText.trim() ? UI.accent : 'transparent',
                     shadowOffset: { width: 0, height: 2 },
                     shadowOpacity: 0.3,
                     shadowRadius: 4,
@@ -671,7 +668,7 @@ export default function CommunityScreen() {
               style={{
                 fontSize: 18,
                 fontWeight: '700',
-                color: COLORS.textDark,
+                color: UI.text,
                 marginBottom: Spacing['4'],
                 letterSpacing: -0.2,
               }}
@@ -700,24 +697,24 @@ export default function CommunityScreen() {
                       paddingVertical: Spacing['3'],
                       paddingHorizontal: Spacing['4'],
                       borderRadius: Radius.full,
-                      backgroundColor: isActive ? COLORS.accent : COLORS.card,
+                      backgroundColor: isActive ? UI.accent : UI.card,
                       borderWidth: 1.5,
-                      borderColor: isActive ? COLORS.accent : COLORS.border,
+                      borderColor: isActive ? UI.accent : UI.border,
                       gap: Spacing['2'],
                       minHeight: 44,
-                      shadowColor: isActive ? COLORS.accent : 'transparent',
+                      shadowColor: isActive ? UI.accent : 'transparent',
                       shadowOffset: { width: 0, height: 2 },
                       shadowOpacity: 0.2,
                       shadowRadius: 4,
                       elevation: isActive ? 2 : 0,
                     }}
                   >
-                    <IconComponent size={18} color={isActive ? '#FFF' : COLORS.textMuted} strokeWidth={2.5} />
+                    <IconComponent size={18} color={isActive ? colors.text.inverse : UI.textMuted} strokeWidth={2.5} />
                     <Text
                       style={{
                         fontSize: 14,
                         fontWeight: '600',
-                        color: isActive ? '#FFF' : COLORS.textMuted,
+                        color: isActive ? colors.text.inverse : UI.textMuted,
                         letterSpacing: 0.1,
                       }}
                     >
@@ -733,26 +730,26 @@ export default function CommunityScreen() {
           <View style={{ paddingHorizontal: Spacing['6'] }}>
             {loading ? (
               <View style={{ paddingVertical: Spacing['8'], alignItems: 'center' }}>
-                <ActivityIndicator size="large" color={COLORS.accent} />
-                <Text style={{ marginTop: Spacing['3'], color: COLORS.textMuted }}>
+                <ActivityIndicator size="large" color={UI.accent} />
+                <Text style={{ marginTop: Spacing['3'], color: UI.textMuted }}>
                   Carregando posts...
                 </Text>
               </View>
             ) : posts.length === 0 ? (
               <View
                 style={{
-                  backgroundColor: COLORS.card,
+                  backgroundColor: UI.card,
                   borderRadius: Radius.xl,
                   padding: Spacing['6'],
                   alignItems: 'center',
                 }}
               >
-                <MessageSquare size={48} color={COLORS.textMuted} />
+                <MessageSquare size={48} color={UI.textMuted} />
                 <Text
                   style={{
                     fontSize: 16,
                     fontWeight: '600',
-                    color: COLORS.textDark,
+                    color: UI.text,
                     marginTop: Spacing['3'],
                     textAlign: 'center',
                   }}
@@ -762,7 +759,7 @@ export default function CommunityScreen() {
                 <Text
                   style={{
                     fontSize: 14,
-                    color: COLORS.textMuted,
+                    color: UI.textMuted,
                     marginTop: Spacing['2'],
                     textAlign: 'center',
                   }}
@@ -783,18 +780,18 @@ export default function CommunityScreen() {
                 alignItems: 'flex-start',
                 justifyContent: 'center',
                 gap: 8,
-                backgroundColor: `${COLORS.mint}20`,
+                backgroundColor: `${colors.status.success}20`,
                 padding: Spacing['3'],
                 borderRadius: Radius.lg,
                 borderLeftWidth: 3,
-                borderLeftColor: COLORS.mint,
+                borderLeftColor: colors.status.success,
               }}
             >
-              <Shield size={16} color={COLORS.mint} style={{ marginTop: 2 }} />
+              <Shield size={16} color={colors.status.success} style={{ marginTop: 2 }} />
               <Text
                 style={{
                   fontSize: 12,
-                  color: COLORS.textMuted,
+                  color: UI.textMuted,
                   textAlign: 'center',
                   flex: 1,
                   lineHeight: 18,
