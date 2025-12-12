@@ -22,9 +22,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
+import { PlatformNavigation } from '@/theme/platform';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
@@ -38,18 +40,15 @@ interface SOSMaeFloatingButtonProps {
 export function SOSMaeFloatingButton({ style }: SOSMaeFloatingButtonProps) {
   const { isDark } = useTheme();
   const navigation = useNavigation<NavigationProp>();
+  const insets = useSafeAreaInsets();
 
   const scale = useSharedValue(1);
   const pulseScale = useSharedValue(1);
   const pulseOpacity = useSharedValue(0.5);
 
-  // iOS: posição considerando SafeArea (notch + home indicator)
-  // Android/Web: posição padrão
-  // Para iOS, usamos valor fixo seguro (34px home indicator + padding)
-  // Na web, sempre usar 100px
-  const bottomOffset = Platform.OS === 'ios' 
-    ? 100 + 34 // iOS: posição base + home indicator height aproximado
-    : 100; // Android/Web: posição fixa
+  // Cálculo dinâmico da posição: SafeArea + altura da tab bar + espaçamento
+  const tabBarHeight = PlatformNavigation.tabBarHeight;
+  const bottomOffset = insets.bottom + tabBarHeight + Tokens.spacing['4'];
 
   // Animação de pulso contínuo
   React.useEffect(() => {
@@ -121,8 +120,8 @@ export function SOSMaeFloatingButton({ style }: SOSMaeFloatingButtonProps) {
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         accessibilityRole="button"
-        accessibilityLabel="Abrir SOS Mãe"
-        accessibilityHint="Acesso rápido ao suporte emergencial"
+        accessibilityLabel="SOS Mãe - Ajuda emocional urgente"
+        accessibilityHint="Toque para acessar suporte emergencial, recursos de ajuda e contatos de emergência para mães"
         style={{
           minWidth: 64,
           minHeight: 64,

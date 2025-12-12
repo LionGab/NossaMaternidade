@@ -1,438 +1,671 @@
 /**
- * MundoNathScreen - Tela de conteúdo exclusivo da Nathália
- * 
- * Redesenhado conforme Style Guide Blue Version
- * - Primary Blue: #0070F3 (Trust & Action)
- * - Primary Pink: #FF0080 (Brand Accent)
- * - Gradientes: Cotton Background, Blue Action Gradient
- * - Cards: rounded-3xl, shadow-sm, border-gray-100
- * 
- * @version 2.0.0 - Blue Version Style Guide
+ * MundoNathScreen - Conteúdo Exclusivo da Nathália
+ *
+ * Design premium com:
+ * - Rituals rápidos de bem-estar
+ * - Reels e vídeos educativos
+ * - Artigos e conteúdo personalizado
+ * - Conexão real com backend
+ *
+ * @version 3.0.0 - Production Ready
  */
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { Play, Video as VideoIcon } from 'lucide-react-native';
-import { useRef, useEffect } from 'react';
-import { View, ScrollView, Animated, Easing, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { Avatar } from '@/components/Avatar';
-import { Badge } from '@/components/Badge';
-import { Box } from '@/components/atoms/Box';
-import { Button } from '@/components/primitives/Button';
-import { Text } from '@/components/atoms/Text';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import {
-  FeaturedVideo,
-  ForYouSection,
-  ReelsPlayer,
-} from '@/components/mundo-nath';
+  Play,
+  BookOpen,
+  Headphones,
+  Video,
+  Heart,
+  Clock,
+  Eye,
+  Sparkles,
+  Star,
+  Flower2,
+} from 'lucide-react-native';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import {
+  View,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+  ActivityIndicator,
+  Animated,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { Text } from '@/components/atoms/Text';
+import { feedService, type ContentItem } from '@/services/supabase/feedService';
 import type { RootStackParamList } from '@/navigation/types';
-import { useTheme } from '@/theme';
-import { Tokens, ColorTokens, Spacing, Radius, Shadows } from '@/theme/tokens';
+import { Spacing, Radius } from '@/theme/tokens';
+import { SoftPastelTheme, SoftPastelBackgrounds } from '@/theme/softPastelTheme';
 import { logger } from '@/utils/logger';
-import type { ContentItem } from '@/types/content';
+
+// Cores SoftPastel
+const COLORS = {
+  background: SoftPastelBackgrounds.soft,
+  backgroundEnd: '#F0F7FF',
+  card: '#FFFFFF',
+  pink: SoftPastelTheme.colors.pink,
+  purple: SoftPastelTheme.colors.purple,
+  blue: SoftPastelTheme.colors.blue,
+  mint: SoftPastelTheme.colors.mint,
+  peach: SoftPastelTheme.colors.peach,
+  accent: '#FF6B9D',
+  accentLight: '#FFE4EC',
+  textDark: '#3A2E2E',
+  textMuted: '#6A5450',
+  border: 'rgba(0,0,0,0.06)',
+};
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-// Style Guide Colors - Blue Version
-const STYLE_GUIDE = {
-  primaryPink: '#FF0080',
-  primaryBlue: '#0070F3',
-  backgroundSoft: '#FDF4F9',
-  cottonGradient: ['#FFF0F5', '#F0F7FF'] as const,
-  blueActionGradient: ['#0070F3', '#00C6FF'] as const,
-  pinkBlueGradient: ['#FF0080', '#0070F3'] as const,
-  success: '#22c55e',
-  warning: '#ca8a04',
-};
+// Categorias de conteúdo
+const CONTENT_CATEGORIES = [
+  { id: 'all', label: 'Todos', emoji: '✨' },
+  { id: 'video', label: 'Vídeos', emoji: '🎬' },
+  { id: 'audio', label: 'Áudios', emoji: '🎧' },
+  { id: 'article', label: 'Artigos', emoji: '📖' },
+];
 
-// Mock data para conteúdo com reels
-const MOCK_CONTENT_ITEMS: ContentItem[] = [
+// Rituais rápidos (mock - depois conectar ao backend)
+const QUICK_RITUALS = [
   {
-    id: 'content-1',
-    title: 'Como lidar com os primeiros dias',
-    description:
-      'Dicas práticas para atravessar os momentos mais desafiadores da maternidade inicial.',
-    type: 'article',
-    category: 'pos_parto',
+    id: 'r1',
+    title: 'Respiração 4-7-8',
+    duration: '2 min',
+    emoji: '🌬️',
+    color: COLORS.blue,
+    description: 'Acalme sua mente',
+  },
+  {
+    id: 'r2',
+    title: 'Gratidão Matinal',
+    duration: '3 min',
+    emoji: '🌅',
+    color: COLORS.peach,
+    description: 'Comece bem o dia',
+  },
+  {
+    id: 'r3',
+    title: 'Body Scan',
     duration: '5 min',
-    views: 1234,
+    emoji: '🧘',
+    color: COLORS.purple,
+    description: 'Relaxe o corpo',
   },
   {
-    id: 'content-2',
-    title: 'Meditação para noites difíceis',
-    description:
-      'Um momento de paz para quando tudo parecer demais. Respire fundo e se permitir sentir.',
-    type: 'audio',
-    category: 'saude_mental',
-    duration: '8 min',
-    views: 987,
-  },
-  {
-    id: 'reels-1',
-    title: 'Dica rápida: Autocuidado em 60s',
-    description: 'Um minuto para você se reconectar',
-    type: 'reels',
-    category: 'autocuidado',
-    duration: '60s',
-    views: 5432,
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    thumbnailUrl: 'https://i.imgur.com/tNIrNIs.jpg',
+    id: 'r4',
+    title: 'Afirmações',
+    duration: '2 min',
+    emoji: '💝',
+    color: COLORS.pink,
+    description: 'Fortaleça sua mente',
   },
 ];
 
-// Hook para animações escalonadas
-function useStaggeredAnimations(itemCount: number, baseDelay = 100) {
-  const animations = useRef(
-    Array.from({ length: itemCount }, () => ({
-      opacity: new Animated.Value(0),
-      translateY: new Animated.Value(30),
-    }))
-  ).current;
-
-  useEffect(() => {
-    const staggeredAnimations = animations.map((anim, index) =>
-      Animated.parallel([
-        Animated.timing(anim.opacity, {
-          toValue: 1,
-          duration: 500,
-          delay: index * baseDelay,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.timing(anim.translateY, {
-          toValue: 0,
-          duration: 600,
-          delay: index * baseDelay,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-      ])
-    );
-
-    Animated.stagger(baseDelay, staggeredAnimations).start();
-  }, [animations, baseDelay]);
-
-  return animations;
-}
+// Mock content (fallback quando backend não tem dados)
+const MOCK_CONTENT: ContentItem[] = [
+  {
+    id: 'mock-1',
+    title: 'Como lidar com a privação de sono',
+    description: 'Dicas práticas para sobreviver às noites mal dormidas',
+    type: 'article',
+    category: 'bem-estar',
+    duration: 5,
+    views_count: 1234,
+    likes_count: 89,
+    is_premium: false,
+    is_exclusive: false,
+    is_published: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 'mock-2',
+    title: 'Meditação para Mães Cansadas',
+    description: 'Um momento de paz no meio do caos',
+    type: 'audio',
+    category: 'mindfulness',
+    duration: 10,
+    views_count: 856,
+    likes_count: 156,
+    is_premium: false,
+    is_exclusive: true,
+    is_published: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 'mock-3',
+    title: 'Amamentação: Mitos e Verdades',
+    description: 'O que você precisa saber sobre amamentação',
+    type: 'video',
+    category: 'educativo',
+    duration: 8,
+    views_count: 2103,
+    likes_count: 234,
+    is_premium: false,
+    is_exclusive: false,
+    is_published: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+];
 
 export default function MundoNathScreen() {
-  const { isDark } = useTheme();
   const navigation = useNavigation<NavigationProp>();
+  const insets = useSafeAreaInsets();
 
-  // Animações: header (0), featured card (1), reels (2), featured video (3), section header (4)
-  const animations = useStaggeredAnimations(5, 120);
+  // State
+  const [content, setContent] = useState<ContentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('all');
 
-  // Animação do avatar (scale + fade)
-  const avatarScale = useRef(new Animated.Value(0)).current;
-  const avatarOpacity = useRef(new Animated.Value(0)).current;
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.95)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.spring(avatarScale, {
+      Animated.timing(fadeAnim, {
         toValue: 1,
-        delay: 200,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
         tension: 50,
         friction: 7,
         useNativeDriver: true,
       }),
-      Animated.timing(avatarOpacity, {
-        toValue: 1,
-        duration: 400,
-        delay: 200,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }),
     ]).start();
-  }, [avatarScale, avatarOpacity]);
+  }, [fadeAnim, scaleAnim]);
 
-  const handleContentPress = (itemId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    logger.info('Content pressed', { itemId, screen: 'MundoNathScreen' });
-  };
+  // Load data
+  const loadData = useCallback(async () => {
+    try {
+      const filters = activeCategory !== 'all'
+        ? { type: activeCategory as 'video' | 'audio' | 'article' | 'reels' }
+        : {};
+      const fetchedContent = await feedService.getContent(filters, 0, 20);
 
-  const handleRitualPress = () => {
+      // Use mock data if no content from backend
+      setContent(fetchedContent.length > 0 ? fetchedContent : MOCK_CONTENT);
+    } catch (error) {
+      logger.error('[MundoNathScreen] Error loading data', error);
+      setContent(MOCK_CONTENT);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeCategory]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  }, [loadData]);
+
+  // Navegação
+  const handleRitualPress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     navigation.navigate('Ritual');
-  };
+  }, [navigation]);
 
-  const handleVideoPlay = () => {
-    logger.info('Featured video played', { screen: 'MundoNathScreen' });
+  const handleContentPress = useCallback(
+    (item: ContentItem) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      navigation.navigate('ContentDetail', { contentId: item.id });
+    },
+    [navigation]
+  );
+
+  // Get icon for content type
+  const getContentIcon = (type: string) => {
+    switch (type) {
+      case 'video':
+        return Video;
+      case 'audio':
+        return Headphones;
+      case 'article':
+        return BookOpen;
+      default:
+        return Sparkles;
+    }
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: STYLE_GUIDE.backgroundSoft }} edges={['top']}>
-      <StatusBar style={isDark ? 'light' : 'dark'} />
+    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
+      <StatusBar style="dark" />
+
+      {/* Background Gradient */}
+      <LinearGradient
+        colors={[COLORS.background, COLORS.backgroundEnd]}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          // Espaço suficiente para: tab bar (~70px) + botão SOS (~134px) + padding extra
-          paddingBottom: 180
+          paddingTop: insets.top + Spacing['4'],
+          paddingBottom: insets.bottom + 180,
         }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.accent} />
+        }
       >
-        {/* Header com gradiente Cotton Background */}
-        <View style={{ position: 'relative', overflow: 'hidden' }}>
-          <LinearGradient
-            colors={STYLE_GUIDE.cottonGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={{
-              paddingTop: Spacing['4'],
-              paddingBottom: Spacing['8'],
-              paddingHorizontal: Spacing['6'],
-            }}
-          >
-            {/* Theme Toggle */}
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+            transform: [{ scale: scaleAnim }],
+          }}
+        >
+          {/* Header com Avatar */}
+          <View style={{ alignItems: 'center', paddingHorizontal: Spacing['6'], marginBottom: Spacing['6'] }}>
             <View
               style={{
-                position: 'absolute',
-                top: Spacing['4'],
-                right: Spacing['6'],
-                zIndex: 10,
+                width: 80,
+                height: 80,
+                borderRadius: 40,
+                backgroundColor: COLORS.accentLight,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: Spacing['3'],
+                borderWidth: 3,
+                borderColor: COLORS.accent,
               }}
             >
-              <ThemeToggle variant="outline" iconColor={ColorTokens.neutral[900]} />
+              <Image
+                source={{ uri: 'https://i.imgur.com/tNIrNIs.jpg' }}
+                style={{ width: 72, height: 72, borderRadius: 36 }}
+                contentFit="cover"
+              />
+            </View>
+            <Text style={{ fontSize: 24, fontWeight: 'bold', color: COLORS.textDark }}>
+              Mundo da Nath 🌸
+            </Text>
+            <Text style={{ fontSize: 14, color: COLORS.textMuted, marginTop: 4, textAlign: 'center' }}>
+              Conteúdo exclusivo pra você se cuidar
+            </Text>
+          </View>
+
+          {/* Featured Ritual Card */}
+          <View style={{ paddingHorizontal: Spacing['6'], marginBottom: Spacing['5'] }}>
+            <TouchableOpacity onPress={handleRitualPress} activeOpacity={0.9}>
+              <LinearGradient
+                colors={[COLORS.pink, COLORS.purple]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{
+                  borderRadius: Radius['2xl'],
+                  padding: Spacing['5'],
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Badge */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(255,255,255,0.25)',
+                    paddingVertical: 4,
+                    paddingHorizontal: 10,
+                    borderRadius: Radius.full,
+                    alignSelf: 'flex-start',
+                    marginBottom: Spacing['3'],
+                  }}
+                >
+                  <Star size={14} color="#FFF" fill="#FFF" />
+                  <Text style={{ marginLeft: 4, fontSize: 12, fontWeight: '600', color: '#FFF' }}>
+                    DESTAQUE
+                  </Text>
+                </View>
+
+                <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#FFF', marginBottom: 6 }}>
+                  Ritual de 3 Minutos
+                </Text>
+                <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.9)', marginBottom: Spacing['4'] }}>
+                  Reconecte-se com você antes de começar o caos do dia
+                </Text>
+
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: '#FFF',
+                    paddingVertical: Spacing['3'],
+                    paddingHorizontal: Spacing['4'],
+                    borderRadius: Radius.full,
+                    alignSelf: 'flex-start',
+                  }}
+                >
+                  <Play size={18} color={COLORS.accent} fill={COLORS.accent} />
+                  <Text style={{ marginLeft: 8, fontSize: 14, fontWeight: '600', color: COLORS.accent }}>
+                    Começar Agora
+                  </Text>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+
+          {/* Quick Rituals */}
+          <View style={{ marginBottom: Spacing['5'] }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingHorizontal: Spacing['6'],
+                marginBottom: Spacing['3'],
+              }}
+            >
+              <Text style={{ fontSize: 16, fontWeight: 'bold', color: COLORS.textDark }}>
+                Rituais Rápidos
+              </Text>
+              <TouchableOpacity>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: COLORS.accent }}>Ver todos</Text>
+              </TouchableOpacity>
             </View>
 
-            {/* Avatar da Nathália - Animado */}
-            <Animated.View
-              style={{
-                alignItems: 'center',
-                marginTop: Spacing['4'],
-                opacity: avatarOpacity,
-                transform: [{ scale: avatarScale }],
-              }}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: Spacing['6'], gap: Spacing['3'] }}
             >
-              <Avatar
-                size={80}
-                source={{ uri: 'https://i.imgur.com/tNIrNIs.jpg' }}
-                fallback="NV"
-                borderWidth={3}
-                borderColor={STYLE_GUIDE.primaryPink}
-                style={{
-                  backgroundColor: `${STYLE_GUIDE.primaryPink}20`,
-                }}
-              />
-            </Animated.View>
-
-            {/* Título e subtítulo - Animado */}
-            <Animated.View
-              style={{
-                alignItems: 'center',
-                marginTop: Spacing['4'],
-                opacity: animations[0].opacity,
-                transform: [{ translateY: animations[0].translateY }],
-              }}
-            >
-              <Text
-                size="2xl"
-                weight="bold"
-                style={{
-                  color: ColorTokens.neutral[900],
-                  marginBottom: Spacing['2'],
-                  fontSize: Tokens.typography.sizes['2xl'],
-                }}
-              >
-                Mundo da Nath
-              </Text>
-              <Text
-                size="sm"
-                style={{
-                  color: ColorTokens.neutral[700],
-                }}
-              >
-                Conteúdo exclusivo pra você ✨
-              </Text>
-            </Animated.View>
-          </LinearGradient>
-        </View>
-
-        {/* Content */}
-        <Box px="6" style={{ gap: Spacing['6'], marginTop: -Spacing['6'] }}>
-          {/* Featured Card - Ritual de 3 Minutos - Style Guide */}
-          <Animated.View
-            style={{
-              borderRadius: Radius['3xl'],
-              overflow: 'hidden',
-              backgroundColor: ColorTokens.neutral[0],
-              borderWidth: 1,
-              borderColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[100],
-              ...Shadows.sm,
-              opacity: animations[1].opacity,
-              transform: [{ translateY: animations[1].translateY }],
-            }}
-          >
-            <LinearGradient
-              colors={STYLE_GUIDE.pinkBlueGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{
-                padding: Spacing['6'],
-                gap: Spacing['4'],
-              }}
-            >
-              <Badge
-                variant="warning"
-                containerStyle={{
-                  alignSelf: 'flex-start',
-                }}
-              >
-                ⭐ NOVO
-              </Badge>
-
-              <Text
-                size="xl"
-                weight="bold"
-                style={{
-                  color: ColorTokens.neutral[0],
-                  lineHeight: 28,
-                }}
-              >
-                Ritual de 3 Minutos
-              </Text>
-
-              <Text
-                size="sm"
-                style={{
-                  color: `${ColorTokens.neutral[0]}E6`,
-                }}
-              >
-                Reconecte-se com você antes de começar o caos do dia.
-              </Text>
-
-              <Button
-                variant="primary"
-                onPress={handleRitualPress}
-                leftIcon={<Play size={16} color={ColorTokens.neutral[0]} />}
-                style={{
-                  backgroundColor: ColorTokens.neutral[0],
-                  borderRadius: Radius.full,
-                }}
-              >
-                <Text size="sm" weight="bold" style={{ color: STYLE_GUIDE.primaryPink }}>
-                  Começar Agora
-                </Text>
-              </Button>
-            </LinearGradient>
-          </Animated.View>
-
-          {/* Reels Section - Funcional */}
-          <Animated.View
-            style={{
-              opacity: animations[2].opacity,
-              transform: [{ translateY: animations[2].translateY }],
-            }}
-          >
-            <Box
-              style={{
-                backgroundColor: ColorTokens.neutral[0],
-                borderRadius: Radius['3xl'],
-                borderWidth: 1,
-                borderColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[100],
-                ...Shadows.sm,
-                overflow: 'hidden',
-              }}
-            >
-              <Box
-                px="4"
-                py="3"
-                direction="row"
-                align="center"
-                justify="space-between"
-                style={{
-                  borderBottomWidth: 1,
-                  borderBottomColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[100],
-                }}
-              >
-                <Box direction="row" align="center" gap="2">
-                  <VideoIcon size={20} color={STYLE_GUIDE.primaryBlue} />
-                  <Text size="lg" weight="bold" style={{ color: ColorTokens.neutral[900] }}>
-                    Reels
-                  </Text>
-                </Box>
+              {QUICK_RITUALS.map(ritual => (
                 <TouchableOpacity
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    logger.info('See all reels pressed');
+                  key={ritual.id}
+                  onPress={handleRitualPress}
+                  activeOpacity={0.8}
+                  style={{
+                    width: 130,
+                    backgroundColor: COLORS.card,
+                    borderRadius: Radius.xl,
+                    padding: Spacing['4'],
+                    borderWidth: 1,
+                    borderColor: COLORS.border,
                   }}
-                  accessibilityRole="button"
-                  accessibilityLabel="Ver todos os reels"
                 >
-                  <Text size="sm" weight="semibold" style={{ color: STYLE_GUIDE.primaryBlue }}>
-                    Ver todos
+                  <View
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 22,
+                      backgroundColor: `${ritual.color}30`,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: Spacing['2'],
+                    }}
+                  >
+                    <Text style={{ fontSize: 22 }}>{ritual.emoji}</Text>
+                  </View>
+                  <Text
+                    style={{ fontSize: 13, fontWeight: '600', color: COLORS.textDark }}
+                    numberOfLines={1}
+                  >
+                    {ritual.title}
+                  </Text>
+                  <Text style={{ fontSize: 11, color: COLORS.textMuted, marginTop: 2 }}>
+                    {ritual.duration}
                   </Text>
                 </TouchableOpacity>
-              </Box>
+              ))}
+            </ScrollView>
+          </View>
 
-              <Box p="4">
-                <ReelsPlayer
-                  videoUrl={MOCK_CONTENT_ITEMS.find((item) => item.type === 'reels')?.videoUrl || ''}
-                  thumbnailUrl={
-                    MOCK_CONTENT_ITEMS.find((item) => item.type === 'reels')?.thumbnailUrl
-                  }
-                  title={MOCK_CONTENT_ITEMS.find((item) => item.type === 'reels')?.title}
-                  duration={
-                    (() => {
-                      const reelItem = MOCK_CONTENT_ITEMS.find((item) => item.type === 'reels');
-                      if (reelItem?.duration && typeof reelItem.duration === 'string') {
-                        const seconds = parseInt(reelItem.duration.replace('s', ''), 10);
-                        return isNaN(seconds) ? undefined : seconds;
-                      }
-                      return undefined;
-                    })()
-                  }
-                  views={MOCK_CONTENT_ITEMS.find((item) => item.type === 'reels')?.views}
-                  height={400}
-                  autoPlay={false}
-                  onPlay={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                    logger.info('Reels played');
+          {/* Content Categories */}
+          <View style={{ paddingHorizontal: Spacing['6'], marginBottom: Spacing['4'] }}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: COLORS.textDark, marginBottom: Spacing['3'] }}>
+              Explore
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: Spacing['2'] }}
+            >
+              {CONTENT_CATEGORIES.map(cat => {
+                const isActive = activeCategory === cat.id;
+                return (
+                  <TouchableOpacity
+                    key={cat.id}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setActiveCategory(cat.id);
+                    }}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      paddingVertical: Spacing['2'],
+                      paddingHorizontal: Spacing['3'],
+                      borderRadius: Radius.full,
+                      backgroundColor: isActive ? COLORS.accent : COLORS.card,
+                      borderWidth: 1,
+                      borderColor: isActive ? COLORS.accent : COLORS.border,
+                      gap: 6,
+                    }}
+                  >
+                    <Text style={{ fontSize: 14 }}>{cat.emoji}</Text>
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: '600',
+                        color: isActive ? '#FFF' : COLORS.textMuted,
+                      }}
+                    >
+                      {cat.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+
+          {/* Content Grid */}
+          <View style={{ paddingHorizontal: Spacing['6'] }}>
+            {loading ? (
+              <View style={{ paddingVertical: Spacing['8'], alignItems: 'center' }}>
+                <ActivityIndicator size="large" color={COLORS.accent} />
+                <Text style={{ marginTop: Spacing['3'], color: COLORS.textMuted }}>
+                  Carregando conteúdos...
+                </Text>
+              </View>
+            ) : content.length === 0 ? (
+              <View
+                style={{
+                  backgroundColor: COLORS.card,
+                  borderRadius: Radius.xl,
+                  padding: Spacing['6'],
+                  alignItems: 'center',
+                }}
+              >
+                <Flower2 size={48} color={COLORS.textMuted} />
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '600',
+                    color: COLORS.textDark,
+                    marginTop: Spacing['3'],
+                    textAlign: 'center',
                   }}
-                />
-              </Box>
-            </Box>
-          </Animated.View>
+                >
+                  Novos conteúdos em breve!
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: COLORS.textMuted,
+                    marginTop: Spacing['2'],
+                    textAlign: 'center',
+                  }}
+                >
+                  Estamos preparando algo especial pra você
+                </Text>
+              </View>
+            ) : (
+              <View style={{ gap: Spacing['3'] }}>
+                {content.map(item => {
+                  const IconComponent = getContentIcon(item.type);
+                  return (
+                    <TouchableOpacity
+                      key={item.id}
+                      onPress={() => handleContentPress(item)}
+                      activeOpacity={0.9}
+                      style={{
+                        backgroundColor: COLORS.card,
+                        borderRadius: Radius.xl,
+                        overflow: 'hidden',
+                        borderWidth: 1,
+                        borderColor: COLORS.border,
+                      }}
+                    >
+                      {/* Thumbnail ou gradient */}
+                      {item.thumbnail_url ? (
+                        <Image
+                          source={{ uri: item.thumbnail_url }}
+                          style={{ width: '100%', height: 160 }}
+                          contentFit="cover"
+                        />
+                      ) : (
+                        <LinearGradient
+                          colors={
+                            item.type === 'video'
+                              ? [COLORS.blue, COLORS.purple]
+                              : item.type === 'audio'
+                              ? [COLORS.mint, COLORS.blue]
+                              : [COLORS.peach, COLORS.pink]
+                          }
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={{
+                            width: '100%',
+                            height: 120,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <IconComponent size={40} color="rgba(255,255,255,0.8)" />
+                        </LinearGradient>
+                      )}
 
-          {/* Vídeo Especial em Destaque */}
-          <Animated.View
-            style={{
-              opacity: animations[3].opacity,
-              transform: [{ translateY: animations[3].translateY }],
-            }}
-          >
-            <FeaturedVideo
-              videoUrl="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-              title="O DIA MAIS FELIZ DA MINHA VIDA! 💙"
-              description="Um momento especial que marcou profundamente. Uma experiência emocional única e transformadora."
-              viewsCount={50000}
-              duration={15}
-              onPlay={handleVideoPlay}
-            />
-          </Animated.View>
+                      {/* Content Info */}
+                      <View style={{ padding: Spacing['4'] }}>
+                        {/* Type badge */}
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginBottom: Spacing['2'],
+                          }}
+                        >
+                          <IconComponent size={14} color={COLORS.accent} />
+                          <Text
+                            style={{
+                              marginLeft: 6,
+                              fontSize: 11,
+                              fontWeight: '600',
+                              color: COLORS.accent,
+                              textTransform: 'uppercase',
+                            }}
+                          >
+                            {item.type === 'video' ? 'Vídeo' : item.type === 'audio' ? 'Áudio' : 'Artigo'}
+                          </Text>
+                          {item.is_exclusive && (
+                            <View
+                              style={{
+                                marginLeft: 8,
+                                backgroundColor: COLORS.accentLight,
+                                paddingHorizontal: 6,
+                                paddingVertical: 2,
+                                borderRadius: 4,
+                              }}
+                            >
+                              <Text style={{ fontSize: 10, fontWeight: '600', color: COLORS.accent }}>
+                                EXCLUSIVO
+                              </Text>
+                            </View>
+                          )}
+                        </View>
 
-          {/* Seção: Para Você (personalizada com IA) */}
-          <Animated.View
-            style={{
-              opacity: animations[4].opacity,
-              transform: [{ translateY: animations[4].translateY }],
-            }}
-          >
-            <ForYouSection
-              onItemPress={(item) => handleContentPress(item.id)}
-              onSeeAllPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                logger.info('See all personalized pressed', { screen: 'MundoNathScreen' });
-              }}
-            />
-          </Animated.View>
-        </Box>
+                        {/* Title */}
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            fontWeight: '600',
+                            color: COLORS.textDark,
+                            marginBottom: 4,
+                          }}
+                          numberOfLines={2}
+                        >
+                          {item.title}
+                        </Text>
+
+                        {/* Description */}
+                        {item.description && (
+                          <Text
+                            style={{
+                              fontSize: 13,
+                              color: COLORS.textMuted,
+                              marginBottom: Spacing['3'],
+                            }}
+                            numberOfLines={2}
+                          >
+                            {item.description}
+                          </Text>
+                        )}
+
+                        {/* Stats */}
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing['4'] }}>
+                          {item.duration && (
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                              <Clock size={14} color={COLORS.textMuted} />
+                              <Text style={{ fontSize: 12, color: COLORS.textMuted }}>
+                                {item.duration} min
+                              </Text>
+                            </View>
+                          )}
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                            <Eye size={14} color={COLORS.textMuted} />
+                            <Text style={{ fontSize: 12, color: COLORS.textMuted }}>
+                              {item.views_count?.toLocaleString() || 0}
+                            </Text>
+                          </View>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                            <Heart size={14} color={COLORS.textMuted} />
+                            <Text style={{ fontSize: 12, color: COLORS.textMuted }}>
+                              {item.likes_count?.toLocaleString() || 0}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            )}
+          </View>
+
+          {/* Footer */}
+          <View style={{ paddingVertical: Spacing['6'], alignItems: 'center' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Heart size={16} fill={COLORS.accent} color={COLORS.accent} />
+              <Text style={{ fontSize: 13, color: COLORS.textMuted }}>
+                Conteúdo feito com amor
+              </Text>
+              <Sparkles size={16} color={COLORS.purple} />
+            </View>
+          </View>
+        </Animated.View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

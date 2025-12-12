@@ -38,6 +38,7 @@ const eslintConfig = [
       'src/mcp/**',
       'supabase/**',
       'web-*.js',
+      'docs/**',
     ],
   },
   ...compat.extends(

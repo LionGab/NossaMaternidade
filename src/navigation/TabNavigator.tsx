@@ -33,6 +33,15 @@ import { useTheme } from '../theme/ThemeContext';
 import { Tokens, ColorTokens } from '../theme/tokens';
 import { getShadowFromToken } from '../utils/shadowHelper';
 
+// Soft Pastel Colors (App Store Ready)
+const SOFT_PASTEL = {
+  tabActive: '#FF6B9D',     // Rosa vibrante para ativo
+  tabInactive: '#9B8A8F',   // Cinza rosado para inativo
+  pink: '#FFB8D9',          // Rosa pastel principal
+  purple: '#D9B8FF',        // Roxo pastel
+  blue: '#B8D4FF',          // Azul pastel
+} as const;
+
 // Icons - Design Web
 import { Home, Users, MessageCircle, Sparkles, Heart } from 'lucide-react-native';
 
@@ -78,7 +87,7 @@ const MundoNathScreenWrapper = createLazyScreen(MundoNathScreen);
 const HabitsScreenWrapper = createLazyScreen(HabitsScreen);
 
 export const TabNavigator = () => {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
   // Haptic feedback ao trocar de tab
@@ -91,8 +100,8 @@ export const TabNavigator = () => {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: true, // ✅ Garantir labels visíveis
-        tabBarActiveTintColor: '#FF8BA3', // rosa_acento premium
-        tabBarInactiveTintColor: isDark ? colors.text.tertiary : '#6DA9E499', // azul_acento com opacidade ~0.6
+        tabBarActiveTintColor: SOFT_PASTEL.tabActive, // Rosa vibrante SoftPastel
+        tabBarInactiveTintColor: SOFT_PASTEL.tabInactive, // Cinza rosado SoftPastel
         tabBarStyle: {
           height: 70 + insets.bottom, // Aumentado para acomodar labels
           paddingBottom: insets.bottom + 8,
@@ -204,41 +213,59 @@ export const TabNavigator = () => {
         options={{
           tabBarLabel: 'NathIA',
           tabBarAccessibilityLabel: 'Chat com NathIA, assistente de IA',
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                marginTop: -40, // Eleva o botão acima dos outros
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <LinearGradient
-                colors={
-                  focused
-                    ? [ColorTokens.primary[500], ColorTokens.secondary[500]]
-                    : [ColorTokens.accent.ocean, ColorTokens.accent.oceanDeep]
-                }
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+          tabBarIcon: ({ focused }) => {
+            // Quando focado: FAB grande elevado
+            // Quando não focado: ícone normal (mesmo nível das outras tabs)
+            const isFAB = focused;
+            const size = isFAB ? 64 : 20;
+            const iconSize = isFAB ? 28 : 20;
+            const marginTop = isFAB ? -40 : 0;
+
+            if (!isFAB) {
+              // Ícone simples quando não focado (ex: quando está na Home)
+              return (
+                <MessageCircle
+                  size={iconSize}
+                  color={SOFT_PASTEL.tabInactive}
+                  strokeWidth={2}
+                  accessibilityLabel="Ícone de chat com NathIA"
+                />
+              );
+            }
+
+            // FAB elevado quando focado
+            return (
+              <View
                 style={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: 32,
+                  marginTop,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  ...getShadowFromToken('xl', ColorTokens.neutral[900]),
-                  elevation: 12,
                 }}
               >
-                <MessageCircle
-                  size={28}
-                  color={ColorTokens.neutral[0]}
-                  strokeWidth={2.5}
-                  fill={focused ? ColorTokens.neutral[0] : 'transparent'}
-                />
-              </LinearGradient>
-            </View>
-          ),
+                <LinearGradient
+                  colors={[SOFT_PASTEL.pink, SOFT_PASTEL.purple]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{
+                    width: size,
+                    height: size,
+                    borderRadius: size / 2,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    ...getShadowFromToken('xl', ColorTokens.neutral[900]),
+                    elevation: 12,
+                  }}
+                >
+                  <MessageCircle
+                    size={iconSize}
+                    color={ColorTokens.neutral[0]}
+                    strokeWidth={2.5}
+                    fill={ColorTokens.neutral[0]}
+                  />
+                </LinearGradient>
+              </View>
+            );
+          },
         }}
         listeners={{
           tabPress: handleTabPress,

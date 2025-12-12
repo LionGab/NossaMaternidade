@@ -12,12 +12,15 @@
 
 require('dotenv').config();
 
-// Design System Colors (Bubblegum Theme)
+// Design System Colors (SoftPastel Theme - App Store Ready)
 const COLORS = {
-  primary: '#EC4899', // Rosa maternal (pink-500)
-  primaryDark: '#DB2777', // Rosa escuro (pink-600)
-  background: '#FFF5F7', // Rosa claro (pink-50)
-  splash: '#EC4899', // Splash rosa
+  primary: '#FF6B9D',     // Rosa vibrante SoftPastel
+  primaryDark: '#E5527A', // Rosa escuro
+  background: '#FFF8FC',  // Rosa suave background
+  splash: '#FF6B9D',      // Splash rosa
+  accent: '#FFB8D9',      // Rosa pastel
+  purple: '#D9B8FF',      // Roxo pastel
+  blue: '#B8D4FF',        // Azul pastel
 };
 
 module.exports = {

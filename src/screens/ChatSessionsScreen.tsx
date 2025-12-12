@@ -40,7 +40,6 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Avatar } from '@/components/Avatar';
 import { IconButton } from '@/components/atoms/IconButton';
 import { Text } from '@/components/atoms/Text';
-import { getRandomSessionName } from '@/constants/sessionNames';
 import type { RootStackParamList } from '@/navigation/types';
 import { chatService, ChatConversation } from '@/services/supabase';
 import { useTheme } from '@/theme';
@@ -50,6 +49,25 @@ import { logger } from '@/utils/logger';
 const AVATAR_URL = 'https://i.imgur.com/oB9ewPG.jpg';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+// TODO: Tags de sentimento mock - substituir por análise real posteriormente
+type MoodTag = 'sono' | 'culpa' | 'amamentacao' | 'cansaco' | 'duvida';
+
+const MOOD_TAG_CONFIG: Record<MoodTag, { label: string; emoji: string; color: string }> = {
+  sono: { label: 'Sono', emoji: '😴', color: ColorTokens.primary[500] },
+  culpa: { label: 'Culpa', emoji: '💭', color: ColorTokens.warning[600] },
+  amamentacao: { label: 'Amamentação', emoji: '🍼', color: ColorTokens.info[500] },
+  cansaco: { label: 'Cansaço', emoji: '😔', color: ColorTokens.secondary[500] },
+  duvida: { label: 'Dúvida', emoji: '❓', color: ColorTokens.success[600] },
+};
+
+// Função mock para gerar tag aleatória (TODO: substituir por análise real)
+const getMockMoodTag = (conversationId: string): MoodTag => {
+  const tags: MoodTag[] = ['sono', 'culpa', 'amamentacao', 'cansaco', 'duvida'];
+  // Usa o ID da conversa como seed para consistência
+  const index = conversationId.charCodeAt(0) % tags.length;
+  return tags[index];
+};
 
 // Formatar data relativa
 const formatRelativeDate = (dateString: string): string => {
@@ -85,6 +103,10 @@ const SessionItem = React.memo(
     const truncatedPreview =
       preview.length > 60 ? `${preview.slice(0, 60)}...` : preview;
 
+    // Gerar tag de sentimento mock
+    const moodTag = getMockMoodTag(conversation.id);
+    const tagConfig = MOOD_TAG_CONFIG[moodTag];
+
     return (
       <Animated.View
         entering={FadeInDown.duration(300).springify()}
@@ -112,7 +134,7 @@ const SessionItem = React.memo(
           }}
           activeOpacity={0.7}
           accessibilityRole="button"
-          accessibilityLabel={`Conversa: ${conversation.title || 'Nova conversa'}`}
+          accessibilityLabel={`Conversa: ${conversation.title || 'Nova conversa'}. Tema: ${tagConfig.label}`}
           accessibilityHint="Toque para abrir esta conversa"
           style={[
             styles.sessionItem,
@@ -174,6 +196,24 @@ const SessionItem = React.memo(
             >
               {truncatedPreview}
             </Text>
+
+            {/* Tag de sentimento (mock) */}
+            <View
+              style={[
+                styles.moodTag,
+                { backgroundColor: `${tagConfig.color}20` },
+              ]}
+            >
+              <Text style={{ fontSize: 12, marginRight: 4 }}>{tagConfig.emoji}</Text>
+              <Text
+                variant="caption"
+                size="xs"
+                weight="medium"
+                style={{ color: tagConfig.color }}
+              >
+                {tagConfig.label}
+              </Text>
+            </View>
           </View>
 
           {/* Seta */}
@@ -187,7 +227,12 @@ const SessionItem = React.memo(
 SessionItem.displayName = 'SessionItem';
 
 // Componente de estado vazio
-const EmptyState = React.memo(({ colors }: { colors: ReturnType<typeof useTheme>['colors'] }) => (
+interface EmptyStateProps {
+  colors: ReturnType<typeof useTheme>['colors'];
+  onStartFirstConversation: () => void;
+}
+
+const EmptyState = React.memo(({ colors, onStartFirstConversation }: EmptyStateProps) => (
   <Animated.View
     entering={FadeIn.duration(500)}
     style={styles.emptyState}
@@ -207,17 +252,42 @@ const EmptyState = React.memo(({ colors }: { colors: ReturnType<typeof useTheme>
       align="center"
       style={{ marginTop: Spacing['4'] }}
     >
-      Nenhuma conversa ainda
+      Você ainda não começou nenhuma conversa com a NathIA
     </Text>
     <Text
       variant="body"
-      size="sm"
+      size="md"
       color="secondary"
       align="center"
-      style={{ marginTop: Spacing['2'], maxWidth: 260 }}
+      style={{ marginTop: Spacing['2'], maxWidth: 280, lineHeight: 22 }}
     >
-      Comece uma conversa com a NathIA para receber apoio emocional.
+      Quando quiser falar, tô aqui 💕
     </Text>
+
+    {/* Botão "Começar primeira conversa" */}
+    <TouchableOpacity
+      onPress={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        onStartFirstConversation();
+      }}
+      activeOpacity={0.8}
+      accessibilityRole="button"
+      accessibilityLabel="Começar primeira conversa com a NathIA"
+      style={[
+        styles.emptyStateButton,
+        { backgroundColor: colors.primary.main },
+      ]}
+    >
+      <MessageCircle size={20} color={ColorTokens.neutral[0]} strokeWidth={2} />
+      <Text
+        variant="body"
+        size="md"
+        weight="semibold"
+        style={{ color: ColorTokens.neutral[0], marginLeft: Spacing['2'] }}
+      >
+        Começar primeira conversa
+      </Text>
+    </TouchableOpacity>
   </Animated.View>
 ));
 
@@ -262,29 +332,15 @@ export default function ChatSessionsScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     logger.info('[ChatSessionsScreen] Criando nova conversa');
 
-    try {
-      // Usa um nome sugerido aleatório em vez de "Nova conversa"
-      const suggestedTitle = getRandomSessionName();
-
-      const newConv = await chatService.createConversation({
-        title: suggestedTitle,
+    // TODO: Pode criar conversa aqui ou deixar ChatScreen criar ao abrir sem threadId
+    // Por enquanto, navegar para Chat sem threadId (ChatScreen cria automaticamente)
+    navigation.goBack();
+    setTimeout(() => {
+      navigation.navigate('Main', {
+        screen: 'Chat',
+        params: {}, // Sem threadId = nova conversa
       });
-
-      if (newConv) {
-        // Navegar para o chat com a nova sessão
-        navigation.goBack();
-        // Pequeno delay para garantir que a tela anterior receba o parâmetro
-        setTimeout(() => {
-          navigation.navigate('Main', {
-            screen: 'Chat',
-            params: { sessionId: newConv.id },
-          });
-        }, 100);
-      }
-    } catch (error) {
-      logger.error('[ChatSessionsScreen] Erro ao criar conversa', error);
-      Alert.alert('Erro', 'Não foi possível criar uma nova conversa.');
-    }
+    }, 100);
   };
 
   // Abrir conversa existente
@@ -409,7 +465,9 @@ export default function ChatSessionsScreen() {
           />
         }
         ListEmptyComponent={
-          !isLoading ? <EmptyState colors={colors} /> : null
+          !isLoading ? (
+            <EmptyState colors={colors} onStartFirstConversation={handleNewConversation} />
+          ) : null
         }
         ItemSeparatorComponent={() => <View style={{ height: Spacing['3'] }} />}
       />
@@ -512,6 +570,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: Spacing['2'],
   },
+  moodTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginTop: Spacing['2'],
+    paddingHorizontal: Spacing['2'],
+    paddingVertical: Spacing['1'],
+    borderRadius: Radius.md,
+  },
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -523,6 +590,21 @@ const styles = StyleSheet.create({
     borderRadius: 48,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  emptyStateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: Spacing['6'],
+    paddingVertical: Spacing['3.5'],
+    paddingHorizontal: Spacing['6'],
+    borderRadius: Radius.xl,
+    minHeight: 52, // WCAG AAA touch target
+    elevation: 4,
+    shadowColor: ColorTokens.primary[500],
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   fabContainer: {
     position: 'absolute',

@@ -60,6 +60,25 @@ export interface Chat {
   updated_at: string;
 }
 
+/**
+ * ChatThread - Interface para threads de conversa (preparação para memória)
+ * TODO MEMÓRIA: Esta interface prepara a estrutura para threading de conversas
+ * Futuramente, cada thread terá:
+ * - Histórico persistido no Supabase (chat_conversations + chat_messages)
+ * - Tags de sentimento automáticas (análise de conteúdo)
+ * - Sincronização em tempo real (Supabase Realtime)
+ */
+export interface ChatThread {
+  id: string;
+  title: string;
+  lastMessage: string;
+  updatedAt: string;
+  // Mock tags - TODO: substituir por análise automática de sentimento
+  moodTag?: 'sono' | 'culpa' | 'amamentacao' | 'cansaco' | 'duvida';
+  isPinned?: boolean;
+  messageCount: number;
+}
+
 export interface ChatConfig {
   model: AIModel;
   mode: AIMode;

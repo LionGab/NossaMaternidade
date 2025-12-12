@@ -44,3 +44,6 @@ supabase/
 
 # Assets
 assets/
+
+# Documentation (reference files)
+docs/

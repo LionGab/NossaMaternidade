@@ -2,31 +2,12 @@ import { decode } from 'base64-arraybuffer';
 import * as FileSystem from 'expo-file-system';
 
 import { logger } from '@/utils/logger';
+import type { CommunityPost } from '@/types/community';
 
 import { supabase } from './supabase';
 
-export interface CommunityPost {
-  id: string;
-  user_id: string;
-  content: string;
-  image_url?: string;
-  tags?: string[];
-  likes_count: number;
-  comments_count: number;
-  is_reported: boolean;
-  is_approved: boolean;
-  created_at: string;
-  updated_at: string;
-
-  // Dados do autor
-  author?: {
-    full_name?: string;
-    avatar_url?: string;
-  };
-
-  // Interação do usuário
-  is_liked_by_user?: boolean;
-}
+// Re-export para compatibilidade
+export type { CommunityPost };
 
 export interface CommunityComment {
   id: string;

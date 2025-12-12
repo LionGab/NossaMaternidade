@@ -1,12 +1,29 @@
 /**
  * AI Router Robusto - Focado em Gemini 2.5 Flash
  *
+ * ✅ STATUS: Implementado e pronto para uso
+ *
+ * TODO INTEGRAÇÃO - FASE 5:
+ * Este router está implementado mas ainda não está sendo usado no ChatScreen.
+ * Para ativar:
+ * 1. Importar: import { aiRouter } from '@/services/ai/aiRouter'
+ * 2. No ChatScreen.handleSend, substituir chatService.sendMessageWithAI por aiRouter.route
+ * 3. Passar contexto apropriado (user_id, profile, wellnessData)
+ * 4. Processar metadata retornada (model_used, tokens_used, contains_crisis_keywords)
+ *
  * Estratégia de custo-benefício:
- * - 90%+ dos casos: Gemini 2.5 Flash (econômico e rápido)
- * - Crise detectada: GPT-4o (segurança primeiro)
+ * - 90%+ dos casos: Gemini 2.5 Flash (econômico e rápido, ~$0.0001/1K tokens)
+ * - Crise detectada: GPT-4o (segurança primeiro, ~$0.005/1K tokens)
  * - Fallback automático: Flash → GPT-4o → Claude Opus
- * - Circuit breaker: Evita custos desnecessários
- * - Retry inteligente: Apenas em falhas temporárias
+ * - Circuit breaker: Evita custos desnecessários (5 falhas → 5min cooldown)
+ * - Retry inteligente: Apenas em falhas temporárias (max 2 retries)
+ * - Timeout: 30s por tentativa
+ *
+ * Custo estimado mensal (com 90% Gemini Flash):
+ * - 10k mensagens/mês × 200 tokens/msg = 2M tokens
+ * - Gemini Flash: 1.8M tokens × $0.0001 = $0.18
+ * - GPT-4o (crise): 200k tokens × $0.005 = $1.00
+ * - Total estimado: ~$1.20/mês para 10k mensagens
  */
 
 import { estimateCost, type LlmProfile } from '@/ai/llmConfig';

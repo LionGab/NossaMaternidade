@@ -10,10 +10,7 @@
 import * as Haptics from 'expo-haptics';
 import {
   Send,
-  Heart,
   Sparkles,
-  HelpCircle,
-  Laugh,
 } from 'lucide-react-native';
 import { useState, useCallback } from 'react';
 import {
@@ -35,6 +32,7 @@ import { Modal } from '@/components/Modal';
 import { useTheme } from '@/theme';
 import { Tokens, ColorTokens } from '@/theme/tokens';
 import { logger } from '@/utils/logger';
+import { THEME_COLORS, type PostTheme } from '@/types/community';
 
 interface CreatePostModalProps {
   /** Se o modal está aberto */
@@ -45,18 +43,22 @@ interface CreatePostModalProps {
   onCreatePost: (post: {
     title?: string;
     content: string;
-    category?: string;
+    theme?: PostTheme; // Mudado de category para theme
     is_anonymous?: boolean;
     image_url?: string;
+    status?: 'pending'; // Sempre pending para moderação
   }) => Promise<void>;
 }
 
-const CATEGORIES = [
-  { value: 'dicas', label: 'Dicas', icon: Sparkles, color: ColorTokens.warning[500] },
-  { value: 'desabafos', label: 'Desabafos', icon: Heart, color: ColorTokens.secondary[500] },
-  { value: 'duvidas', label: 'Dúvidas', icon: HelpCircle, color: ColorTokens.info[500] },
-  { value: 'humor', label: 'Humor', icon: Laugh, color: ColorTokens.accent.purple },
-] as const;
+// Temas do post (usando os tipos do community.ts)
+const THEMES: Array<{ value: PostTheme; label: string; color: string }> = [
+  { value: 'sono', label: 'Sono', color: THEME_COLORS.sono },
+  { value: 'culpa', label: 'Culpa', color: THEME_COLORS.culpa },
+  { value: 'puerperio', label: 'Puerpério', color: THEME_COLORS.puerperio },
+  { value: 'amamentacao', label: 'Amamentação', color: THEME_COLORS.amamentacao },
+  { value: 'relacionamento', label: 'Relacionamento', color: THEME_COLORS.relacionamento },
+  { value: 'saude-mental', label: 'Saúde Mental', color: THEME_COLORS['saude-mental'] },
+];
 
 const MAX_TITLE_LENGTH = 100;
 const MAX_CONTENT_LENGTH = 500;
@@ -67,19 +69,19 @@ export function CreatePostModal({ visible, onClose, onCreatePost }: CreatePostMo
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [category, setCategory] = useState<string | null>(null);
+  const [theme, setTheme] = useState<PostTheme | null>(null); // Mudado de category para theme
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const remainingChars = MAX_CONTENT_LENGTH - content.length;
   const canSubmit = (content.trim().length > 0 || title.trim().length > 0) && !isSubmitting;
 
-  const handleCategoryPress = useCallback(
-    (catValue: string) => {
+  const handleThemePress = useCallback(
+    (themeValue: PostTheme) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      setCategory(category === catValue ? null : catValue);
+      setTheme(theme === themeValue ? null : themeValue);
     },
-    [category]
+    [theme]
   );
 
   const handleToggleAnonymous = useCallback(() => {
@@ -97,26 +99,29 @@ export function CreatePostModal({ visible, onClose, onCreatePost }: CreatePostMo
       await onCreatePost({
         title: title.trim() || undefined,
         content: content.trim(),
-        category: category || undefined,
+        theme: theme || undefined,
         is_anonymous: isAnonymous,
+        status: 'pending', // TODO: Integrar com backend para moderação pela NathIA
       });
 
       // Limpar formulário
       setTitle('');
       setContent('');
-      setCategory(null);
+      setTheme(null);
       setIsAnonymous(false);
       onClose();
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      logger.info('[CreatePostModal] Post criado com sucesso');
+      logger.info('[CreatePostModal] Post enviado para revisão pela NathIA');
+
+      // TODO: Mostrar mensagem de sucesso: "Seu post está em revisão pela NathIA 💕"
     } catch (error) {
       logger.error('[CreatePostModal] Erro ao criar post', error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
       setIsSubmitting(false);
     }
-  }, [title, content, category, isAnonymous, canSubmit, onCreatePost, onClose]);
+  }, [title, content, theme, isAnonymous, canSubmit, onCreatePost, onClose]);
 
   const handleClose = useCallback(() => {
     if (isSubmitting) return;
@@ -124,7 +129,7 @@ export function CreatePostModal({ visible, onClose, onCreatePost }: CreatePostMo
     onClose();
   }, [isSubmitting, onClose]);
 
-  const selectedCategory = category ? CATEGORIES.find((c) => c.value === category) : null;
+  const selectedTheme = theme ? THEMES.find((t) => t.value === theme) : null;
 
   return (
     <Modal visible={visible} onClose={handleClose} title="Novo Post" fullScreen={false}>
@@ -170,49 +175,44 @@ export function CreatePostModal({ visible, onClose, onCreatePost }: CreatePostMo
               </Text>
             </Box>
 
-            {/* Categorias */}
+            {/* Temas */}
             <Box gap="2">
               <Text size="sm" weight="medium" color="secondary">
-                Categoria (opcional)
+                Tema (opcional)
               </Text>
               <Box direction="row" className="flex-wrap" gap="2">
-                {CATEGORIES.map((cat) => {
-                  const Icon = cat.icon;
-                  const isSelected = category === cat.value;
+                {THEMES.map((themeItem) => {
+                  const isSelected = theme === themeItem.value;
 
                   return (
                     <TouchableOpacity
-                      key={cat.value}
-                      onPress={() => handleCategoryPress(cat.value)}
+                      key={themeItem.value}
+                      onPress={() => handleThemePress(themeItem.value)}
                       activeOpacity={0.7}
                       style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: Tokens.spacing['1.5'],
                         paddingHorizontal: Tokens.spacing['3'],
                         paddingVertical: Tokens.spacing['2'],
                         borderRadius: Tokens.radius.full,
                         backgroundColor: isSelected
-                          ? `${cat.color}20`
+                          ? `${themeItem.color}40`
                           : isDark
                             ? ColorTokens.neutral[800]
                             : ColorTokens.neutral[100],
                         borderWidth: 1,
-                        borderColor: isSelected ? cat.color : colors.border.light,
+                        borderColor: isSelected ? themeItem.color : colors.border.light,
                       }}
                       accessibilityRole="button"
-                      accessibilityLabel={`Categoria ${cat.label}`}
+                      accessibilityLabel={`Tema ${themeItem.label}`}
                       accessibilityState={{ selected: isSelected }}
                     >
-                      <Icon size={14} color={isSelected ? cat.color : colors.text.secondary} />
                       <Text
                         size="xs"
                         weight={isSelected ? 'semibold' : 'medium'}
                         style={{
-                          color: isSelected ? cat.color : colors.text.secondary,
+                          color: isSelected ? themeItem.color : colors.text.secondary,
                         }}
                       >
-                        {cat.label}
+                        {themeItem.label}
                       </Text>
                     </TouchableOpacity>
                   );
@@ -274,13 +274,13 @@ export function CreatePostModal({ visible, onClose, onCreatePost }: CreatePostMo
                 borderColor: colors.border.light,
               }}
               accessibilityRole="switch"
-              accessibilityLabel="Postar anonimamente"
+              accessibilityLabel="Postar como anônima"
               accessibilityState={{ checked: isAnonymous }}
               accessibilityHint="Ativa ou desativa o modo anônimo para o post"
             >
               <Box gap="0.5">
                 <Text size="sm" weight="medium" style={{ color: colors.text.primary }}>
-                  Postar anonimamente
+                  Postar como Anônima
                 </Text>
                 <Text size="xs" color="tertiary">
                   Seu nome não será exibido no post
@@ -307,6 +307,29 @@ export function CreatePostModal({ visible, onClose, onCreatePost }: CreatePostMo
                 />
               </View>
             </TouchableOpacity>
+
+            {/* Aviso de moderação pela NathIA */}
+            <Box
+              p="3"
+              rounded="lg"
+              style={{
+                backgroundColor: isDark ? `${colors.primary.main}15` : `${colors.primary.main}10`,
+                borderLeftWidth: 3,
+                borderLeftColor: colors.primary.main,
+              }}
+            >
+              <Box direction="row" align="flex-start" gap="2">
+                <Sparkles size={16} color={colors.primary.main} style={{ marginTop: 2 }} />
+                <Box flex={1}>
+                  <Text size="xs" weight="medium" style={{ color: colors.text.primary }}>
+                    Seu post passará pela NathIA antes de ser publicado
+                  </Text>
+                  <Text size="xs" color="tertiary" style={{ marginTop: 2 }}>
+                    Isso garante um espaço seguro para todas 💕
+                  </Text>
+                </Box>
+              </Box>
+            </Box>
 
             {/* Preview do post */}
             {(content.trim() || title.trim()) && (
@@ -346,17 +369,17 @@ export function CreatePostModal({ visible, onClose, onCreatePost }: CreatePostMo
                       Agora
                     </Text>
                   </Box>
-                  {selectedCategory && (
+                  {selectedTheme && (
                     <Badge
                       variant="default"
                       outlined
                       containerStyle={{
-                        backgroundColor: `${selectedCategory.color}20`,
-                        borderColor: selectedCategory.color,
+                        backgroundColor: `${selectedTheme.color}30`,
+                        borderColor: selectedTheme.color,
                       }}
                     >
-                      <Text size="xs" style={{ color: selectedCategory.color }}>
-                        {selectedCategory.label}
+                      <Text size="xs" style={{ color: selectedTheme.color }}>
+                        {selectedTheme.label}
                       </Text>
                     </Badge>
                   )}
@@ -390,7 +413,7 @@ export function CreatePostModal({ visible, onClose, onCreatePost }: CreatePostMo
                 textClassName="font-semibold"
               />
               <Button
-                title={isSubmitting ? 'Publicando...' : 'Publicar'}
+                title={isSubmitting ? 'Enviando...' : 'Enviar para revisão'}
                 onPress={handleSubmit}
                 disabled={!canSubmit}
                 leftIcon={
