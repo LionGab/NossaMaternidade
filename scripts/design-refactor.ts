@@ -307,8 +307,22 @@ class DesignRefactorEngine {
   /**
    * Analisa todos os arquivos do projeto
    */
-  async analyzeProject(pattern = 'src/**/*.{ts,tsx}'): Promise<RefactorResult[]> {
-    const files = await glob(pattern, { ignore: ['**/node_modules/**', '**/dist/**'] });
+  async analyzeProject(
+    pattern = 'src/{components,screens}/**/*.{ts,tsx}'
+  ): Promise<RefactorResult[]> {
+    // Regra: validar design tokens onde há UI (components + screens).
+    // Não faz sentido validar tokens/tema/tipos/utilitários com o mesmo critério,
+    // porque esses módulos frequentemente DEFINEM cores/espaçamentos ou lidam com valores brutos.
+    const files = await glob(pattern, {
+      ignore: [
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/build/**',
+        '**/__tests__/**',
+        '**/*.test.*',
+        '**/*.d.ts',
+      ],
+    });
     const results: RefactorResult[] = [];
 
     for (const file of files) {
