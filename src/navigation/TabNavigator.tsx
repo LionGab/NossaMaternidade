@@ -33,15 +33,6 @@ import { useTheme } from '../theme/ThemeContext';
 import { Tokens, ColorTokens } from '../theme/tokens';
 import { getShadowFromToken } from '../utils/shadowHelper';
 
-// Soft Pastel Colors (App Store Ready)
-const SOFT_PASTEL = {
-  tabActive: '#FF6B9D',     // Rosa vibrante para ativo
-  tabInactive: '#9B8A8F',   // Cinza rosado para inativo
-  pink: '#FFB8D9',          // Rosa pastel principal
-  purple: '#D9B8FF',        // Roxo pastel
-  blue: '#B8D4FF',          // Azul pastel
-} as const;
-
 // Icons - Design Web
 import { Home, Users, MessageCircle, Sparkles, Heart } from 'lucide-react-native';
 
@@ -100,8 +91,8 @@ export const TabNavigator = () => {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: true, // ✅ Garantir labels visíveis
-        tabBarActiveTintColor: SOFT_PASTEL.tabActive, // Rosa vibrante SoftPastel
-        tabBarInactiveTintColor: SOFT_PASTEL.tabInactive, // Cinza rosado SoftPastel
+        tabBarActiveTintColor: colors.primary.main, // ✅ Derivado do tema
+        tabBarInactiveTintColor: colors.text.tertiary, // ✅ Derivado do tema
         tabBarStyle: {
           height: 70 + insets.bottom, // Aumentado para acomodar labels
           paddingBottom: insets.bottom + 8,
@@ -231,8 +222,8 @@ export const TabNavigator = () => {
                 <LinearGradient
                   colors={
                     focused
-                      ? [SOFT_PASTEL.pink, SOFT_PASTEL.purple]
-                      : [`${SOFT_PASTEL.pink}`, `${SOFT_PASTEL.purple}`]
+                      ? [colors.primary.light, colors.primary.main]
+                      : [colors.primary.light, colors.secondary.main]
                   }
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
