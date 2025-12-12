@@ -101,39 +101,41 @@ export const NathIAChatInput: React.FC<NathIAChatInputProps> = memo(
       }
     }, [value, sending, onSend]);
 
-    // Container style com SafeArea
+    // Container style com SafeArea - Estilo ChatGPT
     const containerStyles: ViewStyle = useMemo(() => {
       return {
         flexDirection: 'row',
         alignItems: 'flex-end',
-        gap: Tokens.spacing['2'],
+        gap: Tokens.spacing['3'],
         paddingHorizontal: Tokens.spacing['4'],
-        paddingTop: Tokens.spacing['3'],
-        paddingBottom: Math.max(insets.bottom, Tokens.spacing['3']), // SafeArea aware
-        backgroundColor: colors.background.canvas,
+        paddingTop: Tokens.spacing['4'],
+        paddingBottom: Math.max(insets.bottom + Tokens.spacing['2'], Tokens.spacing['4']),
+        backgroundColor: isDark ? ColorTokens.neutral[900] : ColorTokens.neutral[0],
         borderTopWidth: 1,
-        borderTopColor: colors.border.light,
+        borderTopColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[200],
         ...containerStyle,
       };
-    }, [colors, containerStyle, insets.bottom]);
+    }, [colors, containerStyle, insets.bottom, isDark]);
 
-    // Input style
+    // Input style - Estilo ChatGPT
     const inputStyles = useMemo((): TextStyle => {
       const calculatedMaxHeight = multiline
-        ? Math.max(maxLines * MIN_LINE_HEIGHT, Tokens.touchTargets.min)
-        : Tokens.touchTargets.min;
+        ? Math.max(maxLines * MIN_LINE_HEIGHT, 44)
+        : 44;
 
       return {
         flex: 1,
-        minHeight: Tokens.touchTargets.min,
+        minHeight: 44,
         maxHeight: calculatedMaxHeight,
-        backgroundColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[100],
-        borderRadius: Tokens.radius['2xl'],
+        backgroundColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[50],
+        borderRadius: 24,
         paddingHorizontal: Tokens.spacing['4'],
         paddingVertical: Tokens.spacing['3'],
         color: colors.text.primary,
-        fontSize: Tokens.typography.sizes.md,
+        fontSize: 15,
         fontFamily: Tokens.typography.fonts.body,
+        borderWidth: 1,
+        borderColor: isDark ? ColorTokens.neutral[700] : ColorTokens.neutral[200],
         ...(multiline && {
           textAlignVertical: 'top' as const,
         }),
@@ -141,11 +143,11 @@ export const NathIAChatInput: React.FC<NathIAChatInputProps> = memo(
       };
     }, [isDark, colors, multiline, maxLines, inputStyle]);
 
-    // Botão send style
+    // Botão send style - Estilo ChatGPT
     const showVoiceButton = voiceEnabled && !hasText;
 
     const sendButtonStyle: ViewStyle = useMemo(() => {
-      const buttonSize = Tokens.touchTargets.min;
+      const buttonSize = 36;
       const disabledColor = isDark ? ColorTokens.neutral[700] : ColorTokens.neutral[300];
 
       const backgroundColor = hasText || showVoiceButton ? colors.primary.main : disabledColor;
@@ -153,11 +155,11 @@ export const NathIAChatInput: React.FC<NathIAChatInputProps> = memo(
       return {
         width: buttonSize,
         height: buttonSize,
-        borderRadius: Tokens.radius.full,
+        borderRadius: 18,
         backgroundColor,
         alignItems: 'center',
         justifyContent: 'center',
-        ...Tokens.shadows.md,
+        marginBottom: 4,
       };
     }, [hasText, colors, isDark, showVoiceButton]);
 
@@ -170,20 +172,36 @@ export const NathIAChatInput: React.FC<NathIAChatInputProps> = memo(
     }, [hasText, isDark, showVoiceButton]);
 
     const handlePrimaryAction = useCallback(() => {
+      logger.info('[NathIAChatInput] handlePrimaryAction chamado', {
+        sending,
+        hasText,
+        showVoiceButton,
+        hasOnSend: !!onSend,
+      });
+
       if (sending) {
+        logger.debug('[NathIAChatInput] Ação bloqueada: sending=true');
         return;
       }
 
       if (hasText) {
+        logger.info('[NathIAChatInput] Chamando handleSend');
         handleSend();
         return;
       }
 
       if (showVoiceButton && onVoiceRequest) {
+        logger.info('[NathIAChatInput] Abrindo modo de voz');
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onVoiceRequest();
+      } else {
+        logger.warn('[NathIAChatInput] Nenhuma ação disponível', {
+          hasText,
+          showVoiceButton,
+          hasOnVoiceRequest: !!onVoiceRequest,
+        });
       }
-    }, [handleSend, hasText, onVoiceRequest, sending, showVoiceButton]);
+    }, [handleSend, hasText, onVoiceRequest, sending, showVoiceButton, onSend]);
 
     const accessibilityLabel = hasText
       ? 'Enviar mensagem'
@@ -217,7 +235,14 @@ export const NathIAChatInput: React.FC<NathIAChatInputProps> = memo(
 
         {/* Send Button */}
         <TouchableOpacity
-          onPress={handlePrimaryAction}
+          onPress={() => {
+            logger.info('[NathIAChatInput] TouchableOpacity onPress disparado', {
+              disabled: sending || (!hasText && !showVoiceButton),
+              hasText,
+              sending,
+            });
+            handlePrimaryAction();
+          }}
           disabled={sending || (!hasText && !showVoiceButton)}
           style={sendButtonStyle}
           activeOpacity={0.7}
@@ -225,6 +250,7 @@ export const NathIAChatInput: React.FC<NathIAChatInputProps> = memo(
           accessibilityLabel={accessibilityLabel}
           accessibilityHint={accessibilityHint}
           accessibilityState={{ disabled: sending || (!hasText && !showVoiceButton) }}
+          testID="nathia-chat-send-button"
         >
           {showVoiceButton ? (
             <Mic size={20} color={actionIconColor} />

@@ -35,8 +35,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   AccessibilityInfo,
-  Linking,
-  Alert,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -128,7 +126,7 @@ type ChatScreenRouteProp = RouteProp<MainTabParamList, 'Chat'>;
 // ======================
 
 const TypingIndicator = React.memo(() => {
-  const { colors } = useTheme();
+  const { isDark } = useTheme();
   const dot1 = useSharedValue(0);
   const dot2 = useSharedValue(0);
   const dot3 = useSharedValue(0);
@@ -176,7 +174,13 @@ const TypingIndicator = React.memo(() => {
     <Animated.View
       entering={FadeIn.duration(200)}
       exiting={FadeOut.duration(200)}
-      style={styles.typingContainer}
+      style={[
+        styles.typingContainer,
+        {
+          paddingLeft: Tokens.spacing['4'],
+          paddingRight: Tokens.spacing['4'],
+        },
+      ]}
       accessible={true}
       accessibilityRole="progressbar"
       accessibilityLabel="NathIA está digitando"
@@ -184,18 +188,33 @@ const TypingIndicator = React.memo(() => {
     >
       <View style={styles.typingDots}>
         <Animated.View
-          style={[styles.typingDot, { backgroundColor: colors.primary.main }, animatedStyle1]}
+          style={[
+            styles.typingDot,
+            {
+              backgroundColor: isDark ? ColorTokens.neutral[400] : ColorTokens.neutral[500],
+            },
+            animatedStyle1,
+          ]}
         />
         <Animated.View
-          style={[styles.typingDot, { backgroundColor: colors.primary.main }, animatedStyle2]}
+          style={[
+            styles.typingDot,
+            {
+              backgroundColor: isDark ? ColorTokens.neutral[400] : ColorTokens.neutral[500],
+            },
+            animatedStyle2,
+          ]}
         />
         <Animated.View
-          style={[styles.typingDot, { backgroundColor: colors.primary.main }, animatedStyle3]}
+          style={[
+            styles.typingDot,
+            {
+              backgroundColor: isDark ? ColorTokens.neutral[400] : ColorTokens.neutral[500],
+            },
+            animatedStyle3,
+          ]}
         />
       </View>
-      <Text size="xs" color="tertiary" style={{ marginLeft: Tokens.spacing['2'] }}>
-        NathIA está digitando...
-      </Text>
     </Animated.View>
   );
 });
@@ -213,7 +232,7 @@ interface ErrorCardProps {
 }
 
 const ErrorCard = React.memo(({ type, onRetry, onDismiss }: ErrorCardProps) => {
-  const { colors, isDark } = useTheme();
+  const { isDark } = useTheme();
   const errorConfig = ERROR_MESSAGES[type];
   const IconComponent = errorConfig.icon;
 
@@ -231,8 +250,10 @@ const ErrorCard = React.memo(({ type, onRetry, onDismiss }: ErrorCardProps) => {
       style={[
         styles.errorCard,
         {
-          backgroundColor: isDark ? ColorTokens.error[900] + '40' : ColorTokens.error[50],
-          borderColor: ColorTokens.error[500] + '30',
+          backgroundColor: isDark ? ColorTokens.neutral[800] : ColorTokens.neutral[50],
+          borderColor: isDark ? ColorTokens.neutral[700] : ColorTokens.neutral[200],
+          borderLeftWidth: 3,
+          borderLeftColor: ColorTokens.error[500],
         },
       ]}
       accessible={true}
@@ -240,16 +261,28 @@ const ErrorCard = React.memo(({ type, onRetry, onDismiss }: ErrorCardProps) => {
       accessibilityLabel={`Erro: ${errorConfig.title}. ${errorConfig.message}`}
     >
       <View style={styles.errorHeader}>
-        <IconComponent size={20} color={ColorTokens.error[500]} />
+        <IconComponent size={18} color={ColorTokens.error[500]} strokeWidth={2.5} />
         <Text
-          weight="bold"
-          style={{ marginLeft: Tokens.spacing['2'], color: ColorTokens.error[500] }}
+          weight="semibold"
+          style={{
+            marginLeft: Tokens.spacing['2'],
+            color: ColorTokens.error[500],
+            fontSize: 14,
+          }}
         >
           {errorConfig.title}
         </Text>
       </View>
 
-      <Text color="secondary" size="sm" style={{ marginTop: Tokens.spacing['2'] }}>
+      <Text
+        color="secondary"
+        size="sm"
+        style={{
+          marginTop: Tokens.spacing['2'],
+          fontSize: 13,
+          lineHeight: 18,
+        }}
+      >
         {errorConfig.message}
       </Text>
 
@@ -259,12 +292,23 @@ const ErrorCard = React.memo(({ type, onRetry, onDismiss }: ErrorCardProps) => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             onRetry();
           }}
-          style={[styles.errorButton, { backgroundColor: ColorTokens.error[500] }]}
+          activeOpacity={0.8}
+          style={[
+            styles.errorButton,
+            {
+              backgroundColor: ColorTokens.error[500],
+              borderRadius: 20,
+            },
+          ]}
           accessibilityRole="button"
           accessibilityLabel={errorConfig.action}
         >
-          <RefreshCw size={14} color={ColorTokens.neutral[0]} />
-          <Text size="xs" weight="bold" style={{ color: ColorTokens.neutral[0], marginLeft: 4 }}>
+          <RefreshCw size={14} color={ColorTokens.neutral[0]} strokeWidth={2.5} />
+          <Text
+            size="xs"
+            weight="semibold"
+            style={{ color: ColorTokens.neutral[0], marginLeft: 6, fontSize: 13 }}
+          >
             {errorConfig.action}
           </Text>
         </TouchableOpacity>
@@ -275,11 +319,24 @@ const ErrorCard = React.memo(({ type, onRetry, onDismiss }: ErrorCardProps) => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               onDismiss();
             }}
-            style={[styles.errorButtonSecondary, { borderColor: colors.border.medium }]}
+            activeOpacity={0.8}
+            style={[
+              styles.errorButtonSecondary,
+              {
+                borderColor: isDark ? ColorTokens.neutral[700] : ColorTokens.neutral[300],
+                borderRadius: 20,
+              },
+            ]}
             accessibilityRole="button"
             accessibilityLabel="Fechar"
           >
-            <Text size="xs" color="secondary">
+            <Text
+              size="xs"
+              style={{
+                color: isDark ? ColorTokens.neutral[300] : ColorTokens.neutral[600],
+                fontSize: 13,
+              }}
+            >
               Fechar
             </Text>
           </TouchableOpacity>
@@ -518,8 +575,20 @@ export default function ChatScreen() {
 
   const handleSend = useCallback(
     async (customMessage?: string) => {
+      logger.info('[ChatScreen] handleSend chamado', {
+        customMessage: !!customMessage,
+        inputLength: input.length,
+        isSending,
+      });
+
       const messageContent = customMessage || input.trim();
-      if (!messageContent || isSending) return;
+      if (!messageContent || isSending) {
+        logger.debug('[ChatScreen] handleSend bloqueado', {
+          hasMessage: !!messageContent,
+          isSending,
+        });
+        return;
+      }
 
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
@@ -674,29 +743,6 @@ export default function ChatScreen() {
     // TODO: Salvar reação no Supabase para treinamento
   }, []);
 
-  const handleEmergency = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    Alert.alert(
-      'Precisa de ajuda urgente?',
-      'Se você está passando por um momento difícil, ligue agora para:',
-      [
-        {
-          text: 'CVV - 188',
-          onPress: () => Linking.openURL('tel:188'),
-        },
-        {
-          text: 'SAMU - 192',
-          onPress: () => Linking.openURL('tel:192'),
-        },
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-      ],
-      { cancelable: true }
-    );
-  }, []);
-
   // ======================
   // RENDER ITEM
   // ======================
@@ -765,7 +811,7 @@ export default function ChatScreen() {
           onDismiss={undefined}
         />
 
-        {/* Header com novo componente */}
+        {/* Header minimalista - Estilo ChatGPT */}
         <ChatHeader
           avatarUrl={AVATAR_URL}
           isOnline={true}
@@ -773,9 +819,6 @@ export default function ChatScreen() {
           onBack={() => navigation.goBack()}
           onModeChange={setChatMode}
         />
-
-        {/* Disclaimer Banner (discreto) */}
-        <DisclaimerBanner />
 
         {/* Chat Content */}
         <KeyboardAvoidingView
@@ -820,10 +863,7 @@ export default function ChatScreen() {
             />
           )}
 
-          {/* Emergency CTA - Fixo acima do input */}
-          <EmergencyCTA onPress={handleEmergency} />
-
-          {/* Input Area - Usando NathIAChatInput existente */}
+          {/* Input Area - Estilo ChatGPT */}
           <NathIAChatInput
             value={input}
             onChangeText={setInput}
@@ -851,28 +891,29 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   messagesList: {
-    padding: Tokens.spacing['4'],
-    paddingBottom: 100,
+    paddingTop: Tokens.spacing['4'],
+    paddingBottom: 120,
   },
   typingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: Tokens.spacing['3'],
-    marginHorizontal: Tokens.spacing['2'],
+    paddingVertical: Tokens.spacing['4'],
   },
   typingDots: {
     flexDirection: 'row',
-    gap: 4,
+    gap: 6,
+    alignItems: 'center',
   },
   typingDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   errorCard: {
-    margin: Tokens.spacing['4'],
+    marginHorizontal: Tokens.spacing['4'],
+    marginTop: Tokens.spacing['4'],
     padding: Tokens.spacing['4'],
-    borderRadius: Tokens.radius.xl,
+    borderRadius: 12,
     borderWidth: 1,
   },
   errorHeader: {
@@ -887,17 +928,15 @@ const styles = StyleSheet.create({
   errorButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: Tokens.spacing['3'],
-    paddingVertical: Tokens.spacing['2'],
-    borderRadius: Tokens.radius.lg,
-    minHeight: Tokens.touchTargets.min, // WCAG AAA
+    paddingHorizontal: Tokens.spacing['4'],
+    paddingVertical: Tokens.spacing['2.5'],
+    minHeight: 36,
   },
   errorButtonSecondary: {
-    paddingHorizontal: Tokens.spacing['3'],
-    paddingVertical: Tokens.spacing['2'],
-    borderRadius: Tokens.radius.lg,
+    paddingHorizontal: Tokens.spacing['4'],
+    paddingVertical: Tokens.spacing['2.5'],
     borderWidth: 1,
-    minHeight: Tokens.touchTargets.min, // WCAG AAA
+    minHeight: 36,
   },
   emergencyCTA: {
     flexDirection: 'row',

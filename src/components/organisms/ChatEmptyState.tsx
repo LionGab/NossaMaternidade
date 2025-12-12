@@ -21,7 +21,6 @@
  */
 
 import { Image } from 'expo-image';
-import { Sparkles, CheckCircle } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, {
@@ -34,10 +33,9 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { ChatSuggestionChips } from '@/components/molecules/ChatSuggestionChips';
-import { Heading } from '@/components/atoms/Heading';
 import { Text } from '@/components/atoms/Text';
 import { useTheme } from '@/theme';
-import { Tokens, ColorTokens } from '@/theme/tokens';
+import { Tokens } from '@/theme/tokens';
 import type { DynamicChip } from '@/utils/buildUserContext';
 
 export interface ChatEmptyStateProps {
@@ -102,7 +100,7 @@ export const ChatEmptyState: React.FC<ChatEmptyStateProps> = ({
 
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
-      {/* Avatar com breathing effect */}
+      {/* Avatar com breathing effect - Estilo ChatGPT */}
       <Animated.View style={[styles.avatarContainer, breatheStyle]}>
         <Image
           source={{ uri: avatarUrl }}
@@ -110,42 +108,41 @@ export const ChatEmptyState: React.FC<ChatEmptyStateProps> = ({
           contentFit="cover"
           transition={300}
         />
-
-        {/* Badge de Sparkles */}
-        <View style={[styles.sparklesBadge, { backgroundColor: colors.primary.main }]}>
-          <Sparkles size={14} color={ColorTokens.neutral[0]} />
-        </View>
       </Animated.View>
 
-      {/* Nome */}
-      <Heading level="h2" color="primary" align="center" style={{ marginTop: Tokens.spacing['4'] }}>
+      {/* Nome - Minimalista */}
+      <Text
+        weight="semibold"
+        style={{
+          marginTop: Tokens.spacing['5'],
+          fontSize: 20,
+          letterSpacing: -0.3,
+          color: colors.text.primary,
+        }}
+      >
         NathIA
-      </Heading>
+      </Text>
 
-      {/* Badge de Verificação */}
-      <View style={styles.badgeContainer}>
-        <CheckCircle size={12} color={colors.primary.main} />
-        <Text size="xs" color="primary" weight="medium" style={{ marginLeft: 4 }}>
-          Assistente Maternal Verificada
-        </Text>
-      </View>
-
-      {/* Greeting */}
+      {/* Greeting - Estilo ChatGPT */}
       <Text
         color="secondary"
         size="md"
         align="center"
         style={{
-          maxWidth: 280,
+          maxWidth: 320,
           marginTop: Tokens.spacing['4'],
           lineHeight: 24,
+          fontSize: 15,
+          letterSpacing: 0.1,
         }}
       >
         {finalGreeting}
       </Text>
 
-      {/* Chips de Sugestão */}
-      <ChatSuggestionChips chips={chips} onPress={onSuggestionPress} maxChips={4} />
+      {/* Chips de Sugestão - Estilo ChatGPT */}
+      <View style={{ marginTop: Tokens.spacing['6'], width: '100%', alignItems: 'center' }}>
+        <ChatSuggestionChips chips={chips} onPress={onSuggestionPress} maxChips={4} />
+      </View>
     </Animated.View>
   );
 };
@@ -161,28 +158,9 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   avatar: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    borderWidth: 3,
-    borderColor: ColorTokens.neutral[200],
-  },
-  sparklesBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: ColorTokens.neutral[0],
-  },
-  badgeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: Tokens.spacing['2'],
+    width: 64,
+    height: 64,
+    borderRadius: 32,
   },
 });
 
