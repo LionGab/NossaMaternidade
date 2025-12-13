@@ -38,6 +38,7 @@ import BreathingExerciseScreen from "../screens/BreathingExerciseScreen";
 import RestSoundsScreen from "../screens/RestSoundsScreen";
 import HabitsEnhancedScreen from "../screens/HabitsEnhancedScreen";
 import MaeValenteProgressScreen from "../screens/MaeValenteProgressScreen";
+import PaywallScreen from "../screens/PaywallScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -222,6 +223,17 @@ export default function RootNavigator() {
             options={{
               headerShown: false,
               animation: "slide_from_right",
+            }}
+          />
+
+          {/* Paywall Screen */}
+          <Stack.Screen
+            name="Paywall"
+            component={PaywallScreen}
+            options={{
+              headerShown: false,
+              presentation: "modal",
+              animation: "slide_from_bottom",
             }}
           />
         </>

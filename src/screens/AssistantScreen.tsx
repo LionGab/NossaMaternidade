@@ -33,6 +33,9 @@ import {
   NATHIA_API_CONFIG,
 } from "../config/nathia";
 import { logger } from "../utils/logger";
+import { VoiceMessagePlayer } from "../components/VoiceMessagePlayer";
+import { useVoicePremiumGate } from "../hooks/useVoice";
+import { PRIMARY_COLOR } from "../utils/colors";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -70,6 +73,15 @@ export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assi
 
   // AI Consent state
   const [showAIConsent, setShowAIConsent] = useState(!hasAcceptedAITerms);
+
+  // Voice premium gate
+  const { hasAccess: hasVoiceAccess } = useVoicePremiumGate();
+
+  // Handler para quando voz premium e necessaria
+  const handleVoicePremiumRequired = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate("Paywall" as any, { source: "voice_nathia" });
+  }, [navigation]);
 
   // Get current messages
   const currentMessages = useMemo(() => {
@@ -273,6 +285,26 @@ export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assi
             <Text className={`text-base leading-6 ${isUser ? "text-white" : "text-warmGray-800"}`}>
               {message.content}
             </Text>
+
+            {/* Voice Player - Apenas para mensagens da NathIA */}
+            {!isUser && (
+              <View className="flex-row items-center justify-between mt-3 pt-2 border-t border-warmGray-200">
+                <View className="flex-row items-center">
+                  <Ionicons name="volume-medium-outline" size={14} color="#78716C" />
+                  <Text className="text-warmGray-500 text-xs ml-1">
+                    {hasVoiceAccess ? "Ouvir resposta" : "Voz Premium"}
+                  </Text>
+                </View>
+                <VoiceMessagePlayer
+                  messageId={message.id}
+                  text={message.content}
+                  onPremiumRequired={handleVoicePremiumRequired}
+                  size="small"
+                  compact
+                  iconColor={PRIMARY_COLOR}
+                />
+              </View>
+            )}
           </View>
         </View>
         <Text className={`text-warmGray-400 text-xs mt-1 ${isUser ? "mr-2" : "ml-12"}`}>

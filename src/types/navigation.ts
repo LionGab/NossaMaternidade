@@ -36,6 +36,9 @@ export type RootStackParamList = {
   BreathingExercise: undefined;
   RestSounds: undefined;
 
+  // Premium
+  Paywall: { source?: string };
+
   // Other
   Legal: undefined;
   ComingSoon: {
