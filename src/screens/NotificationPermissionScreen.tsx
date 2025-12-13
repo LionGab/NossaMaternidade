@@ -23,11 +23,9 @@ import {
   SHADOWS,
   TYPOGRAPHY,
 } from "../theme/design-system";
+import { RootStackScreenProps } from "../types/navigation";
 
-interface NotificationPermissionScreenProps {
-  onComplete: () => void;
-  onSkip: () => void;
-}
+type Props = RootStackScreenProps<"NotificationPermission">;
 
 interface FeatureCardProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -92,10 +90,7 @@ const FeatureCard = ({
   </Animated.View>
 );
 
-export default function NotificationPermissionScreen({
-  onComplete,
-  onSkip,
-}: NotificationPermissionScreenProps) {
+export default function NotificationPermissionScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -111,17 +106,17 @@ export default function NotificationPermissionScreen({
         await initializeNotifications();
         await markNotificationSetupComplete();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        onComplete();
+        navigation.replace("NathIAOnboarding");
       } else {
         // Permission denied
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         await skipNotificationSetup();
-        onSkip();
+        navigation.replace("NathIAOnboarding");
       }
     } catch {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       await skipNotificationSetup();
-      onSkip();
+      navigation.replace("NathIAOnboarding");
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +125,7 @@ export default function NotificationPermissionScreen({
   const handleSkip = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     await skipNotificationSetup();
-    onSkip();
+    navigation.replace("NathIAOnboarding");
   };
 
   return (

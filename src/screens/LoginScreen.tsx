@@ -37,10 +37,9 @@ import {
   SHADOWS,
   TYPOGRAPHY,
 } from "../theme/design-system";
+import { RootStackScreenProps } from "../types/navigation";
 
-interface LoginScreenProps {
-  onLoginSuccess: () => void;
-}
+type Props = RootStackScreenProps<"Login">;
 
 // Componente de Input personalizado
 const CustomInput = ({
@@ -255,7 +254,7 @@ const CustomAlert = ({
   );
 };
 
-export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
+export default function LoginScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
@@ -326,7 +325,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       setAuthenticated(true);
       setIsLoading(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      onLoginSuccess();
+      navigation.replace("NotificationPermission");
     }, 1500);
   };
 

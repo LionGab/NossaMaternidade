@@ -98,7 +98,7 @@ export default function BreathingExerciseScreen() {
   const startBreathingCycle = useCallback(() => {
     const phases = technique.phases;
     let phaseIndex = 0;
-    let timeoutId: NodeJS.Timeout | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const runPhase = () => {
       const phase = phases[phaseIndex];

@@ -1183,7 +1183,7 @@ export default function NathIAOnboardingScreen({ navigation }: Props) {
     useNathIAOnboardingStore();
 
   const handleComplete = () => {
-    navigation.replace("MainTabs");
+    navigation.replace("MainTabs", {} as any);
   };
 
   const handleBack = () => {
