@@ -1,12 +1,18 @@
 /**
  * Nossa Maternidade - NotificationPermissionScreen
- * Notification permission request with benefit cards
+ * Premium UX inspired by Headspace, Calm, and Flo
+ * Pre-permission priming pattern with notification preview
  */
 
 import React, { useState } from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import Animated, {
+  FadeInDown,
+  FadeInUp,
+  FadeIn,
+  SlideInRight,
+} from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -27,66 +33,112 @@ import { RootStackScreenProps } from "../types/navigation";
 
 type Props = RootStackScreenProps<"NotificationPermission">;
 
-interface FeatureCardProps {
-  icon: keyof typeof Ionicons.glyphMap;
-  iconColor: string;
-  iconBgColor: string;
-  title: string;
-  description: string;
-  delay: number;
-}
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-const FeatureCard = ({
-  icon,
-  iconColor,
-  iconBgColor,
-  title,
-  description,
-  delay,
-}: FeatureCardProps) => (
+// Notification preview component - shows how notifications will look
+const NotificationPreview = ({ delay }: { delay: number }) => (
   <Animated.View
-    entering={FadeInDown.duration(500).delay(delay).springify()}
+    entering={SlideInRight.duration(600).delay(delay).springify()}
     style={{
+      backgroundColor: "rgba(255, 255, 255, 0.95)",
+      borderRadius: RADIUS.xl,
+      padding: SPACING.md,
+      marginBottom: SPACING.sm,
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: "rgba(255, 255, 255, 0.7)",
-      borderRadius: RADIUS["2xl"],
-      padding: SPACING.lg,
-      marginBottom: SPACING.md,
-      ...SHADOWS.sm,
+      ...SHADOWS.md,
+      borderWidth: 1,
+      borderColor: "rgba(244, 63, 94, 0.1)",
     }}
   >
-    <View
+    <LinearGradient
+      colors={[COLORS.primary[400], COLORS.primary[500]]}
       style={{
-        backgroundColor: iconBgColor,
-        borderRadius: RADIUS.full,
-        padding: SPACING.md,
-        marginRight: SPACING.lg,
+        width: 40,
+        height: 40,
+        borderRadius: RADIUS.lg,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: SPACING.md,
       }}
     >
-      <Ionicons name={icon} size={24} color={iconColor} />
-    </View>
+      <Ionicons name="heart" size={20} color="#FFFFFF" />
+    </LinearGradient>
     <View style={{ flex: 1 }}>
       <Text
         style={{
-          fontSize: TYPOGRAPHY.bodyLarge.fontSize,
+          fontSize: 13,
           fontWeight: "600",
           color: COLORS.neutral[800],
           marginBottom: 2,
         }}
       >
-        {title}
+        Nossa Maternidade
       </Text>
       <Text
         style={{
-          fontSize: TYPOGRAPHY.bodySmall.fontSize,
+          fontSize: 12,
           color: COLORS.neutral[600],
-          lineHeight: 18,
         }}
+        numberOfLines={1}
       >
-        {description}
+        Bom dia! Como você está se sentindo hoje? 💕
       </Text>
     </View>
+    <Text style={{ fontSize: 11, color: COLORS.neutral[400] }}>agora</Text>
+  </Animated.View>
+);
+
+const NotificationPreview2 = ({ delay }: { delay: number }) => (
+  <Animated.View
+    entering={SlideInRight.duration(600).delay(delay).springify()}
+    style={{
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
+      borderRadius: RADIUS.xl,
+      padding: SPACING.md,
+      marginBottom: SPACING.sm,
+      flexDirection: "row",
+      alignItems: "center",
+      ...SHADOWS.sm,
+      borderWidth: 1,
+      borderColor: "rgba(167, 139, 250, 0.1)",
+    }}
+  >
+    <LinearGradient
+      colors={[COLORS.secondary[400], COLORS.secondary[500]]}
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: RADIUS.lg,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: SPACING.md,
+      }}
+    >
+      <Ionicons name="sparkles" size={20} color="#FFFFFF" />
+    </LinearGradient>
+    <View style={{ flex: 1 }}>
+      <Text
+        style={{
+          fontSize: 13,
+          fontWeight: "600",
+          color: COLORS.neutral[800],
+          marginBottom: 2,
+        }}
+      >
+        Sua afirmação do dia
+      </Text>
+      <Text
+        style={{
+          fontSize: 12,
+          color: COLORS.neutral[600],
+        }}
+        numberOfLines={1}
+      >
+        Você é forte e capaz. Confie no processo ✨
+      </Text>
+    </View>
+    <Text style={{ fontSize: 11, color: COLORS.neutral[400] }}>8:00</Text>
   </Animated.View>
 );
 
@@ -102,23 +154,19 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
       const token = await registerForPushNotifications();
 
       if (token) {
-        // Initialize all notification schedules
         await initializeNotifications();
         await markNotificationSetupComplete();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        navigation.replace("NathIAOnboarding");
       } else {
-        // Permission denied
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         await skipNotificationSetup();
-        navigation.replace("NathIAOnboarding");
       }
     } catch {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       await skipNotificationSetup();
-      navigation.replace("NathIAOnboarding");
     } finally {
       setIsLoading(false);
+      navigation.replace("NathIAOnboarding");
     }
   };
 
@@ -130,134 +178,168 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
 
   return (
     <LinearGradient
-      colors={["#FFF1F2", "#FCE7F3", "#FAE8FF", COLORS.background.primary]}
-      locations={[0, 0.3, 0.6, 1]}
+      colors={["#FFF1F2", "#FCE7F3", "#F5F3FF", COLORS.background.primary]}
+      locations={[0, 0.25, 0.5, 1]}
       style={{ flex: 1 }}
     >
       <View
         style={{
           flex: 1,
-          paddingHorizontal: SPACING["2xl"],
-          paddingTop: insets.top + SPACING["4xl"],
-          paddingBottom: insets.bottom + SPACING["2xl"],
-          justifyContent: "center",
+          paddingHorizontal: SPACING.xl,
+          paddingTop: insets.top + SPACING["2xl"],
+          paddingBottom: insets.bottom + SPACING.xl,
         }}
       >
-        {/* Icon */}
+        {/* Header with bell animation */}
         <Animated.View
-          entering={FadeInUp.duration(600).springify()}
+          entering={FadeInUp.duration(800).springify()}
           style={{
             alignItems: "center",
-            marginBottom: SPACING["3xl"],
+            marginBottom: SPACING["2xl"],
           }}
         >
           <View
             style={{
               backgroundColor: "rgba(255, 255, 255, 0.9)",
               borderRadius: RADIUS.full,
-              padding: SPACING["2xl"],
+              padding: SPACING.xl,
               ...SHADOWS.lg,
             }}
           >
             <LinearGradient
-              colors={[COLORS.primary[500], COLORS.secondary[500]]}
+              colors={[COLORS.primary[400], COLORS.secondary[400]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={{
-                width: 96,
-                height: 96,
-                borderRadius: 48,
+                width: 80,
+                height: 80,
+                borderRadius: 40,
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Ionicons name="notifications" size={48} color="#FFFFFF" />
+              <Ionicons name="notifications" size={40} color="#FFFFFF" />
             </LinearGradient>
           </View>
         </Animated.View>
 
-        {/* Title and Description */}
+        {/* Title */}
         <Animated.View
           entering={FadeInDown.duration(600).delay(200).springify()}
-          style={{ marginBottom: SPACING["3xl"] }}
+          style={{ marginBottom: SPACING.lg }}
         >
           <Text
             style={{
-              fontSize: TYPOGRAPHY.displaySmall.fontSize,
+              fontSize: 28,
               fontWeight: "700",
               color: COLORS.neutral[800],
               textAlign: "center",
-              marginBottom: SPACING.md,
               letterSpacing: -0.5,
+              lineHeight: 34,
             }}
           >
-            Fique conectada
+            Nunca perca um{"\n"}momento importante
           </Text>
+        </Animated.View>
+
+        {/* Subtitle */}
+        <Animated.View
+          entering={FadeInDown.duration(600).delay(300).springify()}
+          style={{ marginBottom: SPACING["2xl"] }}
+        >
           <Text
             style={{
               fontSize: TYPOGRAPHY.bodyLarge.fontSize,
               color: COLORS.neutral[600],
               textAlign: "center",
               lineHeight: 24,
+              paddingHorizontal: SPACING.md,
             }}
           >
-            Receba lembretes gentis para cuidar de você e acompanhar sua jornada
+            Lembretes carinhosos para cuidar de você durante essa jornada especial
           </Text>
         </Animated.View>
 
-        {/* Features */}
-        <View style={{ marginBottom: SPACING["3xl"] }}>
-          <FeatureCard
-            icon="heart"
-            iconColor={COLORS.primary[500]}
-            iconBgColor={COLORS.primary[50]}
-            title="Check-in diário"
-            description="Como você está se sentindo hoje?"
-            delay={400}
-          />
+        {/* Notification Previews - Like real notifications */}
+        <Animated.View
+          entering={FadeIn.duration(400).delay(500)}
+          style={{
+            marginBottom: SPACING["2xl"],
+            paddingHorizontal: SPACING.xs,
+          }}
+        >
+          <NotificationPreview delay={600} />
+          <NotificationPreview2 delay={750} />
+        </Animated.View>
 
-          <FeatureCard
-            icon="sparkles"
-            iconColor={COLORS.secondary[500]}
-            iconBgColor={COLORS.secondary[50]}
-            title="Afirmações diárias"
-            description="Mensagens de amor e encorajamento"
-            delay={500}
-          />
+        {/* Benefits List */}
+        <Animated.View
+          entering={FadeInDown.duration(600).delay(900).springify()}
+          style={{
+            backgroundColor: "rgba(255, 255, 255, 0.6)",
+            borderRadius: RADIUS["2xl"],
+            padding: SPACING.lg,
+            marginBottom: SPACING["2xl"],
+          }}
+        >
+          {[
+            { icon: "sunny", text: "Check-in diário às 9h", color: "#F59E0B" },
+            { icon: "sparkles", text: "Afirmações positivas às 8h", color: COLORS.secondary[500] },
+            { icon: "leaf", text: "Lembretes de hábitos às 20h", color: "#10B981" },
+            { icon: "moon", text: "Momento de relaxar às 14:30", color: "#6366F1" },
+          ].map((item, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: SPACING.sm,
+              }}
+            >
+              <View
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  backgroundColor: `${item.color}15`,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: SPACING.md,
+                }}
+              >
+                <Ionicons name={item.icon as any} size={16} color={item.color} />
+              </View>
+              <Text
+                style={{
+                  fontSize: TYPOGRAPHY.bodyMedium.fontSize,
+                  color: COLORS.neutral[700],
+                  flex: 1,
+                }}
+              >
+                {item.text}
+              </Text>
+              <Ionicons name="checkmark-circle" size={20} color={COLORS.semantic.success} />
+            </View>
+          ))}
+        </Animated.View>
 
-          <FeatureCard
-            icon="leaf"
-            iconColor={COLORS.semantic.success}
-            iconBgColor="#DCFCE7"
-            title="Hábitos saudáveis"
-            description="Lembretes para seus rituais de bem-estar"
-            delay={600}
-          />
-
-          <FeatureCard
-            icon="moon"
-            iconColor="#6366F1"
-            iconBgColor="#EEF2FF"
-            title="Momento de descanso"
-            description="Pausa para respirar e relaxar"
-            delay={700}
-          />
-        </View>
+        {/* Spacer */}
+        <View style={{ flex: 1 }} />
 
         {/* Buttons */}
-        <Animated.View
-          entering={FadeInDown.duration(600).delay(800).springify()}
-        >
+        <Animated.View entering={FadeInDown.duration(600).delay(1100).springify()}>
+          {/* Primary Button */}
           <Pressable
             onPress={handleEnableNotifications}
             disabled={isLoading}
-            style={{
+            style={({ pressed }) => ({
               marginBottom: SPACING.md,
-              opacity: isLoading ? 0.8 : 1,
-            }}
+              opacity: isLoading ? 0.8 : pressed ? 0.9 : 1,
+              transform: [{ scale: pressed ? 0.98 : 1 }],
+            })}
           >
             <LinearGradient
-              colors={[COLORS.primary[500], COLORS.secondary[500]]}
+              colors={[COLORS.primary[500], COLORS.primary[600]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={{
@@ -268,21 +350,12 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
               }}
             >
               <View style={{ flexDirection: "row", alignItems: "center" }}>
-                {isLoading ? (
-                  <Ionicons
-                    name="sync-outline"
-                    size={20}
-                    color="#FFFFFF"
-                    style={{ marginRight: SPACING.sm }}
-                  />
-                ) : (
-                  <Ionicons
-                    name="notifications-outline"
-                    size={20}
-                    color="#FFFFFF"
-                    style={{ marginRight: SPACING.sm }}
-                  />
-                )}
+                <Ionicons
+                  name={isLoading ? "hourglass-outline" : "notifications"}
+                  size={20}
+                  color="#FFFFFF"
+                  style={{ marginRight: SPACING.sm }}
+                />
                 <Text
                   style={{
                     color: "#FFFFFF",
@@ -290,19 +363,21 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
                     fontWeight: "700",
                   }}
                 >
-                  {isLoading ? "Configurando..." : "Ativar notificações"}
+                  {isLoading ? "Configurando..." : "Ativar lembretes"}
                 </Text>
               </View>
             </LinearGradient>
           </Pressable>
 
+          {/* Secondary Button */}
           <Pressable
             onPress={handleSkip}
             disabled={isLoading}
-            style={{
-              paddingVertical: SPACING.lg,
+            style={({ pressed }) => ({
+              paddingVertical: SPACING.md,
               alignItems: "center",
-            }}
+              opacity: pressed ? 0.7 : 1,
+            })}
           >
             <Text
               style={{
@@ -311,9 +386,25 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
                 fontWeight: "500",
               }}
             >
-              Agora não
+              Configurar depois
             </Text>
           </Pressable>
+
+          {/* Privacy note */}
+          <Animated.View
+            entering={FadeIn.duration(400).delay(1300)}
+            style={{ alignItems: "center", marginTop: SPACING.sm }}
+          >
+            <Text
+              style={{
+                color: COLORS.neutral[400],
+                fontSize: 11,
+                textAlign: "center",
+              }}
+            >
+              Você pode alterar isso a qualquer momento nas configurações
+            </Text>
+          </Animated.View>
         </Animated.View>
       </View>
     </LinearGradient>
