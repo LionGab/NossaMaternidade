@@ -360,6 +360,11 @@ export async function initializeNotifications(): Promise<void> {
  */
 export async function markNotificationSetupComplete(): Promise<void> {
   await AsyncStorage.setItem("@notification_setup_complete", "true");
+  // Ensure permission key is also set for navigation flow
+  const existing = await AsyncStorage.getItem("@notification_permission");
+  if (!existing) {
+    await AsyncStorage.setItem("@notification_permission", "granted");
+  }
 }
 
 /**
@@ -375,4 +380,5 @@ export async function isNotificationSetupComplete(): Promise<boolean> {
  */
 export async function skipNotificationSetup(): Promise<void> {
   await AsyncStorage.setItem("@notification_setup_complete", "skipped");
+  await AsyncStorage.setItem("@notification_permission", "skipped");
 }
