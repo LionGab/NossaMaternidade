@@ -27,7 +27,6 @@ import MainTabNavigator from "./MainTabNavigator";
 // Feature Screens
 import PostDetailScreen from "../screens/PostDetailScreen";
 import NewPostScreen from "../screens/NewPostScreen";
-import WeightCalculatorScreen from "../screens/WeightCalculatorScreen";
 import DailyLogScreen from "../screens/DailyLogScreen";
 import AffirmationsScreen from "../screens/AffirmationsScreen";
 import HabitsScreen from "../screens/HabitsScreen";
@@ -145,11 +144,6 @@ export default function RootNavigator() {
               headerTintColor: COLORS.primary[600],
               headerStyle: { backgroundColor: COLORS.background.primary },
             }}
-          />
-          <Stack.Screen
-            name="WeightCalculator"
-            component={WeightCalculatorScreen}
-            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="DailyLog"

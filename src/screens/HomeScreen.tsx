@@ -15,7 +15,6 @@ const QUICK_ACTIONS: { id: string; label: string; icon: string; gradient: [strin
   { id: "mycare", label: "Meus Cuidados", icon: "heart", gradient: ["#E11D48", "#F43F5E"] },
   { id: "assistant", label: "NathIA", icon: "chatbubble-ellipses", gradient: ["#6BAD78", "#8BC896"] },
   { id: "affirmations", label: "Afirmações", icon: "sparkles", gradient: ["#A78BFA", "#C4B5FD"] },
-  { id: "calculator", label: "Peso Ideal", icon: "calculator", gradient: ["#BC8B7B", "#D4A59A"] },
 ];
 
 const DAILY_TIPS = [
@@ -215,7 +214,6 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
                     if (action.id === "mycare") navigation.navigate("MyCare");
                     if (action.id === "assistant") navigation.navigate("Assistant");
                     if (action.id === "affirmations") navigation.navigate("Affirmations");
-                    if (action.id === "calculator") navigation.navigate("WeightCalculator");
                   }}
                   className="rounded-2xl overflow-hidden"
                   style={shadowPresets.lg}

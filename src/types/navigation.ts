@@ -24,7 +24,6 @@ export type RootStackParamList = {
   PrivacySettings: undefined;
 
   // Tools
-  WeightCalculator: undefined;
   DailyLog: { date?: string };
   Affirmations: undefined;
 
