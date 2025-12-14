@@ -28,6 +28,7 @@ import Animated, {
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useNathIAOnboardingStore } from "../state/nathia-onboarding-store";
+import { useAppStore } from "../state/store";
 import {
   LIFE_STAGE_OPTIONS,
   TRYING_FOCUS_OPTIONS,
@@ -1182,8 +1183,28 @@ export default function NathIAOnboardingScreen({ navigation }: Props) {
   const { currentStep, nextStep, prevStep, getProgress } =
     useNathIAOnboardingStore();
 
+  // Get legacy onboarding store to mark as complete
+  const setOnboardingComplete = useAppStore((s) => s.setOnboardingComplete);
+  const setUser = useAppStore((s) => s.setUser);
+
   const handleComplete = () => {
-    navigation.replace("MainTabs", {} as any);
+    // Get NathIA profile data
+    const nathiaProfile = useNathIAOnboardingStore.getState().profile;
+
+    // Create user profile from NathIA onboarding data
+    setUser({
+      id: Date.now().toString(),
+      name: nathiaProfile.nickname || "Mae",
+      stage: nathiaProfile.life_stage === "pregnant" ? "pregnant"
+           : nathiaProfile.life_stage === "postpartum" ? "postpartum"
+           : "trying",
+      interests: [],
+      createdAt: new Date().toISOString(),
+      hasCompletedOnboarding: true,
+    });
+
+    // Mark legacy onboarding as complete to skip duplicate screens
+    setOnboardingComplete(true);
   };
 
   const handleBack = () => {

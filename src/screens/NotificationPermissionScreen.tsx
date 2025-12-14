@@ -166,14 +166,14 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
       await skipNotificationSetup();
     } finally {
       setIsLoading(false);
-      navigation.replace("NathIAOnboarding");
+      // Navigation handled by RootNavigator
     }
   };
 
   const handleSkip = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     await skipNotificationSetup();
-    navigation.replace("NathIAOnboarding");
+    // Navigation handled by RootNavigator
   };
 
   return (

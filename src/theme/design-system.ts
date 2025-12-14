@@ -21,13 +21,13 @@
 export const COLORS = {
   // Cores Primarias
   primary: {
-    50: "#FFF1F2",
+    50: "#FFF0F6",
     100: "#FFE4E6",
     200: "#FECDD3",
     300: "#FDA4AF",
     400: "#FB7185",
-    500: "#F43F5E", // Principal
-    600: "#E11D48",
+    500: "#f4258c", // Principal
+    600: "#DB1F7D",
     700: "#BE123C",
     800: "#9F1239",
     900: "#881337",
@@ -64,8 +64,8 @@ export const COLORS = {
 
   // Background especiais
   background: {
-    primary: "#FFFCFA",
-    secondary: "#FAF8F5",
+    primary: "#f8f5f7",
+    secondary: "#FFFFFF",
     tertiary: "#F5F2EE",
     card: "rgba(255, 255, 255, 0.85)",
     glass: "rgba(255, 255, 255, 0.72)",
@@ -445,12 +445,12 @@ export const COMPONENT_STYLES = {
 // ===========================================
 
 export const GRADIENTS = {
-  primary: ["#F43F5E", "#E11D48"],
+  primary: ["#f4258c", "#DB1F7D"],
   secondary: ["#A855F7", "#9333EA"],
-  warm: ["#FFF1F2", "#FCE7F3", "#FAE8FF"],
+  warm: ["#FFF0F6", "#FCE7F3", "#FAE8FF"],
   cool: ["#EFF6FF", "#DBEAFE", "#BFDBFE"],
   sunset: ["#FED7AA", "#FECACA", "#FEE2E2"],
-  aurora: ["#A855F7", "#EC4899", "#F43F5E"],
+  aurora: ["#A855F7", "#EC4899", "#f4258c"],
   sage: ["#D1FAE5", "#A7F3D0", "#86EFAC"],
   glass: ["rgba(255,255,255,0.8)", "rgba(255,255,255,0.4)"],
 } as const;

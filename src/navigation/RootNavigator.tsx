@@ -68,11 +68,12 @@ export default function RootNavigator() {
   }
 
   // Determine which screen to show based on auth state
+  // Flow: Login → NotificationPermission → NathIAOnboarding → MainApp
   const shouldShowLogin = !isAuthenticated;
   const shouldShowNotificationPermission = isAuthenticated && !notificationSetupDone;
   const shouldShowNathIAOnboarding = isAuthenticated && notificationSetupDone && !isNathIAOnboardingComplete;
-  const shouldShowLegacyOnboarding = isAuthenticated && notificationSetupDone && isNathIAOnboardingComplete && !isOnboardingComplete;
-  const shouldShowMainApp = isAuthenticated && notificationSetupDone && isNathIAOnboardingComplete && isOnboardingComplete;
+  const shouldShowLegacyOnboarding = false; // Skipped - using NathIA onboarding only
+  const shouldShowMainApp = isAuthenticated && notificationSetupDone && isNathIAOnboardingComplete;
 
   return (
     <Stack.Navigator

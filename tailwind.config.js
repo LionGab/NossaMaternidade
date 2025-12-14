@@ -15,17 +15,17 @@ module.exports = {
         // Nossa Maternidade Premium - Sistema de cores 2025
         // Primary Rose - Rosa vibrante principal
         primary: {
-          DEFAULT: "#F43F5E", // Primary rose
+          DEFAULT: "#f4258c", // Primary rose
           50: "#FFF1F2",
           100: "#FFE4E6",
           200: "#FECDD3",
           300: "#FDA4AF",
           400: "#FB7185",
-          500: "#F43F5E", // Main primary
-          600: "#E11D48",
-          700: "#BE123C",
-          800: "#9F1239",
-          900: "#881337",
+          500: "#f4258c", // Main primary
+          600: "#DB1F7D",
+          700: "#B8196A",
+          800: "#961456",
+          900: "#7A1047",
         },
         // Secondary Purple - Roxo vibrante
         secondary: {
@@ -48,11 +48,11 @@ module.exports = {
           200: "#FECDD3",
           300: "#FDA4AF",
           400: "#FB7185",
-          500: "#F43F5E",
-          600: "#E11D48",
-          700: "#BE123C",
-          800: "#9F1239",
-          900: "#881337",
+          500: "#f4258c",
+          600: "#DB1F7D",
+          700: "#B8196A",
+          800: "#961456",
+          900: "#7A1047",
         },
         blush: {
           50: "#FDF8F6",
@@ -67,7 +67,7 @@ module.exports = {
           900: "#5C4238",
         },
         cream: {
-          50: "#FFFCF9",
+          50: "#f8f5f7",
           100: "#FFF9F3",
           200: "#FFF3E8",
           300: "#FFEBD9",
@@ -117,7 +117,7 @@ module.exports = {
             light: "#F3E8FF",
           },
           heart: {
-            DEFAULT: "#F43F5E", // Rose - Ansiosa
+            DEFAULT: "#f4258c", // Rose - Ansiosa
             light: "#FFE4E6",
           },
         },
@@ -130,8 +130,8 @@ module.exports = {
         },
         // Background colors
         background: {
-          DEFAULT: "#FFFCF9", // Creme suave
-          primary: "#FFFCF9",
+          DEFAULT: "#f8f5f7", // Creme suave
+          primary: "#f8f5f7",
           secondary: "#F8F5F7",
           tertiary: "#F5F5F4",
           elevated: "#FFFFFF",

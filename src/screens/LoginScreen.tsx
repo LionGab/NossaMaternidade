@@ -325,7 +325,7 @@ export default function LoginScreen({ navigation }: Props) {
       setAuthenticated(true);
       setIsLoading(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      navigation.replace("NotificationPermission");
+      // Navigation handled by RootNavigator
     }, 1500);
   };
 

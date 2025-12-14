@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Pressable, TextInput, Share, Image } from "react-native";
+import { View, Text, ScrollView, Pressable, TextInput, Share } from "react-native";
+import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,56 +12,89 @@ import { Avatar } from "../components/ui";
 import { shadowPresets } from "../utils/shadow";
 import * as Haptics from "expo-haptics";
 
+// Imgur images
+const IMGUR_IMAGES = {
+  valentina: "https://i.imgur.com/oB9ewPG.jpg",
+  ebook: "https://i.imgur.com/LF2PX1w.jpg",
+  video: "https://i.imgur.com/tNIrNIs.jpg",
+};
+
+// Featured content cards
+const DESTAQUES = [
+  {
+    id: "1",
+    tag: "E-BOOK GRÁTIS",
+    tagColor: "#f4258c",
+    title: "Guia Completo do Sono do Bebê",
+    image: IMGUR_IMAGES.ebook,
+  },
+  {
+    id: "2",
+    tag: "NOVO VÍDEO",
+    tagColor: "#A855F7",
+    title: "Desafio da Amamentação",
+    image: IMGUR_IMAGES.video,
+  },
+];
+
+// Filter chips
+const FILTER_CHIPS = [
+  { id: "todos", label: "Todos", active: true },
+  { id: "recentes", label: "Recentes", icon: "funnel-outline" },
+  { id: "perguntas", label: "Perguntas p/ Valent..." },
+];
+
 const MOCK_POSTS: Post[] = [
   {
     id: "1",
-    authorId: "user1",
-    authorName: "Mariana Santos",
-    content: "Acabei de descobrir que estou grávida! Estou tão feliz e nervosa ao mesmo tempo. Alguém tem dicas para o primeiro trimestre?",
-    likesCount: 45,
-    commentsCount: 23,
+    authorId: "valentina",
+    authorName: "Valentina",
+    authorAvatar: IMGUR_IMAGES.valentina,
+    content: "5 coisas que não te contaram sobre o puerpério ✨\n\nMães, preparei uma lista especial hoje. O puerpério é uma montanha-russa, mas saber disso antes ajuda muito! Vejam as dicas completas no vídeo...",
+    likesCount: 1200,
+    commentsCount: 342,
     createdAt: new Date(Date.now() - 3600000).toISOString(),
     isLiked: false,
+    type: "dica",
+    tag: "FIXADO",
+    tagColor: "#6B7280",
   },
   {
     id: "2",
     authorId: "user2",
-    authorName: "Camila Oliveira",
-    content: "O sono no terceiro trimestre está impossível. Já tentei almofadas de amamentação, mas nada funciona. O que vocês usam?",
-    likesCount: 32,
-    commentsCount: 18,
-    createdAt: new Date(Date.now() - 7200000).toISOString(),
+    authorName: "Ana Nogueira",
+    content: "A amamentação não está sendo fácil\n\nPensei que seria natural, mas estou sofrendo com fissuras e muita sensibilidade. Alguém passou por isso?",
+    likesCount: 156,
+    commentsCount: 48,
+    createdAt: new Date(Date.now() - 2700000).toISOString(),
     isLiked: true,
+    type: "desabafo",
+    tag: "DESABAFO",
+    tagColor: "#f4258c",
   },
   {
     id: "3",
     authorId: "user3",
-    authorName: "Juliana Costa",
-    content: "Minha bebê completou 3 meses hoje! O tempo voa. Compartilhando essa conquista com vocês que me apoiaram tanto durante a gestação.",
-    likesCount: 89,
-    commentsCount: 34,
-    createdAt: new Date(Date.now() - 14400000).toISOString(),
+    authorName: "Carla Dias",
+    content: "O positivo finalmente veio! 🌈\n\nDepois de 2 anos de tentativas, hoje recebi o meu milagre. Não desistam mamães!",
+    likesCount: 892,
+    commentsCount: 340,
+    createdAt: new Date(Date.now() - 18000000).toISOString(),
     isLiked: false,
+    type: "vitoria",
+    tag: "VITÓRIA",
+    tagColor: "#10B981",
   },
   {
     id: "4",
     authorId: "user4",
-    authorName: "Patricia Lima",
-    content: "Meninas, alguém mais está sentindo muitas dores nas costas? Tenho 28 semanas e está bem desconfortável.",
-    likesCount: 28,
-    commentsCount: 15,
-    createdAt: new Date(Date.now() - 18000000).toISOString(),
-    isLiked: false,
-  },
-  {
-    id: "5",
-    authorId: "user5",
-    authorName: "Fernanda Souza",
-    content: "Acabei de fazer minha primeira ultrassom! Ver o coraçãozinho batendo foi emocionante demais. Chorei muito! 💕",
-    likesCount: 156,
-    commentsCount: 42,
+    authorName: "Mariana Santos",
+    content: "Acabei de descobrir que estou grávida! Estou tão feliz e nervosa ao mesmo tempo. Alguém tem dicas para o primeiro trimestre?",
+    likesCount: 45,
+    commentsCount: 23,
     createdAt: new Date(Date.now() - 28800000).toISOString(),
-    isLiked: true,
+    isLiked: false,
+    type: "duvida",
   },
 ];
 
@@ -166,6 +200,31 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
     });
   };
 
+  const handleNotificationsPress = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate("ComingSoon", {
+      title: "Notificações",
+      description: "Em breve você receberá notificações sobre novos posts e interações.",
+      emoji: "🔔",
+      primaryCtaLabel: "Voltar",
+    });
+  };
+
+  const handleAskValentina = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate("Assistant");
+  };
+
+  const handleDestaquePress = async (destaque: typeof DESTAQUES[0]) => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate("ComingSoon", {
+      title: destaque.title,
+      description: "Conteúdo exclusivo em breve!",
+      emoji: "✨",
+      primaryCtaLabel: "Voltar",
+    });
+  };
+
   const handleGroupPress = async (group: Group) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     navigation.navigate("ComingSoon", {
@@ -205,7 +264,8 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
   };
 
   const renderPost = (post: Post, index: number) => {
-    const postType = post.type ? POST_TYPE_STYLES[post.type] : null;
+    const postTag = (post as Post & { tag?: string; tagColor?: string }).tag;
+    const postTagColor = (post as Post & { tag?: string; tagColor?: string }).tagColor;
 
     return (
       <Animated.View
@@ -215,116 +275,106 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
       >
         <Pressable
           onPress={() => navigation.navigate("PostDetail", { postId: post.id })}
-          className="rounded-3xl p-5"
+          className="rounded-2xl p-4"
           style={[{ backgroundColor: "#FFF" }, shadowPresets.md]}
           accessibilityRole="button"
           accessibilityLabel={`Post de ${post.authorName}`}
-          accessibilityHint="Abre os detalhes e comentários do post"
         >
-          {/* Post Type Badge */}
-          {postType && (
-            <View
-              className="flex-row items-center self-start mb-3 px-3 py-1.5 rounded-full"
-              style={{ backgroundColor: postType.bgColor }}
-            >
-              <Text style={{ fontSize: 12, marginRight: 4 }}>{postType.emoji}</Text>
-              <Text style={{ color: postType.color, fontSize: 12, fontWeight: "600" }}>
-                {postType.label}
-              </Text>
-            </View>
-          )}
-
-          {/* Header */}
-          <View className="flex-row items-center mb-4">
-            <Avatar
-              size={48}
-              source={post.authorAvatar ? { uri: post.authorAvatar } : null}
-              isNathalia={post.authorName === "Nathália Valente" || post.authorName === "Nathalia Valente"}
-              fallbackIcon="person"
-              fallbackColor="#9E7269"
-              fallbackBgColor="rgba(188, 139, 123, 0.15)"
-              style={{ marginRight: 12 }}
-            />
+          {/* Header with Tag */}
+          <View className="flex-row items-center mb-3">
+            {post.authorAvatar ? (
+              <Image
+                source={{ uri: post.authorAvatar }}
+                style={{ width: 40, height: 40, borderRadius: 20, marginRight: 12 }}
+                contentFit="cover"
+              />
+            ) : (
+              <Avatar
+                size={40}
+                isNathalia={post.authorName === "Valentina"}
+                fallbackIcon="person"
+                fallbackColor="#9E7269"
+                fallbackBgColor="rgba(188, 139, 123, 0.15)"
+                style={{ marginRight: 12 }}
+              />
+            )}
             <View className="flex-1">
-              <Text className="text-warmGray-900 text-base font-semibold">
-                {post.authorName}
-              </Text>
-              <Text className="text-warmGray-400 text-xs mt-0.5">
-                {formatTimeAgo(post.createdAt)}
+              <View className="flex-row items-center">
+                <Text className="text-warmGray-900 text-sm font-semibold">
+                  {post.authorName}
+                </Text>
+                {postTag === "FIXADO" && (
+                  <Ionicons name="pin" size={12} color="#6B7280" style={{ marginLeft: 4 }} />
+                )}
+              </View>
+              <Text className="text-warmGray-400 text-xs">
+                {formatTimeAgo(post.createdAt)} • {post.type === "dica" ? "Dicas Rápidas" : post.type === "desabafo" ? "Puerpério" : post.type === "vitoria" ? "Tentante" : "Geral"}
               </Text>
             </View>
-            <Pressable
-              onPress={() => handleOptionsPress(post.id)}
-              className="w-8 h-8 items-center justify-center"
-              accessibilityRole="button"
-              accessibilityLabel="Opções do post"
-              accessibilityHint="Abre menu com opções do post"
-            >
-              <Ionicons name="ellipsis-horizontal" size={20} color="#D6D3D1" />
-            </Pressable>
+            {postTag && (
+              <View
+                className="px-2 py-1 rounded-full"
+                style={{ backgroundColor: `${postTagColor}15` }}
+              >
+                <Text
+                  className="text-xs font-semibold"
+                  style={{ color: postTagColor }}
+                >
+                  {postTag}
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* Content */}
-          <Text className="text-warmGray-700 leading-6 mb-4">
-            {post.content}
+          <Text className="text-warmGray-900 text-base font-semibold mb-1" numberOfLines={2}>
+            {post.content.split("\n")[0]}
+          </Text>
+          <Text className="text-warmGray-600 text-sm leading-5 mb-3" numberOfLines={2}>
+            {post.content.split("\n").slice(1).join(" ").trim() || post.content}
           </Text>
 
           {/* Image */}
           {post.imageUrl && (
-            <View className="mb-4 rounded-xl overflow-hidden">
+            <View className="mb-3 rounded-xl overflow-hidden">
               <Image
                 source={{ uri: post.imageUrl }}
-                className="w-full"
-                style={{ height: 300 }}
-                resizeMode="cover"
-                accessibilityRole="image"
-                accessibilityLabel="Imagem do post"
+                style={{ width: "100%", height: 200 }}
+                contentFit="cover"
               />
             </View>
           )}
 
           {/* Actions */}
-          <View className="flex-row items-center pt-4 border-t border-warmGray-100">
+          <View className="flex-row items-center">
             <Pressable
               onPress={() => toggleLike(post.id)}
-              className="flex-row items-center mr-6"
-              accessibilityRole="button"
-              accessibilityLabel={post.isLiked ? "Descurtir post" : "Curtir post"}
-              accessibilityState={{ selected: post.isLiked }}
+              className="flex-row items-center mr-4"
             >
               <Ionicons
                 name={post.isLiked ? "heart" : "heart-outline"}
-                size={22}
-                color={post.isLiked ? "#E11D48" : "#A8A29E"}
+                size={16}
+                color={post.isLiked ? "#f4258c" : "#A8A29E"}
               />
-              <Text
-                className={`text-sm ml-2 font-medium ${
-                  post.isLiked ? "text-rose-600" : "text-warmGray-600"
-                }`}
-              >
-                {post.likesCount}
+              <Text className="text-warmGray-500 text-xs ml-1">
+                {post.likesCount >= 1000 ? `${(post.likesCount / 1000).toFixed(1)}k` : post.likesCount}
               </Text>
             </Pressable>
             <Pressable
               onPress={() => handleCommentPress(post.id)}
-              className="flex-row items-center mr-6"
-              accessibilityRole="button"
-              accessibilityLabel={`Ver ${post.commentsCount} comentários`}
-              accessibilityHint="Abre os comentários do post"
+              className="flex-row items-center"
             >
-              <Ionicons name="chatbubble-outline" size={20} color="#A8A29E" />
-              <Text className="text-warmGray-600 text-sm ml-2 font-medium">
-                {post.commentsCount}
-              </Text>
+              <Ionicons name="chatbubble-outline" size={14} color="#A8A29E" />
+              <Text className="text-warmGray-500 text-xs ml-1">{post.commentsCount}</Text>
             </Pressable>
+            <View className="flex-1" />
             <Pressable
-              onPress={() => handleSharePress(post)}
-              className="flex-row items-center ml-auto"
-              accessibilityRole="button"
-              accessibilityLabel="Compartilhar post"
-              accessibilityHint="Compartilha o post com outras pessoas"
+              onPress={() => handleCommentPress(post.id)}
+              className="flex-row items-center px-3 py-1.5 rounded-full"
+              style={{ backgroundColor: "#F5F5F4" }}
             >
-              <Ionicons name="share-outline" size={20} color="#A8A29E" />
+              <Ionicons name="arrow-undo-outline" size={14} color="#78716C" />
+              <Text className="text-warmGray-600 text-xs ml-1 font-medium">Responder</Text>
             </Pressable>
           </View>
         </Pressable>
@@ -399,97 +449,147 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
   );
 
   return (
-    <View className="flex-1" style={{ backgroundColor: "#FFFCF9" }}>
-      {/* Header */}
-      <View style={{ paddingTop: insets.top }}>
-        <LinearGradient
-          colors={["#FFF1F2", "#FFFCF9"]}
-          locations={[0, 1]}
-          style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 20 }}
-        >
-          <Animated.View entering={FadeInDown.duration(600).springify()}>
-            <View className="flex-row items-center justify-between mb-6">
-              <View>
-                <Text
-                  className="text-warmGray-900 text-3xl font-serif"
-                  accessibilityRole="header"
-                >
-                  Mães Valente
-                </Text>
-                <Text className="text-warmGray-500 text-sm mt-1">
-                  Comunidade de apoio e inspiração
+    <View className="flex-1" style={{ backgroundColor: "#f8f5f7" }}>
+      {/* Header - MãesValente Style */}
+      <View style={{ paddingTop: insets.top, backgroundColor: "#FFF" }}>
+        <Animated.View entering={FadeInDown.duration(600).springify()}>
+          {/* Top Bar */}
+          <View className="flex-row items-center justify-between px-6 py-4">
+            <View className="flex-row items-center">
+              <Image
+                source={{ uri: IMGUR_IMAGES.valentina }}
+                style={{ width: 40, height: 40, borderRadius: 20 }}
+                contentFit="cover"
+              />
+              <View className="ml-3">
+                <View className="flex-row items-center">
+                  <Text className="text-warmGray-900 text-xl font-semibold">
+                    MãesValente
+                  </Text>
+                  <View className="ml-1 bg-rose-100 px-1.5 py-0.5 rounded">
+                    <Text className="text-rose-600 text-xs font-medium">HOST</Text>
+                  </View>
+                </View>
+                <Text className="text-warmGray-500 text-xs">
+                  Comunidade da Valentina
                 </Text>
               </View>
+            </View>
+            <View className="flex-row items-center">
               <Pressable
-                onPress={() => navigation.navigate("NewPost")}
-                className="w-12 h-12 rounded-full items-center justify-center"
-                style={[{ backgroundColor: "#E11D48" }, shadowPresets.colored("#E11D48", 0.3)]}
+                onPress={handleNotificationsPress}
+                className="mr-4"
                 accessibilityRole="button"
-                accessibilityLabel="Criar nova publicação"
-                accessibilityHint="Abre o formulário para criar uma nova publicação"
+                accessibilityLabel="Notificações"
               >
-                <Ionicons name="add" size={28} color="#FFFFFF" />
+                <Ionicons name="notifications-outline" size={24} color="#1C1917" />
+              </Pressable>
+              <Pressable
+                onPress={() => navigation.navigate("Profile" as never)}
+                accessibilityRole="button"
+                accessibilityLabel="Perfil"
+              >
+                <Ionicons name="person-circle-outline" size={28} color="#1C1917" />
               </Pressable>
             </View>
+          </View>
 
-            {/* Search Bar */}
+          {/* Search Bar */}
+          <View className="px-6 pb-4">
             <View
-              className="flex-row items-center rounded-2xl px-4 py-3 mb-4"
-              style={{ backgroundColor: "#FFF" }}
+              className="flex-row items-center rounded-xl px-4 py-3"
+              style={{ backgroundColor: "#F5F5F4" }}
             >
-              <Ionicons name="search" size={20} color="#A8A29E" />
+              <Ionicons name="search" size={18} color="#A8A29E" />
               <TextInput
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                placeholder="Buscar posts ou grupos..."
+                placeholder="Buscar no MãesValente..."
                 placeholderTextColor="#A8A29E"
-                className="flex-1 text-warmGray-800 ml-2"
-                accessibilityLabel="Buscar posts ou grupos"
-                accessibilityHint="Digite para buscar publicações ou grupos na comunidade"
+                className="flex-1 text-warmGray-800 ml-2 text-sm"
+                accessibilityLabel="Buscar no MãesValente"
               />
             </View>
+          </View>
 
-            {/* Tabs */}
-            <View className="flex-row">
-              <Pressable
-                onPress={() => setActiveTab("feed")}
-                className="flex-1 items-center py-3 rounded-xl mr-2"
-                style={{
-                  backgroundColor: activeTab === "feed" ? "#E11D48" : "#FFF",
-                }}
-                accessibilityRole="tab"
-                accessibilityLabel="Feed"
-                accessibilityState={{ selected: activeTab === "feed" }}
+          {/* Tabs */}
+          <View className="flex-row px-6 border-b border-warmGray-100">
+            <Pressable
+              onPress={() => setActiveTab("feed")}
+              className="mr-6 pb-3"
+              style={{
+                borderBottomWidth: activeTab === "feed" ? 2 : 0,
+                borderBottomColor: "#f4258c",
+              }}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: activeTab === "feed" }}
+            >
+              <Text
+                className={`font-semibold ${
+                  activeTab === "feed" ? "text-rose-600" : "text-warmGray-500"
+                }`}
               >
-                <Text
-                  className={`font-semibold ${
-                    activeTab === "feed" ? "text-white" : "text-warmGray-600"
-                  }`}
-                >
-                  Feed
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => setActiveTab("groups")}
-                className="flex-1 items-center py-3 rounded-xl ml-2"
-                style={{
-                  backgroundColor: activeTab === "groups" ? "#E11D48" : "#FFF",
-                }}
-                accessibilityRole="tab"
-                accessibilityLabel="Grupos"
-                accessibilityState={{ selected: activeTab === "groups" }}
+                Feed
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setActiveTab("groups")}
+              className="pb-3"
+              style={{
+                borderBottomWidth: activeTab === "groups" ? 2 : 0,
+                borderBottomColor: "#f4258c",
+              }}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: activeTab === "groups" }}
+            >
+              <Text
+                className={`font-semibold ${
+                  activeTab === "groups" ? "text-rose-600" : "text-warmGray-500"
+                }`}
               >
-                <Text
-                  className={`font-semibold ${
-                    activeTab === "groups" ? "text-white" : "text-warmGray-600"
-                  }`}
+                Grupos
+              </Text>
+            </Pressable>
+          </View>
+
+          {/* Filter Chips */}
+          {activeTab === "feed" && (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="py-3"
+              contentContainerStyle={{ paddingHorizontal: 24 }}
+            >
+              {FILTER_CHIPS.map((chip) => (
+                <Pressable
+                  key={chip.id}
+                  className="flex-row items-center mr-2 px-4 py-2 rounded-full"
+                  style={{
+                    backgroundColor: chip.active ? "#f4258c" : "#FFF",
+                    borderWidth: chip.active ? 0 : 1,
+                    borderColor: "#E7E5E4",
+                  }}
                 >
-                  Grupos
-                </Text>
-              </Pressable>
-            </View>
-          </Animated.View>
-        </LinearGradient>
+                  {chip.icon && (
+                    <Ionicons
+                      name={chip.icon as keyof typeof Ionicons.glyphMap}
+                      size={14}
+                      color={chip.active ? "#FFF" : "#78716C"}
+                      style={{ marginRight: 4 }}
+                    />
+                  )}
+                  <Text
+                    className={`text-sm font-medium ${
+                      chip.active ? "text-white" : "text-warmGray-600"
+                    }`}
+                  >
+                    {chip.label}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          )}
+        </Animated.View>
       </View>
 
       {/* Content */}
@@ -499,22 +599,107 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
       >
         {activeTab === "feed" ? (
           <>
+            {/* Destaques da Valentina */}
+            <View className="mb-6">
+              <View className="flex-row items-center mb-4">
+                <Ionicons name="star" size={18} color="#f4258c" />
+                <Text className="text-warmGray-900 text-base font-semibold ml-2">
+                  Destaques da Valentina
+                </Text>
+                <Pressable className="ml-auto">
+                  <Text className="text-rose-600 text-sm">Ver Conteúdo Completo</Text>
+                </Pressable>
+              </View>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ marginHorizontal: -24 }}
+                contentContainerStyle={{ paddingHorizontal: 24 }}
+              >
+                {DESTAQUES.map((destaque) => (
+                  <Pressable
+                    key={destaque.id}
+                    onPress={() => handleDestaquePress(destaque)}
+                    className="mr-3 rounded-2xl overflow-hidden"
+                    style={[{ width: 180 }, shadowPresets.md]}
+                  >
+                    <Image
+                      source={{ uri: destaque.image }}
+                      style={{ width: 180, height: 120 }}
+                      contentFit="cover"
+                    />
+                    <View
+                      className="absolute top-3 left-3 px-2 py-1 rounded"
+                      style={{ backgroundColor: destaque.tagColor }}
+                    >
+                      <Text className="text-white text-xs font-semibold">{destaque.tag}</Text>
+                    </View>
+                    <View className="p-3 bg-white">
+                      <Text className="text-warmGray-900 text-sm font-medium" numberOfLines={2}>
+                        {destaque.title}
+                      </Text>
+                    </View>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </View>
+
+            {/* Pergunte à Valentina */}
+            <Pressable
+              onPress={handleAskValentina}
+              className="rounded-2xl p-4 mb-6"
+              style={[{ backgroundColor: "#EFF6FF" }, shadowPresets.sm]}
+            >
+              <View className="flex-row items-center">
+                <View
+                  className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                  style={{ backgroundColor: "#DBEAFE" }}
+                >
+                  <Text className="text-lg">❓</Text>
+                </View>
+                <View className="flex-1">
+                  <Text className="text-warmGray-900 text-base font-semibold">
+                    Pergunte à Valentina
+                  </Text>
+                  <Text className="text-warmGray-500 text-xs">
+                    Envie sua dúvida e ela poderá ser respondida na próxima live da comunidade!
+                  </Text>
+                </View>
+              </View>
+              <Pressable
+                onPress={handleAskValentina}
+                className="mt-3 py-2.5 rounded-full items-center"
+                style={{ backgroundColor: "#FFF" }}
+              >
+                <Text className="text-rose-600 font-semibold text-sm">
+                  Enviar minha dúvida →
+                </Text>
+              </Pressable>
+            </Pressable>
+
             {/* Composer */}
             <CommunityComposer onPost={handleNewPost} />
 
             {displayPosts.map((post, index) => renderPost(post, index))}
 
-            {/* Load More */}
+            {/* CTA - Compartilhe sua jornada */}
             <Pressable
-              onPress={handleLoadMore}
-              className="py-4 items-center rounded-2xl mt-2"
-              style={{ backgroundColor: "#FFF" }}
+              onPress={() => navigation.navigate("NewPost")}
+              className="rounded-2xl p-4 flex-row items-center justify-center mt-4"
+              style={{ backgroundColor: "#f4258c" }}
               accessibilityRole="button"
-              accessibilityLabel="Carregar mais posts"
-              accessibilityHint="Carrega mais publicações do feed"
+              accessibilityLabel="Compartilhe sua jornada"
             >
-              <Text className="text-warmGray-600 font-medium">Carregar mais posts</Text>
+              <Ionicons name="create-outline" size={20} color="#FFFFFF" />
+              <Text className="text-white text-sm font-semibold ml-2">
+                Compartilhe sua jornada
+              </Text>
             </Pressable>
+
+            {/* Você viu tudo por agora */}
+            <View className="items-center py-6">
+              <Text className="text-warmGray-400 text-sm">Você viu tudo por agora!</Text>
+            </View>
           </>
         ) : (
           <>
