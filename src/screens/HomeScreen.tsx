@@ -130,12 +130,12 @@ const DAILY_TIPS = [
 
 // NathIA Quick Chips - Perguntas frequentes por categoria
 const NATHIA_QUICK_CHIPS = [
-  { id: "sleep", label: "Bebê não dorme", emoji: "😴", color: "#6366F1" },
-  { id: "food", label: "Alimentação", emoji: "🍎", color: "#10B981" },
-  { id: "tired", label: "Estou exausta", emoji: "😓", color: "#F59E0B" },
-  { id: "colic", label: "Cólica do bebê", emoji: "👶", color: "#EC4899" },
-  { id: "breast", label: "Amamentação", emoji: "🤱", color: "#8B5CF6" },
-  { id: "anxiety", label: "Ansiedade", emoji: "💭", color: "#14B8A6" },
+  { id: "sleep", label: "Bebê não dorme", emoji: "😴", color: "#93C5FD" }, // Azul mais suave
+  { id: "food", label: "Alimentação", emoji: "🍎", color: "#86EFAC" }, // Verde mais suave
+  { id: "tired", label: "Estou exausta", emoji: "😓", color: "#FCD34D" }, // Amarelo mais suave
+  { id: "colic", label: "Cólica do bebê", emoji: "👶", color: "#F9A8D4" }, // Rosa mais suave
+  { id: "breast", label: "Amamentação", emoji: "🤱", color: "#C4B5FD" }, // Lilás mais suave
+  { id: "anxiety", label: "Ansiedade", emoji: "💭", color: "#A7F3D0" }, // Verde-água mais suave
 ];
 
 // Dicas contextuais baseadas no horário (memoizada no componente)
@@ -258,41 +258,47 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
                 <DailyCheckIn />
               </Animated.View>
 
-              {/* Bem-estar Card - Gradient Pink to Blue */}
+              {/* Bem-estar Card - Gradient SUAVE (Pastel) */}
               <Pressable
                 onPress={() => navigation.navigate("Community")}
                 accessibilityRole="button"
                 accessibilityLabel="Acessar comunidade"
               >
                 <LinearGradient
-                  colors={["#EC4899", "#A855F7", "#60A5FA"]}
+                  colors={["#F9A8D4", "#DDD6FE", "#BFDBFE"]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  style={[
-                    { borderRadius: 28, padding: 28, minHeight: 200 },
-                    shadowPresets.lg,
-                  ]}
+                  style={{
+                    borderRadius: 24,
+                    padding: 24,
+                    minHeight: 180,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.08,
+                    shadowRadius: 8,
+                    elevation: 3,
+                  }}
                 >
-                  {/* Tag DESTAQUE - Estilo Boa Noite Mãe */}
-                  <View className="bg-white/30 self-start px-4 py-2 rounded-full mb-4 flex-row items-center">
-                    <Ionicons name="heart" size={14} color="#FFFFFF" style={{ marginRight: 6 }} />
-                    <Text className="text-white text-xs font-bold uppercase tracking-wider">Destaque</Text>
+                  {/* Tag DESTAQUE - LEVE */}
+                  <View className="bg-white/60 self-start px-3 py-1.5 rounded-full mb-3 flex-row items-center">
+                    <Ionicons name="heart" size={12} color="#EC4899" style={{ marginRight: 4 }} />
+                    <Text className="text-rose-600 text-xs font-semibold uppercase tracking-wide">Destaque</Text>
                   </View>
 
-                  {/* Content */}
-                  <Text className="text-white/90 text-base mb-2">
+                  {/* Content - LEVE */}
+                  <Text className="text-white/95 text-sm mb-1">
                     Conecte-se com outras mães
                   </Text>
-                  <Text className="text-white text-4xl font-serif mb-4" style={{ letterSpacing: -0.5 }}>
+                  <Text className="text-white text-3xl font-serif mb-3" style={{ letterSpacing: -0.5 }}>
                     Comunidade de{"\n"}Mães
                   </Text>
                   <Text className="text-white/90 text-sm">
                     na mesma jornada que você.
                   </Text>
 
-                  {/* Decorative Icon */}
-                  <View className="absolute right-6 bottom-6 opacity-30">
-                    <Ionicons name="hand-left" size={64} color="#FFFFFF" />
+                  {/* Decorative Icon - MAIS SUTIL */}
+                  <View className="absolute right-4 bottom-4 opacity-20">
+                    <Ionicons name="heart-outline" size={56} color="#FFFFFF" />
                   </View>
                 </LinearGradient>
               </Pressable>
@@ -304,14 +310,21 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
               >
                 <View
                   className="rounded-3xl overflow-hidden"
-                  style={[{ backgroundColor: "#FFFFFF" }, shadowPresets.lg]}
+                  style={{
+                    backgroundColor: "#FFFFFF",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.06,
+                    shadowRadius: 8,
+                    elevation: 2,
+                  }}
                 >
                   {/* Header com Avatar e Status */}
                   <LinearGradient
-                    colors={["#FDF2F8", "#FCE7F3", "#FBCFE8"]}
+                    colors={["#FDF2F8", "#FAF5FF", "#F0F9FF"]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    style={{ padding: 16, paddingBottom: 12 }}
+                    style={{ padding: 14, paddingBottom: 10 }}
                   >
                     <View className="flex-row items-center">
                       <View className="relative">
@@ -429,7 +442,13 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
                     if (action.id === "affirmations") navigation.navigate("Affirmations");
                   }}
                   className="rounded-2xl overflow-hidden"
-                  style={shadowPresets.lg}
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.06,
+                    shadowRadius: 6,
+                    elevation: 2,
+                  }}
                   accessibilityRole="button"
                   accessibilityLabel={action.label}
                   accessibilityHint={`Abre a tela de ${action.label}`}
@@ -470,7 +489,14 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
           <Pressable
             onPress={handleTipPress}
             className="rounded-3xl p-6"
-            style={[{ backgroundColor: "#FFF" }, shadowPresets.lg]}
+            style={{
+              backgroundColor: "#FFF",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.05,
+              shadowRadius: 6,
+              elevation: 2,
+            }}
             accessibilityRole="button"
             accessibilityLabel={`Dica do dia: ${tip.title}`}
             accessibilityHint="Abre mais informações sobre dicas personalizadas"
@@ -554,7 +580,14 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
                   });
                 }}
                 className="mr-4 rounded-2xl overflow-hidden"
-                style={[{ width: 160 }, shadowPresets.lg]}
+                style={{
+                  width: 160,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 4,
+                  elevation: 1,
+                }}
                 accessibilityRole="button"
                 accessibilityLabel={card.title}
               >

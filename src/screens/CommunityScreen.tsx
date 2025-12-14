@@ -747,27 +747,17 @@ const PostCard = React.memo(({ post, index, onPress, onToggleLike, onComment }: 
         <Pressable
           onPress={() => navigation.navigate("NewPost", {})}
           style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingVertical: 16,
+            paddingHorizontal: 28,
+            borderRadius: 28,
             shadowColor: "#f4258c",
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.4,
-            shadowRadius: 16,
-            elevation: 12,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.15,
+            shadowRadius: 8,
+            elevation: 4,
           }}
-          accessibilityRole="button"
-          accessibilityLabel="Compartilhe sua jornada"
-        >
-          <LinearGradient
-            colors={["#f4258c", "#EC4899"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 16,
-              paddingHorizontal: 28,
-              borderRadius: 28,
-            }}
-          >
             <Ionicons name="create" size={20} color="#FFFFFF" />
             <Text className="text-white text-base font-bold ml-3">
               Compartilhe sua jornada

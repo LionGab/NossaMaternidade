@@ -231,10 +231,16 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
           className="px-5 mb-6"
         >
           <View
-            style={[
-              { backgroundColor: COLORS.cardBg, borderRadius: 24, padding: 24 },
-              shadowPresets.lg,
-            ]}
+            style={{
+              backgroundColor: COLORS.cardBg,
+              borderRadius: 24,
+              padding: 24,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.05,
+              shadowRadius: 6,
+              elevation: 2,
+            }}
             accessibilityRole="summary"
           >
             <View className="flex-row items-start mb-4">
@@ -386,18 +392,20 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                   accessibilityHint={section.description}
                 >
                   <View
-                    style={[
-                      {
-                        width: 46,
-                        height: 46,
-                        borderRadius: 14,
-                        backgroundColor: COLORS.cardBg,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginBottom: 14,
-                      },
-                      shadowPresets.sm,
-                    ]}
+                    style={{
+                      width: 46,
+                      height: 46,
+                      borderRadius: 14,
+                      backgroundColor: COLORS.cardBg,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: 14,
+                      shadowColor: "#000",
+                      shadowOffset: { width: 0, height: 1 },
+                      shadowOpacity: 0.03,
+                      shadowRadius: 3,
+                      elevation: 1,
+                    }}
                   >
                     <Ionicons
                       name={section.icon as any}
@@ -447,10 +455,16 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
           </Text>
 
           <View
-            style={[
-              { backgroundColor: COLORS.cardBg, borderRadius: 20, padding: 6 },
-              shadowPresets.md,
-            ]}
+            style={{
+              backgroundColor: COLORS.cardBg,
+              borderRadius: 20,
+              padding: 6,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.04,
+              shadowRadius: 6,
+              elevation: 1,
+            }}
           >
             {QUICK_SUPPORT.map((item, index) => (
               <Pressable

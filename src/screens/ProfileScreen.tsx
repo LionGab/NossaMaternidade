@@ -135,7 +135,15 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
             <Pressable
               onPress={handleSettingsPress}
               className="p-2"
-              style={[{ backgroundColor: "#FFFFFF", borderRadius: 12 }, shadowPresets.sm]}
+              style={{
+                backgroundColor: "#FFFFFF",
+                borderRadius: 12,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.04,
+                shadowRadius: 4,
+                elevation: 1,
+              }}
               accessibilityRole="button"
               accessibilityLabel="Configurações"
               accessibilityHint="Abre as configurações do perfil"
@@ -146,10 +154,16 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
 
           {/* Profile Card */}
           <View
-            style={[
-              { backgroundColor: "#FFFFFF", borderRadius: 32, padding: 28 },
-              shadowPresets.xl,
-            ]}
+            style={{
+              backgroundColor: "#FFFFFF",
+              borderRadius: 32,
+              padding: 28,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.06,
+              shadowRadius: 12,
+              elevation: 3,
+            }}
             accessibilityRole="summary"
           >
             <View className="items-center">
@@ -220,10 +234,15 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
                 >
                   <View
                     className="px-5 py-2.5 mr-2 mb-2"
-                    style={[
-                      { backgroundColor: "#FFFFFF", borderRadius: 20 },
-                      shadowPresets.sm,
-                    ]}
+                    style={{
+                      backgroundColor: "#FFFFFF",
+                      borderRadius: 20,
+                      shadowColor: "#000",
+                      shadowOffset: { width: 0, height: 1 },
+                      shadowOpacity: 0.04,
+                      shadowRadius: 4,
+                      elevation: 1,
+                    }}
                   >
                     <Text className="text-warmGray-700 text-base capitalize">
                       {interest.replace("_", " ")}
@@ -247,10 +266,16 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
             Configuracoes
           </Text>
           <View
-            style={[
-              { backgroundColor: "#FFFFFF", borderRadius: 24, overflow: "hidden" },
-              shadowPresets.md,
-            ]}
+            style={{
+              backgroundColor: "#FFFFFF",
+              borderRadius: 24,
+              overflow: "hidden",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.04,
+              shadowRadius: 6,
+              elevation: 1,
+            }}
           >
             {MENU_ITEMS.map((item, index) => (
               <Pressable
