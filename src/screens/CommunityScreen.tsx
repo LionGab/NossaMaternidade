@@ -237,6 +237,7 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
     });
   };
 
+  // Carregar mock posts no primeiro render
   React.useEffect(() => {
     if (posts.length === 0) {
       setPosts(MOCK_POSTS);
@@ -245,6 +246,17 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
 
   const displayPosts = posts.length > 0 ? posts : MOCK_POSTS;
 
+// Renderizar Post individual (memoizado para performance)
+const PostCard = React.memo(({ post, index, onPress, onToggleLike, onComment }: {
+  post: Post;
+  index: number;
+  onPress: () => void;
+  onToggleLike: () => void;
+  onComment: () => void;
+}) => {
+  const postTag = (post as Post & { tag?: string; tagColor?: string }).tag;
+  const postTagColor = (post as Post & { tag?: string; tagColor?: string }).tagColor;
+  
   const formatTimeAgo = (dateString: string) => {
     const diff = Date.now() - new Date(dateString).getTime();
     const hours = Math.floor(diff / 3600000);
@@ -256,131 +268,119 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
     return `há ${days} dias`;
   };
 
-  const POST_TYPE_STYLES: Record<string, { emoji: string; label: string; color: string; bgColor: string }> = {
-    duvida: { emoji: "❓", label: "Dúvida", color: "#3B82F6", bgColor: "#EFF6FF" },
-    desabafo: { emoji: "💭", label: "Desabafo", color: "#8B5CF6", bgColor: "#F5F3FF" },
-    vitoria: { emoji: "🎉", label: "Vitória", color: "#10B981", bgColor: "#ECFDF5" },
-    dica: { emoji: "💡", label: "Dica", color: "#F59E0B", bgColor: "#FFFBEB" },
-  };
-
-  const renderPost = (post: Post, index: number) => {
-    const postTag = (post as Post & { tag?: string; tagColor?: string }).tag;
-    const postTagColor = (post as Post & { tag?: string; tagColor?: string }).tagColor;
-
-    return (
-      <Animated.View
-        key={post.id}
-        entering={FadeInUp.delay(index * 80).duration(500).springify()}
-        className="mb-4"
+  return (
+    <Animated.View
+      entering={FadeInUp.delay(index * 80).duration(500).springify()}
+      className="mb-4"
+    >
+      <Pressable
+        onPress={onPress}
+        className="rounded-2xl p-4"
+        style={[{ backgroundColor: "#FFF" }, shadowPresets.md]}
+        accessibilityRole="button"
+        accessibilityLabel={`Post de ${post.authorName}`}
       >
-        <Pressable
-          onPress={() => navigation.navigate("PostDetail", { postId: post.id })}
-          className="rounded-2xl p-4"
-          style={[{ backgroundColor: "#FFF" }, shadowPresets.md]}
-          accessibilityRole="button"
-          accessibilityLabel={`Post de ${post.authorName}`}
-        >
-          {/* Header with Tag */}
-          <View className="flex-row items-center mb-3">
-            {post.authorAvatar ? (
-              <Image
-                source={{ uri: post.authorAvatar }}
-                style={{ width: 40, height: 40, borderRadius: 20, marginRight: 12 }}
-                contentFit="cover"
-              />
-            ) : (
-              <Avatar
-                size={40}
-                isNathalia={post.authorName === "Valentina"}
-                fallbackIcon="person"
-                fallbackColor="#9E7269"
-                fallbackBgColor="rgba(188, 139, 123, 0.15)"
-                style={{ marginRight: 12 }}
-              />
-            )}
-            <View className="flex-1">
-              <View className="flex-row items-center">
-                <Text className="text-warmGray-900 text-sm font-semibold">
-                  {post.authorName}
-                </Text>
-                {postTag === "FIXADO" && (
-                  <Ionicons name="pin" size={12} color="#6B7280" style={{ marginLeft: 4 }} />
-                )}
-              </View>
-              <Text className="text-warmGray-400 text-xs">
-                {formatTimeAgo(post.createdAt)} • {post.type === "dica" ? "Dicas Rápidas" : post.type === "desabafo" ? "Puerpério" : post.type === "vitoria" ? "Tentante" : "Geral"}
+        {/* Header with Tag */}
+        <View className="flex-row items-center mb-3">
+          {post.authorAvatar ? (
+            <Image
+              source={{ uri: post.authorAvatar }}
+              style={{ width: 40, height: 40, borderRadius: 20, marginRight: 12 }}
+              contentFit="cover"
+            />
+          ) : (
+            <Avatar
+              size={40}
+              isNathalia={post.authorName === "Valentina"}
+              fallbackIcon="person"
+              fallbackColor="#9E7269"
+              fallbackBgColor="rgba(188, 139, 123, 0.15)"
+              style={{ marginRight: 12 }}
+            />
+          )}
+          <View className="flex-1">
+            <View className="flex-row items-center">
+              <Text className="text-warmGray-900 text-sm font-semibold">
+                {post.authorName}
               </Text>
+              {postTag === "FIXADO" && (
+                <Ionicons name="pin" size={12} color="#6B7280" style={{ marginLeft: 4 }} />
+              )}
             </View>
-            {postTag && (
-              <View
-                className="px-2 py-1 rounded-full"
-                style={{ backgroundColor: `${postTagColor}15` }}
-              >
-                <Text
-                  className="text-xs font-semibold"
-                  style={{ color: postTagColor }}
-                >
-                  {postTag}
-                </Text>
-              </View>
-            )}
+            <Text className="text-warmGray-400 text-xs">
+              {formatTimeAgo(post.createdAt)} • {post.type === "dica" ? "Dicas Rápidas" : post.type === "desabafo" ? "Puerpério" : post.type === "vitoria" ? "Tentante" : "Geral"}
+            </Text>
           </View>
-
-          {/* Content */}
-          <Text className="text-warmGray-900 text-base font-semibold mb-1" numberOfLines={2}>
-            {post.content.split("\n")[0]}
-          </Text>
-          <Text className="text-warmGray-600 text-sm leading-5 mb-3" numberOfLines={2}>
-            {post.content.split("\n").slice(1).join(" ").trim() || post.content}
-          </Text>
-
-          {/* Image */}
-          {post.imageUrl && (
-            <View className="mb-3 rounded-xl overflow-hidden">
-              <Image
-                source={{ uri: post.imageUrl }}
-                style={{ width: "100%", height: 200 }}
-                contentFit="cover"
-              />
+          {postTag && (
+            <View
+              className="px-2 py-1 rounded-full"
+              style={{ backgroundColor: `${postTagColor}15` }}
+            >
+              <Text
+                className="text-xs font-semibold"
+                style={{ color: postTagColor }}
+              >
+                {postTag}
+              </Text>
             </View>
           )}
+        </View>
 
-          {/* Actions */}
-          <View className="flex-row items-center">
-            <Pressable
-              onPress={() => toggleLike(post.id)}
-              className="flex-row items-center mr-4"
-            >
-              <Ionicons
-                name={post.isLiked ? "heart" : "heart-outline"}
-                size={16}
-                color={post.isLiked ? "#f4258c" : "#A8A29E"}
-              />
-              <Text className="text-warmGray-500 text-xs ml-1">
-                {post.likesCount >= 1000 ? `${(post.likesCount / 1000).toFixed(1)}k` : post.likesCount}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => handleCommentPress(post.id)}
-              className="flex-row items-center"
-            >
-              <Ionicons name="chatbubble-outline" size={14} color="#A8A29E" />
-              <Text className="text-warmGray-500 text-xs ml-1">{post.commentsCount}</Text>
-            </Pressable>
-            <View className="flex-1" />
-            <Pressable
-              onPress={() => handleCommentPress(post.id)}
-              className="flex-row items-center px-3 py-1.5 rounded-full"
-              style={{ backgroundColor: "#F5F5F4" }}
-            >
-              <Ionicons name="arrow-undo-outline" size={14} color="#78716C" />
-              <Text className="text-warmGray-600 text-xs ml-1 font-medium">Responder</Text>
-            </Pressable>
+        {/* Content */}
+        <Text className="text-warmGray-900 text-base font-semibold mb-1" numberOfLines={2}>
+          {post.content.split("\n")[0]}
+        </Text>
+        <Text className="text-warmGray-600 text-sm leading-5 mb-3" numberOfLines={2}>
+          {post.content.split("\n").slice(1).join(" ").trim() || post.content}
+        </Text>
+
+        {/* Image */}
+        {post.imageUrl && (
+          <View className="mb-3 rounded-xl overflow-hidden">
+            <Image
+              source={{ uri: post.imageUrl }}
+              style={{ width: "100%", height: 200 }}
+              contentFit="cover"
+            />
           </View>
-        </Pressable>
-      </Animated.View>
-    );
-  };
+        )}
+
+        {/* Actions */}
+        <View className="flex-row items-center">
+          <Pressable
+            onPress={onToggleLike}
+            className="flex-row items-center mr-4"
+          >
+            <Ionicons
+              name={post.isLiked ? "heart" : "heart-outline"}
+              size={16}
+              color={post.isLiked ? "#f4258c" : "#A8A29E"}
+            />
+            <Text className="text-warmGray-500 text-xs ml-1">
+              {post.likesCount >= 1000 ? `${(post.likesCount / 1000).toFixed(1)}k` : post.likesCount}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={onComment}
+            className="flex-row items-center"
+          >
+            <Ionicons name="chatbubble-outline" size={14} color="#A8A29E" />
+            <Text className="text-warmGray-500 text-xs ml-1">{post.commentsCount}</Text>
+          </Pressable>
+          <View className="flex-1" />
+          <Pressable
+            onPress={onComment}
+            className="flex-row items-center px-3 py-1.5 rounded-full"
+            style={{ backgroundColor: "#F5F5F4" }}
+          >
+            <Ionicons name="arrow-undo-outline" size={14} color="#78716C" />
+            <Text className="text-warmGray-600 text-xs ml-1 font-medium">Responder</Text>
+          </Pressable>
+        </View>
+      </Pressable>
+    </Animated.View>
+  );
+});
 
   const renderGroup = (group: Group, index: number) => (
     <Animated.View
@@ -680,7 +680,16 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
             {/* Composer */}
             <CommunityComposer onPost={handleNewPost} />
 
-            {displayPosts.map((post, index) => renderPost(post, index))}
+            {displayPosts.map((post, index) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                index={index}
+                onPress={() => navigation.navigate("PostDetail", { postId: post.id })}
+                onToggleLike={() => toggleLike(post.id)}
+                onComment={() => handleCommentPress(post.id)}
+              />
+            ))}
 
             {/* CTA - Compartilhe sua jornada */}
             <Pressable
@@ -722,6 +731,50 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
           </>
         )}
       </ScrollView>
+
+      {/* FAB - Floating Action Button (Estilo Boa Noite Mãe) */}
+      <Animated.View
+        entering={FadeInUp.delay(800).duration(600).springify()}
+        style={{
+          position: "absolute",
+          bottom: 90,
+          left: 0,
+          right: 0,
+          alignItems: "center",
+          paddingHorizontal: 24,
+        }}
+      >
+        <Pressable
+          onPress={() => navigation.navigate("NewPost", {})}
+          style={{
+            shadowColor: "#f4258c",
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.4,
+            shadowRadius: 16,
+            elevation: 12,
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Compartilhe sua jornada"
+        >
+          <LinearGradient
+            colors={["#f4258c", "#EC4899"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingVertical: 16,
+              paddingHorizontal: 28,
+              borderRadius: 28,
+            }}
+          >
+            <Ionicons name="create" size={20} color="#FFFFFF" />
+            <Text className="text-white text-base font-bold ml-3">
+              Compartilhe sua jornada
+            </Text>
+          </LinearGradient>
+        </Pressable>
+      </Animated.View>
     </View>
   );
 }

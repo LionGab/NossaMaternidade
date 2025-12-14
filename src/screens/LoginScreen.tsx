@@ -345,8 +345,8 @@ export default function LoginScreen({ navigation }: Props) {
         style={{ flex: 1 }}
       >
         <LinearGradient
-          colors={["#FFF5F7", "#FEF3F2", "#FAF5FF", COLORS.background.primary]}
-          locations={[0, 0.3, 0.6, 1]}
+          colors={["#FFF0F6", "#FAF5FF", "#FFFFFF"]}
+          locations={[0, 0.4, 1]}
           style={{ flex: 1 }}
         >
           <ScrollView
@@ -359,44 +359,48 @@ export default function LoginScreen({ navigation }: Props) {
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            {/* Logo e Header */}
+            {/* Logo e Header - REDESIGN PREMIUM */}
             <Animated.View
-              entering={FadeInUp.duration(600).springify()}
+              entering={FadeInUp.duration(800).springify()}
               style={{
                 alignItems: "center",
-                marginBottom: SPACING["4xl"],
+                marginBottom: SPACING["5xl"],
               }}
             >
-              {/* Logo com gradiente */}
+              {/* Logo com gradiente + shadow glow */}
               <View
                 style={{
-                  marginBottom: SPACING.xl,
-                  ...SHADOWS.lg,
+                  marginBottom: SPACING["2xl"],
                 }}
               >
                 <LinearGradient
-                  colors={[COLORS.primary[500], COLORS.secondary[500]]}
+                  colors={[COLORS.primary[400], COLORS.primary[600]]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={{
-                    width: 88,
-                    height: 88,
-                    borderRadius: RADIUS["2xl"],
+                    width: 96,
+                    height: 96,
+                    borderRadius: 28,
                     alignItems: "center",
                     justifyContent: "center",
+                    shadowColor: COLORS.primary[500],
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 20,
+                    elevation: 12,
                   }}
                 >
-                  <Ionicons name="heart" size={48} color="#FFFFFF" />
+                  <Ionicons name="heart" size={52} color="#FFFFFF" />
                 </LinearGradient>
               </View>
 
               <Text
                 style={{
-                  fontSize: TYPOGRAPHY.headlineLarge.fontSize,
+                  fontSize: 34,
                   fontWeight: "700",
-                  color: COLORS.neutral[800],
-                  marginBottom: SPACING.sm,
-                  letterSpacing: -0.5,
+                  color: COLORS.neutral[900],
+                  marginBottom: SPACING.xs,
+                  letterSpacing: -0.8,
                 }}
               >
                 Nossa Maternidade
@@ -406,11 +410,12 @@ export default function LoginScreen({ navigation }: Props) {
                   fontSize: TYPOGRAPHY.bodyLarge.fontSize,
                   color: COLORS.neutral[500],
                   textAlign: "center",
+                  lineHeight: 24,
                 }}
               >
                 {isLogin
-                  ? "Bem-vinda de volta!"
-                  : "Junte-se a nossa comunidade"}
+                  ? "Feliz em ter você de volta ✨"
+                  : "Sua jornada começa aqui 💜"}
               </Text>
             </Animated.View>
 
@@ -541,30 +546,34 @@ export default function LoginScreen({ navigation }: Props) {
                 </Pressable>
               )}
 
-              {/* Botao de Submit */}
-              <Animated.View style={[buttonAnimatedStyle, { marginTop: SPACING.lg }]}>
+              {/* Botao de Submit - REDESIGN PREMIUM */}
+              <Animated.View style={[buttonAnimatedStyle, { marginTop: SPACING["2xl"] }]}>
                 <Pressable
                   onPress={handleSubmit}
                   disabled={isLoading}
                   style={{ opacity: isLoading ? 0.8 : 1 }}
                 >
                   <LinearGradient
-                    colors={[COLORS.primary[500], COLORS.secondary[500]]}
+                    colors={[COLORS.primary[400], COLORS.primary[600]]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={{
                       borderRadius: RADIUS.xl,
-                      paddingVertical: SPACING.lg + 2,
+                      paddingVertical: SPACING.lg + 4,
                       alignItems: "center",
                       justifyContent: "center",
-                      ...SHADOWS.md,
+                      shadowColor: COLORS.primary[500],
+                      shadowOffset: { width: 0, height: 6 },
+                      shadowOpacity: 0.35,
+                      shadowRadius: 16,
+                      elevation: 8,
                     }}
                   >
                     {isLoading ? (
                       <View style={{ flexDirection: "row", alignItems: "center" }}>
                         <Ionicons
                           name="sync-outline"
-                          size={20}
+                          size={22}
                           color={COLORS.neutral[0]}
                           style={{ marginRight: SPACING.sm }}
                         />
@@ -573,6 +582,7 @@ export default function LoginScreen({ navigation }: Props) {
                             color: COLORS.neutral[0],
                             fontSize: TYPOGRAPHY.labelLarge.fontSize,
                             fontWeight: "700",
+                            letterSpacing: 0.5,
                           }}
                         >
                           Carregando...
@@ -584,22 +594,22 @@ export default function LoginScreen({ navigation }: Props) {
                           color: COLORS.neutral[0],
                           fontSize: TYPOGRAPHY.labelLarge.fontSize,
                           fontWeight: "700",
-                          letterSpacing: 0.3,
+                          letterSpacing: 0.5,
                         }}
                       >
-                        {isLogin ? "Entrar" : "Criar conta"}
+                        {isLogin ? "Entrar" : "Criar minha conta"}
                       </Text>
                     )}
                   </LinearGradient>
                 </Pressable>
               </Animated.View>
 
-              {/* Divisor */}
+              {/* Divisor - REDESIGN */}
               <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  marginVertical: SPACING["2xl"],
+                  marginVertical: SPACING["3xl"],
                 }}
               >
                 <View
@@ -613,7 +623,10 @@ export default function LoginScreen({ navigation }: Props) {
                   style={{
                     paddingHorizontal: SPACING.lg,
                     color: COLORS.neutral[400],
-                    fontSize: TYPOGRAPHY.bodySmall.fontSize,
+                    fontSize: TYPOGRAPHY.labelSmall.fontSize,
+                    fontWeight: "600",
+                    textTransform: "uppercase",
+                    letterSpacing: 1,
                   }}
                 >
                   ou

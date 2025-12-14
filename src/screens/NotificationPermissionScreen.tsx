@@ -178,8 +178,8 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
 
   return (
     <LinearGradient
-      colors={["#FFF1F2", "#FCE7F3", "#F5F3FF", COLORS.background.primary]}
-      locations={[0, 0.25, 0.5, 1]}
+      colors={["#FFF0F6", "#FAF5FF", "#FFFFFF"]}
+      locations={[0, 0.5, 1]}
       style={{ flex: 1 }}
     >
       <View
@@ -223,22 +223,22 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
           </View>
         </Animated.View>
 
-        {/* Title */}
+        {/* Title - REFINADO */}
         <Animated.View
           entering={FadeInDown.duration(600).delay(200).springify()}
-          style={{ marginBottom: SPACING.lg }}
+          style={{ marginBottom: SPACING.xl }}
         >
           <Text
             style={{
-              fontSize: 28,
+              fontSize: 32,
               fontWeight: "700",
-              color: COLORS.neutral[800],
+              color: COLORS.neutral[900],
               textAlign: "center",
-              letterSpacing: -0.5,
-              lineHeight: 34,
+              letterSpacing: -0.8,
+              lineHeight: 38,
             }}
           >
-            Nunca perca um{"\n"}momento importante
+            Nunca perca um{"\n"}momento importante 💜
           </Text>
         </Animated.View>
 

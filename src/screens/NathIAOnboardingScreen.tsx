@@ -53,7 +53,7 @@ import { RootStackScreenProps } from "../types/navigation";
 
 type Props = RootStackScreenProps<"NathIAOnboarding">;
 
-// Reusable Option Button Component
+// Reusable Option Button Component - REDESIGN PREMIUM
 const OptionButton = ({
   selected,
   onPress,
@@ -77,7 +77,7 @@ const OptionButton = ({
 
   const handlePress = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    scale.value = withSpring(0.95, { damping: 15 });
+    scale.value = withSpring(0.96, { damping: 15 });
     setTimeout(() => {
       scale.value = withSpring(1, { damping: 15 });
     }, 100);
@@ -94,20 +94,24 @@ const OptionButton = ({
         style={{
           backgroundColor: selected ? COLORS.primary[50] : COLORS.neutral[0],
           borderRadius: isLarge ? RADIUS["2xl"] : RADIUS.xl,
-          padding: isSmall ? SPACING.md : SPACING.lg,
-          borderWidth: 2,
+          padding: isSmall ? SPACING.lg : SPACING.xl,
+          borderWidth: selected ? 2 : 1.5,
           borderColor: selected ? COLORS.primary[500] : COLORS.neutral[200],
           marginBottom: SPACING.md,
           flexDirection: isLarge ? "column" : "row",
           alignItems: isLarge ? "flex-start" : "center",
-          minHeight: 56,
-          ...SHADOWS.sm,
+          minHeight: 60,
+          shadowColor: selected ? COLORS.primary[500] : "#000",
+          shadowOffset: { width: 0, height: selected ? 4 : 2 },
+          shadowOpacity: selected ? 0.15 : 0.05,
+          shadowRadius: selected ? 8 : 4,
+          elevation: selected ? 4 : 2,
         }}
       >
         {emoji && (
           <Text
             style={{
-              fontSize: isLarge ? 32 : 24,
+              fontSize: isLarge ? 36 : 28,
               marginRight: isLarge ? 0 : SPACING.md,
               marginBottom: isLarge ? SPACING.sm : 0,
             }}
@@ -119,11 +123,11 @@ const OptionButton = ({
           <Text
             style={{
               fontSize: isLarge
-                ? TYPOGRAPHY.titleMedium.fontSize
+                ? TYPOGRAPHY.titleLarge.fontSize
                 : TYPOGRAPHY.bodyLarge.fontSize,
               fontWeight: "600",
               color: selected ? COLORS.primary[700] : COLORS.neutral[800],
-              marginBottom: description ? 2 : 0,
+              marginBottom: description ? 4 : 0,
             }}
           >
             {label}
@@ -132,7 +136,8 @@ const OptionButton = ({
             <Text
               style={{
                 fontSize: TYPOGRAPHY.bodySmall.fontSize,
-                color: COLORS.neutral[500],
+                color: selected ? COLORS.primary[600] : COLORS.neutral[500],
+                lineHeight: 18,
               }}
             >
               {description}
@@ -142,7 +147,7 @@ const OptionButton = ({
         {selected && (
           <Ionicons
             name="checkmark-circle"
-            size={24}
+            size={26}
             color={COLORS.primary[500]}
           />
         )}
@@ -151,7 +156,7 @@ const OptionButton = ({
   );
 };
 
-// Multi-select chip component
+// Multi-select chip component - REDESIGN PREMIUM
 const ChipButton = ({
   selected,
   onPress,
@@ -174,18 +179,23 @@ const ChipButton = ({
       style={{
         backgroundColor: selected ? COLORS.primary[500] : COLORS.neutral[0],
         borderRadius: RADIUS.full,
-        paddingVertical: SPACING.md,
-        paddingHorizontal: SPACING.lg,
-        borderWidth: 1.5,
-        borderColor: selected ? COLORS.primary[500] : COLORS.neutral[200],
+        paddingVertical: SPACING.md + 2,
+        paddingHorizontal: SPACING.xl,
+        borderWidth: selected ? 0 : 1.5,
+        borderColor: COLORS.neutral[200],
         marginRight: SPACING.sm,
         marginBottom: SPACING.sm,
         flexDirection: "row",
         alignItems: "center",
+        shadowColor: selected ? COLORS.primary[500] : "#000",
+        shadowOffset: { width: 0, height: selected ? 3 : 1 },
+        shadowOpacity: selected ? 0.2 : 0.05,
+        shadowRadius: selected ? 6 : 2,
+        elevation: selected ? 3 : 1,
       }}
     >
       {emoji && (
-        <Text style={{ fontSize: 16, marginRight: SPACING.xs }}>{emoji}</Text>
+        <Text style={{ fontSize: 18, marginRight: SPACING.xs }}>{emoji}</Text>
       )}
       <Text
         style={{
@@ -200,7 +210,7 @@ const ChipButton = ({
   );
 };
 
-// Progress bar component
+// Progress bar component - REDESIGN PREMIUM
 const ProgressBar = ({
   progress,
   onBack,
@@ -214,47 +224,61 @@ const ProgressBar = ({
         flexDirection: "row",
         alignItems: "center",
         paddingHorizontal: SPACING["2xl"],
-        paddingVertical: SPACING.lg,
+        paddingVertical: SPACING.xl,
       }}
     >
       <Pressable
         onPress={onBack}
         style={{
-          width: 44,
-          height: 44,
-          borderRadius: RADIUS.lg,
+          width: 48,
+          height: 48,
+          borderRadius: RADIUS.xl,
           backgroundColor: COLORS.neutral[0],
           alignItems: "center",
           justifyContent: "center",
-          ...SHADOWS.sm,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 6,
+          elevation: 3,
         }}
       >
-        <Ionicons name="arrow-back" size={24} color={COLORS.neutral[600]} />
+        <Ionicons name="arrow-back" size={24} color={COLORS.neutral[700]} />
       </Pressable>
       <View
         style={{
           flex: 1,
-          height: 6,
+          height: 8,
           backgroundColor: COLORS.neutral[200],
           borderRadius: RADIUS.full,
           marginLeft: SPACING.lg,
           overflow: "hidden",
         }}
       >
-        <View
+        <Animated.View
+          entering={FadeIn.duration(400)}
           style={{
             width: `${progress}%`,
             height: "100%",
-            backgroundColor: COLORS.primary[500],
             borderRadius: RADIUS.full,
           }}
-        />
+        >
+          <LinearGradient
+            colors={[COLORS.primary[400], COLORS.primary[600]]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        </Animated.View>
       </View>
     </View>
   );
 };
 
-// Continue button
+// Continue button - REDESIGN PREMIUM
 const ContinueButton = ({
   onPress,
   disabled,
@@ -285,17 +309,22 @@ const ContinueButton = ({
       <LinearGradient
         colors={
           isPrimary
-            ? [COLORS.primary[500], COLORS.secondary[500]]
+            ? [COLORS.primary[400], COLORS.primary[600]]
             : [COLORS.neutral[100], COLORS.neutral[200]]
         }
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={{
           borderRadius: RADIUS.xl,
-          paddingVertical: SPACING.lg + 2,
+          paddingVertical: SPACING.lg + 4,
           alignItems: "center",
           justifyContent: "center",
-          minHeight: 56,
+          minHeight: 60,
+          shadowColor: isPrimary ? COLORS.primary[500] : "#000",
+          shadowOffset: { width: 0, height: isPrimary ? 6 : 2 },
+          shadowOpacity: isPrimary ? 0.3 : 0.08,
+          shadowRadius: isPrimary ? 12 : 4,
+          elevation: isPrimary ? 6 : 2,
         }}
       >
         <Text
@@ -303,6 +332,7 @@ const ContinueButton = ({
             color: isPrimary ? COLORS.neutral[0] : COLORS.neutral[700],
             fontSize: TYPOGRAPHY.labelLarge.fontSize,
             fontWeight: "700",
+            letterSpacing: 0.5,
           }}
         >
           {label}

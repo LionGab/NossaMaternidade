@@ -19,7 +19,6 @@ import { COLORS } from "../theme/design-system";
 import LoginScreen from "../screens/LoginScreen";
 import NotificationPermissionScreen from "../screens/NotificationPermissionScreen";
 import NathIAOnboardingScreen from "../screens/NathIAOnboardingScreen";
-import OnboardingScreen from "../screens/OnboardingScreen";
 
 // Main Navigator
 import MainTabNavigator from "./MainTabNavigator";
@@ -72,7 +71,6 @@ export default function RootNavigator() {
   const shouldShowLogin = !isAuthenticated;
   const shouldShowNotificationPermission = isAuthenticated && !notificationSetupDone;
   const shouldShowNathIAOnboarding = isAuthenticated && notificationSetupDone && !isNathIAOnboardingComplete;
-  const shouldShowLegacyOnboarding = false; // Skipped - using NathIA onboarding only
   const shouldShowMainApp = isAuthenticated && notificationSetupDone && isNathIAOnboardingComplete;
 
   return (
@@ -106,15 +104,6 @@ export default function RootNavigator() {
         <Stack.Screen
           name="NathIAOnboarding"
           component={NathIAOnboardingScreen}
-          options={{ animation: "fade" }}
-        />
-      )}
-
-      {/* Stage 3.5: Legacy Onboarding (if still needed) */}
-      {shouldShowLegacyOnboarding && (
-        <Stack.Screen
-          name="Onboarding"
-          component={OnboardingScreen}
           options={{ animation: "fade" }}
         />
       )}

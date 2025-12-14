@@ -259,63 +259,81 @@ export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assi
     });
   };
 
-  const renderMessage = (message: ChatMessage, index: number) => {
-    const isUser = message.role === "user";
-    return (
-      <Animated.View
-        key={message.id}
-        entering={FadeInUp.delay(index * 30).duration(300)}
-        className={`mb-4 ${isUser ? "items-end" : "items-start"}`}
-      >
-        <View className="flex-row items-end max-w-[85%]">
-          {!isUser && (
-            <Avatar
-              size={32}
-              isNathIA={true}
-              style={{ marginRight: 8, marginBottom: 4 }}
-            />
-          )}
-          <View
-            className={`rounded-2xl px-4 py-3 ${isUser ? "rounded-br-sm" : "rounded-bl-sm"}`}
-            style={{
-              backgroundColor: isUser ? "#E11D48" : "#F5F5F4",
-              flex: 1,
-            }}
-          >
-            <Text className={`text-base leading-6 ${isUser ? "text-white" : "text-warmGray-800"}`}>
-              {message.content}
-            </Text>
+// Renderizar mensagem individual (memoizado)
+const MessageBubble = React.memo(({ message, index, hasVoiceAccess, onPremiumRequired }: {
+  message: ChatMessage;
+  index: number;
+  hasVoiceAccess: boolean;
+  onPremiumRequired: () => void;
+}) => {
+  const isUser = message.role === "user";
+  return (
+    <Animated.View
+      entering={FadeInUp.delay(index * 30).duration(300)}
+      className={`mb-4 ${isUser ? "items-end" : "items-start"}`}
+    >
+      <View className="flex-row items-end max-w-[85%]">
+        {!isUser && (
+          <Avatar
+            size={32}
+            isNathIA={true}
+            style={{ marginRight: 8, marginBottom: 4 }}
+          />
+        )}
+        <View
+          className={`rounded-2xl px-4 py-3 ${isUser ? "rounded-br-sm" : "rounded-bl-sm"}`}
+          style={{
+            backgroundColor: isUser ? "#f4258c" : "#FFFFFF",
+            flex: 1,
+            ...(isUser ? {
+              shadowColor: "#f4258c",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              elevation: 2,
+            } : {
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.05,
+              shadowRadius: 2,
+              elevation: 1,
+            }),
+          }}
+        >
+          <Text className={`text-base leading-6 ${isUser ? "text-white" : "text-warmGray-800"}`}>
+            {message.content}
+          </Text>
 
-            {/* Voice Player - Apenas para mensagens da NathIA */}
-            {!isUser && (
-              <View className="flex-row items-center justify-between mt-3 pt-2 border-t border-warmGray-200">
-                <View className="flex-row items-center">
-                  <Ionicons name="volume-medium-outline" size={14} color="#78716C" />
-                  <Text className="text-warmGray-500 text-xs ml-1">
-                    {hasVoiceAccess ? "Ouvir resposta" : "Voz Premium"}
-                  </Text>
-                </View>
-                <VoiceMessagePlayer
-                  messageId={message.id}
-                  text={message.content}
-                  onPremiumRequired={handleVoicePremiumRequired}
-                  size="small"
-                  compact
-                  iconColor={PRIMARY_COLOR}
-                />
+          {/* Voice Player - Apenas para mensagens da NathIA */}
+          {!isUser && (
+            <View className="flex-row items-center justify-between mt-3 pt-2 border-t border-warmGray-200">
+              <View className="flex-row items-center">
+                <Ionicons name="volume-medium-outline" size={14} color="#78716C" />
+                <Text className="text-warmGray-500 text-xs ml-1">
+                  {hasVoiceAccess ? "Ouvir resposta" : "Voz Premium"}
+                </Text>
               </View>
-            )}
-          </View>
+              <VoiceMessagePlayer
+                messageId={message.id}
+                text={message.content}
+                onPremiumRequired={onPremiumRequired}
+                size="small"
+                compact
+                iconColor={PRIMARY_COLOR}
+              />
+            </View>
+          )}
         </View>
-        <Text className={`text-warmGray-400 text-xs mt-1 ${isUser ? "mr-2" : "ml-12"}`}>
-          {new Date(message.createdAt).toLocaleTimeString("pt-BR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </Text>
-      </Animated.View>
-    );
-  };
+      </View>
+      <Text className={`text-warmGray-400 text-xs mt-1 ${isUser ? "mr-2" : "ml-12"}`}>
+        {new Date(message.createdAt).toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
+      </Text>
+    </Animated.View>
+  );
+});
 
   const renderEmptyState = () => (
     <Animated.View entering={FadeIn.duration(600)} className="flex-1 justify-center items-center px-6">
@@ -760,7 +778,15 @@ export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assi
             showsVerticalScrollIndicator={false}
             onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
           >
-            {currentMessages.map((message, index) => renderMessage(message, index))}
+            {currentMessages.map((message, index) => (
+              <MessageBubble
+                key={message.id}
+                message={message}
+                index={index}
+                hasVoiceAccess={hasVoiceAccess}
+                onPremiumRequired={handleVoicePremiumRequired}
+              />
+            ))}
 
             {isLoading && (
               <Animated.View entering={FadeIn.duration(300)} className="items-start mb-4">

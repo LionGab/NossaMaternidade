@@ -453,4 +453,66 @@ export const GRADIENTS = {
   aurora: ["#A855F7", "#EC4899", "#f4258c"],
   sage: ["#D1FAE5", "#A7F3D0", "#86EFAC"],
   glass: ["rgba(255,255,255,0.8)", "rgba(255,255,255,0.4)"],
+  
+  // Gradientes Hero (para backgrounds principais)
+  heroLight: ["#FFF0F6", "#FAF5FF", "#FFFFFF"],
+  heroPrimary: ["#f4258c", "#EC4899", "#A855F7"],
+  heroSoft: ["#FFF7ED", "#FEF3C7", "#FEE2E2"],
+  
+  // Gradientes Overlay (para cards flutuantes)
+  overlayWarm: ["rgba(255, 240, 246, 0.95)", "rgba(250, 245, 255, 0.85)"],
+  overlayCool: ["rgba(239, 246, 255, 0.95)", "rgba(219, 234, 254, 0.85)"],
+  
+  // Gradientes Shimmer (para loading states)
+  shimmer: ["rgba(255,255,255,0)", "rgba(255,255,255,0.5)", "rgba(255,255,255,0)"],
+} as const;
+
+// ===========================================
+// ELEVATIONS (z-index system)
+// ===========================================
+
+export const ELEVATION = {
+  base: 0,
+  raised: 1,
+  overlay: 10,
+  dropdown: 20,
+  modal: 30,
+  tooltip: 40,
+  toast: 50,
+} as const;
+
+// ===========================================
+// ESTADOS INTERATIVOS
+// ===========================================
+
+export const INTERACTIVE = {
+  // Opacidade para estados pressed
+  pressedOpacity: 0.7,
+  // Escala para animações de tap
+  pressedScale: 0.96,
+  // Duração da animação de feedback
+  feedbackDuration: 150,
+} as const;
+
+// ===========================================
+// ESPAÇAMENTOS SEMÂNTICOS
+// ===========================================
+
+export const LAYOUT = {
+  // Padding de telas
+  screenPaddingHorizontal: SPACING["2xl"],
+  screenPaddingVertical: SPACING["2xl"],
+  
+  // Espaçamento entre seções
+  sectionGap: SPACING["4xl"],
+  
+  // Espaçamento entre cards
+  cardGap: SPACING.lg,
+  
+  // Hero section heights
+  heroHeight: {
+    small: 180,
+    medium: 240,
+    large: 320,
+  },
 } as const;

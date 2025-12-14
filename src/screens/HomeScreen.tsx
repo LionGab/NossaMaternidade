@@ -98,11 +98,11 @@ const COMMUNITY_POSTS = [
   },
 ];
 
-const QUICK_ACTIONS: { id: string; label: string; icon: string; gradient: [string, string] }[] = [
+const QUICK_ACTIONS = [
   { id: "mycare", label: "Meus Cuidados", icon: "heart", gradient: ["#f4258c", "#F43F5E"] },
   { id: "assistant", label: "NathIA", icon: "chatbubble-ellipses", gradient: ["#6BAD78", "#8BC896"] },
   { id: "affirmations", label: "Afirmações", icon: "sparkles", gradient: ["#A78BFA", "#C4B5FD"] },
-];
+] as const;
 
 const DAILY_TIPS = [
   {
@@ -138,22 +138,14 @@ const NATHIA_QUICK_CHIPS = [
   { id: "anxiety", label: "Ansiedade", emoji: "💭", color: "#14B8A6" },
 ];
 
-// Dicas contextuais baseadas no horário
-const getContextualTip = () => {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 9) {
-    return { text: "Bom dia! Como foi sua noite de sono?", emoji: "🌅" };
-  } else if (hour >= 9 && hour < 12) {
-    return { text: "Já tomou seu café da manhã nutritivo?", emoji: "☀️" };
-  } else if (hour >= 12 && hour < 14) {
-    return { text: "Hora do almoço! Descanse um pouco também.", emoji: "🥗" };
-  } else if (hour >= 14 && hour < 18) {
-    return { text: "Lembrete: Beba água e faça uma pausa.", emoji: "💧" };
-  } else if (hour >= 18 && hour < 21) {
-    return { text: "Preparando para a noite? Posso ajudar!", emoji: "🌙" };
-  } else {
-    return { text: "Noite tranquila! Estou aqui se precisar.", emoji: "✨" };
-  }
+// Dicas contextuais baseadas no horário (memoizada no componente)
+const getContextualTip = (hour: number) => {
+  if (hour >= 5 && hour < 9) return { text: "Bom dia! Como foi sua noite de sono?", emoji: "🌅" };
+  if (hour >= 9 && hour < 12) return { text: "Já tomou seu café da manhã nutritivo?", emoji: "☀️" };
+  if (hour >= 12 && hour < 14) return { text: "Hora do almoço! Descanse um pouco também.", emoji: "🥗" };
+  if (hour >= 14 && hour < 18) return { text: "Lembrete: Beba água e faça uma pausa.", emoji: "💧" };
+  if (hour >= 18 && hour < 21) return { text: "Preparando para a noite? Posso ajudar!", emoji: "🌙" };
+  return { text: "Noite tranquila! Estou aqui se precisar.", emoji: "✨" };
 };
 
 export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
@@ -162,6 +154,7 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
 
   const [currentTip, setCurrentTip] = useState(0);
 
+  // Carousel automático de dicas
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTip((prev) => (prev + 1) % DAILY_TIPS.length);
@@ -169,12 +162,18 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
     return () => clearInterval(interval);
   }, []);
 
-  const getGreeting = () => {
+  // Memoizar valores calculados
+  const greeting = React.useMemo(() => {
     const hour = new Date().getHours();
     if (hour < 12) return "Bom dia";
     if (hour < 18) return "Boa tarde";
     return "Boa noite";
-  };
+  }, []);
+
+  const contextualTip = React.useMemo(() => {
+    const hour = new Date().getHours();
+    return getContextualTip(hour);
+  }, []);
 
   const tip = DAILY_TIPS[currentTip];
 
@@ -220,10 +219,10 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
             >
               {/* Header - Boa Noite Mae Style */}
               <View className="flex-row items-center justify-between mb-6">
-                <View className="flex-1">
-                  <Text className="text-warmGray-900 text-3xl font-serif">
-                    {getGreeting()}, Mãe
-                  </Text>
+              <View className="flex-1">
+                <Text className="text-warmGray-900 text-3xl font-serif">
+                  {greeting}, Mãe
+                </Text>
                   <Text className="text-warmGray-500 text-sm mt-1">
                     {userName ? `${userName}, ` : ""}24ª Semana
                   </Text>
@@ -239,7 +238,13 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
                   </Pressable>
                   <Image
                     source={{ uri: IMGUR_IMAGES.avatar }}
-                    style={{ width: 48, height: 48, borderRadius: 24 }}
+                    style={{ 
+                      width: 48, 
+                      height: 48, 
+                      borderRadius: 24,
+                      borderWidth: 3,
+                      borderColor: "#FFFFFF"
+                    }}
                     contentFit="cover"
                   />
                 </View>
@@ -260,32 +265,30 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
                 accessibilityLabel="Acessar comunidade"
               >
                 <LinearGradient
-                  colors={["#f4258c", "#A855F7", "#89CFF0"]}
+                  colors={["#EC4899", "#A855F7", "#60A5FA"]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={[
-                    { borderRadius: 24, padding: 24, minHeight: 180 },
+                    { borderRadius: 28, padding: 28, minHeight: 200 },
                     shadowPresets.lg,
                   ]}
                 >
-                  {/* Tag */}
-                  <View className="bg-white/20 self-start px-3 py-1.5 rounded-full mb-4">
-                    <Text className="text-white text-xs font-semibold">Bem-estar</Text>
+                  {/* Tag DESTAQUE - Estilo Boa Noite Mãe */}
+                  <View className="bg-white/30 self-start px-4 py-2 rounded-full mb-4 flex-row items-center">
+                    <Ionicons name="heart" size={14} color="#FFFFFF" style={{ marginRight: 6 }} />
+                    <Text className="text-white text-xs font-bold uppercase tracking-wider">Destaque</Text>
                   </View>
 
                   {/* Content */}
-                  <Text className="text-white/90 text-sm mb-1">
-                    Fortaleça seu senso de
+                  <Text className="text-white/90 text-base mb-2">
+                    Conecte-se com outras mães
                   </Text>
-                  <Text className="text-white text-3xl font-serif mb-3">
-                    Pertencimento
+                  <Text className="text-white text-4xl font-serif mb-4" style={{ letterSpacing: -0.5 }}>
+                    Comunidade de{"\n"}Mães
                   </Text>
-                  <View className="flex-row items-center">
-                    <Ionicons name="heart" size={16} color="#FFFFFF" />
-                    <Text className="text-white text-sm ml-2">
-                      Você não está sozinha
-                    </Text>
-                  </View>
+                  <Text className="text-white/90 text-sm">
+                    na mesma jornada que você.
+                  </Text>
 
                   {/* Decorative Icon */}
                   <View className="absolute right-6 bottom-6 opacity-30">
@@ -328,7 +331,7 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
                           </View>
                         </View>
                         <Text className="text-warmGray-600 text-sm mt-0.5">
-                          {getContextualTip().emoji} {getContextualTip().text}
+                          {contextualTip.emoji} {contextualTip.text}
                         </Text>
                       </View>
                     </View>
