@@ -35,7 +35,8 @@
       "Bash(bun run typecheck:*)",
       "Bash(tee:*)",
       "Bash(bun run lint:*)",
-      "Bash(bun run check-build-ready:*)"
+      "Bash(bun run check-build-ready:*)",
+      "Bash(git push:*)"
     ]
   }
 }

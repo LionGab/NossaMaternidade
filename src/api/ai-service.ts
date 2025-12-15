@@ -22,6 +22,19 @@ export interface AIContext {
 }
 
 /**
+ * Payload enviado para a Edge Function /ai
+ */
+interface EdgeFunctionPayload {
+  messages: AIMessage[];
+  provider: "claude" | "gemini" | "openai";
+  grounding: boolean;
+  imageData?: {
+    base64: string;
+    mediaType: string;
+  };
+}
+
+/**
  * Obter resposta da NathIA (Claude ou Gemini)
  * Decide automaticamente o provider com base no contexto
  */
@@ -59,15 +72,12 @@ export async function getNathIAResponse(
     // Provider permanece "claude" mas Edge Function detecta imageData
 
     // 3. Preparar payload
-    const payload: any = {
+    const payload: EdgeFunctionPayload = {
       messages,
       provider,
       grounding,
+      ...(context.imageData && { imageData: context.imageData }),
     };
-
-    if (context.imageData) {
-      payload.imageData = context.imageData;
-    }
 
     // 4. Chamar Edge Function COM JWT
     const response = await fetch(`${FUNCTIONS_URL}/ai`, {

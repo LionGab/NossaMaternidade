@@ -9,9 +9,11 @@ import Purchases, {
   PurchasesPackage,
   CustomerInfo,
   LOG_LEVEL,
+  PurchasesError,
 } from "react-native-purchases";
 import { Platform } from "react-native";
 import Constants from "expo-constants";
+import { logger } from "../utils/logger";
 
 // RevenueCat API Keys (from environment)
 const REVENUECAT_IOS_KEY = Constants.expoConfig?.extra?.revenueCatIosKey || "";
@@ -25,6 +27,26 @@ export const PRODUCT_IDS = {
   MONTHLY: "nossa_maternidade_monthly",
   YEARLY: "nossa_maternidade_yearly",
 } as const;
+
+/**
+ * Type guard to check if error is from RevenueCat
+ */
+function isPurchasesError(error: unknown): error is PurchasesError {
+  return typeof error === "object" && error !== null && "userCancelled" in error;
+}
+
+/**
+ * Get error message from unknown error
+ */
+function getErrorMessage(error: unknown): string {
+  if (isPurchasesError(error)) {
+    return error.message || "Purchase error";
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "Unknown error";
+}
 
 /**
  * Initialize RevenueCat
@@ -46,9 +68,9 @@ export async function initializePurchases(userId?: string): Promise<void> {
       await Purchases.configure({ apiKey });
     }
 
-    console.log("[Purchases] Initialized successfully");
+    logger.info("Initialized successfully", "Purchases");
   } catch (error) {
-    console.error("[Purchases] Failed to initialize:", error);
+    logger.error("Failed to initialize", "Purchases", error instanceof Error ? error : new Error(String(error)));
   }
 }
 
@@ -93,14 +115,14 @@ export async function purchasePackage(
       success: isPremium,
       customerInfo,
     };
-  } catch (error: any) {
+  } catch (error) {
     // User cancelled
-    if (error.userCancelled) {
+    if (isPurchasesError(error) && error.userCancelled) {
       return { success: false, error: "cancelled" };
     }
 
     console.error("[Purchases] Purchase failed:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: getErrorMessage(error) };
   }
 }
 
@@ -120,9 +142,9 @@ export async function restorePurchases(): Promise<{
       success: isPremium,
       customerInfo,
     };
-  } catch (error: any) {
+  } catch (error) {
     console.error("[Purchases] Restore failed:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: getErrorMessage(error) };
   }
 }
 
@@ -157,9 +179,9 @@ export async function getCustomerInfo(): Promise<CustomerInfo | null> {
 export async function loginUser(userId: string): Promise<void> {
   try {
     await Purchases.logIn(userId);
-    console.log("[Purchases] User logged in:", userId);
+    logger.info(`User logged in: ${userId}`, "Purchases");
   } catch (error) {
-    console.error("[Purchases] Failed to login user:", error);
+    logger.error("Failed to login user", "Purchases", error instanceof Error ? error : new Error(String(error)));
   }
 }
 
@@ -169,9 +191,9 @@ export async function loginUser(userId: string): Promise<void> {
 export async function logoutUser(): Promise<void> {
   try {
     await Purchases.logOut();
-    console.log("[Purchases] User logged out");
+    logger.info("User logged out", "Purchases");
   } catch (error) {
-    console.error("[Purchases] Failed to logout user:", error);
+    logger.error("Failed to logout user", "Purchases", error instanceof Error ? error : new Error(String(error)));
   }
 }
 

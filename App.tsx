@@ -8,8 +8,10 @@ import RootNavigator from "./src/navigation/RootNavigator";
 import { View, ActivityIndicator } from "react-native";
 import { ErrorBoundary } from "./src/components/ErrorBoundary";
 import { OfflineBanner } from "./src/components/OfflineBanner";
+import { ToastProvider } from "./src/context/ToastContext";
 import { useNetworkStatus } from "./src/hooks/useNetworkStatus";
 import { useTheme } from "./src/hooks/useTheme";
+import { useDeepLinking } from "./src/hooks/useDeepLinking";
 
 /*
 IMPORTANT NOTICE: DO NOT REMOVE
@@ -47,6 +49,9 @@ export default function App() {
   
   // Theme management
   const { isDark, colors } = useTheme();
+  
+  // Deep linking
+  useDeepLinking();
 
   if (!fontsLoaded) {
     return (
@@ -60,12 +65,14 @@ export default function App() {
     <ErrorBoundary>
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.background.DEFAULT }}>
         <SafeAreaProvider>
-          {/* Offline Banner - appears on top when no connection */}
-          {isOffline && <OfflineBanner onRetry={retry} isRetrying={isChecking} />}
-          <NavigationContainer>
-            <StatusBar style={isDark ? "light" : "dark"} />
-            <RootNavigator />
-          </NavigationContainer>
+          <ToastProvider>
+            {/* Offline Banner - appears on top when no connection */}
+            {isOffline && <OfflineBanner onRetry={retry} isRetrying={isChecking} />}
+            <NavigationContainer>
+              <StatusBar style={isDark ? "light" : "dark"} />
+              <RootNavigator />
+            </NavigationContainer>
+          </ToastProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>
     </ErrorBoundary>

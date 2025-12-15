@@ -28,7 +28,7 @@ export function useTheme() {
     }
   }, [shouldUseDark, isDarkMode, setIsDarkMode]);
 
-  // Retorna as cores baseadas no tema
+  // Retorna as cores baseadas no tema (usando colors.ts para compatibilidade)
   const colors = shouldUseDark ? ColorsDark : Colors;
 
   return {

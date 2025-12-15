@@ -252,7 +252,7 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
               {userAvatar ? (
                 <Image source={{ uri: userAvatar }} style={{ height: "100%", width: "100%" }} />
               ) : (
-                <View style={{ height: "100%", width: "100%", backgroundColor: colors.primary.DEFAULT, alignItems: "center", justifyContent: "center" }}>
+                <View style={{ height: "100%", width: "100%", backgroundColor: colors.primary[500], alignItems: "center", justifyContent: "center" }}>
                   <Ionicons name="person" size={24} color="#fff" />
                 </View>
               )}
@@ -566,7 +566,7 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
                       height: "100%",
                       borderRadius: 3,
                       width: `${habitsProgress}%`,
-                      backgroundColor: colors.primary.DEFAULT,
+                      backgroundColor: colors.primary[500],
                     }}
                   />
                 </View>

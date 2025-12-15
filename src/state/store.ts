@@ -123,9 +123,19 @@ export const useAppStore = create<AppState>()(
       setOnboardingStep: (step) => set({ currentOnboardingStep: step }),
 
       loadUserProfile: async (userId: string) => {
-        const { data, error } = await getUserProfile(userId);
-        if (data && !error) {
-          set({ user: data as unknown as UserProfile });
+        try {
+          const { data, error } = await getUserProfile(userId);
+          if (error) {
+            const errorObj = error instanceof Error ? error : new Error(String(error));
+            logger.error("Failed to load user profile", "Store", errorObj);
+            throw errorObj;
+          }
+          if (data) {
+            set({ user: data as unknown as UserProfile });
+          }
+        } catch (error) {
+          logger.error("Error loading user profile", "Store", error instanceof Error ? error : new Error(String(error)));
+          throw error;
         }
       },
 

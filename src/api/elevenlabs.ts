@@ -170,7 +170,7 @@ export async function generateSpeech(options: GenerateSpeechOptions): Promise<st
     const fileUri = `${FileSystem.cacheDirectory}${filename}`;
 
     await FileSystem.writeAsStringAsync(fileUri, base64Audio, {
-      encoding: FileSystem.EncodingType.Base64 as any,
+      encoding: FileSystem.EncodingType.Base64,
     });
 
     logger.info("Speech generated successfully", "ElevenLabs", {

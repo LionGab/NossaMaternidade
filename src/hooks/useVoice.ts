@@ -7,7 +7,7 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Audio } from "expo-av";
+import { Audio, AVPlaybackStatus } from "expo-av";
 import {
   generateSpeech,
   playAudio,
@@ -77,7 +77,7 @@ export function useVoice(): UseVoiceReturn {
 
   // Refs
   const soundRef = useRef<Audio.Sound | null>(null);
-  const playbackStatusSubscription = useRef<((status: any) => void) | null>(null);
+  const playbackStatusSubscription = useRef<((status: AVPlaybackStatus) => void) | null>(null);
 
   // Premium access
   const hasVoiceAccess = useHasVoiceAccess();
@@ -145,7 +145,7 @@ export function useVoice(): UseVoiceReturn {
   /**
    * Callback de status do playback
    */
-  const onPlaybackStatusUpdate = useCallback((status: any) => {
+  const onPlaybackStatusUpdate = useCallback((status: AVPlaybackStatus) => {
     if (!status.isLoaded) return;
 
     // Calcular progresso

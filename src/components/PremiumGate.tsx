@@ -80,7 +80,7 @@ export function usePremiumGate(): PremiumGateHookReturn {
    */
   const showPaywall = useCallback(
     (source?: string) => {
-      navigation.navigate("Paywall" as any, { source });
+      navigation.navigate("Paywall", { source });
     },
     [navigation]
   );

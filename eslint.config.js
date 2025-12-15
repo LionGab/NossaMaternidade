@@ -36,6 +36,24 @@ module.exports = defineConfig([
       // Enforce React Hooks rules
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
+
+      // Project-specific rules
+      // Bloquear console.log - usar logger centralizado
+      "no-console": ["error", { allow: ["warn", "error"] }],
+      // Bloquear alert/confirm - usar modais customizados
+      "no-alert": "error",
+      // Bloquear tipos any - TypeScript strict mode
+      "@typescript-eslint/no-explicit-any": "error",
+      // Bloquear @ts-ignore sem justificativa
+      "@typescript-eslint/ban-ts-comment": [
+        "error",
+        {
+          "ts-expect-error": "allow-with-description",
+          "ts-ignore": "allow-with-description",
+          "ts-nocheck": false,
+          "ts-check": false,
+        },
+      ],
     },
   },
 ]);

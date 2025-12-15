@@ -4,6 +4,7 @@
  */
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { logger } from "./logger";
 
 export async function resetAllOnboarding(): Promise<void> {
   try {
@@ -13,8 +14,8 @@ export async function resetAllOnboarding(): Promise<void> {
     // Clear app store (includes legacy onboarding)
     await AsyncStorage.removeItem("nossa-maternidade-storage");
 
-    console.log("[Reset] Onboarding reset complete. Restart the app.");
+    logger.info("Onboarding reset complete. Restart the app.", "Reset");
   } catch (error) {
-    console.error("[Reset] Failed to reset onboarding:", error);
+    logger.error("Failed to reset onboarding", "Reset", error instanceof Error ? error : new Error(String(error)));
   }
 }

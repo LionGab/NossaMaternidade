@@ -43,7 +43,13 @@ import { PRIMARY_COLOR } from "../utils/colors";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-const SUGGESTED_PROMPTS = [
+interface SuggestedPrompt {
+  icon: keyof typeof Ionicons.glyphMap;
+  text: string;
+  color: string;
+}
+
+const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
   { icon: "nutrition-outline", text: "O que posso comer na gravidez?", color: "#10B981" },
   { icon: "fitness-outline", text: "Exercícios seguros na gestação", color: "#8B5CF6" },
   { icon: "medical-outline", text: "Quando devo ir ao médico?", color: "#F59E0B" },
@@ -84,7 +90,7 @@ export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assi
   // Handler para quando voz premium e necessaria
   const handleVoicePremiumRequired = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("Paywall" as any, { source: "voice_nathia" });
+    navigation.navigate("Paywall", { source: "voice_nathia" });
   }, [navigation]);
 
   // Get current messages
@@ -424,7 +430,7 @@ MessageBubble.displayName = 'MessageBubble';
                   className="w-9 h-9 rounded-xl items-center justify-center"
                   style={{ backgroundColor: `${prompt.color}15` }}
                 >
-                  <Ionicons name={prompt.icon as any} size={20} color={prompt.color} />
+                  <Ionicons name={prompt.icon} size={20} color={prompt.color} />
                 </View>
                 <Text className="text-warmGray-700 text-sm leading-5" numberOfLines={2}>
                   {prompt.text}

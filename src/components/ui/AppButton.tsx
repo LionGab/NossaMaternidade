@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, Text, ActivityIndicator, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import { buttonAccessibility } from "../../utils/accessibility";
 
 interface AppButtonProps {
   title: string;
@@ -83,8 +84,15 @@ export default function AppButton({
   const currentVariant = variantStyles[variant];
   const opacity = disabled ? 0.5 : 1;
 
+  const accessibilityProps = buttonAccessibility(
+    title,
+    disabled ? "Botão desabilitado" : loading ? "Carregando..." : undefined,
+    disabled || loading
+  );
+
   return (
     <Pressable
+      {...accessibilityProps}
       onPress={handlePress}
       disabled={disabled || loading}
       style={({ pressed }) => ({

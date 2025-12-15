@@ -8,7 +8,14 @@ import { MainTabScreenProps } from "../types/navigation";
 import { useAppStore } from "../state/store";
 import * as Haptics from "expo-haptics";
 
-const MENU_ITEMS = [
+interface MenuItem {
+  id: string;
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  color: string;
+}
+
+const MENU_ITEMS: MenuItem[] = [
   { id: "edit", label: "Editar perfil", icon: "person-outline", color: "#78716C" },
   { id: "notifications", label: "Notificações", icon: "notifications-outline", color: "#78716C" },
   { id: "privacy", label: "Privacidade", icon: "shield-outline", color: "#78716C" },
@@ -241,7 +248,7 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
                   className="w-11 h-11 rounded-full items-center justify-center mr-4"
                   style={{ backgroundColor: "rgba(120, 113, 108, 0.08)" }}
                 >
-                  <Ionicons name={item.icon as any} size={22} color={item.color} />
+                  <Ionicons name={item.icon} size={22} color={item.color} />
                 </View>
                 <Text className="flex-1 text-warmGray-700 text-base font-medium">{item.label}</Text>
                 <Ionicons name="chevron-forward" size={20} color="#D6D3D1" />
