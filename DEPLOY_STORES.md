@@ -48,8 +48,8 @@ eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_URL --value "https
 eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value "your-anon-key"
 
 # APIs de IA
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_OPENAI_API_KEY --value "sk-..."
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_GROK_API_KEY --value "xai-..."
+eas secret:create --scope project --name EXPO_PUBLIC_OPENAI_API_KEY --value "sk-..."
+eas secret:create --scope project --name EXPO_PUBLIC_GROK_API_KEY --value "xai-..."
 
 # Feature Flags
 eas secret:create --scope project --name EXPO_PUBLIC_ENABLE_AI_FEATURES --value "true"

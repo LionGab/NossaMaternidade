@@ -6,34 +6,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Nossa Maternidade** - A maternal health companion app for pregnant women and new mothers in Brazil, created by Nathalia Valente. iOS-first Expo React Native app.
 
-## Critical Constraints (Vibecode Environment)
+## Development Guidelines
 
-- **DO NOT** install new packages - all dependencies are pre-installed in package.json
-- **DO NOT** manage git unless explicitly asked
-- **DO NOT** tinker with the dev server (auto-hosted on port 8081)
 - **DO NOT** share, display, or expose API keys in any manner
-- **Always use** `bun` instead of `npm`
 - **Always use** double quotes for strings containing apostrophes: `"How's it going?"` (NOT single quotes)
 - **Never use** `console.log()` for user communication - display messages on screen instead
 - **Never use** alerts - implement custom modals instead
-- Ignore the orange menu button in screenshots (Vibecode system UI)
 
 ## Commands
 
+You can use either `npm` or `bun` (bun is faster but optional):
+
 ```bash
-# Development (auto-managed by Vibecode, rarely needed)
-bun start            # Start Expo dev server
-bun run ios          # Run on iOS simulator
-bun run android      # Run on Android emulator
+# Install dependencies
+npm install          # or: bun install
+
+# Development
+npm start            # or: bun start (starts Expo dev server)
+npm run ios          # or: bun run ios
+npm run android      # or: bun run android
 
 # Quality checks
-bunx tsc --noEmit    # Check TypeScript errors
-bun run lint         # Run ESLint
-bun run typecheck    # Same as tsc --noEmit
+npx tsc --noEmit     # Check TypeScript errors
+npm run lint         # Run ESLint
+npm run typecheck    # Same as tsc --noEmit
 
 # Build preparation
-bun run check-build-ready  # Verify app is ready for build
-bun run setup-secrets      # Setup environment secrets
+npm run check-build-ready  # Verify app is ready for build
 ```
 
 ## Architecture

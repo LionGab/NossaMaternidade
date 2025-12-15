@@ -80,10 +80,10 @@ Criados os seguintes documentos:
 - ✅ Script de configuração de secrets (`scripts/setup-secrets.sh`)
 - ✅ Scripts adicionados ao `package.json`
 
-### 7. Vibecode Project ID
+### 7. Variáveis de Ambiente
 
-- ✅ Project ID identificado: `ZrLucAP5Cc_UUmPsc0bdC60j3xqkiiQG8DPJVb90`
-- ✅ Configurado no script de setup de secrets
+- ✅ Template de variáveis criado: `env.template`
+- ✅ Script de setup de secrets atualizado
 - ✅ Documentado em todos os guias
 
 ---
@@ -132,14 +132,11 @@ Criados os seguintes documentos:
 # Login no EAS
 eas login
 
-# Executar script automatizado (configura Vibecode Project ID)
-npm run setup-secrets
-
-# Configurar os outros secrets manualmente:
+# Configurar os secrets:
 eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_URL --value "..."
 eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value "..."
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_OPENAI_API_KEY --value "..."
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_GROK_API_KEY --value "..."
+eas secret:create --scope project --name EXPO_PUBLIC_OPENAI_API_KEY --value "..."
+eas secret:create --scope project --name EXPO_PUBLIC_GROK_API_KEY --value "..."
 ```
 
 ### 2. Criar Assets Faltantes
@@ -214,7 +211,7 @@ eas submit --platform all
 - [x] Error Boundary
 - [x] Documentação completa
 - [x] Scripts de automação
-- [x] Vibecode Project ID identificado
+- [x] Template de variáveis configurado
 
 ### Pendente (Você Precisa Fazer)
 
@@ -224,20 +221,6 @@ eas submit --platform all
 - [ ] Criar contas nas lojas
 - [ ] Configurar apps nas lojas
 - [ ] Build e submissão
-
----
-
-## 🔑 Vibecode Project ID
-
-**Já Identificado e Documentado:**
-```
-ZrLucAP5Cc_UUmPsc0bdC60j3xqkiiQG8DPJVb90
-```
-
-Este ID será configurado automaticamente quando você executar:
-```bash
-npm run setup-secrets
-```
 
 ---
 

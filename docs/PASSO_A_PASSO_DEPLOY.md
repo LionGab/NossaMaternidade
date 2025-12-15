@@ -82,11 +82,8 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY
 EXPO_PUBLIC_SUPABASE_FUNCTIONS_URL
 
 # APIs de IA (obrigatório)
-EXPO_PUBLIC_VIBECODE_OPENAI_API_KEY
-EXPO_PUBLIC_VIBECODE_GROK_API_KEY
-
-# Vibecode (obrigatório)
-EXPO_PUBLIC_VIBECODE_PROJECT_ID
+EXPO_PUBLIC_OPENAI_API_KEY
+EXPO_PUBLIC_GROK_API_KEY
 
 # Feature Flags (opcional, mas recomendado)
 EXPO_PUBLIC_ENABLE_AI_FEATURES=true
@@ -117,9 +114,6 @@ EXPO_PUBLIC_ENABLE_GAMIFICATION=false
 3. Crie uma nova chave
 4. Formato: `xai-...`
 
-#### Vibecode Project ID
-- ✅ **Já configurado:** `ZrLucAP5Cc_UUmPsc0bdC60j3xqkiiQG8DPJVb90`
-
 ### 2.3 Configurar Secrets no EAS
 
 Execute os comandos abaixo **um por um**, substituindo os valores:
@@ -135,15 +129,12 @@ eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value "
 eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_FUNCTIONS_URL --value "https://seu-projeto.supabase.co/functions/v1"
 
 # 4. OpenAI API Key
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_OPENAI_API_KEY --value "sk-sua-chave-aqui"
+eas secret:create --scope project --name EXPO_PUBLIC_OPENAI_API_KEY --value "sk-sua-chave-aqui"
 
-# 5. Grok API Key
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_GROK_API_KEY --value "xai-sua-chave-aqui"
+# 5. Grok API Key (opcional)
+eas secret:create --scope project --name EXPO_PUBLIC_GROK_API_KEY --value "xai-sua-chave-aqui"
 
-# 6. Vibecode Project ID (JÁ CONFIGURADO)
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_PROJECT_ID --value "ZrLucAP5Cc_UUmPsc0bdC60j3xqkiiQG8DPJVb90"
-
-# 7. Feature Flags (opcional)
+# 6. Feature Flags (opcional)
 eas secret:create --scope project --name EXPO_PUBLIC_ENABLE_AI_FEATURES --value "true"
 eas secret:create --scope project --name EXPO_PUBLIC_ENABLE_ANALYTICS --value "true"
 ```
@@ -155,7 +146,7 @@ eas secret:create --scope project --name EXPO_PUBLIC_ENABLE_ANALYTICS --value "t
 eas secret:list
 
 # Ver valor de um secret específico (sem mostrar o valor completo por segurança)
-eas secret:get EXPO_PUBLIC_VIBECODE_PROJECT_ID
+eas secret:get EXPO_PUBLIC_SUPABASE_URL
 ```
 
 **✅ Checkpoint:** Todos os secrets devem aparecer na lista.
@@ -773,11 +764,11 @@ eas credentials
 eas secret:list
 
 # Verificar se secret existe
-eas secret:get EXPO_PUBLIC_VIBECODE_PROJECT_ID
+eas secret:get EXPO_PUBLIC_SUPABASE_URL
 
 # Recriar secret se necessário
-eas secret:delete --name EXPO_PUBLIC_VIBECODE_PROJECT_ID
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_PROJECT_ID --value "novo-valor"
+eas secret:delete --name EXPO_PUBLIC_SUPABASE_URL
+eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_URL --value "novo-valor"
 ```
 
 ---

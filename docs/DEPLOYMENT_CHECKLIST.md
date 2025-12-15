@@ -33,9 +33,8 @@ Este checklist garante que tudo está pronto antes de submeter o app para as loj
 # Configurar via CLI
 eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_URL --value "..."
 eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value "..."
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_OPENAI_API_KEY --value "..."
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_GROK_API_KEY --value "..."
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_PROJECT_ID --value "..."
+eas secret:create --scope project --name EXPO_PUBLIC_OPENAI_API_KEY --value "..."
+eas secret:create --scope project --name EXPO_PUBLIC_GROK_API_KEY --value "..."
 
 # Verificar
 eas secret:list
