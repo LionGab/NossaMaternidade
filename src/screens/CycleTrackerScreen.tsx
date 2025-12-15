@@ -8,6 +8,7 @@ import Animated, {
   FadeInUp,
 } from "react-native-reanimated";
 import { useCycleStore } from "../state/store";
+import { useTheme } from "../hooks/useTheme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const DAY_SIZE = (SCREEN_WIDTH - 64) / 7;
@@ -31,6 +32,7 @@ interface DayInfo {
 
 export default function CycleTrackerScreen() {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -199,31 +201,31 @@ export default function CycleTrackerScreen() {
       dayInfo.date.getMonth() === selectedDate.getMonth() &&
       dayInfo.date.getFullYear() === selectedDate.getFullYear();
 
-    let bgColor = "transparent";
-    let textColor = dayInfo.isCurrentMonth ? "#44403C" : "#D6D3D1";
-    let borderColor = "transparent";
+    let bgColor: string = "transparent";
+    let textColor: string = dayInfo.isCurrentMonth ? colors.neutral[700] : colors.neutral[300];
+    let borderColor: string = "transparent";
 
     if (dayInfo.isPeriod) {
-      bgColor = "#FEE2E2";
-      textColor = "#E11D48";
+      bgColor = colors.primary[100];
+      textColor = colors.primary[500];
     } else if (dayInfo.isPredictedPeriod) {
-      bgColor = "#FCE7F3";
-      textColor = "#EC4899";
-      borderColor = "#F9A8D4";
+      bgColor = colors.primary[50];
+      textColor = colors.primary[400];
+      borderColor = colors.primary[200];
     } else if (dayInfo.isOvulation) {
-      bgColor = "#EDE9FE";
-      textColor = "#8B5CF6";
+      bgColor = colors.secondary[100];
+      textColor = colors.secondary[600];
     } else if (dayInfo.isFertile) {
-      bgColor = "#F3E8FF";
-      textColor = "#A855F7";
+      bgColor = colors.secondary[50];
+      textColor = colors.secondary[500];
     }
 
     if (dayInfo.isToday) {
-      borderColor = "#E11D48";
+      borderColor = colors.primary[500];
     }
 
     if (isSelected) {
-      borderColor = "#44403C";
+      borderColor = colors.neutral[700];
     }
 
     return (
@@ -264,7 +266,7 @@ export default function CycleTrackerScreen() {
   };
 
   return (
-    <View className="flex-1" style={{ backgroundColor: "#FFFCF9" }}>
+    <View className="flex-1" style={{ backgroundColor: colors.background.secondary }}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 120 }}
@@ -272,7 +274,7 @@ export default function CycleTrackerScreen() {
         {/* Header */}
         <View style={{ paddingTop: insets.top }}>
           <LinearGradient
-            colors={["#FDF2F8", "#FFF1F5", "#FFFCF9"]}
+            colors={[colors.primary[50], colors.secondary[50], colors.background.secondary]}
             locations={[0, 0.5, 1]}
             style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 24 }}
           >
@@ -369,8 +371,8 @@ export default function CycleTrackerScreen() {
           <View
             className="rounded-3xl p-5"
             style={{
-              backgroundColor: "#FFF",
-              shadowColor: "#000",
+              backgroundColor: colors.background.card,
+              shadowColor: colors.neutral[900],
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.08,
               shadowRadius: 16,
@@ -381,9 +383,9 @@ export default function CycleTrackerScreen() {
               <Pressable
                 onPress={goToPrevMonth}
                 className="w-10 h-10 rounded-full items-center justify-center"
-                style={{ backgroundColor: "#FDF2F8" }}
+                style={{ backgroundColor: colors.primary[50] }}
               >
-                <Ionicons name="chevron-back" size={20} color="#E11D48" />
+                <Ionicons name="chevron-back" size={20} color={colors.primary[500]} />
               </Pressable>
               <Text className="text-warmGray-900 text-lg font-semibold">
                 {MONTHS[currentMonth.getMonth()]} {currentMonth.getFullYear()}
@@ -391,9 +393,9 @@ export default function CycleTrackerScreen() {
               <Pressable
                 onPress={goToNextMonth}
                 className="w-10 h-10 rounded-full items-center justify-center"
-                style={{ backgroundColor: "#FDF2F8" }}
+                style={{ backgroundColor: colors.primary[50] }}
               >
-                <Ionicons name="chevron-forward" size={20} color="#E11D48" />
+                <Ionicons name="chevron-forward" size={20} color={colors.primary[500]} />
               </Pressable>
             </View>
 
@@ -433,7 +435,7 @@ export default function CycleTrackerScreen() {
               <View className="flex-row items-center mb-2">
                 <View
                   className="w-3 h-3 rounded-full mr-2"
-                  style={{ borderWidth: 2, borderColor: "#E11D48" }}
+                  style={{ borderWidth: 2, borderColor: colors.primary[500] }}
                 />
                 <Text className="text-warmGray-500 text-xs">Hoje</Text>
               </View>
@@ -450,8 +452,8 @@ export default function CycleTrackerScreen() {
             onPress={handleLogPeriod}
             className="rounded-2xl py-4 active:opacity-80"
             style={{
-              backgroundColor: "#E11D48",
-              shadowColor: "#E11D48",
+              backgroundColor: colors.primary[500],
+              shadowColor: colors.primary[500],
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.3,
               shadowRadius: 12,
@@ -475,8 +477,8 @@ export default function CycleTrackerScreen() {
             <View
               className="rounded-3xl p-5"
               style={{
-                backgroundColor: "#FFF",
-                shadowColor: "#000",
+                backgroundColor: colors.background.card,
+                shadowColor: colors.neutral[900],
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.08,
                 shadowRadius: 16,
@@ -493,15 +495,15 @@ export default function CycleTrackerScreen() {
                   const isOvDay = dayOffset === cycleInfo.ovulationDay;
 
                   let height = 20;
-                  let color = "#E7E5E4";
+                  let color: string = colors.neutral[200];
 
                   if (isFertileDay) {
                     height = 40 + index * 15;
-                    color = "#DDD6FE";
+                    color = colors.secondary[200];
                   }
                   if (isOvDay) {
                     height = 120;
-                    color = "#8B5CF6";
+                    color = colors.secondary[600];
                   }
 
                   return (
