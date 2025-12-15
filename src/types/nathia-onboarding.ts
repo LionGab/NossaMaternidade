@@ -80,12 +80,12 @@ export type NathIAOnboardingStep =
   | "preferences";
 
 // Options for each screen
-export const LIFE_STAGE_OPTIONS: Array<{
+export const LIFE_STAGE_OPTIONS: {
   id: LifeStage;
   label: string;
   emoji: string;
   description: string;
-}> = [
+}[] = [
   {
     id: "trying",
     label: "Tentando engravidar",
@@ -112,11 +112,11 @@ export const LIFE_STAGE_OPTIONS: Array<{
   },
 ];
 
-export const TRYING_FOCUS_OPTIONS: Array<{
+export const TRYING_FOCUS_OPTIONS: {
   id: TryingFocus;
   label: string;
   description: string;
-}> = [
+}[] = [
   {
     id: "trying_emotions",
     label: "Emocoes/rotina de tentante",
@@ -134,51 +134,51 @@ export const TRYING_FOCUS_OPTIONS: Array<{
   },
 ];
 
-export const TRIMESTER_OPTIONS: Array<{
+export const TRIMESTER_OPTIONS: {
   id: Trimester;
   label: string;
-}> = [
+}[] = [
   { id: "t1", label: "1o trimestre (ate 12 semanas)" },
   { id: "t2", label: "2o trimestre (13-26 semanas)" },
   { id: "t3", label: "3o trimestre (27+ semanas)" },
   { id: "unknown", label: "Prefiro nao dizer" },
 ];
 
-export const BABY_AGE_OPTIONS: Array<{
+export const BABY_AGE_OPTIONS: {
   id: BabyAgeBucket;
   label: string;
-}> = [
+}[] = [
   { id: "0-6w", label: "0-6 semanas (recem-nascido)" },
   { id: "2-6m", label: "2-6 meses" },
   { id: "6-12m", label: "6-12 meses" },
   { id: "1y+", label: "1 ano ou mais" },
 ];
 
-export const ROUTINE_OPTIONS: Array<{
+export const ROUTINE_OPTIONS: {
   id: Routine;
   label: string;
   emoji: string;
-}> = [
+}[] = [
   { id: "calm", label: "Tranquila", emoji: "😌" },
   { id: "busy", label: "Corrida", emoji: "🏃‍♀️" },
   { id: "chaotic", label: "Caotica", emoji: "😅" },
 ];
 
-export const AGE_RANGE_OPTIONS: Array<{
+export const AGE_RANGE_OPTIONS: {
   id: AgeRange;
   label: string;
-}> = [
+}[] = [
   { id: "18-24", label: "18-24 anos" },
   { id: "25-34", label: "25-34 anos" },
   { id: "35+", label: "35+ anos" },
   { id: "unknown", label: "Prefiro nao dizer" },
 ];
 
-export const INTEREST_OPTIONS: Array<{
+export const INTEREST_OPTIONS: {
   id: InterestOption;
   label: string;
   emoji: string;
-}> = [
+}[] = [
   { id: "beachwear", label: "Moda praia / looks", emoji: "🩱" },
   { id: "dance", label: "Fitness leve, danca e movimento", emoji: "💃" },
   { id: "self_esteem", label: "Autoestima e confianca no corpo", emoji: "✨" },
@@ -188,11 +188,11 @@ export const INTEREST_OPTIONS: Array<{
   { id: "basic", label: "So o basico", emoji: "✅" },
 ];
 
-export const MOOD_OPTIONS: Array<{
+export const MOOD_OPTIONS: {
   id: MoodToday;
   label: string;
   emoji: string;
-}> = [
+}[] = [
   { id: "excited", label: "Animada", emoji: "✨" },
   { id: "powerful", label: "Poderosa", emoji: "💪" },
   { id: "anxious", label: "Ansiosa", emoji: "😰" },
@@ -200,21 +200,21 @@ export const MOOD_OPTIONS: Array<{
   { id: "other", label: "Outra vibe", emoji: "💭" },
 ];
 
-export const SENSITIVE_TOPIC_OPTIONS: Array<{
+export const SENSITIVE_TOPIC_OPTIONS: {
   id: SensitiveTopic;
   label: string;
-}> = [
+}[] = [
   { id: "body_comparison", label: "Corpo/comparacao" },
   { id: "weight_diet", label: "Peso/dieta" },
   { id: "anxiety", label: "Ansiedade" },
   { id: "none", label: "Nenhum" },
 ];
 
-export const TONE_OPTIONS: Array<{
+export const TONE_OPTIONS: {
   id: TonePreference;
   label: string;
   description: string;
-}> = [
+}[] = [
   {
     id: "direct",
     label: "Direta e objetiva",
@@ -232,11 +232,11 @@ export const TONE_OPTIONS: Array<{
   },
 ];
 
-export const NOTIFICATION_OPTIONS: Array<{
+export const NOTIFICATION_OPTIONS: {
   id: NotificationPref;
   label: string;
   description: string;
-}> = [
+}[] = [
   { id: "none", label: "Nao", description: "Sem notificacoes" },
   { id: "daily", label: "Diaria", description: "Uma mensagem por dia" },
   { id: "weekly", label: "Semanal", description: "Resumo semanal" },

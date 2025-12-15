@@ -1,5 +1,5 @@
-// @ts-nocheck - Type checking disabled due to optional Supabase configuration
-import { supabase } from "./supabase";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { supabase, Database } from "./supabase";
 import { logger } from "../utils/logger";
 
 export type AuthUser = {
@@ -8,13 +8,17 @@ export type AuthUser = {
   name?: string;
 };
 
-// Helper to check if Supabase is available
-const checkSupabase = () => {
+/**
+ * Type guard to ensure Supabase client is configured
+ * @throws Error if Supabase is not initialized
+ * @returns Typed Supabase client
+ */
+function checkSupabase(): SupabaseClient<Database> {
   if (!supabase) {
     throw new Error("Supabase is not configured. Please add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY to your environment variables.");
   }
   return supabase;
-};
+}
 
 /**
  * Sign up a new user with email and password

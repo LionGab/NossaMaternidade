@@ -1,4 +1,8 @@
-// @ts-nocheck - Type checking disabled due to optional Supabase configuration
+// @ts-nocheck - TypeScript disabled due to Supabase type inference issues
+// The manually defined Database type in supabase.ts doesn't match Supabase's expected generic structure
+// TODO: Generate types from actual Supabase schema using `supabase gen types typescript`
+// See: https://supabase.com/docs/guides/api/rest/generating-types
+import { SupabaseClient } from "@supabase/supabase-js";
 import { supabase, Database } from "./supabase";
 import { logger } from "../utils/logger";
 
@@ -23,13 +27,17 @@ type HabitUpdate = Database["public"]["Tables"]["habits"]["Update"];
 type HabitCompletion = Database["public"]["Tables"]["habit_completions"]["Row"];
 type HabitCompletionInsert = Database["public"]["Tables"]["habit_completions"]["Insert"];
 
-// Helper to check if Supabase is available
-const checkSupabase = () => {
+/**
+ * Type guard to ensure Supabase client is configured
+ * @throws Error if Supabase is not initialized
+ * @returns Typed Supabase client
+ */
+function checkSupabase(): SupabaseClient<Database> {
   if (!supabase) {
     throw new Error("Supabase is not configured. Please add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY to your environment variables.");
   }
   return supabase;
-};
+}
 
 // ============================================
 // USER OPERATIONS

@@ -191,7 +191,18 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      increment_comments_count: {
+        Args: { post_id: string };
+        Returns: void;
+      };
+      increment_likes_count: {
+        Args: { post_id: string };
+        Returns: void;
+      };
+      decrement_likes_count: {
+        Args: { post_id: string };
+        Returns: void;
+      };
     };
     Enums: {
       [_ in never]: never;

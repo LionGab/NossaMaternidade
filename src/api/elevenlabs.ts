@@ -8,14 +8,14 @@
 
 import * as FileSystemModule from "expo-file-system";
 import { Audio, AVPlaybackStatus } from "expo-av";
+import Constants from "expo-constants";
+import { logger } from "../utils/logger";
 
 // Type workaround for expo-file-system
 const FileSystem = FileSystemModule as typeof FileSystemModule & {
   cacheDirectory: string | null;
   EncodingType: { Base64: string; UTF8: string };
 };
-import Constants from "expo-constants";
-import { logger } from "../utils/logger";
 
 // ============================================
 // CONFIGURACAO

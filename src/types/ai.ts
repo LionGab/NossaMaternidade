@@ -21,11 +21,11 @@ export interface AIResponse {
   fallback?: boolean;
   grounding?: {
     searchEntryPoint?: any;
-    citations?: Array<{
+    citations?: {
       title?: string;
       url?: string;
       text?: string;
-    }>;
+    }[];
   };
 }
 

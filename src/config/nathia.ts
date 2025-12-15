@@ -97,7 +97,7 @@ export const getRandomFallbackMessage = (): string => {
  * Prepara as mensagens para enviar à API incluindo o system prompt
  */
 export const prepareMessagesForAPI = (
-  conversationHistory: Array<{ role: "user" | "assistant"; content: string }>
+  conversationHistory: { role: "user" | "assistant"; content: string }[]
 ): AIMessage[] => {
   const messages: AIMessage[] = [
     {

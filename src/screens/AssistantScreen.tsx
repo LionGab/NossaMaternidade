@@ -369,6 +369,7 @@ const MessageBubble = React.memo(({ message, index, hasVoiceAccess, onPremiumReq
     </Animated.View>
   );
 });
+MessageBubble.displayName = 'MessageBubble';
 
   const renderEmptyState = () => (
     <Animated.View entering={FadeIn.duration(600)} className="flex-1 justify-center items-center px-6">

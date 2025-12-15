@@ -9,6 +9,11 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "validate": "bun run typecheck && bun run lint",
+    "diagnose:production": "bun run validate && bun run check-build-ready",
     "check-build-ready": "bash scripts/check-build-ready.sh",
     "setup-secrets": "bash scripts/setup-secrets.sh",
     "postinstall": "node scripts/fix-lightningcss.js"

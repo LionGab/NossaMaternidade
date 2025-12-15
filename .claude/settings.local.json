@@ -30,7 +30,12 @@
       "Bash(supabase functions:*)",
       "Bash(curl:*)",
       "Bash(node test-ai-function.js:*)",
-      "Bash(supabase:*)"
+      "Bash(supabase:*)",
+      "Bash(git checkout:*)",
+      "Bash(bun run typecheck:*)",
+      "Bash(tee:*)",
+      "Bash(bun run lint:*)",
+      "Bash(bun run check-build-ready:*)"
     ]
   }
 }
