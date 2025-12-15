@@ -31,6 +31,10 @@ export async function getNathIAResponse(
 ): Promise<AIResponse> {
   try {
     // 1. Verificar autenticação
+    if (!supabase) {
+      throw new Error("Supabase não está configurado.");
+    }
+
     const {
       data: { session },
     } = await supabase.auth.getSession();

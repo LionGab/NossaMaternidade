@@ -9,6 +9,7 @@ import { View, ActivityIndicator } from "react-native";
 import { ErrorBoundary } from "./src/components/ErrorBoundary";
 import { OfflineBanner } from "./src/components/OfflineBanner";
 import { useNetworkStatus } from "./src/hooks/useNetworkStatus";
+import { useTheme } from "./src/hooks/useTheme";
 
 /*
 IMPORTANT NOTICE: DO NOT REMOVE
@@ -43,23 +44,26 @@ export default function App() {
 
   // Monitor network status for offline banner
   const { isOffline, isChecking, retry } = useNetworkStatus();
+  
+  // Theme management
+  const { isDark, colors } = useTheme();
 
   if (!fontsLoaded) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#FFFCF9" }}>
-        <ActivityIndicator size="large" color="#E11D48" />
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background.DEFAULT }}>
+        <ActivityIndicator size="large" color={colors.primary[500]} />
       </View>
     );
   }
 
   return (
     <ErrorBoundary>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.background.DEFAULT }}>
         <SafeAreaProvider>
           {/* Offline Banner - appears on top when no connection */}
           {isOffline && <OfflineBanner onRetry={retry} isRetrying={isChecking} />}
           <NavigationContainer>
-            <StatusBar style="dark" />
+            <StatusBar style={isDark ? "light" : "dark"} />
             <RootNavigator />
           </NavigationContainer>
         </SafeAreaProvider>

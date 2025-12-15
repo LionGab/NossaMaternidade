@@ -4,7 +4,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { RootStackScreenProps } from "../types/navigation";
 import { useCommunityStore } from "../state/store";
-import { Avatar } from "../components/ui";
 import * as Haptics from "expo-haptics";
 
 export default function PostDetailScreen({ route, navigation }: RootStackScreenProps<"PostDetail">) {
@@ -53,14 +52,9 @@ export default function PostDetailScreen({ route, navigation }: RootStackScreenP
         {/* Post Content */}
         <View className="bg-white rounded-2xl p-4 border border-blush-100">
           <View className="flex-row items-center mb-4">
-            <Avatar
-              size={48}
-              isNathalia={false}
-              fallbackIcon="person"
-              fallbackColor="#9E7269"
-              fallbackBgColor="rgba(188, 139, 123, 0.15)"
-              style={{ marginRight: 12 }}
-            />
+            <View className="w-12 h-12 rounded-full bg-blush-200 items-center justify-center mr-3">
+              <Ionicons name="person" size={24} color="#9E7269" />
+            </View>
             <View className="flex-1">
               <Text className="text-warmGray-800 text-base font-semibold">Mariana Santos</Text>
               <Text className="text-warmGray-400 text-sm">ha 2 horas</Text>
@@ -95,14 +89,9 @@ export default function PostDetailScreen({ route, navigation }: RootStackScreenP
           {[1, 2, 3].map((i) => (
             <View key={i} className="bg-white rounded-xl p-4 mb-3 border border-blush-100">
               <View className="flex-row items-start">
-                <Avatar
-                  size={36}
-                  isNathalia={false}
-                  fallbackIcon="person"
-                  fallbackColor="#9E7269"
-                  fallbackBgColor="rgba(188, 139, 123, 0.15)"
-                  style={{ marginRight: 12 }}
-                />
+                <View className="w-9 h-9 rounded-full bg-blush-200 items-center justify-center mr-3">
+                  <Ionicons name="person" size={18} color="#9E7269" />
+                </View>
                 <View className="flex-1">
                   <Text className="text-warmGray-800 text-sm font-semibold">Usuario {i}</Text>
                   <Text className="text-warmGray-600 text-sm mt-1 leading-5">

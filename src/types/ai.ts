@@ -16,6 +16,17 @@ export interface AIResponse {
     completionTokens: number;
     totalTokens: number;
   };
+  provider?: string;
+  latency?: number;
+  fallback?: boolean;
+  grounding?: {
+    searchEntryPoint?: any;
+    citations?: Array<{
+      title?: string;
+      url?: string;
+      text?: string;
+    }>;
+  };
 }
 
 export interface AIService {

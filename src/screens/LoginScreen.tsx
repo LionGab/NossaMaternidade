@@ -15,6 +15,8 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Modal,
+  Dimensions,
+  Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
@@ -28,7 +30,12 @@ import Animated, {
 import { Ionicons } from "@expo/vector-icons";
 import { useAppStore } from "../state/store";
 import * as Haptics from "expo-haptics";
-import { UserProfile, PregnancyStage, Interest } from "../types/navigation";
+import {
+  UserProfile,
+  PregnancyStage,
+  Interest,
+  RootStackScreenProps,
+} from "../types/navigation";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   COLORS,
@@ -37,7 +44,14 @@ import {
   SHADOWS,
   TYPOGRAPHY,
 } from "../theme/design-system";
-import { RootStackScreenProps } from "../types/navigation";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
+// Calcular valores responsivos
+const getResponsiveValue = (baseValue: number, scale: number = 1) => {
+  const scaleFactor = SCREEN_WIDTH / 375; // Baseado em iPhone 12/13 (375px)
+  return Math.round(baseValue * scaleFactor * scale);
+};
 
 type Props = RootStackScreenProps<"Login">;
 
@@ -87,22 +101,22 @@ const CustomInput = ({
   return (
     <Animated.View style={[animatedStyle, { marginBottom: SPACING.lg }]}>
       <View
-        style={{
-          backgroundColor: COLORS.neutral[0],
-          borderRadius: RADIUS.xl,
-          borderWidth: 1.5,
-          borderColor: isFocused ? COLORS.primary[300] : COLORS.neutral[200],
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: SPACING.lg,
-          minHeight: 56,
-          ...SHADOWS.sm,
-        }}
+          style={{
+            backgroundColor: COLORS.neutral[0],
+            borderRadius: RADIUS.xl,
+            borderWidth: 1.5,
+            borderColor: isFocused ? COLORS.primary[300] : COLORS.neutral[200],
+            flexDirection: "row",
+            alignItems: "center",
+            paddingHorizontal: getResponsiveValue(16),
+            minHeight: getResponsiveValue(52, 1.1),
+            ...SHADOWS.sm,
+          }}
       >
         <View
           style={{
-            width: 40,
-            height: 40,
+            width: getResponsiveValue(36, 1.1),
+            height: getResponsiveValue(36, 1.1),
             borderRadius: RADIUS.md,
             backgroundColor: isFocused ? COLORS.primary[50] : COLORS.neutral[50],
             alignItems: "center",
@@ -112,7 +126,7 @@ const CustomInput = ({
         >
           <Ionicons
             name={icon}
-            size={20}
+            size={getResponsiveValue(18, 1.1)}
             color={isFocused ? COLORS.primary[500] : COLORS.neutral[400]}
           />
         </View>
@@ -352,12 +366,22 @@ export default function LoginScreen({ navigation }: Props) {
           <ScrollView
             contentContainerStyle={{
               flexGrow: 1,
-              paddingTop: insets.top + SPACING["3xl"],
-              paddingBottom: insets.bottom + SPACING["2xl"],
-              paddingHorizontal: SPACING["2xl"],
+              paddingTop: insets.top + getResponsiveValue(32),
+              paddingBottom: insets.bottom + getResponsiveValue(24),
+              paddingHorizontal: getResponsiveValue(20),
+              maxWidth: 500,
+              alignSelf: "center",
+              width: "100%",
+              minHeight: "100%",
+            }}
+            style={{
+              flex: 1,
+              width: "100%",
             }}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
+            bounces={true}
+            alwaysBounceVertical={false}
           >
             {/* Logo e Header - REDESIGN PREMIUM */}
             <Animated.View
@@ -367,36 +391,55 @@ export default function LoginScreen({ navigation }: Props) {
                 marginBottom: SPACING["5xl"],
               }}
             >
-              {/* Logo com gradiente + shadow glow */}
-              <View
+              {/* Logo Premium com sombra e destaque */}
+              <Animated.View
+                entering={FadeInUp.duration(800).springify()}
                 style={{
                   marginBottom: SPACING["2xl"],
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <LinearGradient
-                  colors={[COLORS.primary[400], COLORS.primary[600]]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
+                <View
                   style={{
-                    width: 96,
-                    height: 96,
-                    borderRadius: 28,
-                    alignItems: "center",
-                    justifyContent: "center",
                     shadowColor: COLORS.primary[500],
-                    shadowOffset: { width: 0, height: 8 },
-                    shadowOpacity: 0.4,
-                    shadowRadius: 20,
-                    elevation: 12,
+                    shadowOffset: { width: 0, height: 12 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 28,
+                    elevation: 18,
+                    borderRadius: getResponsiveValue(36),
+                    backgroundColor: "#FFFFFF",
+                    padding: getResponsiveValue(20),
+                    borderWidth: 2,
+                    borderColor: "rgba(255, 182, 217, 0.3)",
+                    overflow: "hidden",
                   }}
                 >
-                  <Ionicons name="heart" size={52} color="#FFFFFF" />
-                </LinearGradient>
-              </View>
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: "rgba(255, 182, 217, 0.05)",
+                    }}
+                  />
+                  <Image
+                    source={require("../../assets/logo.png")}
+                    style={{
+                      width: getResponsiveValue(120, 1.4),
+                      height: getResponsiveValue(120, 1.4),
+                      resizeMode: "contain",
+                      zIndex: 1,
+                    }}
+                  />
+                </View>
+              </Animated.View>
 
               <Text
                 style={{
-                  fontSize: 34,
+                  fontSize: getResponsiveValue(30, 1.1),
                   fontWeight: "700",
                   color: COLORS.neutral[900],
                   marginBottom: SPACING.xs,
@@ -407,10 +450,10 @@ export default function LoginScreen({ navigation }: Props) {
               </Text>
               <Text
                 style={{
-                  fontSize: TYPOGRAPHY.bodyLarge.fontSize,
+                  fontSize: getResponsiveValue(16, 1),
                   color: COLORS.neutral[500],
                   textAlign: "center",
-                  lineHeight: 24,
+                  lineHeight: getResponsiveValue(22),
                 }}
               >
                 {isLogin

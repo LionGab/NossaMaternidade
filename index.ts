@@ -1,6 +1,5 @@
 //DO NOT REMOVE THIS CODE
 import { logger } from "./src/utils/logger";
-logger.debug("Project ID loaded", "index", { projectId: process.env.EXPO_PUBLIC_VIBECODE_PROJECT_ID ? "configured" : "missing" });
 import "./global.css";
 import "react-native-get-random-values";
 import { LogBox } from "react-native";

@@ -208,8 +208,8 @@ export default function MainTabNavigator() {
         name="Community"
         component={CommunityScreen}
         options={{
-          tabBarLabel: "Comunidade",
-          tabBarAccessibilityLabel: "Comunidade Mães Valente - Conecte-se com outras mães",
+          tabBarLabel: "MãesValente",
+          tabBarAccessibilityLabel: "MãesValente - Conecte-se com outras mães",
           tabBarIcon: ({ color, focused }) => (
             <AnimatedTabIcon
               name={focused ? "people" : "people-outline"}
@@ -246,11 +246,11 @@ export default function MainTabNavigator() {
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarLabel: "Aulas",
-          tabBarAccessibilityLabel: "Aulas - Conteúdo exclusivo da Nathalia",
+          tabBarLabel: "Mundo da Nath",
+          tabBarAccessibilityLabel: "Mundo da Nath - Conteúdo exclusivo da Nathalia",
           tabBarIcon: ({ color, focused }) => (
             <AnimatedTabIcon
-              name={focused ? "play-circle" : "play-circle-outline"}
+              name={focused ? "person" : "person-outline"}
               focused={focused}
               color={color}
             />
@@ -261,7 +261,7 @@ export default function MainTabNavigator() {
         name="MyCare"
         component={MyCareScreen}
         options={{
-          tabBarLabel: "Cuidados",
+          tabBarLabel: "Meus Cuidados",
           tabBarAccessibilityLabel: "Meus Cuidados - Bem-estar e autocuidado",
           tabBarIcon: ({ color, focused }) => (
             <AnimatedTabIcon

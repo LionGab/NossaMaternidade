@@ -24,7 +24,11 @@ import { useChatStore, Conversation } from "../state/store";
 import { Avatar } from "../components/ui";
 import { shadowPresets } from "../utils/shadow";
 import * as Haptics from "expo-haptics";
-import { getOpenAITextResponse } from "../api/chat-service";
+import {
+  getNathIAResponse,
+  estimateTokens,
+  detectMedicalQuestion,
+} from "../api/ai-service";
 import {
   prepareMessagesForAPI,
   getRandomFallbackMessage,
@@ -159,10 +163,14 @@ export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assi
       // Preparar mensagens com system prompt da NathIA
       const apiMessages = prepareMessagesForAPI(conversationForAPI);
 
-      // Chamar a API do OpenAI
-      const response = await getOpenAITextResponse(apiMessages, {
-        temperature: NATHIA_API_CONFIG.temperature,
-        maxTokens: NATHIA_API_CONFIG.maxTokens,
+      // Estimar tokens e detectar se é pergunta médica
+      const estimated = estimateTokens(apiMessages);
+      const requiresGrounding = detectMedicalQuestion(userInput);
+
+      // Chamar a Edge Function segura (Claude/Gemini com JWT)
+      const response = await getNathIAResponse(apiMessages, {
+        estimatedTokens: estimated,
+        requiresGrounding,
       });
 
       let aiContent = response.content;
@@ -170,6 +178,14 @@ export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assi
       // Verificar se é um tópico sensível e adicionar disclaimer
       if (containsSensitiveTopic(userInput)) {
         aiContent = aiContent + "\n\n" + SENSITIVE_TOPIC_DISCLAIMER;
+      }
+
+      // Se tem grounding, adicionar citations ao final
+      if (response.grounding?.citations && response.grounding.citations.length > 0) {
+        aiContent += "\n\n📚 Fontes:\n";
+        response.grounding.citations.slice(0, 3).forEach((citation, i) => {
+          aiContent += `${i + 1}. ${citation.title || "Fonte"}\n`;
+        });
       }
 
       // Criar mensagem da IA
@@ -185,15 +201,34 @@ export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assi
         inputLength: userInput.length,
         outputLength: aiContent.length,
         tokens: response.usage?.totalTokens,
+        provider: response.provider,
+        grounding: requiresGrounding,
+        latency: response.latency,
       });
+
+      // Log se usou fallback
+      if (response.fallback) {
+        logger.warn("AI fallback activated (Claude offline)", "AssistantScreen");
+      }
     } catch (error) {
       // Em caso de erro, mostrar mensagem amigável
       logger.error("NathIA API error", "AssistantScreen", error instanceof Error ? error : new Error(String(error)));
 
+      // Mensagens de erro específicas
+      let errorMessage = getRandomFallbackMessage();
+
+      if (error instanceof Error) {
+        if (error.message.includes("não autenticado") || error.message.includes("Sessão expirada")) {
+          errorMessage = "Sua sessão expirou. Faça login novamente para continuar conversando comigo. 🔒";
+        } else if (error.message.includes("muitas mensagens") || error.message.includes("Rate limit")) {
+          errorMessage = "Você está enviando muitas mensagens! Aguarde um minutinho e voltamos a conversar. ⏱️";
+        }
+      }
+
       const fallbackMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: getRandomFallbackMessage(),
+        content: errorMessage,
         createdAt: new Date().toISOString(),
       };
       addMessage(fallbackMessage);

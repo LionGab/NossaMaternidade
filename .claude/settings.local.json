@@ -15,7 +15,22 @@
       "Bash(bunx tsc:*)",
       "Bash(grep:*)",
       "Bash(wc:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(bun install)",
+      "Bash(ls:*)",
+      "Bash(node -e:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(rm:*)",
+      "mcp__sequential-thinking__sequentialthinking",
+      "Bash(supabase projects list:*)",
+      "Bash(supabase link:*)",
+      "Bash(supabase secrets set:*)",
+      "Bash(supabase functions deploy:*)",
+      "Bash(supabase functions:*)",
+      "Bash(curl:*)",
+      "Bash(node test-ai-function.js:*)",
+      "Bash(supabase:*)"
     ]
   }
 }

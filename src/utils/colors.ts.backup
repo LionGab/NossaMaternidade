@@ -1,0 +1,282 @@
+/**
+ * Sistema de Cores - Nossa Maternidade
+ * Paleta Pastel: Rosa Suave + Azul Pastel
+ * 
+ * Este arquivo centraliza todas as cores do app para fácil manutenção
+ * e consistência visual.
+ */
+
+export const Colors = {
+  // Cores Principais - Rosa Pastel Suave
+  primary: {
+    DEFAULT: "#FFB6D9", // Rosa pastel suave principal
+    50: "#FFF0F8",
+    100: "#FFE5F2",
+    200: "#FFD1E8",
+    300: "#FFB6D9", // Main primary - Rosa pastel
+    400: "#FF9BC8",
+    500: "#FF80B7",
+    600: "#FF66A6",
+    700: "#FF4D95",
+    800: "#FF3384",
+    900: "#FF1A73",
+  },
+  
+  // Cores Secundárias - Azul Pastel (#0d6cf2 base)
+  secondary: {
+    DEFAULT: "#0d6cf2", // Azul base fornecido
+    50: "#E6F2FF",
+    100: "#CCE5FF",
+    200: "#99CBFF",
+    300: "#66B1FF",
+    400: "#3397FF",
+    500: "#0d6cf2", // Main secondary - Azul base
+    600: "#0B5CD9",
+    700: "#094DBF",
+    800: "#073EA6",
+    900: "#052F8C",
+  },
+
+  // Azul Pastel Suave (variação mais clara)
+  bluePastel: {
+    DEFAULT: "#7DB8FF", // Azul pastel suave
+    50: "#F0F7FF",
+    100: "#E0EFFF",
+    200: "#C1DFFF",
+    300: "#A2CFFF",
+    400: "#83BFFF",
+    500: "#7DB8FF", // Azul pastel
+    600: "#5DA3FF",
+    700: "#3D8EFF",
+    800: "#1D79FF",
+    900: "#0d6cf2",
+  },
+
+  // Cores de Sentimentos (Daily Feelings) - Tons pastéis
+  feeling: {
+    sunny: {
+      color: "#FFD89B", // Amarelo pastel - Bem
+      activeColor: "#FFE5B8",
+      label: "Bem",
+    },
+    cloud: {
+      color: "#7DB8FF", // Azul pastel - Cansada
+      activeColor: "#B3D9FF",
+      label: "Cansada",
+    },
+    rainy: {
+      color: "#B8A9FF", // Roxo pastel - Enjoada
+      activeColor: "#D4C9FF",
+      label: "Enjoada",
+    },
+    heart: {
+      color: "#FFB6D9", // Rosa pastel - Amada
+      activeColor: "#FFD1E8",
+      label: "Amada",
+    },
+  },
+
+  // Cores de Texto
+  text: {
+    dark: "#2D3748", // Cinza escuro suave para textos principais
+    DEFAULT: "#2D3748",
+    light: "#718096",
+    muted: "#A0AEC0",
+    white: "#ffffff",
+  },
+
+  // Cores de Fundo - Tons pastéis suaves e limpos
+  background: {
+    DEFAULT: "#FFFFFF", // Branco limpo
+    light: "#FFFFFF",
+    soft: "#FAFAFA", // Branco quase puro
+    cream: "#FFFCF9",
+    blueTint: "#F8FAFF", // Azul muito claro e limpo
+    pinkTint: "#FFFBFD", // Rosa muito sutil e limpo
+  },
+
+  // Cores de Categorias - Tons pastéis
+  category: {
+    nutricao: "#FFB6D9", // Rosa pastel
+    exercicio: "#7DB8FF", // Azul pastel
+    saude: "#B8A9FF", // Roxo pastel
+    bemestar: "#FFB6D9", // Rosa pastel
+  },
+
+  // Gradientes - Rosa e Azul Pastéis
+  gradients: {
+    primary: ["#FFB6D9", "#7DB8FF"], // Rosa pastel para azul pastel
+    primarySoft: ["#FFB6D9", "#FFD1E8"], // Rosa pastel para rosa mais claro
+    secondary: ["#7DB8FF", "#0d6cf2"], // Azul pastel para azul base
+    warm: ["#FFE5F2", "#FFF5F9"], // Rosa muito claro
+    cool: ["#E6F2FF", "#F0F7FF"], // Azul muito claro
+    sunset: ["#FFB6D9", "#FFD89B"], // Rosa para amarelo pastel
+  },
+
+  // Cores de Status - Tons suaves
+  status: {
+    success: "#7DD87D", // Verde pastel
+    warning: "#FFD89B", // Amarelo pastel
+    error: "#FF9B9B", // Vermelho pastel
+    info: "#7DB8FF", // Azul pastel
+  },
+
+  // Cores de UI - Bordas e sombras suaves
+  ui: {
+    border: "#E2E8F0", // Borda cinza claro
+    borderLight: "#F1F5F9", // Borda muito clara
+    borderPink: "#FFD1E8", // Borda rosa pastel
+    borderBlue: "#B3D9FF", // Borda azul pastel
+    shadow: "rgba(255, 182, 217, 0.15)", // Sombra rosa pastel suave
+    shadowStrong: "rgba(255, 182, 217, 0.25)",
+    shadowBlue: "rgba(13, 108, 242, 0.15)", // Sombra azul suave
+  },
+} as const;
+
+// Helper para obter cores de sentimentos
+export const getFeelingColor = (feeling: keyof typeof Colors.feeling) => {
+  return Colors.feeling[feeling];
+};
+
+// Helper para gradientes
+export const getGradient = (gradient: keyof typeof Colors.gradients) => {
+  return Colors.gradients[gradient];
+};
+
+// ===========================================
+// DARK THEME COLORS
+// ===========================================
+
+export const ColorsDark = {
+  // Cores Principais - Rosa Pastel (mantém as mesmas, mas com mais contraste)
+  primary: {
+    DEFAULT: "#FF80B7", // Rosa mais vibrante no dark
+    50: "#1A0A12",
+    100: "#2D0F1A",
+    200: "#4D1A2E",
+    300: "#6D2542",
+    400: "#8D3056",
+    500: "#FF80B7", // Main primary - Rosa pastel
+    600: "#FF66A6",
+    700: "#FF4D95",
+    800: "#FF3384",
+    900: "#FF1A73",
+  },
+  
+  // Cores Secundárias - Azul Pastel
+  secondary: {
+    DEFAULT: "#3397FF", // Azul mais claro no dark
+    50: "#0A1526",
+    100: "#0F1F3D",
+    200: "#1F3F7A",
+    300: "#2F5FB7",
+    400: "#3F7FF4",
+    500: "#3397FF", // Main secondary - Azul mais claro
+    600: "#66B1FF",
+    700: "#99CBFF",
+    800: "#CCE5FF",
+    900: "#E6F2FF",
+  },
+
+  // Azul Pastel Suave
+  bluePastel: {
+    DEFAULT: "#66B1FF", // Azul mais claro no dark
+    50: "#0A1526",
+    100: "#0F1F3D",
+    200: "#1F3F7A",
+    300: "#2F5FB7",
+    400: "#3F7FF4",
+    500: "#66B1FF", // Azul pastel
+    600: "#99CBFF",
+    700: "#CCE5FF",
+    800: "#E0EFFF",
+    900: "#F0F7FF",
+  },
+
+  // Cores de Sentimentos - Mantém cores vibrantes no dark
+  feeling: {
+    sunny: {
+      color: "#FFD89B", // Amarelo pastel - Bem
+      activeColor: "#FFE5B8",
+      label: "Bem",
+    },
+    cloud: {
+      color: "#7DB8FF", // Azul pastel - Cansada
+      activeColor: "#B3D9FF",
+      label: "Cansada",
+    },
+    rainy: {
+      color: "#B8A9FF", // Roxo pastel - Enjoada
+      activeColor: "#D4C9FF",
+      label: "Enjoada",
+    },
+    heart: {
+      color: "#FF80B7", // Rosa pastel - Amada (mais vibrante)
+      activeColor: "#FFB6D9",
+      label: "Amada",
+    },
+  },
+
+  // Cores de Texto - Invertidas para dark
+  text: {
+    dark: "#E2E8F0", // Cinza claro para textos principais
+    DEFAULT: "#E2E8F0",
+    light: "#A0AEC0",
+    muted: "#718096",
+    white: "#ffffff",
+  },
+
+  // Cores de Fundo - Tons escuros
+  background: {
+    DEFAULT: "#0F0F0F", // Preto suave
+    light: "#1A1A1A",
+    soft: "#141414", // Cinza muito escuro
+    cream: "#1A1A1A",
+    blueTint: "#0F1419", // Azul muito escuro
+    pinkTint: "#1A0F14", // Rosa muito escuro
+  },
+
+  // Cores de Categorias - Mantém cores vibrantes
+  category: {
+    nutricao: "#FF80B7", // Rosa pastel
+    exercicio: "#66B1FF", // Azul pastel
+    saude: "#B8A9FF", // Roxo pastel
+    bemestar: "#FF80B7", // Rosa pastel
+  },
+
+  // Gradientes - Ajustados para dark
+  gradients: {
+    primary: ["#FF80B7", "#66B1FF"], // Rosa pastel para azul pastel
+    primarySoft: ["#FF80B7", "#FFB6D9"], // Rosa pastel para rosa mais claro
+    secondary: ["#66B1FF", "#3397FF"], // Azul pastel para azul base
+    warm: ["#2D1A1F", "#1A0F14"], // Rosa muito escuro
+    cool: ["#0F1419", "#0A0F14"], // Azul muito escuro
+    sunset: ["#FF80B7", "#FFD89B"], // Rosa para amarelo pastel
+  },
+
+  // Cores de Status - Mantém cores vibrantes
+  status: {
+    success: "#7DD87D", // Verde pastel
+    warning: "#FFD89B", // Amarelo pastel
+    error: "#FF9B9B", // Vermelho pastel
+    info: "#66B1FF", // Azul pastel
+  },
+
+  // Cores de UI - Bordas e sombras para dark
+  ui: {
+    border: "#2D3748", // Borda cinza escuro
+    borderLight: "#1A202C", // Borda muito escura
+    borderPink: "#4D1A2E", // Borda rosa escuro
+    borderBlue: "#1F3F7A", // Borda azul escuro
+    shadow: "rgba(0, 0, 0, 0.3)", // Sombra preta
+    shadowStrong: "rgba(0, 0, 0, 0.5)",
+    shadowBlue: "rgba(51, 151, 255, 0.2)", // Sombra azul
+  },
+} as const;
+
+// Exportar cor primária como constante para uso rápido
+export const PRIMARY_COLOR = Colors.primary.DEFAULT;
+export const SECONDARY_COLOR = Colors.secondary.DEFAULT;
+export const BLUE_PASTEL = Colors.bluePastel.DEFAULT;
+export const BACKGROUND_COLOR = Colors.background.DEFAULT;
+export const TEXT_DARK = Colors.text.dark;

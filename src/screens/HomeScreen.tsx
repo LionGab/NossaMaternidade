@@ -1,181 +1,173 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Pressable, Dimensions } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { View, Text, ScrollView, Pressable, RefreshControl, Image, Dimensions } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import Slider from "@react-native-community/slider";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
-import { useAppStore } from "../state/store";
+import { useAppStore, useHabitsStore, useCheckInStore, useAffirmationsStore, useCommunityStore } from "../state/store";
 import { MainTabScreenProps } from "../types/navigation";
-import DailyCheckIn from "../components/DailyCheckIn";
-import { Avatar } from "../components/ui";
-import { shadowPresets } from "../utils/shadow";
+import { getPosts } from "../api/database";
+import { useTheme } from "../hooks/useTheme";
 import * as Haptics from "expo-haptics";
-import { Image } from "expo-image";
 
-// Imgur Images
-const IMGUR_IMAGES = {
-  logo: "https://i.imgur.com/jzb0IgO.jpg",
-  nathia: "https://i.imgur.com/oB9ewPG.jpg",
-  habits: "https://i.imgur.com/LF2PX1w.jpg",
-  content: "https://i.imgur.com/tNIrNIs.jpg",
-  sleep: "https://i.imgur.com/w4rZvGG.jpg",
-  community: "https://i.imgur.com/OLdeyD6.jpg",
-  avatar: "https://i.imgur.com/GDYdiuy.jpg",
-};
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-// Content cards for "Para Você" section with categories
-const CONTENT_CARDS = [
-  {
-    id: "1",
-    title: "Alimentos essenciais para o 2º trimestre",
-    category: "NUTRIÇÃO",
-    image: IMGUR_IMAGES.habits,
-    color: "#f4258c",
-  },
-  {
-    id: "2",
-    title: "Yoga leve para as costas",
-    category: "EXERCÍCIO",
-    image: IMGUR_IMAGES.sleep,
-    color: "#A78BFA",
-  },
-  {
-    id: "3",
-    title: "Comunidade de Mães",
-    category: "COMUNIDADE",
-    image: IMGUR_IMAGES.community,
-    color: "#60A5FA",
-  },
-  {
-    id: "4",
-    title: "Meditação guiada",
-    category: "BEM-ESTAR",
-    image: IMGUR_IMAGES.content,
-    color: "#6BAD78",
-  },
-];
-
-// Community posts for "Mães Valente" section
-const COMMUNITY_POSTS = [
-  {
-    id: "1",
-    author: "Valentina",
-    avatar: "https://i.imgur.com/oB9ewPG.jpg",
-    time: "há 1 hora",
-    category: "Dicas Rápidas",
-    tag: "FIXADO",
-    tagColor: "#6B7280",
-    title: "5 coisas que não te contaram sobre o puerpério ✨",
-    content: "Mães, preparei uma lista especial hoje. O puerpério é uma montanha-russa, mas saber disso antes ajuda muito!",
-    likes: "1.2k",
-    comments: "342",
-  },
-  {
-    id: "2",
-    author: "Ana Nogueira",
-    avatar: null,
-    time: "há 45 min",
-    category: "Puerpério",
-    tag: "DESABAFO",
-    tagColor: "#f4258c",
-    title: "A amamentação não está sendo fácil",
-    content: "Pensei que seria natural, mas estou sofrendo com fissuras e muita sensibilidade...",
-    likes: "156",
-    comments: "48",
-  },
-  {
-    id: "3",
-    author: "Carla Dias",
-    avatar: null,
-    time: "há 5 horas",
-    category: "Tentante",
-    tag: "VITÓRIA",
-    tagColor: "#10B981",
-    title: "O positivo finalmente veio! 🌈",
-    content: "Depois de 2 anos de tentativas, hoje recebi o meu milagre. Não desistam mamães!",
-    likes: "892",
-    comments: "340",
-  },
-];
-
-const QUICK_ACTIONS = [
-  { id: "mycare", label: "Meus Cuidados", icon: "heart", gradient: ["#f4258c", "#F43F5E"] },
-  { id: "assistant", label: "NathIA", icon: "chatbubble-ellipses", gradient: ["#6BAD78", "#8BC896"] },
-  { id: "affirmations", label: "Afirmações", icon: "sparkles", gradient: ["#A78BFA", "#C4B5FD"] },
-] as const;
-
-const DAILY_TIPS = [
-  {
-    id: "1",
-    title: "Hidratação é fundamental",
-    description: "Beba água regularmente. Seu corpo e seu bebê agradecem!",
-    icon: "water",
-    color: "#60A5FA",
-  },
-  {
-    id: "2",
-    title: "Momento de autocuidado",
-    description: "Reserve 15 minutos só para você relaxar e respirar",
-    icon: "leaf",
-    color: "#6BAD78",
-  },
-  {
-    id: "3",
-    title: "Movimento suave",
-    description: "Caminhe um pouco hoje. Movimento faz bem para o corpo e mente",
-    icon: "walk",
-    color: "#A78BFA",
-  },
-];
-
-// NathIA Quick Chips - Perguntas frequentes por categoria
-const NATHIA_QUICK_CHIPS = [
-  { id: "sleep", label: "Bebê não dorme", emoji: "😴", color: "#93C5FD" }, // Azul mais suave
-  { id: "food", label: "Alimentação", emoji: "🍎", color: "#86EFAC" }, // Verde mais suave
-  { id: "tired", label: "Estou exausta", emoji: "😓", color: "#FCD34D" }, // Amarelo mais suave
-  { id: "colic", label: "Cólica do bebê", emoji: "👶", color: "#F9A8D4" }, // Rosa mais suave
-  { id: "breast", label: "Amamentação", emoji: "🤱", color: "#C4B5FD" }, // Lilás mais suave
-  { id: "anxiety", label: "Ansiedade", emoji: "💭", color: "#A7F3D0" }, // Verde-água mais suave
-];
-
-// Dicas contextuais baseadas no horário (memoizada no componente)
-const getContextualTip = (hour: number) => {
-  if (hour >= 5 && hour < 9) return { text: "Bom dia! Como foi sua noite de sono?", emoji: "🌅" };
-  if (hour >= 9 && hour < 12) return { text: "Já tomou seu café da manhã nutritivo?", emoji: "☀️" };
-  if (hour >= 12 && hour < 14) return { text: "Hora do almoço! Descanse um pouco também.", emoji: "🥗" };
-  if (hour >= 14 && hour < 18) return { text: "Lembrete: Beba água e faça uma pausa.", emoji: "💧" };
-  if (hour >= 18 && hour < 21) return { text: "Preparando para a noite? Posso ajudar!", emoji: "🌙" };
-  return { text: "Noite tranquila! Estou aqui se precisar.", emoji: "✨" };
+// Calcular valores responsivos baseados no tamanho da tela
+const getResponsiveValue = (baseValue: number, scale: number = 1) => {
+  const scaleFactor = SCREEN_WIDTH / 375; // Baseado em iPhone 12/13 (375px)
+  return Math.round(baseValue * scaleFactor * scale);
 };
 
 export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
   const insets = useSafeAreaInsets();
+  const { colors, isDark } = useTheme();
+  
+  // Valores responsivos
+  const horizontalPadding = getResponsiveValue(20, 1);
+  const cardPadding = getResponsiveValue(16, 1);
+  const cardBorderRadius = getResponsiveValue(20, 1);
+  const gap = getResponsiveValue(14, 1);
+  
   const userName = useAppStore((s) => s.user?.name);
+  const userStage = useAppStore((s) => s.user?.stage);
+  const dueDate = useAppStore((s) => s.user?.dueDate);
+  const babyBirthDate = useAppStore((s) => s.user?.babyBirthDate);
+  const userAvatar = useAppStore((s) => s.user?.avatarUrl);
 
-  const [currentTip, setCurrentTip] = useState(0);
+  // Stores
+  const habits = useHabitsStore((s) => s.habits);
+  const getCompletedToday = useHabitsStore((s) => s.getCompletedToday);
+  const todayAffirmation = useAffirmationsStore((s) => s.todayAffirmation);
+  const posts = useCommunityStore((s) => s.posts);
+  const setPosts = useCommunityStore((s) => s.setPosts);
+  const setTodayMood = useCheckInStore((s) => s.setTodayMood);
+  const setTodayEnergy = useCheckInStore((s) => s.setTodayEnergy);
 
-  // Carousel automático de dicas
+  const [refreshing, setRefreshing] = useState(false);
+  const [moodSlider, setMoodSlider] = useState(0.65);
+  const [selectedFeeling, setSelectedFeeling] = useState<string | null>(null);
+
+  // Calcular estatísticas
+  const completedHabitsToday = getCompletedToday();
+  const totalHabits = habits.length;
+  const habitsProgress = totalHabits > 0 ? (completedHabitsToday / totalHabits) * 100 : 0;
+
+  // Calcular streak de hábitos
+  const habitsStreak = useMemo(() => {
+    const today = new Date().toISOString().split("T")[0];
+    let streak = 0;
+    let checkDate = new Date(today);
+
+    while (true) {
+      const dateStr = checkDate.toISOString().split("T")[0];
+      const allCompleted = habits.every((habit) => habit.completedDates.includes(dateStr));
+      if (allCompleted && habits.length > 0) {
+        streak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }, [habits]);
+
+  // Calcular semanas de gravidez
+  const getPregnancyInfo = useMemo(() => {
+    if (userStage === "pregnant" && dueDate) {
+      const today = new Date();
+      const due = new Date(dueDate);
+      const diffTime = due.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const weeks = Math.floor((280 - diffDays) / 7);
+      
+      if (diffDays > 0) {
+        return {
+          label: `${weeks}ª Semana`,
+          sublabel: `${diffDays} dias para o parto`,
+        };
+      } else {
+        return {
+          label: "Parto chegando!",
+          sublabel: "Qualquer momento agora",
+        };
+      }
+    } else if (userStage === "postpartum" && babyBirthDate) {
+      const today = new Date();
+      const birth = new Date(babyBirthDate);
+      const diffTime = today.getTime() - birth.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      return {
+        label: `${diffDays} dias`,
+        sublabel: "de vida do seu bebê",
+      };
+    }
+    return null;
+  }, [userStage, dueDate, babyBirthDate]);
+
+  // Buscar posts da comunidade
+  const loadCommunityPosts = useCallback(async () => {
+    try {
+      const { data, error } = await getPosts();
+      if (data && !error) {
+        setPosts(data.slice(0, 3));
+      }
+    } catch (error) {
+      console.error("Error loading posts:", error);
+    }
+  }, [setPosts]);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTip((prev) => (prev + 1) % DAILY_TIPS.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    loadCommunityPosts();
+  }, [loadCommunityPosts]);
 
-  // Memoizar valores calculados
-  const greeting = React.useMemo(() => {
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadCommunityPosts();
+    setRefreshing(false);
+  };
+
+  const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Bom dia";
     if (hour < 18) return "Boa tarde";
     return "Boa noite";
-  }, []);
+  };
 
-  const contextualTip = React.useMemo(() => {
-    const hour = new Date().getHours();
-    return getContextualTip(hour);
-  }, []);
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
 
-  const tip = DAILY_TIPS[currentTip];
+    if (diffMins < 1) return "agora";
+    if (diffMins < 60) return `há ${diffMins} min`;
+    if (diffHours < 24) return `há ${diffHours}h`;
+    if (diffDays < 7) return `há ${diffDays} dias`;
+    return date.toLocaleDateString("pt-BR");
+  };
+
+  const handleFeelingPress = async (feeling: string) => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setSelectedFeeling(feeling);
+    
+    // Mapear sentimentos para valores do check-in
+    const feelingMap: Record<string, { mood: number; energy: number }> = {
+      bem: { mood: 5, energy: 4 },
+      cansada: { mood: 3, energy: 2 },
+      enjoada: { mood: 2, energy: 2 },
+      amada: { mood: 5, energy: 4 },
+    };
+
+    const mapping = feelingMap[feeling];
+    if (mapping) {
+      setTodayMood(mapping.mood);
+      setTodayEnergy(mapping.energy);
+    }
+  };
 
   const handleNotifications = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -189,570 +181,553 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">) {
     });
   };
 
-  const handleTipPress = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("ComingSoon", {
-      title: "Dicas Personalizadas",
-      description: "Em breve teremos dicas personalizadas baseadas na sua jornada de maternidade.",
-      emoji: "💡",
-      primaryCtaLabel: "Voltar",
-      secondaryCtaLabel: "Ver Afirmações",
-      relatedRoute: "Assistant",
-    });
+  const handleHabitsPress = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    navigation.navigate("Habits");
+  };
+
+  const handlePostPress = (postId: string) => {
+    navigation.navigate("PostDetail", { postId });
+  };
+
+  const latestPost = posts.length > 0 ? posts[0] : null;
+
+  // Cores baseadas no tema (light/dark)
+  const bg = colors.background.DEFAULT;
+  const textMain = colors.text.dark;
+  const textMuted = isDark ? "rgba(226,232,240,0.65)" : "rgba(45,55,72,0.65)";
+  const cardBg = isDark ? colors.background.light : "#ffffff";
+  const border = isDark ? colors.ui.border : "#F1F5F9";
+
+  const cardShadow = {
+    shadowColor: "#000",
+    shadowOpacity: isDark ? 0.3 : 0.04,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: isDark ? 4 : 2,
   };
 
   return (
-    <View className="flex-1" style={{ backgroundColor: "#f8f5f7" }}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
-      >
-        {/* Hero Section */}
-        <View style={{ paddingTop: insets.top }}>
-          <LinearGradient
-            colors={["#FFF0F6", "#FFF5F7", "#f8f5f7"]}
-            locations={[0, 0.5, 1]}
-            style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 32 }}
-          >
-            <Animated.View
-              entering={FadeInDown.duration(600).springify()}
-            >
-              {/* Header - Boa Noite Mae Style */}
-              <View className="flex-row items-center justify-between mb-6">
-              <View className="flex-1">
-                <Text className="text-warmGray-900 text-3xl font-serif">
-                  {greeting}, Mãe
-                </Text>
-                  <Text className="text-warmGray-500 text-sm mt-1">
-                    {userName ? `${userName}, ` : ""}24ª Semana
-                  </Text>
-                </View>
-                <View className="flex-row items-center">
-                  <Pressable
-                    onPress={handleNotifications}
-                    className="mr-3"
-                    accessibilityRole="button"
-                    accessibilityLabel="Notificações"
-                  >
-                    <Ionicons name="notifications-outline" size={24} color="#78716C" />
-                  </Pressable>
-                  <Image
-                    source={{ uri: IMGUR_IMAGES.avatar }}
-                    style={{ 
-                      width: 48, 
-                      height: 48, 
-                      borderRadius: 24,
-                      borderWidth: 3,
-                      borderColor: "#FFFFFF"
-                    }}
-                    contentFit="cover"
-                  />
-                </View>
-              </View>
-
-              {/* Daily Check-in CTA */}
-              <Animated.View
-                entering={FadeInUp.delay(100).duration(500).springify()}
-                className="mb-6"
-              >
-                <DailyCheckIn />
-              </Animated.View>
-
-              {/* Bem-estar Card - Gradient SUAVE (Pastel) */}
-              <Pressable
-                onPress={() => navigation.navigate("Community")}
-                accessibilityRole="button"
-                accessibilityLabel="Acessar comunidade"
-              >
-                <LinearGradient
-                  colors={["#F9A8D4", "#DDD6FE", "#BFDBFE"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={{
-                    borderRadius: 24,
-                    padding: 24,
-                    minHeight: 180,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.08,
-                    shadowRadius: 8,
-                    elevation: 3,
-                  }}
-                >
-                  {/* Tag DESTAQUE - LEVE */}
-                  <View className="bg-white/60 self-start px-3 py-1.5 rounded-full mb-3 flex-row items-center">
-                    <Ionicons name="heart" size={12} color="#EC4899" style={{ marginRight: 4 }} />
-                    <Text className="text-rose-600 text-xs font-semibold uppercase tracking-wide">Destaque</Text>
-                  </View>
-
-                  {/* Content - LEVE */}
-                  <Text className="text-white/95 text-sm mb-1">
-                    Conecte-se com outras mães
-                  </Text>
-                  <Text className="text-white text-3xl font-serif mb-3" style={{ letterSpacing: -0.5 }}>
-                    Comunidade de{"\n"}Mães
-                  </Text>
-                  <Text className="text-white/90 text-sm">
-                    na mesma jornada que você.
-                  </Text>
-
-                  {/* Decorative Icon - MAIS SUTIL */}
-                  <View className="absolute right-4 bottom-4 opacity-20">
-                    <Ionicons name="heart-outline" size={56} color="#FFFFFF" />
-                  </View>
-                </LinearGradient>
-              </Pressable>
-
-              {/* NathIA Section - Ultraeficaz */}
-              <Animated.View
-                entering={FadeInUp.delay(200).duration(500).springify()}
-                className="mt-4"
-              >
-                <View
-                  className="rounded-3xl overflow-hidden"
-                  style={{
-                    backgroundColor: "#FFFFFF",
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.06,
-                    shadowRadius: 8,
-                    elevation: 2,
-                  }}
-                >
-                  {/* Header com Avatar e Status */}
-                  <LinearGradient
-                    colors={["#FDF2F8", "#FAF5FF", "#F0F9FF"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={{ padding: 14, paddingBottom: 10 }}
-                  >
-                    <View className="flex-row items-center">
-                      <View className="relative">
-                        <Image
-                          source={{ uri: IMGUR_IMAGES.nathia }}
-                          style={{ width: 56, height: 56, borderRadius: 28, borderWidth: 3, borderColor: "#FFFFFF" }}
-                          contentFit="cover"
-                        />
-                        {/* Status Online */}
-                        <View className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-green-500 border-2 border-white" />
-                      </View>
-                      <View className="ml-3 flex-1">
-                        <View className="flex-row items-center">
-                          <Text className="text-warmGray-900 text-lg font-bold">NathIA</Text>
-                          <View className="ml-2 px-2 py-0.5 rounded-full bg-green-100">
-                            <Text className="text-green-700 text-xs font-semibold">Online</Text>
-                          </View>
-                        </View>
-                        <Text className="text-warmGray-600 text-sm mt-0.5">
-                          {contextualTip.emoji} {contextualTip.text}
-                        </Text>
-                      </View>
-                    </View>
-                  </LinearGradient>
-
-                  {/* Quick Chips */}
-                  <View className="px-4 py-3">
-                    <Text className="text-warmGray-500 text-xs font-medium mb-3 uppercase tracking-wide">
-                      Perguntas frequentes
-                    </Text>
-                    <View className="flex-row flex-wrap -mx-1">
-                      {NATHIA_QUICK_CHIPS.map((chip) => (
-                        <Pressable
-                          key={chip.id}
-                          onPress={async () => {
-                            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                            navigation.navigate("Assistant");
-                          }}
-                          className="mx-1 mb-2 px-3 py-2 rounded-full flex-row items-center"
-                          style={{ backgroundColor: `${chip.color}15` }}
-                          accessibilityRole="button"
-                          accessibilityLabel={`Perguntar sobre ${chip.label}`}
-                        >
-                          <Text className="text-base mr-1.5">{chip.emoji}</Text>
-                          <Text className="text-sm font-medium" style={{ color: chip.color }}>
-                            {chip.label}
-                          </Text>
-                        </Pressable>
-                      ))}
-                    </View>
-                  </View>
-
-                  {/* Input Section */}
-                  <View className="px-4 pb-4">
-                    <Pressable
-                      onPress={() => navigation.navigate("Assistant")}
-                      className="flex-row items-center rounded-2xl px-4 py-3"
-                      style={{ backgroundColor: "#F5F5F4" }}
-                      accessibilityRole="button"
-                      accessibilityLabel="Enviar mensagem para NathIA"
-                    >
-                      <Text className="flex-1 text-warmGray-400 text-sm">
-                        Pergunte qualquer coisa...
-                      </Text>
-                      <View className="flex-row items-center">
-                        <Pressable
-                          onPress={async () => {
-                            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            navigation.navigate("Assistant");
-                          }}
-                          className="w-9 h-9 rounded-full items-center justify-center mr-2"
-                          style={{ backgroundColor: "#E7E5E4" }}
-                          accessibilityRole="button"
-                          accessibilityLabel="Falar com NathIA por voz"
-                        >
-                          <Ionicons name="mic" size={18} color="#78716C" />
-                        </Pressable>
-                        <View
-                          className="w-9 h-9 rounded-full items-center justify-center"
-                          style={{ backgroundColor: "#f4258c" }}
-                        >
-                          <Ionicons name="send" size={16} color="#FFFFFF" />
-                        </View>
-                      </View>
-                    </Pressable>
-                  </View>
-                </View>
-              </Animated.View>
-            </Animated.View>
-          </LinearGradient>
-        </View>
-
-        {/* Quick Actions */}
+    <SafeAreaView style={{ flex: 1, backgroundColor: bg }}>
+      <View style={{ flex: 1, width: "100%" }}>
+        {/* HEADER */}
         <Animated.View
-          entering={FadeInUp.delay(200).duration(600).springify()}
-          className="px-6 mb-8"
+          entering={FadeInDown.duration(600).springify()}
+          style={{
+            paddingHorizontal: horizontalPadding,
+            paddingTop: getResponsiveValue(12),
+            paddingBottom: getResponsiveValue(12),
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
         >
-          <Text
-            className="text-warmGray-900 text-xl font-serif mb-5"
-            accessibilityRole="header"
-          >
-            Acesso rápido
-          </Text>
-          <View className="flex-row flex-wrap -mx-2">
-            {QUICK_ACTIONS.map((action, index) => (
-              <Animated.View
-                key={action.id}
-                entering={FadeInUp.delay(300 + index * 50).duration(600).springify()}
-                className="w-[48%] mx-[1%] mb-4"
-              >
-                <Pressable
-                  onPress={() => {
-                    if (action.id === "mycare") navigation.navigate("MyCare");
-                    if (action.id === "assistant") navigation.navigate("Assistant");
-                    if (action.id === "affirmations") navigation.navigate("Affirmations");
-                  }}
-                  className="rounded-2xl overflow-hidden"
-                  style={{
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.06,
-                    shadowRadius: 6,
-                    elevation: 2,
-                  }}
-                  accessibilityRole="button"
-                  accessibilityLabel={action.label}
-                  accessibilityHint={`Abre a tela de ${action.label}`}
-                >
-                  <LinearGradient
-                    colors={action.gradient}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={{ padding: 20, minHeight: 120, justifyContent: "space-between" }}
-                  >
-                    <View
-                      className="w-12 h-12 rounded-full items-center justify-center"
-                      style={{ backgroundColor: "rgba(255, 255, 255, 0.3)" }}
-                    >
-                      <Ionicons name={action.icon as any} size={24} color="#FFFFFF" />
-                    </View>
-                    <Text className="text-white text-base font-semibold">
-                      {action.label}
-                    </Text>
-                  </LinearGradient>
-                </Pressable>
-              </Animated.View>
-            ))}
+          <View style={{ flex: 1, paddingRight: 12 }}>
+            <Text style={{ color: textMain, fontSize: getResponsiveValue(26, 1.1), fontWeight: "800", letterSpacing: -0.5 }}>
+              {getGreeting()}, Mãe
+            </Text>
+            {getPregnancyInfo ? (
+              <Text style={{ color: textMuted, fontSize: getResponsiveValue(14, 1), fontWeight: "600", marginTop: 4 }}>
+                {userName || "Mamãe"}, {getPregnancyInfo.label}
+              </Text>
+            ) : (
+              <Text style={{ color: textMuted, fontSize: getResponsiveValue(14, 1), fontWeight: "600", marginTop: 4 }}>
+                {userName || "Mamãe"}
+              </Text>
+            )}
           </View>
-        </Animated.View>
 
-        {/* Daily Tip Carousel */}
-        <Animated.View
-          entering={FadeInUp.delay(500).duration(600).springify()}
-          className="px-6 mb-8"
-        >
-          <Text
-            className="text-warmGray-900 text-xl font-serif mb-5"
-            accessibilityRole="header"
-          >
-            Dica do dia
-          </Text>
-          <Pressable
-            onPress={handleTipPress}
-            className="rounded-3xl p-6"
-            style={{
-              backgroundColor: "#FFF",
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.05,
-              shadowRadius: 6,
-              elevation: 2,
-            }}
-            accessibilityRole="button"
-            accessibilityLabel={`Dica do dia: ${tip.title}`}
-            accessibilityHint="Abre mais informações sobre dicas personalizadas"
-          >
-            <View className="flex-row items-start">
-              <View
-                className="w-14 h-14 rounded-2xl items-center justify-center mr-4"
-                style={{ backgroundColor: `${tip.color}15` }}
-              >
-                <Ionicons name={tip.icon as any} size={28} color={tip.color} />
-              </View>
-              <View className="flex-1">
-                <Text className="text-warmGray-900 text-lg font-semibold mb-2">
-                  {tip.title}
-                </Text>
-                <Text className="text-warmGray-600 text-sm leading-6">
-                  {tip.description}
-                </Text>
-              </View>
+          <Pressable onPress={handleNotifications} style={{ position: "relative" }}>
+            <View
+              style={{
+                height: getResponsiveValue(44, 1),
+                width: getResponsiveValue(44, 1),
+                borderRadius: 999,
+                borderWidth: 2,
+                borderColor: "#fff",
+                overflow: "hidden",
+                ...cardShadow,
+              }}
+            >
+              {userAvatar ? (
+                <Image source={{ uri: userAvatar }} style={{ height: "100%", width: "100%" }} />
+              ) : (
+                <View style={{ height: "100%", width: "100%", backgroundColor: colors.primary.DEFAULT, alignItems: "center", justifyContent: "center" }}>
+                  <Ionicons name="person" size={24} color="#fff" />
+                </View>
+              )}
             </View>
-
-            {/* Carousel indicators */}
-            <View className="flex-row justify-center mt-5 space-x-2">
-              {DAILY_TIPS.map((_, index) => (
-                <View
-                  key={index}
-                  className="h-1.5 rounded-full"
-                  style={{
-                    width: currentTip === index ? 24 : 8,
-                    backgroundColor: currentTip === index ? "#f4258c" : "#E7E5E4",
-                  }}
-                />
-              ))}
-            </View>
+            <View
+              style={{
+                position: "absolute",
+                right: 0,
+                bottom: 0,
+                height: 12,
+                width: 12,
+                borderRadius: 999,
+                backgroundColor: colors.status.success,
+                borderWidth: 2,
+                borderColor: "#fff",
+              }}
+            />
           </Pressable>
         </Animated.View>
 
-        {/* Para Você - Content Carousel */}
-        <Animated.View
-          entering={FadeInUp.delay(600).duration(600).springify()}
-          className="mb-8"
+        {/* CONTENT */}
+        <ScrollView
+          contentContainerStyle={{
+            paddingHorizontal: horizontalPadding,
+            paddingBottom: getResponsiveValue(24) + getResponsiveValue(90) + insets.bottom,
+            gap: gap,
+          }}
+          showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary.DEFAULT} />}
         >
-          <View className="flex-row items-center justify-between px-6 mb-5">
-            <Text
-              className="text-warmGray-900 text-xl font-serif"
-              accessibilityRole="header"
-            >
-              Para Você
-            </Text>
-            <Pressable
-              onPress={() => navigation.navigate("MyCare")}
-              accessibilityRole="button"
-              accessibilityLabel="Ver todo conteúdo"
-            >
-              <View className="flex-row items-center">
-                <Text className="text-rose-600 text-sm font-semibold mr-1">
-                  Ver tudo
-                </Text>
-                <Ionicons name="arrow-forward" size={16} color="#f4258c" />
-              </View>
-            </Pressable>
-          </View>
-
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 24 }}
+          {/* Sentimento Atual - Slider */}
+          <Animated.View
+            entering={FadeInUp.delay(100).duration(600).springify()}
+            style={{
+              backgroundColor: cardBg,
+              borderRadius: cardBorderRadius,
+              padding: cardPadding,
+              borderWidth: 1,
+              borderColor: border,
+              ...cardShadow,
+            }}
           >
-            {CONTENT_CARDS.map((card) => (
-              <Pressable
-                key={card.id}
-                onPress={async () => {
-                  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  navigation.navigate("ComingSoon", {
-                    title: card.title,
-                    description: "Conteúdo exclusivo em breve!",
-                    emoji: "✨",
-                    primaryCtaLabel: "Voltar",
-                    secondaryCtaLabel: "Falar com NathIA",
-                    relatedRoute: "Assistant",
-                  });
-                }}
-                className="mr-4 rounded-2xl overflow-hidden"
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: getResponsiveValue(12) }}>
+              <View style={{ flex: 1, paddingRight: 8 }}>
+                <Text style={{ color: textMain, fontSize: getResponsiveValue(17, 1.05), fontWeight: "800" }}>Sentimento Atual</Text>
+                <Text style={{ color: "rgba(100,116,139,0.9)", fontSize: getResponsiveValue(12, 0.95), fontWeight: "600", marginTop: 4 }}>
+                  Como você está se sentindo agora?
+                </Text>
+              </View>
+
+              <View
                 style={{
-                  width: 160,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.05,
-                  shadowRadius: 4,
-                  elevation: 1,
+                  height: getResponsiveValue(36, 0.9),
+                  width: getResponsiveValue(36, 0.9),
+                  borderRadius: 999,
+                  backgroundColor: colors.bluePastel[100],
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
-                accessibilityRole="button"
-                accessibilityLabel={card.title}
               >
-                <Image
-                  source={{ uri: card.image }}
-                  style={{ width: 160, height: 120 }}
-                  contentFit="cover"
-                  transition={300}
-                />
-                <View className="p-3 bg-white">
-                  <Text
-                    className="text-xs font-semibold mb-1"
-                    style={{ color: card.color }}
+                <Ionicons name="happy-outline" size={getResponsiveValue(20, 0.9)} color={colors.bluePastel.DEFAULT} />
+              </View>
+            </View>
+
+            <View style={{ paddingVertical: 6 }}>
+              <Slider
+                value={moodSlider}
+                onValueChange={setMoodSlider}
+                minimumValue={0}
+                maximumValue={1}
+                minimumTrackTintColor={colors.bluePastel.DEFAULT}
+                maximumTrackTintColor={colors.ui.borderLight}
+                thumbTintColor={cardBg}
+              />
+
+              <View style={{ flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 2, marginTop: 6 }}>
+                <Text style={{ fontSize: 10, fontWeight: "800", letterSpacing: 1, color: "rgba(100,116,139,0.35)" }}>
+                  BAIXO
+                </Text>
+                <Text style={{ fontSize: 10, fontWeight: "800", letterSpacing: 1, color: "rgba(100,116,139,0.35)" }}>
+                  ALTO
+                </Text>
+              </View>
+            </View>
+          </Animated.View>
+
+          {/* Card Gradiente - Pertencimento */}
+          <Animated.View entering={FadeInUp.delay(200).duration(600).springify()} style={{ borderRadius: cardBorderRadius, overflow: "hidden" }}>
+            <Pressable
+              onPress={async () => {
+                await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                navigation.navigate("Affirmations");
+              }}
+            >
+              <LinearGradient
+                colors={colors.gradients.primary}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{ padding: cardPadding }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", marginBottom: getResponsiveValue(14) }}>
+                  <View
+                    style={{
+                      paddingHorizontal: getResponsiveValue(10),
+                      paddingVertical: getResponsiveValue(5),
+                      borderRadius: 999,
+                      backgroundColor: "rgba(255,255,255,0.18)",
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.12)",
+                    }}
                   >
-                    {card.category}
-                  </Text>
-                  <Text className="text-warmGray-900 text-sm font-medium" numberOfLines={2}>
-                    {card.title}
-                  </Text>
+                    <Text style={{ color: "#fff", fontSize: getResponsiveValue(11, 0.95), fontWeight: "800" }}>Bem-estar</Text>
+                  </View>
+                  <Pressable hitSlop={10}>
+                    <Ionicons name="ellipsis-horizontal" size={getResponsiveValue(20, 0.9)} color="rgba(255,255,255,0.8)" />
+                  </Pressable>
+                </View>
+
+                <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between" }}>
+                  <View style={{ flex: 1, paddingRight: getResponsiveValue(10) }}>
+                    <Text style={{ color: "rgba(255,255,255,0.9)", fontSize: getResponsiveValue(13, 0.95), fontWeight: "600" }}>
+                      Fortaleça seu senso de
+                    </Text>
+                    <Text style={{ color: "#fff", fontSize: getResponsiveValue(28, 1.1), fontWeight: "900", letterSpacing: -0.5, marginTop: 2 }}>
+                      Pertencimento
+                    </Text>
+
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: getResponsiveValue(6), marginTop: getResponsiveValue(12) }}>
+                      <Ionicons name="heart" size={getResponsiveValue(16, 0.9)} color="rgba(255,255,255,0.85)" />
+                      <Text style={{ color: "#fff", fontSize: getResponsiveValue(13, 0.95), fontWeight: "800" }}>Você não está sozinha</Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      height: getResponsiveValue(80, 0.85),
+                      width: getResponsiveValue(80, 0.85),
+                      borderRadius: 999,
+                      backgroundColor: "rgba(255,255,255,0.14)",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Ionicons name="people" size={getResponsiveValue(40, 0.85)} color="#fff" />
+                  </View>
+                </View>
+              </LinearGradient>
+            </Pressable>
+          </Animated.View>
+
+          {/* Conselho da NathIA */}
+          <Animated.View entering={FadeInUp.delay(300).duration(600).springify()}>
+            <Pressable
+              onPress={async () => {
+                await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                navigation.navigate("Assistant");
+              }}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: getResponsiveValue(12),
+                borderRadius: getResponsiveValue(16),
+                padding: cardPadding,
+                backgroundColor: "#eff6ff",
+                borderWidth: 1,
+                borderColor: "rgba(59,130,246,0.15)",
+                ...cardShadow,
+              }}
+            >
+              <View
+                style={{
+                  height: getResponsiveValue(44, 0.9),
+                  width: getResponsiveValue(44, 0.9),
+                  borderRadius: 999,
+                  backgroundColor: colors.bluePastel[50],
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Ionicons name="sparkles" size={getResponsiveValue(20, 0.9)} color={colors.bluePastel.DEFAULT} />
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: textMain, fontSize: getResponsiveValue(15, 1), fontWeight: "900" }}>Conselho da NathIA</Text>
+                <Text style={{ color: textMuted, fontSize: getResponsiveValue(13, 0.95), fontWeight: "600", marginTop: 2 }}>
+                  {todayAffirmation
+                    ? todayAffirmation.text.slice(0, 50) + "..."
+                    : "Toque aqui para receber dicas personalizadas."}
+                </Text>
+              </View>
+
+              <Ionicons name="chevron-forward" size={getResponsiveValue(20, 0.9)} color="rgba(100,116,139,0.6)" />
+            </Pressable>
+          </Animated.View>
+
+          {/* Daily Check-in com Botões de Humor */}
+          <Animated.View
+            entering={FadeInUp.delay(400).duration(600).springify()}
+            style={{
+              backgroundColor: cardBg,
+              borderRadius: getResponsiveValue(16),
+              padding: cardPadding,
+              borderWidth: 1,
+              borderColor: colors.ui.borderPink,
+              ...cardShadow,
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: getResponsiveValue(8) }}>
+              <Text style={{ color: textMain, fontSize: getResponsiveValue(17, 1.05), fontWeight: "900" }}>Daily Check-in</Text>
+              <View
+                style={{
+                  paddingHorizontal: getResponsiveValue(8),
+                  paddingVertical: getResponsiveValue(5),
+                  borderRadius: getResponsiveValue(8),
+                  backgroundColor: colors.primary[100],
+                }}
+              >
+                <Text style={{ color: colors.primary.DEFAULT, fontSize: getResponsiveValue(11, 0.95), fontWeight: "900" }}>Hoje</Text>
+              </View>
+            </View>
+
+            <Text style={{ color: textMuted, fontSize: getResponsiveValue(13, 0.95), fontWeight: "600", marginBottom: getResponsiveValue(10) }}>
+              Como você está se sentindo hoje?
+            </Text>
+
+            <View style={{ flexDirection: "row", gap: getResponsiveValue(8) }}>
+              <MoodButton
+                label="Bem"
+                icon="sunny"
+                iconColor={colors.feeling.sunny.color}
+                isSelected={selectedFeeling === "bem"}
+                onPress={() => handleFeelingPress("bem")}
+              />
+              <MoodButton
+                label="Cansada"
+                icon="cloud"
+                iconColor={colors.feeling.cloud.color}
+                isSelected={selectedFeeling === "cansada"}
+                onPress={() => handleFeelingPress("cansada")}
+              />
+              <MoodButton
+                label="Enjoada"
+                icon="rainy"
+                iconColor={colors.feeling.rainy.color}
+                isSelected={selectedFeeling === "enjoada"}
+                onPress={() => handleFeelingPress("enjoada")}
+              />
+              <MoodButton
+                label="Amada"
+                icon="heart"
+                iconColor={colors.feeling.heart.color}
+                isSelected={selectedFeeling === "amada"}
+                onPress={() => handleFeelingPress("amada")}
+              />
+            </View>
+          </Animated.View>
+
+          {/* Stats Cards - Hábitos */}
+          {habits.length > 0 && (
+            <Animated.View entering={FadeInUp.delay(500).duration(600).springify()}>
+              <Pressable
+                onPress={handleHabitsPress}
+                style={{
+                  backgroundColor: cardBg,
+                  borderRadius: getResponsiveValue(16),
+                  padding: cardPadding,
+                  borderWidth: 1,
+                  borderColor: border,
+                  ...cardShadow,
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: getResponsiveValue(10) }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: getResponsiveValue(10) }}>
+                    <View
+                      style={{
+                        height: getResponsiveValue(38, 0.95),
+                        width: getResponsiveValue(38, 0.95),
+                        borderRadius: getResponsiveValue(10),
+                        backgroundColor: colors.primary[100],
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Ionicons name="checkmark-circle" size={getResponsiveValue(18, 0.9)} color={colors.primary.DEFAULT} />
+                    </View>
+                    <View>
+                      <Text style={{ color: textMain, fontSize: getResponsiveValue(17, 1.05), fontWeight: "900" }}>Hábitos</Text>
+                      <Text style={{ color: textMuted, fontSize: getResponsiveValue(11, 0.95), fontWeight: "600", marginTop: 2 }}>
+                        {completedHabitsToday}/{totalHabits} completados hoje
+                      </Text>
+                    </View>
+                  </View>
+                  {habitsStreak > 0 && (
+                    <View
+                      style={{
+                        paddingHorizontal: getResponsiveValue(8),
+                        paddingVertical: getResponsiveValue(5),
+                        borderRadius: getResponsiveValue(8),
+                        backgroundColor: colors.primary[100],
+                      }}
+                    >
+                      <Text style={{ color: colors.primary.DEFAULT, fontSize: getResponsiveValue(11, 0.95), fontWeight: "900" }}>
+                        🔥 {habitsStreak} dias
+                      </Text>
+                    </View>
+                  )}
+                </View>
+                <View style={{ height: getResponsiveValue(5), borderRadius: getResponsiveValue(2), backgroundColor: "rgba(15,23,42,0.08)", overflow: "hidden" }}>
+                  <View
+                    style={{
+                      height: "100%",
+                      borderRadius: 3,
+                      width: `${habitsProgress}%`,
+                      backgroundColor: colors.primary.DEFAULT,
+                    }}
+                  />
                 </View>
               </Pressable>
-            ))}
-          </ScrollView>
-        </Animated.View>
+            </Animated.View>
+          )}
 
-        {/* Community Preview - Mães Valente */}
-        <Animated.View
-          entering={FadeInUp.delay(700).duration(600).springify()}
-          className="px-6 mb-8"
-        >
-          <View className="flex-row items-center justify-between mb-5">
-            <Text
-              className="text-warmGray-900 text-xl font-serif"
-              accessibilityRole="header"
-            >
-              Mães Valente
-            </Text>
-            <Pressable
-              onPress={() => navigation.navigate("Community")}
-              accessibilityRole="button"
-              accessibilityLabel="Ver todas as publicações da comunidade"
-            >
-              <View className="flex-row items-center">
-                <Text className="text-rose-600 text-sm font-semibold mr-1">
-                  Ver tudo
-                </Text>
-                <Ionicons name="arrow-forward" size={16} color="#f4258c" />
-              </View>
-            </Pressable>
-          </View>
+          {/* Para Você - Posts da Comunidade */}
+          <Animated.View entering={FadeInUp.delay(600).duration(600).springify()} style={{ marginTop: getResponsiveValue(4) }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: getResponsiveValue(8), paddingHorizontal: 2 }}>
+              <Text style={{ color: textMain, fontSize: getResponsiveValue(17, 1.05), fontWeight: "900" }}>Para Você</Text>
+              <Pressable onPress={() => navigation.navigate("Community")}>
+                <Text style={{ color: colors.primary.DEFAULT, fontSize: getResponsiveValue(13, 0.95), fontWeight: "900" }}>Ver tudo</Text>
+              </Pressable>
+            </View>
 
-          {/* Posts Feed */}
-          {COMMUNITY_POSTS.slice(0, 2).map((post) => (
-            <Pressable
-              key={post.id}
-              onPress={() => navigation.navigate("PostDetail", { postId: post.id })}
-              className="rounded-2xl p-4 mb-3"
-              style={[{ backgroundColor: "#FFF" }, shadowPresets.md]}
-              accessibilityRole="button"
-              accessibilityLabel={`Post de ${post.author}: ${post.title}`}
-            >
-              <View className="flex-row items-center mb-3">
-                {post.avatar ? (
-                  <Image
-                    source={{ uri: post.avatar }}
-                    style={{ width: 40, height: 40, borderRadius: 20, marginRight: 12 }}
-                    contentFit="cover"
-                  />
-                ) : (
-                  <Avatar
-                    size={40}
-                    isNathalia={false}
-                    fallbackIcon="person"
-                    fallbackColor="#9E7269"
-                    fallbackBgColor="rgba(188, 139, 123, 0.15)"
-                    style={{ marginRight: 12 }}
-                  />
-                )}
-                <View className="flex-1">
-                  <View className="flex-row items-center">
-                    <Text className="text-warmGray-900 text-sm font-semibold">
-                      {post.author}
-                    </Text>
-                    {post.tag === "FIXADO" && (
-                      <Ionicons name="pin" size={12} color="#6B7280" style={{ marginLeft: 4 }} />
+            {latestPost ? (
+              <Pressable
+                onPress={() => handlePostPress(latestPost.id)}
+                style={{
+                  backgroundColor: cardBg,
+                  borderRadius: getResponsiveValue(14),
+                  padding: getResponsiveValue(10),
+                  borderWidth: 1,
+                  borderColor: border,
+                  ...cardShadow,
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: getResponsiveValue(8) }}>
+                  <View
+                    style={{
+                      height: getResponsiveValue(38, 0.95),
+                      width: getResponsiveValue(38, 0.95),
+                      borderRadius: 999,
+                      backgroundColor: colors.primary[100],
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginRight: getResponsiveValue(8),
+                    }}
+                  >
+                    {latestPost.authorAvatar ? (
+                      <Image source={{ uri: latestPost.authorAvatar }} style={{ height: "100%", width: "100%", borderRadius: 999 }} />
+                    ) : (
+                      <Ionicons name="person" size={20} color={colors.primary.DEFAULT} />
                     )}
                   </View>
-                  <Text className="text-warmGray-400 text-xs">
-                    {post.time} • {post.category}
-                  </Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: textMain, fontSize: getResponsiveValue(13, 0.95), fontWeight: "900" }}>{latestPost.authorName}</Text>
+                    <Text style={{ color: textMuted, fontSize: getResponsiveValue(10, 0.9), marginTop: 2 }}>{formatTimeAgo(latestPost.createdAt)}</Text>
+                  </View>
                 </View>
-                <View
-                  className="px-2 py-1 rounded-full"
-                  style={{ backgroundColor: `${post.tagColor}15` }}
-                >
-                  <Text
-                    className="text-xs font-semibold"
-                    style={{ color: post.tagColor }}
-                  >
-                    {post.tag}
-                  </Text>
+                <Text style={{ color: textMain, fontSize: getResponsiveValue(13, 0.95), fontWeight: "900", lineHeight: getResponsiveValue(16) }} numberOfLines={2}>
+                  {latestPost.content}
+                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center", marginTop: getResponsiveValue(8), gap: getResponsiveValue(12) }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: getResponsiveValue(3) }}>
+                    <Ionicons
+                      name={latestPost.isLiked ? "heart" : "heart-outline"}
+                      size={getResponsiveValue(14, 0.9)}
+                      color={latestPost.isLiked ? colors.primary.DEFAULT : textMuted}
+                    />
+                    <Text style={{ color: textMuted, fontSize: getResponsiveValue(11, 0.95), fontWeight: "700" }}>{latestPost.likesCount}</Text>
+                  </View>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: getResponsiveValue(3) }}>
+                    <Ionicons name="chatbubble-outline" size={getResponsiveValue(14, 0.9)} color={textMuted} />
+                    <Text style={{ color: textMuted, fontSize: getResponsiveValue(11, 0.95), fontWeight: "700" }}>{latestPost.commentsCount}</Text>
+                  </View>
                 </View>
-              </View>
-              <Text className="text-warmGray-900 text-base font-semibold mb-1">
-                {post.title}
-              </Text>
-              <Text className="text-warmGray-600 text-sm leading-5 mb-3" numberOfLines={2}>
-                {post.content}
-              </Text>
-              <View className="flex-row items-center">
-                <View className="flex-row items-center mr-4">
-                  <Ionicons name="heart" size={16} color="#f4258c" />
-                  <Text className="text-warmGray-500 text-xs ml-1">{post.likes}</Text>
-                </View>
-                <View className="flex-row items-center">
-                  <Ionicons name="chatbubble-outline" size={14} color="#A8A29E" />
-                  <Text className="text-warmGray-500 text-xs ml-1">{post.comments}</Text>
-                </View>
-                <View className="flex-1" />
+              </Pressable>
+            ) : (
+              <View
+                style={{
+                  backgroundColor: cardBg,
+                  borderRadius: getResponsiveValue(14),
+                  padding: getResponsiveValue(20),
+                  alignItems: "center",
+                  borderWidth: 1,
+                  borderColor: border,
+                  ...cardShadow,
+                }}
+              >
+                <Ionicons name="people-outline" size={getResponsiveValue(42, 0.9)} color="#D1D5DB" />
+                <Text style={{ color: textMuted, fontSize: getResponsiveValue(13, 0.95), textAlign: "center", marginTop: getResponsiveValue(10) }}>
+                  Ainda não há posts. Seja a primeira a compartilhar!
+                </Text>
                 <Pressable
-                  className="flex-row items-center px-3 py-1.5 rounded-full"
-                  style={{ backgroundColor: "#F5F5F4" }}
+                  onPress={() => navigation.navigate("Community")}
+                  style={{
+                    marginTop: getResponsiveValue(12),
+                    paddingHorizontal: getResponsiveValue(18),
+                    paddingVertical: getResponsiveValue(8),
+                    borderRadius: getResponsiveValue(10),
+                    backgroundColor: colors.primary.DEFAULT,
+                  }}
                 >
-                  <Ionicons name="arrow-undo-outline" size={14} color="#78716C" />
-                  <Text className="text-warmGray-600 text-xs ml-1 font-medium">Responder</Text>
+                  <Text style={{ color: "#fff", fontSize: getResponsiveValue(13, 0.95), fontWeight: "800" }}>Ver comunidade</Text>
                 </Pressable>
               </View>
-            </Pressable>
-          ))}
+            )}
+          </Animated.View>
+        </ScrollView>
+      </View>
+    </SafeAreaView>
+  );
+}
 
-          {/* CTA - Compartilhe sua jornada */}
-          <Pressable
-            onPress={() => navigation.navigate("NewPost")}
-            className="rounded-2xl p-4 flex-row items-center justify-center"
-            style={{ backgroundColor: "#f4258c" }}
-            accessibilityRole="button"
-            accessibilityLabel="Compartilhe sua jornada"
-          >
-            <Ionicons name="create-outline" size={20} color="#FFFFFF" />
-            <Text className="text-white text-sm font-semibold ml-2">
-              Compartilhe sua jornada
-            </Text>
-          </Pressable>
-        </Animated.View>
+function MoodButton({
+  label,
+  icon,
+  iconColor,
+  isSelected,
+  onPress,
+}: {
+  label: string;
+  icon: string;
+  iconColor: string;
+  isSelected: boolean;
+  onPress: () => void;
+}) {
+  const { colors } = useTheme();
+  const iconMap: Record<string, keyof typeof Ionicons.glyphMap> = {
+    sunny: "sunny",
+    cloud: "cloud",
+    rainy: "rainy",
+    heart: "heart",
+  };
 
-        {/* Inspirational Quote */}
-        <Animated.View
-          entering={FadeInUp.delay(900).duration(600).springify()}
-          className="px-6"
-        >
-          <View
-            className="rounded-3xl p-6 items-center"
-            style={{
-              backgroundColor: "#FFF9F3",
-              borderWidth: 1,
-              borderColor: "#F5E1DB",
-            }}
-          >
-            <Ionicons name="sparkles" size={32} color="#E8B88C" />
-            <Text className="text-warmGray-700 text-center text-base leading-7 mt-4 italic">
-              Maternidade: onde o amor se torna visível e a força se transforma em ternura
-            </Text>
-          </View>
-        </Animated.View>
-      </ScrollView>
-    </View>
+  // Obter cor de fundo pastel baseada no sentimento
+  const getBackgroundColor = () => {
+    if (isSelected) {
+      // Usar cor ativa pastel do sentimento
+      const feelingMap: Record<string, string> = {
+        sunny: colors.feeling.sunny.activeColor,
+        cloud: colors.feeling.cloud.activeColor,
+        rainy: colors.feeling.rainy.activeColor,
+        heart: colors.feeling.heart.activeColor,
+      };
+      return feelingMap[icon] || colors.primary[100];
+    }
+    return colors.ui.borderLight;
+  };
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => ({
+        flex: 1,
+        borderRadius: getResponsiveValue(12),
+        paddingVertical: getResponsiveValue(10),
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: getBackgroundColor(),
+        transform: [{ scale: pressed ? 0.97 : 1 }],
+        borderWidth: isSelected ? 2 : 1,
+        borderColor: isSelected ? iconColor : "transparent",
+      })}
+    >
+      <Ionicons name={iconMap[icon] || "ellipse"} size={getResponsiveValue(26, 0.9)} color={iconColor} />
+      <Text style={{ marginTop: getResponsiveValue(4), fontSize: getResponsiveValue(11, 0.95), fontWeight: "700", color: colors.text.dark }}>
+        {label}
+      </Text>
+    </Pressable>
   );
 }

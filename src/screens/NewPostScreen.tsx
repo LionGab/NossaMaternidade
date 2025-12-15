@@ -1,124 +1,54 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, TextInput, KeyboardAvoidingView, Platform, Image, ActivityIndicator, Alert } from "react-native";
+import { View, Text, Pressable, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
 import { RootStackScreenProps, Post } from "../types/navigation";
 import { useCommunityStore, useAppStore } from "../state/store";
-import { uploadImageToImgur } from "../api/imgur";
-import { logger } from "../utils/logger";
 import * as Haptics from "expo-haptics";
 
 export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewPost">) {
   const insets = useSafeAreaInsets();
   const [content, setContent] = useState("");
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
 
   const addPost = useCommunityStore((s) => s.addPost);
   const user = useAppStore((s) => s.user);
 
-  const handlePost = async () => {
-    if (!content.trim() && !selectedImage) return;
+  const handlePost = () => {
+    if (!content.trim()) return;
 
-    setIsUploading(true);
-    let imageUrl: string | undefined;
+    const newPost: Post = {
+      id: Date.now().toString(),
+      authorId: user?.id || "me",
+      authorName: user?.name || "Você",
+      content: content.trim(),
+      likesCount: 0,
+      commentsCount: 0,
+      createdAt: new Date().toISOString(),
+      isLiked: false,
+    };
 
-    try {
-      // Fazer upload da imagem se houver
-      if (selectedImage) {
-        logger.info("Iniciando upload de imagem", "NewPostScreen");
-        imageUrl = await uploadImageToImgur(selectedImage);
-        logger.info("Upload concluído", "NewPostScreen", { imageUrl });
-      }
-
-      const newPost: Post = {
-        id: Date.now().toString(),
-        authorId: user?.id || "me",
-        authorName: user?.name || "Você",
-        content: content.trim(),
-        imageUrl,
-        likesCount: 0,
-        commentsCount: 0,
-        createdAt: new Date().toISOString(),
-        isLiked: false,
-      };
-
-      addPost(newPost);
-      navigation.goBack();
-    } catch (error) {
-      logger.error("Erro ao publicar post", "NewPostScreen", error instanceof Error ? error : new Error(String(error)));
-      Alert.alert(
-        "Erro",
-        "Não foi possível publicar o post. Verifique sua conexão e tente novamente.",
-        [{ text: "OK" }]
-      );
-    } finally {
-      setIsUploading(false);
-    }
+    addPost(newPost);
+    navigation.goBack();
   };
 
   const handlePhotoPress = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
-    try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Permissão necessária",
-          "Precisamos de acesso à sua galeria para adicionar fotos.",
-          [{ text: "OK" }]
-        );
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        setSelectedImage(result.assets[0].uri);
-      }
-    } catch (error) {
-      logger.error("Erro ao selecionar imagem", "NewPostScreen", error instanceof Error ? error : new Error(String(error)));
-      Alert.alert("Erro", "Não foi possível selecionar a imagem.");
-    }
+    navigation.navigate("ComingSoon", {
+      title: "Adicionar Foto",
+      description: "Em breve você poderá adicionar fotos da sua galeria aos seus posts.",
+      emoji: "🖼️",
+      primaryCtaLabel: "Voltar",
+    });
   };
 
   const handleCameraPress = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
-    try {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Permissão necessária",
-          "Precisamos de acesso à câmera para tirar fotos.",
-          [{ text: "OK" }]
-        );
-        return;
-      }
-
-      const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        setSelectedImage(result.assets[0].uri);
-      }
-    } catch (error) {
-      logger.error("Erro ao tirar foto", "NewPostScreen", error instanceof Error ? error : new Error(String(error)));
-      Alert.alert("Erro", "Não foi possível tirar a foto.");
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setSelectedImage(null);
+    navigation.navigate("ComingSoon", {
+      title: "Tirar Foto",
+      description: "Em breve você poderá tirar fotos diretamente para seus posts.",
+      emoji: "📸",
+      primaryCtaLabel: "Voltar",
+    });
   };
 
   return (
@@ -133,19 +63,12 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
         </Pressable>
         <Pressable
           onPress={handlePost}
-          disabled={(!content.trim() && !selectedImage) || isUploading}
-          className={`px-5 py-2 rounded-full flex-row items-center ${(content.trim() || selectedImage) && !isUploading ? "bg-rose-500" : "bg-warmGray-200"}`}
+          disabled={!content.trim()}
+          className={`px-5 py-2 rounded-full ${content.trim() ? "bg-rose-500" : "bg-warmGray-200"}`}
         >
-          {isUploading ? (
-            <>
-              <ActivityIndicator size="small" color="#FFFFFF" style={{ marginRight: 8 }} />
-              <Text className="text-base font-semibold text-white">Enviando...</Text>
-            </>
-          ) : (
-            <Text className={`text-base font-semibold ${(content.trim() || selectedImage) ? "text-white" : "text-warmGray-400"}`}>
-              Publicar
-            </Text>
-          )}
+          <Text className={`text-base font-semibold ${content.trim() ? "text-white" : "text-warmGray-400"}`}>
+            Publicar
+          </Text>
         </Pressable>
       </View>
 
@@ -167,24 +90,6 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
               className="text-warmGray-700 text-base leading-6 mt-2"
               style={{ minHeight: 100 }}
             />
-            
-            {/* Image Preview */}
-            {selectedImage && (
-              <View className="mt-4 relative">
-                <Image
-                  source={{ uri: selectedImage }}
-                  className="w-full rounded-xl"
-                  style={{ height: 200 }}
-                  resizeMode="cover"
-                />
-                <Pressable
-                  onPress={handleRemoveImage}
-                  className="absolute top-2 right-2 bg-black/50 rounded-full p-2"
-                >
-                  <Ionicons name="close" size={20} color="#FFFFFF" />
-                </Pressable>
-              </View>
-            )}
           </View>
         </View>
       </View>

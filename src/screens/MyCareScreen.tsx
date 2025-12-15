@@ -1,25 +1,32 @@
 import React, { useMemo } from "react";
-import { View, Text, ScrollView, Pressable, Dimensions, Image } from "react-native";
+import { View, Text, ScrollView, Pressable, Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeIn, FadeInDown, FadeInUp } from "react-native-reanimated";
 import { MainTabScreenProps } from "../types/navigation";
 import { useAppStore } from "../state/store";
-import { shadowPresets } from "../utils/shadow";
 import * as Haptics from "expo-haptics";
-
-import { COLORS as DESIGN_COLORS, SPACING, RADIUS, SHADOWS } from "../theme/design-system";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-// Usar cores do design system
+// Paleta suave e acolhedora
 const COLORS = {
-  cardBg: DESIGN_COLORS.background.secondary,
-  text: DESIGN_COLORS.neutral[800],
-  textMuted: DESIGN_COLORS.neutral[600],
-  textLight: DESIGN_COLORS.neutral[400],
-  background: DESIGN_COLORS.background.primary,
+  background: "#FBF9F7",
+  cardBg: "#FFFFFF",
+  lilac: "#D4C4E8",
+  lilacSoft: "#EDE7F6",
+  rose: "#F5D0D0",
+  roseSoft: "#FDF0F0",
+  blueCalm: "#C5DAE8",
+  blueSoft: "#E8F2F8",
+  sage: "#D4E5D7",
+  sageSoft: "#EDF5EE",
+  peach: "#F5E0D4",
+  peachSoft: "#FDF6F2",
+  text: "#4A4A4A",
+  textMuted: "#7A7A7A",
+  textLight: "#9A9A9A",
 };
 
 const DAILY_AFFIRMATIONS = [
@@ -36,38 +43,38 @@ const CARE_SECTIONS = [
   {
     id: "breathe",
     title: "Respira comigo",
-    subtitle: "Um momento só seu",
+    subtitle: "Um momento so seu",
     icon: "leaf-outline",
-    color: DESIGN_COLORS.semantic.success,
-    bgColor: `${DESIGN_COLORS.semantic.success}15`,
-    description: "Exercícios de respiração para acalmar",
+    color: COLORS.sage,
+    bgColor: COLORS.sageSoft,
+    description: "Exercicios de respiracao para acalmar",
   },
   {
     id: "feelings",
-    title: "Como você está?",
+    title: "Como voce esta?",
     subtitle: "Registro emocional",
     icon: "heart-outline",
-    color: DESIGN_COLORS.primary[500],
-    bgColor: DESIGN_COLORS.primary[50],
-    description: "Espaço seguro para seus sentimentos",
+    color: COLORS.rose,
+    bgColor: COLORS.roseSoft,
+    description: "Espaco seguro para seus sentimentos",
   },
   {
     id: "rest",
     title: "Descanso",
-    subtitle: "Sons e meditações",
+    subtitle: "Sons e meditacoes",
     icon: "moon-outline",
-    color: DESIGN_COLORS.secondary[500],
-    bgColor: DESIGN_COLORS.secondary[50],
+    color: COLORS.lilac,
+    bgColor: COLORS.lilacSoft,
     description: "Ajuda para relaxar e dormir melhor",
   },
   {
     id: "connect",
-    title: "Conexão",
-    subtitle: "Comunidade de mães",
+    title: "Conexao",
+    subtitle: "Comunidade de maes",
     icon: "people-outline",
-    color: DESIGN_COLORS.semantic.info,
-    bgColor: `${DESIGN_COLORS.semantic.info}15`,
-    description: "Você não está sozinha nessa jornada",
+    color: COLORS.blueCalm,
+    bgColor: COLORS.blueSoft,
+    description: "Voce nao esta sozinha nessa jornada",
   },
 ];
 
@@ -124,37 +131,49 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
     } else if (id === "feelings") {
       navigation.navigate("DailyLog", {});
     } else if (id === "breathe") {
-      navigation.navigate("BreathingExercise");
+      navigation.navigate("ComingSoon", {
+        title: "Respira Comigo",
+        description: "Em breve teremos exercícios guiados de respiração para te ajudar a relaxar.",
+        emoji: "🧘",
+        primaryCtaLabel: "Voltar",
+        secondaryCtaLabel: "Falar com NathIA",
+        relatedRoute: "Assistant",
+      });
     } else if (id === "rest") {
-      navigation.navigate("RestSounds");
+      navigation.navigate("ComingSoon", {
+        title: "Descanso",
+        description: "Em breve teremos sons relaxantes e meditações guiadas para você.",
+        emoji: "🌙",
+        primaryCtaLabel: "Voltar",
+        secondaryCtaLabel: "Ver Afirmações",
+        relatedRoute: "Assistant",
+      });
     }
   };
 
   const handleQuickSupport = async (id: string) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    // Direct navigation for implemented features
-    if (id === "self") {
-      navigation.navigate("HabitsEnhanced");
-      return;
-    }
-
-    if (id === "anxiety") {
-      navigation.navigate("BreathingExercise");
-      return;
-    }
-
-    if (id === "sleep") {
-      navigation.navigate("RestSounds");
-      return;
-    }
-
-    // Coming soon for features not yet implemented
     const supportConfig: Record<string, { title: string; description: string; emoji: string }> = {
+      anxiety: {
+        title: "Ansiedade",
+        description: "Em breve teremos técnicas de alívio e exercícios para ajudar com a ansiedade.",
+        emoji: "🫂",
+      },
+      sleep: {
+        title: "Sono do Bebê",
+        description: "Em breve teremos dicas práticas para ajudar seu bebê a dormir melhor.",
+        emoji: "😴",
+      },
       feeding: {
         title: "Amamentação",
         description: "Em breve teremos guias completos e apoio para amamentação.",
         emoji: "🤱",
+      },
+      self: {
+        title: "Autocuidado",
+        description: "Em breve teremos sugestões de momentos de autocuidado para você.",
+        emoji: "💆‍♀️",
       },
     };
 
@@ -188,20 +207,6 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
             style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 20 }}
           >
             <Animated.View entering={FadeInDown.duration(600).springify()}>
-              {/* Hero Image */}
-              <View className="mb-6" style={{ alignItems: "center" }}>
-                <Image
-                  source={require("../../assets/mycare-image.jpg")}
-                  style={{
-                    width: SCREEN_WIDTH - 48,
-                    height: (SCREEN_WIDTH - 48) * 0.6,
-                    borderRadius: 24,
-                    resizeMode: "cover",
-                  }}
-                  accessibilityRole="image"
-                  accessibilityLabel="Imagem de cuidados pessoais e bem-estar"
-                />
-              </View>
               {/* Greeting */}
               <View className="mb-6">
                 <Text
@@ -236,12 +241,11 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
               borderRadius: 24,
               padding: 24,
               shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.05,
-              shadowRadius: 6,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.04,
+              shadowRadius: 20,
               elevation: 2,
             }}
-            accessibilityRole="summary"
           >
             <View className="flex-row items-start mb-4">
               <View
@@ -249,7 +253,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                   width: 44,
                   height: 44,
                   borderRadius: 22,
-                  backgroundColor: DESIGN_COLORS.accent.peach,
+                  backgroundColor: COLORS.peachSoft,
                   alignItems: "center",
                   justifyContent: "center",
                   marginRight: 14,
@@ -299,7 +303,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                   width: 32,
                   height: 32,
                   borderRadius: 16,
-                  backgroundColor: DESIGN_COLORS.secondary[50],
+                  backgroundColor: COLORS.lilacSoft,
                   alignItems: "center",
                   justifyContent: "center",
                   marginRight: 10,
@@ -321,11 +325,11 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
         >
           <View
             style={{
-              backgroundColor: `${DESIGN_COLORS.semantic.info}15`,
+              backgroundColor: COLORS.blueSoft,
               borderRadius: 20,
               padding: 20,
               borderWidth: 1,
-              borderColor: DESIGN_COLORS.neutral[200],
+              borderColor: "#D6E6F2",
             }}
           >
             <View className="flex-row items-center">
@@ -367,7 +371,6 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
               fontWeight: "600",
               marginBottom: 16,
             }}
-            accessibilityRole="header"
           >
             Cuidados para voce
           </Text>
@@ -387,9 +390,6 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                     padding: 18,
                     minHeight: 140,
                   }}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${section.title}: ${section.subtitle}`}
-                  accessibilityHint={section.description}
                 >
                   <View
                     style={{
@@ -401,10 +401,9 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                       justifyContent: "center",
                       marginBottom: 14,
                       shadowColor: "#000",
-                      shadowOffset: { width: 0, height: 1 },
-                      shadowOpacity: 0.03,
-                      shadowRadius: 3,
-                      elevation: 1,
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.04,
+                      shadowRadius: 8,
                     }}
                   >
                     <Ionicons
@@ -449,7 +448,6 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
               fontWeight: "600",
               marginBottom: 16,
             }}
-            accessibilityRole="header"
           >
             Apoio rapido
           </Text>
@@ -461,9 +459,8 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
               padding: 6,
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.04,
-              shadowRadius: 6,
-              elevation: 1,
+              shadowOpacity: 0.03,
+              shadowRadius: 12,
             }}
           >
             {QUICK_SUPPORT.map((item, index) => (
@@ -477,9 +474,6 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                   borderBottomWidth: index < QUICK_SUPPORT.length - 1 ? 1 : 0,
                   borderBottomColor: "#F5F5F5",
                 }}
-                accessibilityRole="button"
-                accessibilityLabel={`${item.title}: ${item.subtitle}`}
-                accessibilityHint="Abre informações sobre este tópico de apoio"
               >
                 <View
                   style={{
@@ -528,15 +522,12 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
           <Pressable
             onPress={handleTalkPress}
             style={{
-              backgroundColor: DESIGN_COLORS.primary[50],
+              backgroundColor: COLORS.roseSoft,
               borderRadius: 20,
               padding: 20,
               borderWidth: 1,
-              borderColor: DESIGN_COLORS.primary[100],
+              borderColor: "#F5E0E0",
             }}
-            accessibilityRole="button"
-            accessibilityLabel="Precisa conversar? Estamos aqui para ouvir você"
-            accessibilityHint="Abre o chat com a NathIA para conversar"
           >
             <View className="flex-row items-center">
               <View
@@ -550,7 +541,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                   marginRight: 16,
                 }}
               >
-                <Ionicons name="chatbubble-ellipses-outline" size={24} color={DESIGN_COLORS.primary[500]} />
+                <Ionicons name="chatbubble-ellipses-outline" size={24} color={COLORS.rose} />
               </View>
               <View className="flex-1">
                 <Text
@@ -585,15 +576,12 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
           <Pressable
             onPress={() => navigation.navigate("Community")}
             style={{
-              backgroundColor: DESIGN_COLORS.secondary[50],
+              backgroundColor: COLORS.lilacSoft,
               borderRadius: 20,
               padding: 24,
               borderWidth: 1,
-              borderColor: DESIGN_COLORS.secondary[100],
+              borderColor: "#E0D4F0",
             }}
-            accessibilityRole="button"
-            accessibilityLabel="Comunidade Mães Valente"
-            accessibilityHint="Navega para a comunidade de mães"
           >
             <View className="flex-row items-center mb-3">
               <Text style={{ fontSize: 24, marginRight: 10 }}>💜</Text>
@@ -631,7 +619,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                       justifyContent: "center",
                       marginLeft: i > 0 ? -8 : 0,
                       borderWidth: 2,
-                      borderColor: DESIGN_COLORS.secondary[50],
+                      borderColor: COLORS.lilacSoft,
                     }}
                   >
                     <Text style={{ fontSize: 14 }}>{emoji}</Text>
@@ -656,16 +644,13 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
               style={{
                 flex: 1,
                 marginHorizontal: 6,
-                backgroundColor: DESIGN_COLORS.accent.peach,
+                backgroundColor: COLORS.peach,
                 borderRadius: 16,
                 padding: 18,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
               }}
-              accessibilityRole="button"
-              accessibilityLabel="Afirmações"
-              accessibilityHint="Abre a tela de afirmações positivas"
             >
               <Ionicons name="sparkles-outline" size={20} color={COLORS.text} />
               <Text
@@ -680,20 +665,17 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
               </Text>
             </Pressable>
             <Pressable
-              onPress={() => navigation.navigate("HabitsEnhanced")}
+              onPress={() => navigation.navigate("Habits")}
               style={{
                 flex: 1,
                 marginHorizontal: 6,
-                backgroundColor: `${DESIGN_COLORS.semantic.success}80`,
+                backgroundColor: COLORS.sage,
                 borderRadius: 16,
                 padding: 18,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
               }}
-              accessibilityRole="button"
-              accessibilityLabel="Meus hábitos"
-              accessibilityHint="Abre a tela de hábitos e rastreamento"
             >
               <Ionicons name="checkbox-outline" size={20} color={COLORS.text} />
               <Text
