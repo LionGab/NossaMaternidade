@@ -60,10 +60,10 @@ export default function AppCard({
     },
     outlined: {
       borderWidth: 1,
-      borderColor: colors.ui.border,
+      borderColor: colors.neutral[200],
     },
     soft: {
-      backgroundColor: color || colors.background.soft,
+      backgroundColor: color || colors.background.tertiary,
     },
   };
 

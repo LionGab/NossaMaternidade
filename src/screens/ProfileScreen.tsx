@@ -7,6 +7,7 @@ import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { MainTabScreenProps } from "../types/navigation";
 import { useAppStore } from "../state/store";
 import * as Haptics from "expo-haptics";
+import { useTheme } from "../hooks/useTheme";
 
 interface MenuItem {
   id: string;
@@ -15,18 +16,19 @@ interface MenuItem {
   color: string;
 }
 
-const MENU_ITEMS: MenuItem[] = [
-  { id: "edit", label: "Editar perfil", icon: "person-outline", color: "#78716C" },
-  { id: "notifications", label: "Notificações", icon: "notifications-outline", color: "#78716C" },
-  { id: "privacy", label: "Privacidade", icon: "shield-outline", color: "#78716C" },
-  { id: "help", label: "Ajuda e suporte", icon: "help-circle-outline", color: "#78716C" },
-  { id: "about", label: "Sobre o app", icon: "information-circle-outline", color: "#78716C" },
-];
-
 export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profile">) {
   const insets = useSafeAreaInsets();
+  const { colors, theme, setTheme } = useTheme();
   const user = useAppStore((s) => s.user);
   const setOnboardingComplete = useAppStore((s) => s.setOnboardingComplete);
+
+  const MENU_ITEMS: MenuItem[] = [
+    { id: "edit", label: "Editar perfil", icon: "person-outline", color: colors.neutral[500] },
+    { id: "notifications", label: "Notificações", icon: "notifications-outline", color: colors.neutral[500] },
+    { id: "privacy", label: "Privacidade", icon: "shield-outline", color: colors.neutral[500] },
+    { id: "help", label: "Ajuda e suporte", icon: "help-circle-outline", color: colors.neutral[500] },
+    { id: "about", label: "Sobre o app", icon: "information-circle-outline", color: colors.neutral[500] },
+  ];
 
   const getStageLabel = () => {
     switch (user?.stage) {
@@ -100,7 +102,7 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
   return (
     <View className="flex-1 bg-cream-50">
       <LinearGradient
-        colors={["#FFF5F7", "#FFF9F3", "#FFFCF9"]}
+        colors={[colors.primary[50], colors.secondary[50], colors.background.secondary]}
         locations={[0, 0.4, 1]}
         style={{ position: "absolute", top: 0, left: 0, right: 0, height: 400 }}
       />
@@ -121,25 +123,25 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
               onPress={handleSettingsPress}
               className="p-2"
               style={{
-                backgroundColor: "#FFFFFF",
+                backgroundColor: colors.background.card,
                 borderRadius: 12,
-                shadowColor: "#000",
+                shadowColor: colors.neutral[900],
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.04,
                 shadowRadius: 8
               }}
             >
-              <Ionicons name="settings-outline" size={24} color="#78716C" />
+              <Ionicons name="settings-outline" size={24} color={colors.neutral[500]} />
             </Pressable>
           </View>
 
           {/* Profile Card */}
           <View
             style={{
-              backgroundColor: "#FFFFFF",
+              backgroundColor: colors.background.card,
               borderRadius: 32,
               padding: 28,
-              shadowColor: "#000",
+              shadowColor: colors.neutral[900],
               shadowOffset: { width: 0, height: 8 },
               shadowOpacity: 0.06,
               shadowRadius: 24
@@ -148,15 +150,15 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
             <View className="items-center">
               <View
                 className="w-28 h-28 rounded-full items-center justify-center mb-5"
-                style={{ backgroundColor: "rgba(188, 139, 123, 0.15)" }}
+                style={{ backgroundColor: colors.primary[100] }}
               >
-                <Ionicons name="person" size={52} color="#9E7269" />
+                <Ionicons name="person" size={52} color={colors.neutral[400]} />
               </View>
               <Text className="text-warmGray-800 text-2xl font-serif mb-3">{user?.name || "Usuaria"}</Text>
               <View className="flex-row items-center">
                 <View
                   className="px-4 py-2 rounded-full"
-                  style={{ backgroundColor: "rgba(225, 29, 72, 0.1)" }}
+                  style={{ backgroundColor: colors.primary[50] }}
                 >
                   <Text className="text-rose-600 text-base font-semibold">{getStageLabel()}</Text>
                 </View>
@@ -201,9 +203,9 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
                   <View
                     className="px-5 py-2.5 mr-2 mb-2"
                     style={{
-                      backgroundColor: "#FFFFFF",
+                      backgroundColor: colors.background.card,
                       borderRadius: 20,
-                      shadowColor: "#000",
+                      shadowColor: colors.neutral[900],
                       shadowOffset: { width: 0, height: 2 },
                       shadowOpacity: 0.04,
                       shadowRadius: 8
@@ -219,6 +221,114 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
           </Animated.View>
         )}
 
+        {/* Theme Selection */}
+        <Animated.View
+          entering={FadeInUp.delay(300).duration(600).springify()}
+          className="px-6 mb-8"
+        >
+          <Text className="text-warmGray-800 text-xl font-semibold mb-4">Aparência</Text>
+          <View
+            style={{
+              backgroundColor: colors.background.card,
+              borderRadius: 24,
+              padding: 20,
+              shadowColor: colors.neutral[900],
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.04,
+              shadowRadius: 12
+            }}
+          >
+            <View className="flex-row justify-between">
+              {/* Light Theme */}
+              <Pressable
+                onPress={async () => {
+                  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setTheme("light");
+                }}
+                className="flex-1 items-center"
+                style={{
+                  backgroundColor: theme === "light" ? colors.primary[50] : "transparent",
+                  borderRadius: 16,
+                  paddingVertical: 16,
+                  marginRight: 8,
+                  borderWidth: 2,
+                  borderColor: theme === "light" ? colors.primary[500] : "transparent"
+                }}
+              >
+                <Ionicons
+                  name="sunny"
+                  size={28}
+                  color={theme === "light" ? colors.primary[500] : colors.neutral[400]}
+                />
+                <Text
+                  className="text-sm font-semibold mt-2"
+                  style={{ color: theme === "light" ? colors.primary[500] : colors.neutral[600] }}
+                >
+                  Claro
+                </Text>
+              </Pressable>
+
+              {/* Dark Theme */}
+              <Pressable
+                onPress={async () => {
+                  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setTheme("dark");
+                }}
+                className="flex-1 items-center"
+                style={{
+                  backgroundColor: theme === "dark" ? colors.primary[50] : "transparent",
+                  borderRadius: 16,
+                  paddingVertical: 16,
+                  marginHorizontal: 8,
+                  borderWidth: 2,
+                  borderColor: theme === "dark" ? colors.primary[500] : "transparent"
+                }}
+              >
+                <Ionicons
+                  name="moon"
+                  size={28}
+                  color={theme === "dark" ? colors.primary[500] : colors.neutral[400]}
+                />
+                <Text
+                  className="text-sm font-semibold mt-2"
+                  style={{ color: theme === "dark" ? colors.primary[500] : colors.neutral[600] }}
+                >
+                  Escuro
+                </Text>
+              </Pressable>
+
+              {/* System Theme */}
+              <Pressable
+                onPress={async () => {
+                  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setTheme("system");
+                }}
+                className="flex-1 items-center"
+                style={{
+                  backgroundColor: theme === "system" ? colors.primary[50] : "transparent",
+                  borderRadius: 16,
+                  paddingVertical: 16,
+                  marginLeft: 8,
+                  borderWidth: 2,
+                  borderColor: theme === "system" ? colors.primary[500] : "transparent"
+                }}
+              >
+                <Ionicons
+                  name="phone-portrait"
+                  size={28}
+                  color={theme === "system" ? colors.primary[500] : colors.neutral[400]}
+                />
+                <Text
+                  className="text-sm font-semibold mt-2"
+                  style={{ color: theme === "system" ? colors.primary[500] : colors.neutral[600] }}
+                >
+                  Sistema
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </Animated.View>
+
         {/* Menu Items */}
         <Animated.View
           entering={FadeInUp.delay(400).duration(600).springify()}
@@ -227,10 +337,10 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
           <Text className="text-warmGray-800 text-xl font-semibold mb-4">Configuracoes</Text>
           <View
             style={{
-              backgroundColor: "#FFFFFF",
+              backgroundColor: colors.background.card,
               borderRadius: 24,
               overflow: "hidden",
-              shadowColor: "#000",
+              shadowColor: colors.neutral[900],
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.04,
               shadowRadius: 12
@@ -246,12 +356,12 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
               >
                 <View
                   className="w-11 h-11 rounded-full items-center justify-center mr-4"
-                  style={{ backgroundColor: "rgba(120, 113, 108, 0.08)" }}
+                  style={{ backgroundColor: colors.background.tertiary }}
                 >
                   <Ionicons name={item.icon} size={22} color={item.color} />
                 </View>
                 <Text className="flex-1 text-warmGray-700 text-base font-medium">{item.label}</Text>
-                <Ionicons name="chevron-forward" size={20} color="#D6D3D1" />
+                <Ionicons name="chevron-forward" size={20} color={colors.neutral[300]} />
               </Pressable>
             ))}
           </View>
@@ -266,15 +376,15 @@ export default function ProfileScreen({ navigation }: MainTabScreenProps<"Profil
             onPress={handleLogout}
             className="flex-row items-center justify-center"
             style={{
-              backgroundColor: "#FFFFFF",
+              backgroundColor: colors.background.card,
               borderRadius: 20,
               paddingVertical: 18,
               paddingHorizontal: 20,
               borderWidth: 1.5,
-              borderColor: "rgba(225, 29, 72, 0.2)"
+              borderColor: colors.primary[200]
             }}
           >
-            <Ionicons name="log-out-outline" size={22} color="#E11D48" />
+            <Ionicons name="log-out-outline" size={22} color={colors.primary[500]} />
             <Text className="text-rose-500 text-base font-semibold ml-2">Sair da conta</Text>
           </Pressable>
         </Animated.View>
