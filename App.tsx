@@ -6,6 +6,7 @@ import { useFonts, DMSans_400Regular, DMSans_500Medium, DMSans_600SemiBold, DMSa
 import { DMSerifDisplay_400Regular, DMSerifDisplay_400Regular_Italic } from "@expo-google-fonts/dm-serif-display";
 import RootNavigator from "./src/navigation/RootNavigator";
 import { View, ActivityIndicator } from "react-native";
+import { useEffect } from "react";
 import { ErrorBoundary } from "./src/components/ErrorBoundary";
 import { OfflineBanner } from "./src/components/OfflineBanner";
 import { ToastProvider } from "./src/context/ToastContext";
@@ -13,6 +14,8 @@ import { useNetworkStatus } from "./src/hooks/useNetworkStatus";
 import { useTheme } from "./src/hooks/useTheme";
 import { useDeepLinking } from "./src/hooks/useDeepLinking";
 import { navigationRef } from "./src/navigation/navigationRef";
+import { initializePurchases } from "./src/services/purchases";
+import { usePremiumStore } from "./src/state/premium-store";
 
 /*
 IMPORTANT NOTICE: DO NOT REMOVE
@@ -47,12 +50,24 @@ export default function App() {
 
   // Monitor network status for offline banner
   const { isOffline, isChecking, retry } = useNetworkStatus();
-  
+
   // Theme management
   const { isDark, colors } = useTheme();
-  
+
   // Deep linking
   useDeepLinking();
+
+  // Premium/IAP initialization
+  const syncWithRevenueCat = usePremiumStore((s) => s.syncWithRevenueCat);
+
+  useEffect(() => {
+    // Initialize RevenueCat on app startup
+    const initPremium = async () => {
+      await initializePurchases();
+      await syncWithRevenueCat();
+    };
+    initPremium();
+  }, [syncWithRevenueCat]);
 
   if (!fontsLoaded) {
     return (

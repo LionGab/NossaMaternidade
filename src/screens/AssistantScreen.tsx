@@ -21,7 +21,8 @@ import Animated, {
   SlideOutLeft,
 } from "react-native-reanimated";
 import { MainTabScreenProps, ChatMessage } from "../types/navigation";
-import { useChatStore, Conversation } from "../state/store";
+import { useChatStore, Conversation, useAppStore } from "../state/store";
+import { useIsPremium } from "../state/premium-store";
 import { Avatar } from "../components/ui";
 import { shadowPresets } from "../utils/shadow";
 import * as Haptics from "expo-haptics";
@@ -41,6 +42,7 @@ import { VoiceMessagePlayer } from "../components/VoiceMessagePlayer";
 import { useVoicePremiumGate } from "../hooks/useVoice";
 import { COLORS } from "../theme/design-system";
 import { useTheme } from "../hooks/useTheme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const PRIMARY_COLOR = COLORS.primary[500];
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -65,12 +67,16 @@ const QUICK_SUGGESTIONS = [
   "Preparar enxoval",
 ];
 
+const FREE_MESSAGE_LIMIT = 10;
+const MESSAGE_COUNT_KEY = "nathia_message_count";
+
 export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assistant">) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const flatListRef = useRef<FlatList>(null);
   const [inputText, setInputText] = useState("");
   const [showHistory, setShowHistory] = useState(false);
+  const [messageCount, setMessageCount] = useState(0);
 
   // Store selectors
   const conversations = useChatStore((s) => s.conversations);
@@ -84,11 +90,33 @@ export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assi
   const hasAcceptedAITerms = useChatStore((s) => s.hasAcceptedAITerms);
   const acceptAITerms = useChatStore((s) => s.acceptAITerms);
 
+  // Premium status
+  const isPremium = useIsPremium();
+  const user = useAppStore((s) => s.user);
+
   // AI Consent state
   const [showAIConsent, setShowAIConsent] = useState(!hasAcceptedAITerms);
 
   // Voice premium gate
   const { hasAccess: hasVoiceAccess } = useVoicePremiumGate();
+
+  // Load message count on mount
+  React.useEffect(() => {
+    const loadMessageCount = async () => {
+      if (isPremium) {
+        setMessageCount(0);
+        return;
+      }
+      try {
+        const key = `${MESSAGE_COUNT_KEY}_${user?.id || "anonymous"}`;
+        const count = await AsyncStorage.getItem(key);
+        setMessageCount(count ? parseInt(count, 10) : 0);
+      } catch (error) {
+        logger.error("Failed to load message count", "AssistantScreen", error instanceof Error ? error : new Error(String(error)));
+      }
+    };
+    loadMessageCount();
+  }, [isPremium, user?.id]);
 
   // Handler para quando voz premium e necessaria
   const handleVoicePremiumRequired = useCallback(() => {
@@ -136,6 +164,15 @@ export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assi
   const handleSend = useCallback(async () => {
     if (!inputText.trim() || isLoading) return;
 
+    // Verificar limite de mensagens para usuários free
+    if (!isPremium && messageCount >= FREE_MESSAGE_LIMIT) {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      navigation.navigate("Paywall", {
+        source: "chat_limit_reached",
+      });
+      return;
+    }
+
     const userInput = inputText.trim();
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
@@ -149,6 +186,18 @@ export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assi
     addMessage(userMessage);
     setInputText("");
     setLoading(true);
+
+    // Incrementar contador de mensagens para usuários free
+    if (!isPremium) {
+      const newCount = messageCount + 1;
+      setMessageCount(newCount);
+      try {
+        const key = `${MESSAGE_COUNT_KEY}_${user?.id || "anonymous"}`;
+        await AsyncStorage.setItem(key, newCount.toString());
+      } catch (error) {
+        logger.error("Failed to save message count", "AssistantScreen", error instanceof Error ? error : new Error(String(error)));
+      }
+    }
 
     // Scroll para o fim
     setTimeout(() => {
@@ -247,7 +296,7 @@ export default function AssistantScreen({ navigation }: MainTabScreenProps<"Assi
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
     }
-  }, [inputText, isLoading, conversations, currentConversationId, addMessage, setLoading]);
+  }, [inputText, isLoading, conversations, currentConversationId, addMessage, setLoading, isPremium, messageCount, navigation, user]);
 
   const handleNewChat = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

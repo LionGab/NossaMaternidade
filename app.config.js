@@ -161,6 +161,9 @@ module.exports = {
       stripePublishableKey: process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY || '',
       oneSignalAppId: process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID || '',
       sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN || '',
+      // RevenueCat API keys (Premium/IAP)
+      revenueCatIosKey: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || '',
+      revenueCatAndroidKey: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || '',
       // Feature flags
       enableAIFeatures: process.env.EXPO_PUBLIC_ENABLE_AI_FEATURES === 'true' || false,
       enableGamification: process.env.EXPO_PUBLIC_ENABLE_GAMIFICATION === 'true' || false,

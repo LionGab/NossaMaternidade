@@ -1,6 +1,7 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { supabase, Database } from "./supabase";
 import { logger } from "../utils/logger";
+import { loginUser, logoutUser } from "../services/purchases";
 
 export type AuthUser = {
   id: string;
@@ -58,6 +59,11 @@ export async function signIn(email: string, password: string) {
 
     if (error) throw error;
 
+    // Identify user in RevenueCat
+    if (data.user) {
+      await loginUser(data.user.id);
+    }
+
     return { user: data.user, session: data.session, error: null };
   } catch (error) {
     logger.error("Sign in error", "Auth", error as Error);
@@ -71,6 +77,10 @@ export async function signIn(email: string, password: string) {
 export async function signOut() {
   try {
     const client = checkSupabase();
+
+    // Logout from RevenueCat first
+    await logoutUser();
+
     const { error } = await client.auth.signOut();
     if (error) throw error;
     return { error: null };
