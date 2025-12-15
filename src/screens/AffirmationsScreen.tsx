@@ -15,6 +15,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useAffirmationsStore } from "../state/store";
 import { RootStackScreenProps, Affirmation } from "../types/navigation";
+import { useTheme } from "../hooks/useTheme";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -46,6 +47,7 @@ const GRADIENT_THEMES = [
 
 export default function AffirmationsScreen({ navigation }: RootStackScreenProps<"Affirmations">) {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [themeIndex, setThemeIndex] = useState(0);
 
@@ -192,7 +194,7 @@ export default function AffirmationsScreen({ navigation }: RootStackScreenProps<
               className="w-10 h-10 rounded-full items-center justify-center"
               style={{ backgroundColor: "rgba(255, 255, 255, 0.15)" }}
             >
-              <Ionicons name="arrow-back" size={22} color="#FFF" />
+              <Ionicons name="arrow-back" size={22} color={colors.neutral[0]} />
             </Pressable>
           </Animated.View>
 
@@ -202,7 +204,7 @@ export default function AffirmationsScreen({ navigation }: RootStackScreenProps<
               className="w-10 h-10 rounded-full items-center justify-center"
               style={{ backgroundColor: "rgba(255, 255, 255, 0.15)" }}
             >
-              <Ionicons name="color-palette-outline" size={22} color="#FFF" />
+              <Ionicons name="color-palette-outline" size={22} color={colors.neutral[0]} />
             </Pressable>
           </Animated.View>
         </View>
@@ -260,7 +262,7 @@ export default function AffirmationsScreen({ navigation }: RootStackScreenProps<
               className="w-12 h-12 rounded-full items-center justify-center mx-4"
               style={{ backgroundColor: "rgba(255, 255, 255, 0.15)" }}
             >
-              <Ionicons name="chevron-back" size={24} color="#FFF" />
+              <Ionicons name="chevron-back" size={24} color={colors.neutral[0]} />
             </Pressable>
 
             <View className="flex-row items-center">
@@ -276,7 +278,7 @@ export default function AffirmationsScreen({ navigation }: RootStackScreenProps<
                     style={{
                       backgroundColor:
                         actualIndex === currentIndex
-                          ? "#FFF"
+                          ? colors.neutral[0]
                           : "rgba(255, 255, 255, 0.3)",
                       transform: [{ scale: actualIndex === currentIndex ? 1.3 : 1 }],
                     }}
@@ -290,7 +292,7 @@ export default function AffirmationsScreen({ navigation }: RootStackScreenProps<
               className="w-12 h-12 rounded-full items-center justify-center mx-4"
               style={{ backgroundColor: "rgba(255, 255, 255, 0.15)" }}
             >
-              <Ionicons name="chevron-forward" size={24} color="#FFF" />
+              <Ionicons name="chevron-forward" size={24} color={colors.neutral[0]} />
             </Pressable>
           </View>
 
@@ -305,7 +307,7 @@ export default function AffirmationsScreen({ navigation }: RootStackScreenProps<
                 <Ionicons
                   name={isFavorite ? "heart" : "heart-outline"}
                   size={26}
-                  color={isFavorite ? "#F472B6" : "#FFF"}
+                  color={isFavorite ? colors.primary[400] : colors.neutral[0]}
                 />
               </Animated.View>
             </Pressable>
@@ -315,7 +317,7 @@ export default function AffirmationsScreen({ navigation }: RootStackScreenProps<
               className="w-14 h-14 rounded-full items-center justify-center mx-3"
               style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
             >
-              <Ionicons name="share-outline" size={26} color="#FFF" />
+              <Ionicons name="share-outline" size={26} color={colors.neutral[0]} />
             </Pressable>
           </View>
         </Animated.View>
