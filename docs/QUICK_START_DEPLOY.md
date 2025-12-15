@@ -20,14 +20,11 @@ eas whoami
 ### 2. Configurar Secrets no EAS
 
 ```bash
-# Executar script automatizado (configura Vibecode Project ID)
-bash scripts/setup-secrets.sh
-
-# Depois configure manualmente os outros secrets:
+# Configure os secrets necessários:
 eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_URL --value "https://seu-projeto.supabase.co"
 eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value "sua-chave"
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_OPENAI_API_KEY --value "sk-..."
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_GROK_API_KEY --value "xai-..."
+eas secret:create --scope project --name EXPO_PUBLIC_OPENAI_API_KEY --value "sk-..."
+eas secret:create --scope project --name EXPO_PUBLIC_GROK_API_KEY --value "xai-..."
 ```
 
 ### 3. Validar Projeto
@@ -76,8 +73,3 @@ Para guia detalhado passo a passo, veja:
 - **`docs/PASSO_A_PASSO_DEPLOY.md`** - Guia completo e detalhado
 - **`DEPLOY_STORES.md`** - Guia de referência
 - **`docs/DEPLOYMENT_CHECKLIST.md`** - Checklist completo
-
----
-
-**Vibecode Project ID já configurado:** `ZrLucAP5Cc_UUmPsc0bdC60j3xqkiiQG8DPJVb90`
-

@@ -67,11 +67,11 @@ Bem-vindo à documentação completa para deploy do **Nossa Maternidade** nas lo
 ## 🚀 Comandos Principais
 
 ```bash
-# 1. Validar projeto
-npm run check-build-ready
+# 1. Instalar dependências
+npm install
 
-# 2. Configurar secrets (após login EAS)
-npm run setup-secrets
+# 2. Validar projeto
+npm run check-build-ready
 
 # 3. Build
 eas build --platform all --profile production
@@ -82,30 +82,15 @@ eas submit --platform all
 
 ---
 
-## 🔑 Informações Importantes
-
-### Vibecode Project ID
-
-**Já identificado e configurado:**
-```
-ZrLucAP5Cc_UUmPsc0bdC60j3xqkiiQG8DPJVb90
-```
-
-Será configurado automaticamente ao executar:
-```bash
-npm run setup-secrets
-```
-
-### Secrets Necessários
+## 🔑 Secrets Necessários
 
 Você precisa configurar os seguintes secrets no EAS:
 
-1. ✅ `EXPO_PUBLIC_VIBECODE_PROJECT_ID` (já identificado)
-2. `EXPO_PUBLIC_SUPABASE_URL`
-3. `EXPO_PUBLIC_SUPABASE_ANON_KEY`
-4. `EXPO_PUBLIC_SUPABASE_FUNCTIONS_URL`
-5. `EXPO_PUBLIC_VIBECODE_OPENAI_API_KEY`
-6. `EXPO_PUBLIC_VIBECODE_GROK_API_KEY`
+1. `EXPO_PUBLIC_SUPABASE_URL`
+2. `EXPO_PUBLIC_SUPABASE_ANON_KEY`
+3. `EXPO_PUBLIC_SUPABASE_FUNCTIONS_URL`
+4. `EXPO_PUBLIC_OPENAI_API_KEY`
+5. `EXPO_PUBLIC_GROK_API_KEY` (opcional)
 
 Veja [`SECRETS_SETUP.md`](./SECRETS_SETUP.md) para detalhes.
 
@@ -123,7 +108,4 @@ Veja [`SECRETS_SETUP.md`](./SECRETS_SETUP.md) para detalhes.
 
 ---
 
-**Tempo estimado total:** 2-3 dias (incluindo aprovações)
-
 **Última atualização:** 2025
-

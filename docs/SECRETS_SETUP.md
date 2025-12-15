@@ -13,19 +13,27 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY
 EXPO_PUBLIC_SUPABASE_FUNCTIONS_URL
 
 # APIs de IA
-EXPO_PUBLIC_VIBECODE_OPENAI_API_KEY
-EXPO_PUBLIC_VIBECODE_GROK_API_KEY
-
-# Vibecode
-EXPO_PUBLIC_VIBECODE_PROJECT_ID
+EXPO_PUBLIC_OPENAI_API_KEY
+EXPO_PUBLIC_GROK_API_KEY
 ```
 
-### Opcionais (Feature Flags)
+### Opcionais
 
 ```bash
+# Upload de imagens
+EXPO_PUBLIC_IMGUR_CLIENT_ID
+
+# Voz da NathIA
+EXPO_PUBLIC_ELEVENLABS_API_KEY
+EXPO_PUBLIC_ELEVENLABS_VOICE_ID
+
+# Premium/Assinaturas
+EXPO_PUBLIC_REVENUECAT_API_KEY_IOS
+EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID
+
+# Feature Flags
 EXPO_PUBLIC_ENABLE_AI_FEATURES=true
 EXPO_PUBLIC_ENABLE_ANALYTICS=true
-EXPO_PUBLIC_ENABLE_GAMIFICATION=false
 ```
 
 ## 🚀 Como Configurar
@@ -40,13 +48,11 @@ eas login
 eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_URL --value "https://your-project.supabase.co"
 eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value "your-anon-key-here"
 eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_FUNCTIONS_URL --value "https://your-project.supabase.co/functions/v1"
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_OPENAI_API_KEY --value "sk-..."
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_GROK_API_KEY --value "xai-..."
-eas secret:create --scope project --name EXPO_PUBLIC_VIBECODE_PROJECT_ID --value "your-project-id"
+eas secret:create --scope project --name EXPO_PUBLIC_OPENAI_API_KEY --value "sk-..."
+eas secret:create --scope project --name EXPO_PUBLIC_GROK_API_KEY --value "xai-..."
 
 # Feature flags
 eas secret:create --scope project --name EXPO_PUBLIC_ENABLE_AI_FEATURES --value "true"
-eas secret:create --scope project --name EXPO_PUBLIC_ENABLE_ANALYTICS --value "true"
 ```
 
 ### Verificar Secrets Configurados
@@ -95,4 +101,3 @@ eas build:list
 
 - [EAS Secrets Documentation](https://docs.expo.dev/build-reference/variables/)
 - [Environment Variables](https://docs.expo.dev/guides/environment-variables/)
-

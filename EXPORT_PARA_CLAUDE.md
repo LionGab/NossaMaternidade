@@ -151,10 +151,6 @@ Warm Gray: #78716C
 3. Instale dependências: `bun install` ou `npm install`
 4. Execute: `npx expo start`
 
-### Opção 3: Clonar da Vibecode
-Se você tem acesso ao Vibecode, o projeto completo está em:
-`/home/user/workspace/`
-
 ## 🚀 Próximos Passos Sugeridos
 
 ### Integração com Supabase
