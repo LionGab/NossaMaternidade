@@ -17,6 +17,7 @@ import {
   FlatList,
   Image,
   KeyboardAvoidingView,
+  Linking,
   Modal,
   Platform,
   Pressable,
@@ -45,10 +46,12 @@ import { RootStackScreenProps } from "../types/navigation";
 // Types
 interface NathPost {
   id: string;
-  type: "text" | "image" | "video" | "tip" | "announcement";
+  type: "text" | "image" | "video" | "tip" | "announcement" | "reel";
   content: string;
   imageUrl?: string;
   videoUrl?: string;
+  externalUrl?: string; // URL externa (Instagram, TikTok, etc)
+  platform?: "instagram" | "tiktok" | "youtube" | "cnn";
   likesCount: number;
   commentsCount: number;
   createdAt: string;
@@ -64,22 +67,23 @@ interface NathStory {
   isNew?: boolean;
 }
 
-// Mock Data - Calm FemTech: todas com mesma cor base, sem arco-íris
+// Destaques - Conteúdos reais da Nathalia Valente
 const MOCK_STORIES: NathStory[] = [
-  { id: "1", title: "Rotina", emoji: "☀️", thumbnailColor: COLORS.primary[100], isNew: true },
-  { id: "2", title: "Dicas", emoji: "💡", thumbnailColor: COLORS.primary[100] },
-  { id: "3", title: "Q&A", emoji: "❓", thumbnailColor: COLORS.primary[100] },
-  { id: "4", title: "Receitas", emoji: "🥗", thumbnailColor: COLORS.primary[100] },
-  { id: "5", title: "Bebês", emoji: "👶", thumbnailColor: COLORS.primary[100] },
-  { id: "6", title: "Fitness", emoji: "💪", thumbnailColor: COLORS.primary[100] },
+  { id: "1", title: "Parto", emoji: "🩵", thumbnailColor: COLORS.primary[100], isNew: true },
+  { id: "2", title: "Gestação", emoji: "🤰", thumbnailColor: COLORS.primary[100] },
+  { id: "3", title: "Thales", emoji: "👶", thumbnailColor: COLORS.primary[100], isNew: true },
+  { id: "4", title: "Rotina", emoji: "☀️", thumbnailColor: COLORS.primary[100] },
+  { id: "5", title: "Dicas", emoji: "💡", thumbnailColor: COLORS.primary[100] },
+  { id: "6", title: "Q&A", emoji: "❓", thumbnailColor: COLORS.primary[100] },
 ];
 
+// Posts reais da Nathalia Valente - Maternidade & Rotina
 const MOCK_POSTS: NathPost[] = [
   {
     id: "1",
     type: "announcement",
     content:
-      "Oii meninas! 💕 Bem-vindas ao meu cantinho especial no app! Aqui vou compartilhar conteúdos exclusivos, dicas e muito mais. Fico muito feliz em ter vocês comigo nessa jornada!",
+      "Oii meninas! 💕 Bem-vindas ao meu cantinho especial no app! Aqui vou compartilhar conteúdos exclusivos, dicas e muito mais. Fico muito feliz em ter vocês comigo nessa jornada da maternidade!",
     likesCount: 1234,
     commentsCount: 89,
     createdAt: new Date(Date.now() - 3600000).toISOString(),
@@ -88,6 +92,46 @@ const MOCK_POSTS: NathPost[] = [
   },
   {
     id: "2",
+    type: "reel",
+    content:
+      "Meu relato de parto 🩵 O momento mais especial da minha vida. Parto natural, muita emoção e amor. Assiste lá no meu Instagram!",
+    imageUrl: "https://i.imgur.com/7GX41Ft.jpg", // Thumbnail - Nath com Thales
+    externalUrl: "https://www.instagram.com/reel/DOhD-3nEt79/",
+    platform: "instagram",
+    likesCount: 45231,
+    commentsCount: 2341,
+    createdAt: "2025-09-10T10:00:00.000Z",
+    isLiked: true,
+    isPinned: true,
+  },
+  {
+    id: "3",
+    type: "image",
+    content:
+      "Meu ensaio de gestante foi pensado em cada detalhe 🤰✨ Esse momento ficou eternizado nas fotos mais lindas! Cada clique carrega tanto amor...",
+    imageUrl: "https://i.imgur.com/37dbPJE.jpg", // Ensaio gestante
+    externalUrl: "https://www.instagram.com/p/DN6p40GjgmB/",
+    platform: "instagram",
+    likesCount: 32456,
+    commentsCount: 1567,
+    createdAt: "2025-08-15T14:00:00.000Z",
+    isLiked: true,
+  },
+  {
+    id: "4",
+    type: "reel",
+    content:
+      "Estamos te esperando com muito amor 😭🤰 Esse vídeo foi feito quando eu ainda estava esperando o Thales... Que emoção!",
+    imageUrl: "https://i.imgur.com/a4O1jAT.jpg", // Avatar da Nath
+    externalUrl: "https://www.instagram.com/reel/DIHl3pjh8KS/",
+    platform: "instagram",
+    likesCount: 28934,
+    commentsCount: 987,
+    createdAt: "2025-07-20T16:00:00.000Z",
+    isLiked: false,
+  },
+  {
+    id: "5",
     type: "tip",
     content:
       "Dica do dia: Lembre de beber pelo menos 2L de água! Durante a gestação e amamentação, a hidratação é fundamental. Eu deixo uma garrafinha sempre por perto 💧",
@@ -97,18 +141,7 @@ const MOCK_POSTS: NathPost[] = [
     isLiked: false,
   },
   {
-    id: "3",
-    type: "image",
-    content:
-      "Nosso momento de conexão de hoje 🥰 Cada dia ao lado dele é uma benção. Aproveitem cada segundo, mães!",
-    imageUrl: "https://images.unsplash.com/photo-1544126592-807ade215a0b?w=800",
-    likesCount: 2341,
-    commentsCount: 156,
-    createdAt: new Date(Date.now() - 14400000).toISOString(),
-    isLiked: true,
-  },
-  {
-    id: "4",
+    id: "6",
     type: "text",
     content:
       "Ser mãe é descobrir forças que você nem sabia que tinha. É chorar de cansaço e de amor ao mesmo tempo. É não dormir e ainda assim sorrir quando vê aquele rostinho. É uma jornada difícil, mas incrivelmente recompensadora. Vocês são incríveis! 💪✨",
@@ -116,16 +149,6 @@ const MOCK_POSTS: NathPost[] = [
     commentsCount: 67,
     createdAt: new Date(Date.now() - 28800000).toISOString(),
     isLiked: false,
-  },
-  {
-    id: "5",
-    type: "tip",
-    content:
-      "Preparo pro parto: Estou fazendo exercícios de respiração todos os dias. 5 minutos de manhã e 5 à noite. Ajuda muito com a ansiedade e prepara o corpo. Quem quer que eu faça um vídeo mostrando?",
-    likesCount: 678,
-    commentsCount: 234,
-    createdAt: new Date(Date.now() - 43200000).toISOString(),
-    isLiked: true,
   },
 ];
 
@@ -205,8 +228,9 @@ const PostCard: React.FC<{
   onLike: (id: string) => void;
   onComment: (id: string) => void;
   onShare: (id: string) => void;
+  onOpenExternal: (url: string, platform?: string) => void;
   isDark: boolean;
-}> = ({ post, index, onLike, onComment, onShare, isDark }) => {
+}> = ({ post, index, onLike, onComment, onShare, onOpenExternal, isDark }) => {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -220,6 +244,13 @@ const PostCard: React.FC<{
       scale.value = withSpring(1, { damping: 10 });
     }, 100);
     onLike(post.id);
+  };
+
+  const handleOpenExternal = async () => {
+    if (post.externalUrl) {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      onOpenExternal(post.externalUrl, post.platform);
+    }
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -330,7 +361,7 @@ const PostCard: React.FC<{
             </Text>
           </View>
 
-          {/* Badge apenas para "tip" (Dica da Nath) */}
+          {/* Badge para tipo de conteúdo */}
           {post.type === "tip" && (
             <View
               style={{
@@ -350,6 +381,25 @@ const PostCard: React.FC<{
               </Text>
             </View>
           )}
+          {post.type === "reel" && (
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingHorizontal: SPACING.sm,
+                paddingVertical: 4,
+                borderRadius: RADIUS.full,
+                backgroundColor: COLORS.accent[50],
+                borderWidth: 1,
+                borderColor: COLORS.accent[200],
+              }}
+            >
+              <Ionicons name="play-circle" size={12} color={COLORS.accent[500]} />
+              <Text style={{ fontSize: 10, fontWeight: "600", color: COLORS.accent[600], marginLeft: 2 }}>
+                Vídeo
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Content */}
@@ -365,17 +415,85 @@ const PostCard: React.FC<{
         </Text>
       </View>
 
-      {/* Image */}
+      {/* Image / Video Thumbnail */}
       {post.imageUrl && (
-        <Image
-          source={{ uri: post.imageUrl }}
-          style={{
-            width: "100%",
-            height: 180,
-            backgroundColor: COLORS.neutral[200],
-          }}
-          resizeMode="cover"
-        />
+        <Pressable
+          onPress={post.externalUrl ? handleOpenExternal : undefined}
+          disabled={!post.externalUrl}
+          style={({ pressed }) => ({
+            opacity: pressed ? 0.9 : 1,
+          })}
+        >
+          <View style={{ position: "relative" }}>
+            <Image
+              source={{ uri: post.imageUrl }}
+              style={{
+                width: "100%",
+                height: 200,
+                backgroundColor: COLORS.neutral[200],
+              }}
+              resizeMode="cover"
+            />
+            {/* Play button overlay para reels */}
+            {(post.type === "reel" || post.type === "video") && post.externalUrl && (
+              <View
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "rgba(0,0,0,0.2)",
+                }}
+              >
+                <View
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: 28,
+                    backgroundColor: "rgba(255,255,255,0.95)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 8,
+                    elevation: 8,
+                  }}
+                >
+                  <Ionicons name="play" size={28} color={COLORS.accent[500]} style={{ marginLeft: 3 }} />
+                </View>
+              </View>
+            )}
+            {/* Platform badge */}
+            {post.platform && (
+              <View
+                style={{
+                  position: "absolute",
+                  bottom: SPACING.sm,
+                  right: SPACING.sm,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  backgroundColor: "rgba(0,0,0,0.7)",
+                  paddingHorizontal: SPACING.sm,
+                  paddingVertical: 4,
+                  borderRadius: RADIUS.full,
+                }}
+              >
+                <Ionicons
+                  name={post.platform === "instagram" ? "logo-instagram" : post.platform === "tiktok" ? "logo-tiktok" : "globe-outline"}
+                  size={12}
+                  color="#FFFFFF"
+                />
+                <Text style={{ fontSize: 10, color: "#FFFFFF", marginLeft: 4, fontWeight: "600" }}>
+                  {post.platform === "instagram" ? "Instagram" : post.platform === "tiktok" ? "TikTok" : "Abrir"}
+                </Text>
+              </View>
+            )}
+          </View>
+        </Pressable>
       )}
 
       {/* Actions */}
@@ -703,6 +821,17 @@ export default function MundoDaNathScreen({ navigation }: Props) {
     // Share functionality
   }, []);
 
+  const handleOpenExternal = useCallback(async (url: string, _platform?: string) => {
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+      if (canOpen) {
+        await Linking.openURL(url);
+      }
+    } catch (error) {
+      // Silently fail - could show a toast here
+    }
+  }, []);
+
   const handleStoryPress = useCallback(
     async (story: NathStory) => {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -874,6 +1003,7 @@ export default function MundoDaNathScreen({ navigation }: Props) {
             onLike={handleLike}
             onComment={handleComment}
             onShare={handleShare}
+            onOpenExternal={handleOpenExternal}
             isDark={isDark}
           />
         </View>
@@ -895,6 +1025,7 @@ export default function MundoDaNathScreen({ navigation }: Props) {
                 onLike={handleLike}
                 onComment={handleComment}
                 onShare={handleShare}
+                onOpenExternal={handleOpenExternal}
                 isDark={isDark}
               />
             </View>
