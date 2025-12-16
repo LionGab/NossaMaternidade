@@ -19,7 +19,8 @@ import * as Haptics from "expo-haptics";
 import { useAppStore } from "../state/store";
 import { MainTabScreenProps } from "../types/navigation";
 import { useTheme } from "../hooks/useTheme";
-import { SPACING, SHADOWS } from "../theme/design-system";
+import { SPACING, SHADOWS, COLORS, RADIUS, GRADIENTS } from "../theme/design-system";
+import { LinearGradient } from "expo-linear-gradient";
 
 // Componentes da Home
 import {
@@ -109,6 +110,11 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">): 
 
   const handleCommunity = useCallback((): void => {
     navigation.navigate("Community");
+  }, [navigation]);
+
+  const handleMundoDaNath = useCallback(async (): Promise<void> => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate("MundoDaNath");
   }, [navigation]);
 
   const handleQuickNavigation = useCallback((route: string): void => {
@@ -244,6 +250,90 @@ export default function HomeScreen({ navigation }: MainTabScreenProps<"Home">): 
 
           {/* 2. SECUNDÁRIO: Card NathIA */}
           <NathiaAdviceCard onPressChat={handleNathiaChat} />
+
+          {/* 2.5. Mundo da Nath - Conteúdo Exclusivo */}
+          <Animated.View entering={FadeInUp.delay(150).duration(500).springify()}>
+            <Pressable
+              onPress={handleMundoDaNath}
+              style={{
+                borderRadius: RADIUS["2xl"],
+                overflow: "hidden",
+                shadowColor: COLORS.primary[500],
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.15,
+                shadowRadius: 12,
+                elevation: 6,
+              }}
+            >
+              <LinearGradient
+                colors={GRADIENTS.primary as unknown as readonly [string, string]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{
+                  padding: SPACING.xl,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                {/* Avatar Nath */}
+                <View
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: 28,
+                    backgroundColor: "rgba(255,255,255,0.95)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: SPACING.lg,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                  }}
+                >
+                  <Text style={{ fontSize: 28, fontWeight: "700", color: COLORS.primary[500] }}>N</Text>
+                </View>
+
+                {/* Content */}
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 4 }}>
+                    <Text
+                      style={{
+                        fontSize: 17,
+                        fontWeight: "700",
+                        color: "#FFFFFF",
+                        marginRight: SPACING.sm,
+                      }}
+                    >
+                      Mundo da Nath
+                    </Text>
+                    <View
+                      style={{
+                        backgroundColor: "rgba(255,255,255,0.25)",
+                        paddingHorizontal: SPACING.sm,
+                        paddingVertical: 2,
+                        borderRadius: RADIUS.full,
+                      }}
+                    >
+                      <Text style={{ fontSize: 10, fontWeight: "600", color: "#FFFFFF" }}>NOVO</Text>
+                    </View>
+                  </View>
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      color: "rgba(255,255,255,0.9)",
+                      lineHeight: 18,
+                    }}
+                  >
+                    Conteúdos exclusivos da Nath para você 💕
+                  </Text>
+                </View>
+
+                {/* Arrow */}
+                <Ionicons name="chevron-forward" size={22} color="rgba(255,255,255,0.8)" />
+              </LinearGradient>
+            </Pressable>
+          </Animated.View>
 
           {/* 3. SECUNDÁRIO: Pertencimento (discreto) */}
           <BelongingCard onPress={handleCommunity} />

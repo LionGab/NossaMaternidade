@@ -20,7 +20,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
-  Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -33,16 +32,12 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming,
-  interpolate,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import { useTheme } from "../hooks/useTheme";
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY, GRADIENTS } from "../theme/design-system";
+import { COLORS, SPACING, RADIUS, GRADIENTS } from "../theme/design-system";
 import { RootStackScreenProps } from "../types/navigation";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 // Types
 interface NathPost {
@@ -665,9 +660,9 @@ export default function MundoDaNathScreen({ navigation }: Props) {
     );
   }, []);
 
-  const handleComment = useCallback(async (postId: string) => {
+  const handleComment = useCallback(async (_postId: string) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Navigate to comments/post detail
+    // TODO: Navigate to comments/post detail with _postId
     navigation.navigate("ComingSoon", {
       title: "Comentários",
       description: "Em breve você poderá comentar nos posts da Nath!",
