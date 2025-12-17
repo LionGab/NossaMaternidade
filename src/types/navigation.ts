@@ -21,6 +21,7 @@ export type RootStackParamList = {
   // Profile
   EditProfile: undefined;
   NotificationSettings: undefined;
+  NotificationPreferences: undefined;
   PrivacySettings: undefined;
 
   // Tools

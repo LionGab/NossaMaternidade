@@ -1,6 +1,14 @@
 /**
  * Nossa Maternidade - Notification Service
  * Push notifications + Local notifications for iOS & Android
+ *
+ * Features:
+ * - Expo Push Notifications
+ * - Local scheduled notifications
+ * - Supabase token sync (optional)
+ * - Preference management
+ *
+ * @version 2.0.0 - Supabase integration (2025-01)
  */
 
 import * as Notifications from "expo-notifications";
@@ -8,6 +16,7 @@ import * as Device from "expo-device";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
+import { supabase } from "../api/supabase";
 
 // Configure notification handler
 Notifications.setNotificationHandler({
@@ -40,6 +49,7 @@ const DEFAULT_SETTINGS: NotificationSettings = {
 
 const STORAGE_KEY = "@notification_settings";
 const PERMISSION_KEY = "@notification_permission";
+const PUSH_TOKEN_KEY = "@push_token";
 
 // Project ID from app.json
 const PROJECT_ID =
@@ -49,8 +59,135 @@ const PROJECT_ID =
 // Primary color from design system for Android notification light
 const NOTIFICATION_LIGHT_COLOR = "#F43F5E";
 
+// Edge Function URL
+const NOTIFICATIONS_FUNCTION_URL = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/notifications`;
+
+// =======================
+// SUPABASE SYNC FUNCTIONS
+// =======================
+
+/**
+ * Register push token with Supabase Edge Function
+ * This enables server-side push notifications
+ */
+export async function registerTokenWithSupabase(
+  token: string,
+  platform: "ios" | "android" | "web"
+): Promise<boolean> {
+  if (!supabase) return false;
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return false;
+
+    const response = await fetch(`${NOTIFICATIONS_FUNCTION_URL}/register-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        token,
+        platform,
+        deviceName: Device.deviceName || `${Device.brand} ${Device.modelName}`,
+        deviceId: Device.osBuildId || undefined,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.warn("[Notifications] Token registration failed:", error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.warn("[Notifications] Token registration error:", error);
+    return false;
+  }
+}
+
+/**
+ * Get notification preferences from Supabase
+ * Falls back to local storage if Supabase is not available
+ */
+export async function getSupabasePreferences(): Promise<NotificationSettings | null> {
+  if (!supabase) return null;
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return null;
+
+    const response = await fetch(`${NOTIFICATIONS_FUNCTION_URL}/preferences`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    });
+
+    if (!response.ok) return null;
+
+    const result = await response.json();
+    if (!result.success || !result.preferences) return null;
+
+    // Map Supabase preferences to local format
+    const prefs = result.preferences;
+    return {
+      enabled: prefs.notifications_enabled,
+      dailyCheckIn: prefs.daily_check_in,
+      affirmations: prefs.daily_affirmation,
+      habits: prefs.habit_reminders,
+      community: prefs.community_comments || prefs.community_likes || prefs.community_mentions,
+      chatReminders: prefs.chat_reminders,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Sync notification preferences to Supabase
+ */
+export async function syncPreferencesToSupabase(
+  settings: NotificationSettings
+): Promise<boolean> {
+  if (!supabase) return false;
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return false;
+
+    const response = await fetch(`${NOTIFICATIONS_FUNCTION_URL}/preferences`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        notifications_enabled: settings.enabled,
+        daily_check_in: settings.dailyCheckIn,
+        daily_affirmation: settings.affirmations,
+        habit_reminders: settings.habits,
+        community_comments: settings.community,
+        community_likes: settings.community,
+        community_mentions: settings.community,
+        chat_reminders: settings.chatReminders,
+      }),
+    });
+
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+// =======================
+// CORE FUNCTIONS
+// =======================
+
 /**
  * Request notification permissions from user
+ * Registers token with Supabase if successful
  */
 export async function registerForPushNotifications(): Promise<string | null> {
   // Skip push token registration on non-physical devices (simulator/web)
@@ -77,14 +214,9 @@ export async function registerForPushNotifications(): Promise<string | null> {
 
     await AsyncStorage.setItem(PERMISSION_KEY, "granted");
 
-    // Configure channel for Android first
+    // Configure channels for Android
     if (Platform.OS === "android") {
-      await Notifications.setNotificationChannelAsync("default", {
-        name: "default",
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: NOTIFICATION_LIGHT_COLOR,
-      });
+      await configureAndroidChannels();
     }
 
     // Get push token with explicit projectId
@@ -92,7 +224,18 @@ export async function registerForPushNotifications(): Promise<string | null> {
       const tokenResponse = await Notifications.getExpoPushTokenAsync({
         projectId: PROJECT_ID,
       });
-      return tokenResponse.data;
+      const token = tokenResponse.data;
+
+      // Store token locally
+      await AsyncStorage.setItem(PUSH_TOKEN_KEY, token);
+
+      // Register with Supabase (non-blocking)
+      const platform = Platform.OS === "ios" ? "ios" : "android";
+      registerTokenWithSupabase(token, platform).catch(() => {
+        // Silently fail - will retry on next app open
+      });
+
+      return token;
     } catch {
       // If we can't get a push token, still allow local notifications
       return "local-only";
@@ -102,6 +245,81 @@ export async function registerForPushNotifications(): Promise<string | null> {
     await AsyncStorage.setItem(PERMISSION_KEY, "granted");
     return "local-only";
   }
+}
+
+/**
+ * Configure Android notification channels
+ */
+async function configureAndroidChannels(): Promise<void> {
+  const channels = [
+    {
+      id: "default",
+      name: "Geral",
+      importance: Notifications.AndroidImportance.MAX,
+    },
+    {
+      id: "check-in",
+      name: "Check-in Diário",
+      importance: Notifications.AndroidImportance.HIGH,
+    },
+    {
+      id: "affirmation",
+      name: "Afirmações",
+      importance: Notifications.AndroidImportance.DEFAULT,
+    },
+    {
+      id: "habits",
+      name: "Hábitos",
+      importance: Notifications.AndroidImportance.DEFAULT,
+    },
+    {
+      id: "wellness",
+      name: "Bem-estar",
+      importance: Notifications.AndroidImportance.DEFAULT,
+    },
+    {
+      id: "community",
+      name: "Comunidade",
+      importance: Notifications.AndroidImportance.HIGH,
+    },
+    {
+      id: "chat",
+      name: "Chat",
+      importance: Notifications.AndroidImportance.HIGH,
+    },
+    {
+      id: "cycle",
+      name: "Ciclo Menstrual",
+      importance: Notifications.AndroidImportance.DEFAULT,
+    },
+  ];
+
+  for (const channel of channels) {
+    await Notifications.setNotificationChannelAsync(channel.id, {
+      name: channel.name,
+      importance: channel.importance,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: NOTIFICATION_LIGHT_COLOR,
+    });
+  }
+}
+
+/**
+ * Get stored push token
+ */
+export async function getStoredPushToken(): Promise<string | null> {
+  return AsyncStorage.getItem(PUSH_TOKEN_KEY);
+}
+
+/**
+ * Re-register token with Supabase (e.g., after login)
+ */
+export async function refreshTokenRegistration(): Promise<void> {
+  const token = await getStoredPushToken();
+  if (!token || token === "simulator-mode" || token === "local-only") return;
+
+  const platform = Platform.OS === "ios" ? "ios" : "android";
+  await registerTokenWithSupabase(token, platform);
 }
 
 /**
@@ -122,9 +340,19 @@ export async function hasAskedNotificationPermission(): Promise<boolean> {
 
 /**
  * Get notification settings
+ * Tries Supabase first, falls back to local storage
  */
 export async function getNotificationSettings(): Promise<NotificationSettings> {
   try {
+    // Try Supabase first
+    const supabaseSettings = await getSupabasePreferences();
+    if (supabaseSettings) {
+      // Sync to local storage
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(supabaseSettings));
+      return supabaseSettings;
+    }
+
+    // Fall back to local storage
     const settings = await AsyncStorage.getItem(STORAGE_KEY);
     return settings ? JSON.parse(settings) : DEFAULT_SETTINGS;
   } catch {
@@ -134,13 +362,21 @@ export async function getNotificationSettings(): Promise<NotificationSettings> {
 
 /**
  * Update notification settings
+ * Saves locally and syncs to Supabase
  */
 export async function updateNotificationSettings(
   settings: Partial<NotificationSettings>
 ): Promise<void> {
   const current = await getNotificationSettings();
   const updated = { ...current, ...settings };
+
+  // Save locally
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+
+  // Sync to Supabase (non-blocking)
+  syncPreferencesToSupabase(updated).catch(() => {
+    // Silently fail - local settings are source of truth for UI
+  });
 }
 
 /**
@@ -164,6 +400,7 @@ export async function scheduleDailyCheckIn(hour: number = 9): Promise<string> {
       body: "Reserve um momento para fazer seu check-in diário 💕",
       sound: true,
       priority: Notifications.AndroidNotificationPriority.HIGH,
+      ...(Platform.OS === "android" && { channelId: "check-in" }),
     },
     trigger,
   });
@@ -208,6 +445,7 @@ export async function scheduleDailyAffirmation(
       body: randomAffirmation,
       sound: true,
       priority: Notifications.AndroidNotificationPriority.DEFAULT,
+      ...(Platform.OS === "android" && { channelId: "affirmation" }),
     },
     trigger,
   });
@@ -236,6 +474,7 @@ export async function scheduleHabitReminder(hour: number = 20): Promise<string> 
       body: "Já completou seus hábitos diários? Vamos lá! 🌱",
       sound: true,
       priority: Notifications.AndroidNotificationPriority.DEFAULT,
+      ...(Platform.OS === "android" && { channelId: "habits" }),
     },
     trigger,
   });
@@ -275,6 +514,7 @@ export async function scheduleWellnessReminder(
       body: randomMessage,
       sound: true,
       priority: Notifications.AndroidNotificationPriority.DEFAULT,
+      ...(Platform.OS === "android" && { channelId: "wellness" }),
     },
     trigger,
   });
@@ -287,7 +527,8 @@ export async function scheduleWellnessReminder(
  */
 export async function sendLocalNotification(
   title: string,
-  body: string
+  body: string,
+  channelId: string = "default"
 ): Promise<string> {
   const id = await Notifications.scheduleNotificationAsync({
     content: {
@@ -295,6 +536,7 @@ export async function sendLocalNotification(
       body,
       sound: true,
       priority: Notifications.AndroidNotificationPriority.HIGH,
+      ...(Platform.OS === "android" && { channelId }),
     },
     trigger: null,
   });
@@ -353,6 +595,9 @@ export async function initializeNotifications(): Promise<void> {
 
   // Always schedule wellness reminder for premium experience
   await scheduleWellnessReminder(14);
+
+  // Re-register token with Supabase after login
+  await refreshTokenRegistration();
 }
 
 /**
@@ -381,4 +626,37 @@ export async function isNotificationSetupComplete(): Promise<boolean> {
 export async function skipNotificationSetup(): Promise<void> {
   await AsyncStorage.setItem("@notification_setup_complete", "skipped");
   await AsyncStorage.setItem("@notification_permission", "skipped");
+}
+
+// =======================
+// NOTIFICATION LISTENERS
+// =======================
+
+/**
+ * Add notification received listener
+ * Returns unsubscribe function
+ */
+export function addNotificationReceivedListener(
+  callback: (notification: Notifications.Notification) => void
+): () => void {
+  const subscription = Notifications.addNotificationReceivedListener(callback);
+  return () => subscription.remove();
+}
+
+/**
+ * Add notification response listener (when user taps notification)
+ * Returns unsubscribe function
+ */
+export function addNotificationResponseListener(
+  callback: (response: Notifications.NotificationResponse) => void
+): () => void {
+  const subscription = Notifications.addNotificationResponseReceivedListener(callback);
+  return () => subscription.remove();
+}
+
+/**
+ * Get last notification response (for handling notification tap on app launch)
+ */
+export async function getLastNotificationResponse(): Promise<Notifications.NotificationResponse | null> {
+  return await Notifications.getLastNotificationResponseAsync();
 }

@@ -20,7 +20,20 @@
       "Bash(git checkout:*)",
       "Bash(git restore:*)",
       "Bash(bash -c 'if grep -rn \"\"sk-\"\" src/ --include=\"\"*.ts\"\" --include=\"\"*.tsx\"\" 2>/dev/null | grep -v \"\"// sk-\"\" | head -1; then echo \"\"FOUND\"\"; else echo \"\"NOT FOUND\"\"; fi')",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(bun run:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(bun start)",
+      "Bash(xcrun simctl:*)",
+      "Bash(npx expo:*)",
+      "Bash(bunx expo run:ios:*)",
+      "Bash(sudo gem install:*)",
+      "Bash(gem install:*)",
+      "Bash(bun start:*)",
+      "Bash(ruby --version:*)",
+      "Bash(chmod:*)",
+      "Bash(sort:*)"
     ]
   }
 }

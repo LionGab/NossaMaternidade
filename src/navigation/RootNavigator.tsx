@@ -30,6 +30,7 @@ import DailyLogScreen from "../screens/DailyLogScreen";
 import HabitsScreen from "../screens/HabitsScreen";
 import LegalScreen from "../screens/LegalScreen";
 import NewPostScreen from "../screens/NewPostScreen";
+import NotificationPreferencesScreen from "../screens/NotificationPreferencesScreen";
 import PostDetailScreen from "../screens/PostDetailScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 
@@ -188,6 +189,14 @@ export default function RootNavigator() {
             options={{
               headerShown: false,
               presentation: "modal",
+            }}
+          />
+          <Stack.Screen
+            name="NotificationPreferences"
+            component={NotificationPreferencesScreen}
+            options={{
+              headerShown: false,
+              animation: "slide_from_right",
             }}
           />
 

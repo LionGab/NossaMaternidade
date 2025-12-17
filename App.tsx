@@ -19,6 +19,7 @@ import { ToastProvider } from "./src/context/ToastContext";
 import { useNetworkStatus } from "./src/hooks/useNetworkStatus";
 import { useTheme } from "./src/hooks/useTheme";
 import { useDeepLinking } from "./src/hooks/useDeepLinking";
+import { useNotifications } from "./src/hooks/useNotifications";
 import { navigationRef } from "./src/navigation/navigationRef";
 import { usePremiumStore } from "./src/state/premium-store";
 import { logger } from "./src/utils/logger";
@@ -45,6 +46,9 @@ export default function App() {
 
   // Deep linking
   useDeepLinking();
+
+  // Push notifications
+  useNotifications();
 
   // Premium/IAP initialization
   const syncWithRevenueCat = usePremiumStore((s) => s.syncWithRevenueCat);
