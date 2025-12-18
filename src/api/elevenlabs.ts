@@ -275,8 +275,11 @@ export async function stopAudio(sound: Audio.Sound | null): Promise<void> {
     await sound.stopAsync();
     await sound.unloadAsync();
     logger.info("Audio stopped and unloaded", "ElevenLabs");
-  } catch {
-    // Silenciar erro - pode ja estar descarregado
+  } catch (error) {
+    // Pode ja estar descarregado - log apenas em debug
+    logger.debug("Audio already unloaded or stopped", "ElevenLabs", {
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 }
 
@@ -300,8 +303,12 @@ export async function cleanupAudioCache(): Promise<number> {
       try {
         await FileSystem.deleteAsync(`${cacheDir}${file}`, { idempotent: true });
         deletedCount++;
-      } catch {
-        // Ignorar erros de arquivos individuais
+      } catch (error) {
+        // Log individual file errors but continue with other files
+        logger.debug("Failed to delete cache file", "ElevenLabs", {
+          file,
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     }
 

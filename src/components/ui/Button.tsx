@@ -83,6 +83,7 @@ export function Button({
     }
   };
 
+  // iOS HIG minimum tap target: 44pt for all sizes
   const sizeStyles = useMemo(
     () => ({
       sm: {
@@ -90,7 +91,7 @@ export function Button({
         paddingHorizontal: 16,
         fontSize: 14,
         iconSize: 16,
-        minHeight: 40,
+        minHeight: 44, // iOS HIG minimum
       },
       md: {
         paddingVertical: 14,

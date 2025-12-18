@@ -167,7 +167,11 @@ export function useVoice(): UseVoiceReturn {
 
       // Descarregar som
       if (soundRef.current) {
-        soundRef.current.unloadAsync().catch(() => {});
+        soundRef.current.unloadAsync().catch((error) => {
+          logger.debug("Sound already unloaded", "useVoice", {
+            error: error instanceof Error ? error.message : String(error),
+          });
+        });
         soundRef.current = null;
       }
     }
@@ -313,8 +317,11 @@ export function useVoice(): UseVoiceReturn {
           try {
             await soundRef.current.pauseAsync();
             setState((prev) => ({ ...prev, isPlaying: false }));
-          } catch {
+          } catch (error) {
             // Se erro ao pausar, parar completamente
+            logger.debug("Failed to pause, stopping playback", "useVoice", {
+              error: error instanceof Error ? error.message : String(error),
+            });
             await stopPlayback();
           }
         }
@@ -323,8 +330,11 @@ export function useVoice(): UseVoiceReturn {
         try {
           await soundRef.current.playAsync();
           setState((prev) => ({ ...prev, isPlaying: true }));
-        } catch {
+        } catch (error) {
           // Se erro ao retomar, regenerar
+          logger.debug("Failed to resume, regenerating audio", "useVoice", {
+            error: error instanceof Error ? error.message : String(error),
+          });
           await playMessage(messageId, text);
         }
       } else {

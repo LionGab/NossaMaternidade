@@ -22,7 +22,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -33,6 +32,7 @@ import { useCommunityStore, useAppStore } from "../state/store";
 import { useImageUpload } from "../hooks/useImageUpload";
 import { logger } from "../utils/logger";
 import { COLORS, RADIUS } from "../theme/design-system";
+import { useToast } from "../context/ToastContext";
 
 const MAX_CONTENT_LENGTH = 500;
 const IMAGE_RESIZE = { width: 1200, height: 1200, maintainAspectRatio: true };
@@ -41,6 +41,7 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
   const insets = useSafeAreaInsets();
   const [content, setContent] = useState("");
   const [isPosting, setIsPosting] = useState(false);
+  const { showError } = useToast();
 
   const addPost = useCommunityStore((s) => s.addPost);
   const user = useAppStore((s) => s.user);
@@ -109,11 +110,11 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
         error instanceof Error ? error : new Error(String(error))
       );
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert("Erro", "Não foi possível publicar. Tente novamente.");
+      showError("Não foi possível publicar. Tente novamente.");
     } finally {
       setIsPosting(false);
     }
-  }, [content, selectedImage, uploadedImage, user, addPost, navigation, uploadImage]);
+  }, [content, selectedImage, uploadedImage, user, addPost, navigation, uploadImage, showError]);
 
   // Handle photo from gallery
   const handlePhotoPress = useCallback(async () => {
@@ -135,14 +136,13 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
     clearImage();
   }, [clearImage]);
 
-  // Show error alert
+  // Show error toast
   useEffect(() => {
     if (imageError) {
-      Alert.alert("Erro", imageError, [
-        { text: "OK", onPress: clearError },
-      ]);
+      showError(imageError);
+      clearError();
     }
-  }, [imageError, clearError]);
+  }, [imageError, clearError, showError]);
 
   const canPost = content.trim().length > 0 || selectedImage;
   const isLoading = isImageLoading || isPosting;

@@ -63,7 +63,7 @@ export default function ComingSoonScreen({
       >
         <Pressable
           onPress={handlePrimaryAction}
-          className="w-10 h-10 rounded-full items-center justify-center"
+          className="w-11 h-11 rounded-full items-center justify-center"
           style={{ backgroundColor: colors.neutral[100] }}
         >
           <Ionicons name="close" size={24} color={colors.neutral[500]} />

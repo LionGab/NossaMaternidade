@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
-import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { deleteAccount } from "../api/auth";
@@ -11,6 +11,7 @@ import { useAppStore } from "../state/store";
 import { RootStackScreenProps } from "../types/navigation";
 import { logger } from "../utils/logger";
 import { TYPOGRAPHY } from "../theme/design-system";
+import { useAlertModal } from "../components/ui/AlertModal";
 
 interface MenuItem {
   id: string;
@@ -46,6 +47,9 @@ export default function ProfileScreen({ navigation }: RootStackScreenProps<"Edit
   const [deleteReason, setDeleteReason] = useState("");
   const [confirmText, setConfirmText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Alert modal for replacing native Alert.alert
+  const alertModal = useAlertModal();
 
   const MENU_ITEMS: MenuItem[] = [
     { id: "edit", label: "Editar perfil", icon: "person-outline", color: colors.neutral[500] },
@@ -162,11 +166,13 @@ export default function ProfileScreen({ navigation }: RootStackScreenProps<"Edit
 
   const handleConfirmDelete = async () => {
     if (confirmText.toUpperCase() !== "DELETAR") {
-      Alert.alert(
-        "Confirmação incorreta",
-        'Por favor, digite "DELETAR" para confirmar a exclusão permanente da sua conta.',
-        [{ text: "OK", style: "default" }]
-      );
+      alertModal.show({
+        title: "Confirmação incorreta",
+        message: "Por favor, digite \"DELETAR\" para confirmar a exclusão permanente da sua conta.",
+        icon: "warning",
+        iconColor: colors.semantic.warning,
+        buttons: [{ text: "OK", style: "default" }],
+      });
       return;
     }
 
@@ -183,19 +189,22 @@ export default function ProfileScreen({ navigation }: RootStackScreenProps<"Edit
       if (result.success) {
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-        Alert.alert(
-          "Conta deletada",
-          "Sua conta e todos os dados foram permanentemente removidos. Sentiremos sua falta!",
-          [
+        alertModal.show({
+          title: "Conta deletada",
+          message: "Sua conta e todos os dados foram permanentemente removidos. Sentiremos sua falta!",
+          icon: "checkmark-circle",
+          iconColor: colors.semantic.success,
+          buttons: [
             {
               text: "OK",
+              style: "default",
               onPress: () => {
                 handleCloseDeleteModal();
                 setOnboardingComplete(false);
               },
             },
-          ]
-        );
+          ],
+        });
       } else {
         throw new Error(result.error || "Erro ao deletar conta");
       }
@@ -204,11 +213,13 @@ export default function ProfileScreen({ navigation }: RootStackScreenProps<"Edit
 
       logger.error("Failed to delete account", "ProfileScreen", error as Error);
 
-      Alert.alert(
-        "Erro ao deletar conta",
-        error instanceof Error ? error.message : "Ocorreu um erro inesperado. Tente novamente mais tarde.",
-        [{ text: "OK", style: "default" }]
-      );
+      alertModal.show({
+        title: "Erro ao deletar conta",
+        message: error instanceof Error ? error.message : "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+        icon: "alert-circle",
+        iconColor: colors.semantic.error,
+        buttons: [{ text: "OK", style: "default" }],
+      });
 
       setIsDeleting(false);
       setDeleteStep(2);
@@ -856,6 +867,9 @@ export default function ProfileScreen({ navigation }: RootStackScreenProps<"Edit
           </View>
         </View>
       </Modal>
+
+      {/* Alert Modal for custom alerts */}
+      <alertModal.AlertModal />
     </View>
   );
 }

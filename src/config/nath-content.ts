@@ -122,8 +122,15 @@ export const ESSENTIAL_CONTENT = {
   maesValente: MAES_VALENTE_REEL,
   gestacao: GESTACAO_POST,
   // Transformação (texto) - quotes de matérias
+  // URLs serão adicionadas quando o conteúdo estiver disponível
   transformacao: {
-    terra: "https://www.terra.com.br/...", // TODO: Adicionar URL quando disponível
-    podcast: "https://...", // TODO: Adicionar URL quando disponível
+    terra: null, // Terra matéria pendente
+    podcast: null, // Podcast pendente
   },
 } as const;
+
+// Type para conteúdo de transformação
+export type TransformacaoContent = {
+  terra: string | null;
+  podcast: string | null;
+};

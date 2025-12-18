@@ -14,8 +14,9 @@ interface IconButtonProps {
   disabled?: boolean;
 }
 
+// iOS HIG minimum tap target: 44pt
 const SIZE_MAP = {
-  sm: { button: 36, icon: 18 },
+  sm: { button: 44, icon: 18 },
   md: { button: 44, icon: 22 },
   lg: { button: 52, icon: 26 },
 };
