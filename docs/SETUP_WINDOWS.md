@@ -1,69 +1,166 @@
-# 🪟 Setup Windows - Nossa Maternidade
+# Setup Windows 11 - Nossa Maternidade
 
-**Guia completo para configurar o ambiente de desenvolvimento no Windows (mesma conta GitHub)**
+**Guia completo para configurar o ambiente de desenvolvimento no Windows 11**
+
+Tempo estimado: 30-60 minutos (máquina zerada)
 
 ---
 
-## 📋 PRÉ-REQUISITOS
+## 1. PRE-REQUISITOS
 
-### 1. Instalar Git para Windows
+### 1.1 Git for Windows
 
 ```powershell
 # Baixar e instalar:
 # https://git-scm.com/download/win
 
-# Verificar instalação:
+# Verificar instalacao:
 git --version
+# Esperado: git version 2.x.x
 ```
 
-### 2. Instalar Node.js (LTS)
+**Importante:** Durante a instalacao, selecione:
+- "Git Bash Here" no menu de contexto
+- "Use Git from Git Bash only" OU "Git from the command line and also from 3rd-party software"
+
+### 1.2 Node.js LTS
 
 ```powershell
 # Baixar e instalar:
-# https://nodejs.org/ (versão LTS)
+# https://nodejs.org/ (versao LTS - atualmente 20.x ou 22.x)
 
-# Verificar instalação:
+# Verificar instalacao:
 node --version
 npm --version
+# Esperado: v20.x.x ou v22.x.x
 ```
 
-### 3. Instalar Bun (opcional, mas recomendado - mais rápido)
+### 1.3 Bun (opcional, mas recomendado)
 
 ```powershell
 # PowerShell (como administrador):
 irm bun.sh/install.ps1 | iex
 
-# Verificar:
+# Fechar e reabrir o terminal, depois verificar:
 bun --version
+# Esperado: 1.x.x
 ```
-
-### 4. Instalar Git Bash (para scripts .sh)
-
-- Vem junto com Git for Windows
-- Ou instalar separadamente: https://git-scm.com/download/win
 
 ---
 
-## 🔑 CONFIGURAR SSH KEY (se ainda não tiver)
+## 2. ANDROID TOOLCHAIN
 
-### Opção 1: Usar a mesma SSH key do MacBook
+Esta secao e **obrigatoria** para rodar o app no emulador Android.
 
+### 2.1 JDK 17 (Java Development Kit)
+
+**Opcao A: Via Chocolatey (recomendado)**
 ```powershell
-# 1. Copiar a chave do MacBook para Windows
-#    No MacBook, copie: ~/.ssh/id_rsa e ~/.ssh/id_rsa.pub
-#    Cole em: C:\Users\SEU_USUARIO\.ssh\
+# Instalar Chocolatey primeiro (se nao tiver):
+# https://chocolatey.org/install
 
-# 2. No Windows, configurar permissões (Git Bash):
+# PowerShell (administrador):
+choco install microsoft-openjdk17 -y
+
+# Verificar:
+java -version
+# Esperado: openjdk version "17.x.x"
+```
+
+**Opcao B: Download manual**
+- Baixar: https://learn.microsoft.com/en-us/java/openjdk/download
+- Selecionar: Windows x64 MSI
+- Instalar e reiniciar o terminal
+
+### 2.2 Android Studio
+
+1. Baixar: https://developer.android.com/studio
+2. Executar instalador
+3. Durante instalacao, marcar:
+   - Android SDK
+   - Android SDK Platform
+   - Android Virtual Device
+
+### 2.3 Android SDK (via SDK Manager)
+
+1. Abrir Android Studio
+2. Ir em: **More Actions** > **SDK Manager** (ou **Tools** > **SDK Manager**)
+3. Aba **SDK Platforms**:
+   - Marcar: **Android 14.0 (API 34)** ou mais recente
+4. Aba **SDK Tools**:
+   - Marcar: **Android SDK Build-Tools**
+   - Marcar: **Android SDK Command-line Tools**
+   - Marcar: **Android Emulator**
+   - Marcar: **Android SDK Platform-Tools**
+5. Clicar **Apply** e aguardar download
+
+### 2.4 Configurar ANDROID_HOME e PATH
+
+**PowerShell (administrador):**
+```powershell
+# Configurar ANDROID_HOME (ajuste o caminho se necessario)
+[System.Environment]::SetEnvironmentVariable("ANDROID_HOME", "$env:LOCALAPPDATA\Android\Sdk", "User")
+
+# Adicionar platform-tools ao PATH
+$currentPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
+$newPath = "$currentPath;$env:LOCALAPPDATA\Android\Sdk\platform-tools;$env:LOCALAPPDATA\Android\Sdk\emulator"
+[System.Environment]::SetEnvironmentVariable("Path", $newPath, "User")
+
+# FECHAR E REABRIR O TERMINAL para aplicar as mudancas
+```
+
+**Verificar configuracao (em novo terminal):**
+```powershell
+echo $env:ANDROID_HOME
+# Esperado: C:\Users\SEU_USUARIO\AppData\Local\Android\Sdk
+
+adb --version
+# Esperado: Android Debug Bridge version 1.x.x
+```
+
+### 2.5 Criar AVD (Android Virtual Device)
+
+1. Abrir Android Studio
+2. Ir em: **More Actions** > **Virtual Device Manager**
+3. Clicar **Create Device**
+4. Selecionar: **Pixel 7** (ou similar)
+5. Clicar **Next**
+6. Selecionar imagem do sistema: **API 34** (fazer download se necessario)
+7. Clicar **Next** > **Finish**
+8. Na lista de devices, clicar no botao **Play** para iniciar o emulador
+
+**Verificar emulador via terminal:**
+```powershell
+# Listar emuladores disponiveis
+emulator -list-avds
+
+# Verificar dispositivos conectados (emulador deve aparecer)
+adb devices
+# Esperado:
+# List of devices attached
+# emulator-5554   device
+```
+
+---
+
+## 3. SSH KEY (se ainda nao tiver)
+
+### Opcao 1: Usar mesma SSH key de outra maquina
+
+```bash
+# 1. Copiar a chave para: C:\Users\SEU_USUARIO\.ssh\
+# 2. No Git Bash, configurar permissoes:
 chmod 600 ~/.ssh/id_rsa
 chmod 644 ~/.ssh/id_rsa.pub
 
-# 3. Testar conexão:
+# 3. Testar conexao:
 ssh -T git@github.com
+# Esperado: Hi usuario! You've successfully authenticated...
 ```
 
-### Opção 2: Gerar nova SSH key no Windows
+### Opcao 2: Gerar nova SSH key
 
-```powershell
+```bash
 # Git Bash:
 ssh-keygen -t ed25519 -C "seu-email@exemplo.com"
 
@@ -71,169 +168,190 @@ ssh-keygen -t ed25519 -C "seu-email@exemplo.com"
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_ed25519
 
-# Copiar chave pública:
+# Copiar chave publica:
 cat ~/.ssh/id_ed25519.pub
 # Cole no GitHub: Settings > SSH and GPG keys > New SSH key
 ```
 
 ---
 
-## 📥 CLONAR REPOSITÓRIO
+## 4. CLONAR REPOSITORIO
 
-### Opção 1: Via SSH (recomendado)
-
-```powershell
+```bash
 # Git Bash ou PowerShell:
 cd C:\Users\SEU_USUARIO\Documents
 git clone git@github.com:LionGab/NossaMaternidade.git
 cd NossaMaternidade
 ```
 
-### Opção 2: Via HTTPS
-
-```powershell
-git clone https://github.com/LionGab/NossaMaternidade.git
-cd NossaMaternidade
-```
-
----
-
-## ⚙️ CONFIGURAR GIT
-
-```powershell
-# Configurar usuário (se ainda não configurou):
+**Configurar git (se ainda nao configurou):**
+```bash
 git config --global user.name "Seu Nome"
 git config --global user.email "seu-email@exemplo.com"
 
-# Verificar configuração:
-git config --list
+# Configurar line endings (IMPORTANTE no Windows):
+git config --global core.autocrlf true
 ```
 
 ---
 
-## 📦 INSTALAR DEPENDÊNCIAS
-
-### Opção 1: Com Bun (mais rápido)
+## 5. INSTALAR DEPENDENCIAS
 
 ```powershell
-# No diretório do projeto:
+# No diretorio do projeto:
 cd C:\Users\SEU_USUARIO\Documents\NossaMaternidade
+
+# Com Bun (mais rapido):
 bun install
-```
 
-### Opção 2: Com npm
-
-```powershell
+# OU com npm:
 npm install
 ```
 
-**Nota:** O script `postinstall` vai executar automaticamente e corrigir problemas do LightningCSS no Windows.
+**Nota:** O script `postinstall` executa automaticamente e corrige problemas do LightningCSS no Windows.
 
 ---
 
-## 🔐 CONFIGURAR VARIÁVEIS DE AMBIENTE
+## 6. VARIAVEIS DE AMBIENTE
 
-### 1. Criar arquivo `.env.local`
+### 6.1 Criar arquivo .env.local
 
 ```powershell
-# No diretório raiz do projeto:
-# Copie o conteúdo do .env.local do MacBook
-# Ou crie novo baseado no env.template
+# PowerShell (no diretorio do projeto):
+Copy-Item .env.example .env.local
 
-# Windows PowerShell:
-Copy-Item env.template .env.local
-
-# Editar com Notepad ou VS Code:
+# Abrir para editar:
 notepad .env.local
+# OU
+code .env.local
 ```
 
-### 2. Preencher variáveis necessárias:
+### 6.2 AVISO DE SEGURANCA
+
+```
++------------------------------------------------------------------+
+|  !! ATENCAO - SEGURANCA !!                                       |
+|                                                                  |
+|  Variaveis EXPO_PUBLIC_* sao EMBUTIDAS no bundle do app.         |
+|  Qualquer pessoa pode extrair esses valores do APK/IPA.          |
+|                                                                  |
+|  NUNCA coloque nestas variaveis:                                 |
+|  - Service role keys do Supabase                                 |
+|  - Chaves de API com permissoes administrativas                  |
+|  - Secrets de autenticacao server-side                           |
+|  - Tokens de acesso a bancos de dados                            |
+|                                                                  |
+|  USE APENAS:                                                     |
+|  - Chaves anonimas/publicas (ex: Supabase anon key)              |
+|  - Client IDs para OAuth                                         |
+|  - URLs publicas de APIs                                         |
+|  - Feature flags                                                 |
++------------------------------------------------------------------+
+```
+
+### 6.3 Preencher valores obrigatorios
 
 ```env
-# Supabase
-EXPO_PUBLIC_SUPABASE_URL=sua_url
-EXPO_PUBLIC_SUPABASE_ANON_KEY=sua_key
-EXPO_PUBLIC_SUPABASE_FUNCTIONS_URL=sua_url
+# Supabase (OBRIGATORIO)
+EXPO_PUBLIC_SUPABASE_URL=https://seu-projeto.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=sua-chave-anon-aqui
+EXPO_PUBLIC_SUPABASE_FUNCTIONS_URL=https://seu-projeto.supabase.co/functions/v1
 
-# APIs
-EXPO_PUBLIC_OPENAI_API_KEY=sua_key
-EXPO_PUBLIC_GEMINI_API_KEY=sua_key
-EXPO_PUBLIC_ELEVENLABS_API_KEY=sua_key
-EXPO_PUBLIC_ELEVENLABS_VOICE_ID=sua_id
+# APIs de IA (para NathIA funcionar)
+EXPO_PUBLIC_OPENAI_API_KEY=sk-...
 
-# RevenueCat
-EXPO_PUBLIC_REVENUECAT_IOS_KEY=sua_key
-
-# Outros
-EXPO_PUBLIC_SENTRY_DSN=sua_dsn
+# Feature flags
 EXPO_PUBLIC_ENABLE_AI_FEATURES=true
 EXPO_PUBLIC_ENABLE_GAMIFICATION=true
-EXPO_PUBLIC_ENABLE_ANALYTICS=true
+EXPO_PUBLIC_ENABLE_ANALYTICS=false
 ```
+
+**NUNCA commite .env.local** - ele ja esta no .gitignore.
 
 ---
 
-## ✅ VALIDAR INSTALAÇÃO
+## 7. VALIDACAO
 
-### 1. Verificar TypeScript
+Execute cada comando e verifique se passa sem erros:
+
+### 7.1 TypeScript
 
 ```powershell
 npx tsc --noEmit
-# Deve retornar sem erros
+# Esperado: nenhum output (sem erros)
 ```
 
-### 2. Verificar ESLint
+### 7.2 ESLint
 
 ```powershell
 npm run lint
-# Deve retornar sem erros
+# Esperado: sem erros (warnings sao aceitaveis)
 ```
 
-### 3. Verificar Quality Gate
+### 7.3 Quality Gate (completo)
 
 ```powershell
-# Git Bash (scripts .sh precisam do Git Bash):
-git bash scripts/quality-gate.sh
-
-# Ou via npm:
 npm run quality-gate
+# Esperado: "All quality gates passed!"
 ```
 
-### 4. Verificar Build Readiness
+### 7.4 Verificar ambiente
 
 ```powershell
-npm run check-build-ready
+npm run check-env
+# Esperado: lista de variaveis configuradas
+```
+
+### 7.5 Iniciar Expo (teste final)
+
+```powershell
+# Iniciar com cache limpo:
+npx expo start --clear
+
+# Esperado:
+# - QR code aparece
+# - Metro bundler inicia na porta 8081
+# - Pressione 'a' para abrir no emulador Android
+```
+
+### 7.6 Testar no emulador Android
+
+1. Inicie o emulador Android (via Android Studio ou comando `emulator -avd NOME_AVD`)
+2. No terminal do Expo, pressione `a`
+3. O app deve abrir no emulador
+
+```powershell
+# Verificar se emulador esta conectado:
+adb devices
+# Esperado: emulator-5554   device
 ```
 
 ---
 
-## 🚀 COMANDOS ÚTEIS (Windows)
+## 8. COMANDOS UTEIS
 
 ### Desenvolvimento
 
 ```powershell
-# Iniciar Expo dev server:
+# Iniciar dev server:
 npm start
-# ou
-bun start
-
-# Rodar no iOS (precisa Mac):
-npm run ios
+# ou: bun start
 
 # Rodar no Android:
 npm run android
 
-# Rodar no web:
+# Rodar no Web:
 npm run web
+
+# Limpar cache e reiniciar:
+npx expo start --clear
 ```
 
-### Scripts importantes
+### Qualidade
 
 ```powershell
 # TypeScript check:
 npm run typecheck
-# ou
-npx tsc --noEmit
 
 # Lint:
 npm run lint
@@ -243,123 +361,235 @@ npm run format
 
 # Quality gate completo:
 npm run quality-gate
+
+# Verificar build readiness:
+npm run check-build-ready
 ```
 
-### Git (mesmos comandos)
+### Git
 
 ```powershell
 # Status:
 git status
 
-# Pull (atualizar do GitHub):
+# Pull (atualizar):
 git pull origin main
-
-# Ver commits:
-git log --oneline -10
-
-# Criar branch:
-git checkout -b nome-da-branch
 
 # Commit:
 git add .
-git commit -m "mensagem"
-
-# Push:
+git commit -m "feat: descricao"
 git push origin main
 ```
 
 ---
 
-## 🛠️ TROUBLESHOOTING
+## 9. TROUBLESHOOTING
 
-### Problema: Scripts .sh não funcionam
+### 9.1 Scripts .sh nao funcionam
 
-**Solução:** Use Git Bash ao invés de PowerShell/CMD
+**Sintoma:** Erro ao rodar `npm run quality-gate`
 
+**Causa:** bash nao esta no PATH
+
+**Solucao:**
 ```powershell
-# Abrir Git Bash e executar:
-git bash scripts/quality-gate.sh
+# Verificar se bash existe:
+where bash
+# Se nao aparecer, adicione Git Bash ao PATH:
+# C:\Program Files\Git\bin
+
+# Alternativa: rodar diretamente no Git Bash:
+bash scripts/quality-gate.sh
 ```
 
-### Problema: LightningCSS erro no Windows
+### 9.2 LightningCSS erro no Windows
 
-**Solução:** O script `postinstall` deve corrigir automaticamente. Se não:
+**Sintoma:** Erro de binario durante `npm install`
 
+**Solucao:**
 ```powershell
 node scripts/fix-lightningcss.js
+npm install
 ```
 
-### Problema: Permissões SSH
+### 9.3 Permissoes SSH
 
-**Solução:** No Git Bash:
+**Sintoma:** "Permissions are too open" ou "bad permissions"
 
+**Solucao (Git Bash):**
 ```bash
 chmod 600 ~/.ssh/id_rsa
 chmod 644 ~/.ssh/id_rsa.pub
 ```
 
-### Problema: Node modules corrompidos
+### 9.4 Node modules corrompidos
 
-**Solução:**
+**Sintoma:** Erros estranhos apos pull ou mudanca de branch
 
+**Solucao:**
 ```powershell
-# Limpar e reinstalar:
-npm run clean:all
-# ou
+# Limpar tudo e reinstalar:
 rm -rf node_modules
+npm cache clean --force
 npm install
 ```
 
-### Problema: Expo não encontra .env.local
+### 9.5 CRLF/LF quebrando scripts
 
-**Solução:** Verificar que o arquivo está na raiz do projeto e tem o nome exato `.env.local`
+**Sintoma:** Scripts .sh falham com erros de sintaxe
 
----
+**Causa:** Windows usa CRLF, scripts precisam de LF
 
-## 📝 NOTAS IMPORTANTES
-
-1. **Scripts .sh:** Sempre use Git Bash para executar scripts shell (não PowerShell/CMD)
-2. **Caminhos:** Windows usa `\` mas Git Bash aceita `/`
-3. **Variáveis de ambiente:** `.env.local` funciona igual no Windows
-4. **SSH:** Pode usar a mesma chave do MacBook ou gerar nova
-5. **Dependências:** `bun` é mais rápido, mas `npm` também funciona
-
----
-
-## 🔄 SINCRONIZAÇÃO ENTRE MACBOOK E WINDOWS
-
-### Workflow recomendado:
-
+**Solucao:**
 ```powershell
-# No Windows (antes de trabalhar):
-git pull origin main
+# Configurar git para converter automaticamente:
+git config --global core.autocrlf true
 
-# Trabalhar normalmente...
+# Se o problema persistir, converter arquivo manualmente:
+# VS Code: canto inferior direito, clicar em "CRLF" e mudar para "LF"
+```
 
-# Antes de finalizar (no Windows):
-git add .
-git commit -m "feat: descrição"
-git push origin main
+### 9.6 Emulador Android nao aparece
 
-# No MacBook (depois):
-git pull origin main
+**Sintoma:** `adb devices` nao mostra o emulador
+
+**Solucoes:**
+```powershell
+# 1. Verificar se ANDROID_HOME esta configurado:
+echo $env:ANDROID_HOME
+
+# 2. Reiniciar ADB:
+adb kill-server
+adb start-server
+adb devices
+
+# 3. Verificar se emulador esta rodando:
+# Abrir Android Studio > Virtual Device Manager > Play
+
+# 4. Se ainda nao funcionar, criar novo AVD
+```
+
+### 9.7 adb not recognized
+
+**Sintoma:** Comando `adb` nao encontrado
+
+**Solucao:**
+```powershell
+# Verificar se platform-tools esta no PATH:
+echo $env:Path | Select-String "platform-tools"
+
+# Se nao estiver, adicionar manualmente:
+$env:Path += ";$env:LOCALAPPDATA\Android\Sdk\platform-tools"
+
+# Testar:
+adb --version
+```
+
+### 9.8 Porta 8081 ocupada
+
+**Sintoma:** "Something is already running on port 8081"
+
+**Solucao:**
+```powershell
+# Encontrar processo na porta:
+netstat -ano | findstr :8081
+
+# Matar processo (substitua PID pelo numero encontrado):
+taskkill /PID NUMERO_PID /F
+
+# OU usar porta diferente:
+npx expo start --port 8082
+```
+
+### 9.9 Metro bundler travado
+
+**Sintoma:** Build trava, app nao atualiza
+
+**Solucao:**
+```powershell
+# 1. Parar o servidor (Ctrl+C)
+
+# 2. Limpar cache:
+npm run clean
+npx expo start --clear
+
+# 3. Se persistir, limpar cache do Metro global:
+rm -rf $env:USERPROFILE\.metro-cache
+```
+
+### 9.10 Expo nao encontra .env.local
+
+**Sintoma:** Variaveis de ambiente undefined
+
+**Solucao:**
+```powershell
+# Verificar nome do arquivo (deve ser exatamente .env.local):
+ls -la .env*
+
+# Verificar conteudo:
+cat .env.local
+
+# Reiniciar Expo com cache limpo:
+npx expo start --clear
 ```
 
 ---
 
-## ✅ CHECKLIST FINAL
+## 10. CHECKLIST FINAL
 
-- [ ] Git instalado e configurado
-- [ ] Node.js instalado
-- [ ] Bun instalado (opcional)
-- [ ] Repositório clonado
-- [ ] Dependências instaladas (`bun install` ou `npm install`)
-- [ ] `.env.local` configurado
-- [ ] SSH key configurada
-- [ ] TypeScript validado (`npx tsc --noEmit`)
-- [ ] ESLint validado (`npm run lint`)
+Execute cada item e marque como concluido:
+
+### Instalacoes
+- [ ] Git instalado (`git --version`)
+- [ ] Node.js instalado (`node --version`)
+- [ ] Bun instalado (`bun --version`) - opcional
+- [ ] JDK 17 instalado (`java -version`)
+- [ ] Android Studio instalado
+- [ ] Android SDK configurado
+- [ ] ANDROID_HOME configurado (`echo $env:ANDROID_HOME`)
+- [ ] adb no PATH (`adb --version`)
+- [ ] Emulador Android criado e funcionando
+
+### Projeto
+- [ ] Repositorio clonado
+- [ ] SSH key configurada (`ssh -T git@github.com`)
+- [ ] Dependencias instaladas (`bun install` ou `npm install`)
+- [ ] `.env.local` configurado (copiado de `.env.example`)
+
+### Validacao
+- [ ] TypeScript sem erros (`npx tsc --noEmit`)
+- [ ] ESLint sem erros (`npm run lint`)
 - [ ] Quality gate passou (`npm run quality-gate`)
+- [ ] Expo inicia (`npx expo start --clear`)
+- [ ] App abre no emulador Android (pressionar `a`)
 
 ---
 
-**Pronto!** Agora você pode trabalhar no Windows e sincronizar com o MacBook via GitHub. 🎉
+## COMO USAR (Resumo em 6 passos)
+
+```powershell
+# 1. Clonar repositorio
+git clone git@github.com:LionGab/NossaMaternidade.git
+cd NossaMaternidade
+
+# 2. Instalar dependencias
+bun install  # ou: npm install
+
+# 3. Configurar ambiente
+Copy-Item .env.example .env.local
+notepad .env.local  # Preencher valores
+
+# 4. Validar instalacao
+npm run quality-gate
+
+# 5. Iniciar emulador Android
+# (via Android Studio > Virtual Device Manager)
+
+# 6. Rodar app
+npx expo start --clear
+# Pressionar 'a' para abrir no Android
+```
+
+---
+
+**Pronto!** Ambiente configurado para desenvolvimento no Windows 11.

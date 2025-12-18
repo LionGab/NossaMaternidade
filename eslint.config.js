@@ -26,6 +26,18 @@ module.exports = defineConfig([
       "react-hooks": require("eslint-plugin-react-hooks"),
     },
     rules: {
+      // Ignore native modules that ESLint resolver can't find
+      "import/no-unresolved": [
+        "error",
+        {
+          ignore: [
+            "expo-local-authentication",
+            "@sentry/react-native",
+            "react-native-purchases",
+            "react-native-purchases-ui",
+          ],
+        },
+      ],
       // Formatting nits the sorter doesn't fix
       "comma-spacing": ["warn", { before: false, after: true }],
       // React recommended rules (only those not already covered by expo config)
