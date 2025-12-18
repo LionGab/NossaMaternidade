@@ -30,15 +30,19 @@ import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../hooks/useTheme";
 import { useAppStore } from "../state/store";
-import { MainTabScreenProps } from "../types/navigation";
 import { OVERLAY } from "../theme/design-system";
+import { MainTabScreenProps } from "../types/navigation";
 
 // Componentes da Home
 import { EmotionalCheckInPrimary, HealthInsightCard } from "../components/home";
 import { RowCard } from "../components/ui";
 
-// Foto da Nathalia - balanço com bebê (maternal, calma, luz natural)
-const NATHALIA_HERO_URL = "https://i.imgur.com/7GX41Ft.jpg";
+// Configuração de conteúdo da Nathalia
+
+// 🥇 MELHOR FOTO ABSOLUTA (HOME / PRIMEIRA DOBRA)
+// "2 meses do nosso mini homenzinho" - Instagram: https://www.instagram.com/p/DQzcsyvDmTV/
+// TODO: Substituir pela URL direta da imagem quando disponível
+const NATHALIA_HERO_URL = "https://i.imgur.com/7GX41Ft.jpg"; // Placeholder - atualizar com URL real da foto
 
 // Responsividade
 const getResponsiveValue = (screenWidth: number, baseValue: number, scale: number = 1): number => {

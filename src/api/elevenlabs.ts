@@ -1,42 +1,33 @@
 /**
  * ElevenLabs Text-to-Speech Service
  *
- * Servico para converter texto em fala usando a API do ElevenLabs.
- * Usa chamadas diretas a API (NAO o SDK) para compatibilidade com Expo Go.
+ * Servico para converter texto em fala usando Supabase Edge Function.
+ * API key mantida segura no servidor - NUNCA exposta no client.
  * Audio playback gerenciado pelo expo-av.
  */
 
 import * as FileSystem from "expo-file-system/legacy";
 import { Audio } from "expo-av";
-import Constants from "expo-constants";
 import { logger } from "../utils/logger";
-import { fetchWithRetry, TIMEOUT_PRESETS } from "../utils/fetch-utils";
 import {
   AppError,
   ErrorCode,
   wrapError,
-  isAppError,
 } from "../utils/error-handler";
+import { supabase } from "./supabase";
 
 // ============================================
 // CONFIGURACAO
 // ============================================
 
-// API Key do ElevenLabs (via env)
-const ELEVENLABS_API_KEY =
-  Constants.expoConfig?.extra?.elevenLabsApiKey ||
-  process.env.EXPO_PUBLIC_ELEVENLABS_API_KEY ||
-  "";
-
 // Voice ID da NathIA (clone da Nathalia Valente)
 // Fallback para voz feminina padrao se nao configurado
 const NATHIA_VOICE_ID =
-  Constants.expoConfig?.extra?.nathiaVoiceId ||
   process.env.EXPO_PUBLIC_NATHIA_VOICE_ID ||
   "EXAVITQu4vr4xnSDxMaL"; // Bella - voz feminina padrao
 
-// URL base da API
-const ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1";
+// URL da Edge Function (Supabase Functions)
+const FUNCTIONS_URL = process.env.EXPO_PUBLIC_SUPABASE_FUNCTIONS_URL;
 
 // Configuracoes de voz otimizadas para NathIA
 // Tom: Caloroso, maternal, brasileiro
@@ -65,19 +56,7 @@ interface GenerateSpeechOptions {
   voiceSettings?: typeof NATHIA_VOICE_SETTINGS;
 }
 
-interface VoiceInfo {
-  voice_id: string;
-  name: string;
-  category: string;
-  language?: string;
-}
-
-interface ApiStatus {
-  isAvailable: boolean;
-  characterCount?: number;
-  characterLimit?: number;
-  canGenerate?: boolean;
-}
+// VoiceInfo e ApiStatus foram removidos (não mais necessários com Edge Function)
 
 // ============================================
 // FUNCOES PRINCIPAIS
@@ -87,7 +66,8 @@ interface ApiStatus {
  * Verifica se a API esta configurada
  */
 export function isElevenLabsConfigured(): boolean {
-  return !!ELEVENLABS_API_KEY && ELEVENLABS_API_KEY.length > 10;
+  // Agora depende apenas da Edge Function estar configurada
+  return !!FUNCTIONS_URL && !!supabase;
 }
 
 /**
@@ -105,8 +85,6 @@ export async function generateSpeech(
   const {
     text,
     voiceId = NATHIA_VOICE_ID,
-    modelId = MODELS.MULTILINGUAL_V2,
-    voiceSettings = NATHIA_VOICE_SETTINGS,
   } = options;
 
   // Validacoes
@@ -144,55 +122,67 @@ export async function generateSpeech(
 
   const trimmedText = text.trim();
 
-  logger.debug("Generating speech", "ElevenLabs", {
+  logger.debug("Generating speech via Edge Function", "ElevenLabs", {
     textLength: trimmedText.length,
     voiceId,
-    modelId,
   });
 
   try {
-    // Chamar API COM RETRY + TIMEOUT
-    const response = await fetchWithRetry(
-      `${ELEVENLABS_API_URL}/text-to-speech/${voiceId}`,
-      {
-        method: "POST",
-        headers: {
-          "xi-api-key": ELEVENLABS_API_KEY,
-          "Content-Type": "application/json",
-          Accept: "audio/mpeg",
-        },
-        body: JSON.stringify({
-          text: trimmedText,
-          model_id: modelId,
-          voice_settings: voiceSettings,
-        }),
-        // TTS pode demorar dependendo do tamanho do texto
-        timeoutMs: TIMEOUT_PRESETS.LONG,
-        context: "ElevenLabs",
-      },
-      {
-        maxAttempts: 3,
-        initialDelay: 1000,
-        maxDelay: 5000,
-        retryable: (error) => {
-          if (isAppError(error)) {
-            // Não retry em erros de autenticação ou validação
-            return ![
-              ErrorCode.UNAUTHORIZED,
-              ErrorCode.INVALID_INPUT,
-            ].includes(error.code as ErrorCode);
-          }
-          return true;
-        },
-      }
-    );
-
-    // Obter audio como blob
-    const audioBlob = await response.blob();
-
-    if (audioBlob.size === 0) {
+    // Verificar se Supabase está configurado
+    if (!supabase) {
       throw new AppError(
-        "Empty audio response from ElevenLabs",
+        "Supabase not configured",
+        ErrorCode.API_ERROR,
+        "Erro de configuração. Contate o suporte.",
+        undefined,
+        { component: "ElevenLabs" }
+      );
+    }
+
+    // Obter session token
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      throw new AppError(
+        "Not authenticated",
+        ErrorCode.UNAUTHORIZED,
+        "Você precisa estar logado para usar a voz da NathIA.",
+        undefined,
+        { component: "ElevenLabs" }
+      );
+    }
+
+    // Chamar Edge Function COM RETRY + TIMEOUT
+    const response = await fetch(`${FUNCTIONS_URL}/elevenlabs-tts`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        text: trimmedText,
+        voiceId,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new AppError(
+        `Edge Function error: ${response.status}`,
+        ErrorCode.API_ERROR,
+        "Erro ao gerar áudio. Tente novamente.",
+        undefined,
+        { component: "ElevenLabs", status: response.status, error: errorData }
+      );
+    }
+
+    const data = await response.json();
+
+    if (!data.audioBase64) {
+      throw new AppError(
+        "Empty audio response from Edge Function",
         ErrorCode.API_ERROR,
         "Resposta inválida do servidor de áudio.",
         undefined,
@@ -200,8 +190,7 @@ export async function generateSpeech(
       );
     }
 
-    // Converter blob para base64
-    const base64Audio = await blobToBase64(audioBlob);
+    const base64Audio = data.audioBase64;
 
     // Salvar em arquivo local para playback
     if (!FileSystem.cacheDirectory) {
@@ -221,19 +210,14 @@ export async function generateSpeech(
       encoding: FileSystem.EncodingType.Base64,
     });
 
-    logger.info("Speech generated successfully", "ElevenLabs", {
+    logger.info("Speech generated successfully via Edge Function", "ElevenLabs", {
       textLength: trimmedText.length,
-      audioSize: audioBlob.size,
+      audioSize: data.audioSize,
       fileUri,
     });
 
     return fileUri;
   } catch (error) {
-    // Se já é AppError, re-throw
-    if (isAppError(error)) {
-      throw error;
-    }
-
     // Converter erro genérico
     throw wrapError(
       error,
@@ -296,77 +280,8 @@ export async function stopAudio(sound: Audio.Sound | null): Promise<void> {
   }
 }
 
-/**
- * Verifica status da API e quota de caracteres
- */
-export async function checkApiStatus(): Promise<ApiStatus> {
-  if (!isElevenLabsConfigured()) {
-    return { isAvailable: false };
-  }
-
-  try {
-    const response = await fetch(`${ELEVENLABS_API_URL}/user/subscription`, {
-      headers: {
-        "xi-api-key": ELEVENLABS_API_KEY,
-      },
-    });
-
-    if (!response.ok) {
-      return { isAvailable: false };
-    }
-
-    const data = await response.json();
-
-    const characterCount = data.character_count || 0;
-    const characterLimit = data.character_limit || 0;
-    const canGenerate = characterCount < characterLimit;
-
-    return {
-      isAvailable: true,
-      characterCount,
-      characterLimit,
-      canGenerate,
-    };
-  } catch (error) {
-    logger.error(
-      "Failed to check API status",
-      "ElevenLabs",
-      error instanceof Error ? error : new Error(String(error))
-    );
-    return { isAvailable: false };
-  }
-}
-
-/**
- * Lista vozes disponiveis na conta
- */
-export async function getAvailableVoices(): Promise<VoiceInfo[]> {
-  if (!isElevenLabsConfigured()) {
-    return [];
-  }
-
-  try {
-    const response = await fetch(`${ELEVENLABS_API_URL}/voices`, {
-      headers: {
-        "xi-api-key": ELEVENLABS_API_KEY,
-      },
-    });
-
-    if (!response.ok) {
-      return [];
-    }
-
-    const data = await response.json();
-    return data.voices || [];
-  } catch (error) {
-    logger.error(
-      "Failed to get voices",
-      "ElevenLabs",
-      error instanceof Error ? error : new Error(String(error))
-    );
-    return [];
-  }
-}
+// checkApiStatus e getAvailableVoices foram removidos
+// (não são mais necessários com Edge Function)
 
 /**
  * Limpa arquivos de audio em cache
@@ -405,26 +320,7 @@ export async function cleanupAudioCache(): Promise<number> {
   }
 }
 
-// ============================================
-// HELPERS
-// ============================================
-
-/**
- * Converte Blob para string Base64
- */
-async function blobToBase64(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const result = reader.result as string;
-      // Remove o prefixo data URL (ex: "data:audio/mpeg;base64,")
-      const base64 = result.split(",")[1];
-      resolve(base64);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
+// blobToBase64 foi removido (não mais necessário com Edge Function)
 
 // ============================================
 // EXPORTS

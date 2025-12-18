@@ -162,24 +162,37 @@ export default function AssistantScreen({ navigation, route }: MainTabScreenProp
 
   // Load message count on mount
   React.useEffect(() => {
+    let isMounted = true;
+
     const loadMessageCount = async () => {
       if (isPremium) {
-        setMessageCount(0);
+        if (isMounted) setMessageCount(0);
         return;
       }
       try {
         const key = `${MESSAGE_COUNT_KEY}_${user?.id || "anonymous"}`;
         const count = await AsyncStorage.getItem(key);
-        setMessageCount(count ? parseInt(count, 10) : 0);
+        // Só atualizar estado se componente ainda está montado
+        if (isMounted) {
+          setMessageCount(count ? parseInt(count, 10) : 0);
+        }
       } catch (error) {
-        logger.error(
-          "Failed to load message count",
-          "AssistantScreen",
-          error instanceof Error ? error : new Error(String(error))
-        );
+        // Só logar se componente ainda está montado
+        if (isMounted) {
+          logger.error(
+            "Failed to load message count",
+            "AssistantScreen",
+            error instanceof Error ? error : new Error(String(error))
+          );
+        }
       }
     };
+
     loadMessageCount();
+
+    return () => {
+      isMounted = false;
+    };
   }, [isPremium, user?.id]);
 
   // Processar contexto emocional vindo do check-in
@@ -254,6 +267,17 @@ export default function AssistantScreen({ navigation, route }: MainTabScreenProp
   // ============================================
   // HANDLERS
   // ============================================
+
+  // Memoizar renderItem para evitar re-renders em cada digitação
+  const renderMessageItem = useCallback(
+    ({ item, index }: { item: ChatMessage; index: number }) => (
+      <MessageBubble message={item} index={index} maxWidth={messageMaxWidth} />
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [messageMaxWidth]
+    // MessageBubble é React.memo estável definido no mesmo componente
+  );
+
   const handleSend = useCallback(async () => {
     if (!inputText.trim() || isLoading) return;
 
@@ -648,9 +672,7 @@ export default function AssistantScreen({ navigation, route }: MainTabScreenProp
               ref={flatListRef}
               data={currentMessages}
               keyExtractor={(item) => item.id}
-              renderItem={({ item, index }) => (
-                <MessageBubble message={item} index={index} maxWidth={messageMaxWidth} />
-              )}
+              renderItem={renderMessageItem}
               style={[styles.messagesList, { paddingHorizontal: horizontalPadding }]}
               contentContainerStyle={styles.messagesListContent}
               showsVerticalScrollIndicator={false}

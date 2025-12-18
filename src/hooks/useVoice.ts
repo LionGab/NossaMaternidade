@@ -93,8 +93,11 @@ export function useVoice(): UseVoiceReturn {
     if (soundRef.current) {
       try {
         await stopAudio(soundRef.current);
-      } catch {
-        // Ignorar erros de cleanup
+      } catch (err) {
+        // Log de cleanup failure para debug
+        logger.warn("Audio cleanup failed", "useVoice", {
+          error: err instanceof Error ? err.message : String(err),
+        });
       }
       soundRef.current = null;
     }

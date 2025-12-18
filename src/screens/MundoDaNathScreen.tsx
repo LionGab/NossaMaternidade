@@ -36,6 +36,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { GESTACAO_POST, MAES_VALENTE_REEL, PARTO_REEL } from "../config/nath-content";
 import { useAdmin } from "../hooks/useAdmin";
 import { useTheme } from "../hooks/useTheme";
 import { COLORS, GRADIENTS, RADIUS, SPACING } from "../theme/design-system";
@@ -79,6 +80,7 @@ const MOCK_STORIES: NathStory[] = [
 ];
 
 // Posts reais da Nathalia Valente - Maternidade & Rotina
+// Baseado na decisão final: 5 conteúdos essenciais para lançamento
 const MOCK_POSTS: NathPost[] = [
   {
     id: "1",
@@ -94,42 +96,40 @@ const MOCK_POSTS: NathPost[] = [
   {
     id: "2",
     type: "reel",
-    content:
-      "Meu relato de parto 🩵 O momento mais especial da minha vida. Parto natural, muita emoção e amor. Assiste lá no meu Instagram!",
-    imageUrl: "https://i.imgur.com/7GX41Ft.jpg", // Thumbnail - Nath com Thales
-    externalUrl: "https://www.instagram.com/reel/DOhD-3nEt79/",
+    content: PARTO_REEL.description,
+    imageUrl: PARTO_REEL.thumbnailUrl,
+    externalUrl: PARTO_REEL.url,
     platform: "instagram",
     likesCount: 45231,
     commentsCount: 2341,
     createdAt: "2025-09-10T10:00:00.000Z",
     isLiked: true,
-    isPinned: true,
+    isPinned: true, // 🥇 Conteúdo âncora do "Mundo da Nath"
   },
   {
     id: "3",
+    type: "reel",
+    content: MAES_VALENTE_REEL.description,
+    imageUrl: MAES_VALENTE_REEL.thumbnailUrl,
+    externalUrl: MAES_VALENTE_REEL.url,
+    platform: "instagram",
+    likesCount: 38921,
+    commentsCount: 2156,
+    createdAt: "2025-10-05T14:00:00.000Z",
+    isLiked: true,
+    isPinned: true, // 🥇 Vídeo principal da seção Mães Valente
+  },
+  {
+    id: "4",
     type: "image",
-    content:
-      "Meu ensaio de gestante foi pensado em cada detalhe 🤰✨ Esse momento ficou eternizado nas fotos mais lindas! Cada clique carrega tanto amor...",
-    imageUrl: "https://i.imgur.com/37dbPJE.jpg", // Ensaio gestante
-    externalUrl: "https://www.instagram.com/p/DN6p40GjgmB/",
+    content: GESTACAO_POST.description,
+    imageUrl: GESTACAO_POST.thumbnailUrl,
+    externalUrl: GESTACAO_POST.url,
     platform: "instagram",
     likesCount: 32456,
     commentsCount: 1567,
     createdAt: "2025-08-15T14:00:00.000Z",
     isLiked: true,
-  },
-  {
-    id: "4",
-    type: "reel",
-    content:
-      "Estamos te esperando com muito amor 😭🤰 Esse vídeo foi feito quando eu ainda estava esperando o Thales... Que emoção!",
-    imageUrl: "https://i.imgur.com/a4O1jAT.jpg", // Avatar da Nath
-    externalUrl: "https://www.instagram.com/reel/DIHl3pjh8KS/",
-    platform: "instagram",
-    likesCount: 28934,
-    commentsCount: 987,
-    createdAt: "2025-07-20T16:00:00.000Z",
-    isLiked: false,
   },
   {
     id: "5",
@@ -396,7 +396,14 @@ const PostCard: React.FC<{
               }}
             >
               <Ionicons name="play-circle" size={12} color={COLORS.accent[500]} />
-              <Text style={{ fontSize: 10, fontWeight: "600", color: COLORS.accent[600], marginLeft: 2 }}>
+              <Text
+                style={{
+                  fontSize: 10,
+                  fontWeight: "600",
+                  color: COLORS.accent[600],
+                  marginLeft: 2,
+                }}
+              >
                 Vídeo
               </Text>
             </View>
@@ -464,7 +471,12 @@ const PostCard: React.FC<{
                     elevation: 8,
                   }}
                 >
-                  <Ionicons name="play" size={28} color={COLORS.accent[500]} style={{ marginLeft: 3 }} />
+                  <Ionicons
+                    name="play"
+                    size={28}
+                    color={COLORS.accent[500]}
+                    style={{ marginLeft: 3 }}
+                  />
                 </View>
               </View>
             )}
@@ -484,12 +496,29 @@ const PostCard: React.FC<{
                 }}
               >
                 <Ionicons
-                  name={post.platform === "instagram" ? "logo-instagram" : post.platform === "tiktok" ? "logo-tiktok" : "globe-outline"}
+                  name={
+                    post.platform === "instagram"
+                      ? "logo-instagram"
+                      : post.platform === "tiktok"
+                        ? "logo-tiktok"
+                        : "globe-outline"
+                  }
                   size={12}
                   color={COLORS.neutral[0]}
                 />
-                <Text style={{ fontSize: 10, color: COLORS.neutral[0], marginLeft: 4, fontWeight: "600" }}>
-                  {post.platform === "instagram" ? "Instagram" : post.platform === "tiktok" ? "TikTok" : "Abrir"}
+                <Text
+                  style={{
+                    fontSize: 10,
+                    color: COLORS.neutral[0],
+                    marginLeft: 4,
+                    fontWeight: "600",
+                  }}
+                >
+                  {post.platform === "instagram"
+                    ? "Instagram"
+                    : post.platform === "tiktok"
+                      ? "TikTok"
+                      : "Abrir"}
                 </Text>
               </View>
             )}
@@ -634,7 +663,9 @@ const NewPostModal: React.FC<{
               borderRadius: RADIUS.full,
             }}
           >
-            <Text style={{ fontSize: 14, fontWeight: "600", color: COLORS.neutral[0] }}>Publicar</Text>
+            <Text style={{ fontSize: 14, fontWeight: "600", color: COLORS.neutral[0] }}>
+              Publicar
+            </Text>
           </Pressable>
         </View>
 

@@ -3,7 +3,7 @@
  * Premium authentication with animated inputs and custom alerts
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -28,6 +28,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
+import * as LocalAuthentication from "expo-local-authentication";
 import { useAppStore } from "../state/store";
 import * as Haptics from "expo-haptics";
 import {
@@ -56,7 +57,105 @@ const getResponsiveValue = (baseValue: number, scale: number = 1) => {
 
 type Props = RootStackScreenProps<"Login">;
 
-// Componente de Input personalizado
+// Componente de Hero Illustration (Imagem/Avatar no topo)
+const HeroIllustration = () => {
+  const { isDark } = useTheme();
+
+  return (
+    <Animated.View
+      entering={FadeInUp.duration(800).springify()}
+      style={{
+        marginBottom: SPACING["4xl"],
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <View
+        style={{
+          width: getResponsiveValue(180, 1.2),
+          height: getResponsiveValue(180, 1.2),
+          borderRadius: getResponsiveValue(90, 1.2),
+          overflow: "hidden",
+          ...SHADOWS.lg,
+        }}
+      >
+        <LinearGradient
+          colors={[
+            isDark ? COLORS.primary[600] : COLORS.primary[300],
+            isDark ? COLORS.primary[700] : COLORS.primary[400],
+          ]}
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Ionicons
+            name="heart-outline"
+            size={getResponsiveValue(80, 1.2)}
+            color={COLORS.neutral[0]}
+            style={{ opacity: 0.9 }}
+          />
+        </LinearGradient>
+      </View>
+    </Animated.View>
+  );
+};
+
+// Componente de Botão Social Login
+const SocialLoginButton = ({
+  platform,
+  onPress,
+  icon,
+}: {
+  platform: "apple" | "google";
+  onPress: () => void;
+  icon: keyof typeof Ionicons.glyphMap;
+}) => {
+  const { colors } = useTheme();
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    scale.value = withSpring(0.95);
+    setTimeout(() => {
+      scale.value = withSpring(1);
+    }, 100);
+    onPress();
+  };
+
+  return (
+    <Animated.View style={[animatedStyle, { flex: 1 }]}>
+      <Pressable
+        onPress={handlePress}
+        style={{
+          borderWidth: 1.5,
+          borderColor: colors.neutral[200],
+          borderRadius: RADIUS.lg,
+          paddingVertical: SPACING.md,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: colors.neutral[0],
+          ...SHADOWS.sm,
+        }}
+        accessibilityLabel={`Login com ${platform === "apple" ? "Apple" : "Google"}`}
+        accessibilityRole="button"
+      >
+        <Ionicons
+          name={icon}
+          size={24}
+          color={colors.neutral[600]}
+        />
+      </Pressable>
+    </Animated.View>
+  );
+};
+
+// Componente de Input personalizado com validação em tempo real
 const CustomInput = ({
   icon,
   placeholder,
@@ -69,6 +168,8 @@ const CustomInput = ({
   onTogglePassword,
   showPassword,
   autoCorrect,
+  error,
+  isValid,
 }: {
   icon: keyof typeof Ionicons.glyphMap;
   placeholder: string;
@@ -81,6 +182,8 @@ const CustomInput = ({
   onTogglePassword?: () => void;
   showPassword?: boolean;
   autoCorrect?: boolean;
+  error?: string;
+  isValid?: boolean;
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const scale = useSharedValue(1);
@@ -99,20 +202,27 @@ const CustomInput = ({
     scale.value = withSpring(1, { damping: 15 });
   };
 
+  const getBorderColor = () => {
+    if (isValid && value) return COLORS.semantic.success;
+    if (error && value) return COLORS.semantic.error;
+    if (isFocused) return COLORS.primary[300];
+    return COLORS.neutral[200];
+  };
+
   return (
     <Animated.View style={[animatedStyle, { marginBottom: SPACING.lg }]}>
       <View
-          style={{
-            backgroundColor: COLORS.neutral[0],
-            borderRadius: RADIUS.xl,
-            borderWidth: 1.5,
-            borderColor: isFocused ? COLORS.primary[300] : COLORS.neutral[200],
-            flexDirection: "row",
-            alignItems: "center",
-            paddingHorizontal: getResponsiveValue(16),
-            minHeight: getResponsiveValue(52, 1.1),
-            ...SHADOWS.sm,
-          }}
+        style={{
+          backgroundColor: COLORS.neutral[0],
+          borderRadius: RADIUS.xl,
+          borderWidth: 1.5,
+          borderColor: getBorderColor(),
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: getResponsiveValue(16),
+          minHeight: getResponsiveValue(52, 1.1),
+          ...SHADOWS.sm,
+        }}
       >
         <View
           style={{
@@ -149,7 +259,8 @@ const CustomInput = ({
           onFocus={handleFocus}
           onBlur={handleBlur}
           accessibilityLabel={placeholder}
-          accessibilityHint={secureTextEntry ? "Campo de senha" : undefined}
+          accessibilityHint={secureTextEntry ? "Campo de senha" : error ? error : undefined}
+          accessibilityState={{ disabled: false }}
         />
         {showPasswordToggle && (
           <Pressable
@@ -170,7 +281,30 @@ const CustomInput = ({
             />
           </Pressable>
         )}
+        {isValid && value && (
+          <View style={{ paddingRight: SPACING.sm }}>
+            <Ionicons
+              name="checkmark-circle"
+              size={22}
+              color={COLORS.semantic.success}
+            />
+          </View>
+        )}
       </View>
+      {error && value && (
+        <Text
+          style={{
+            fontSize: TYPOGRAPHY.labelSmall.fontSize,
+            color: COLORS.semantic.error,
+            marginTop: SPACING.xs,
+            marginLeft: SPACING.md,
+          }}
+          accessible
+          accessibilityRole="alert"
+        >
+          {error}
+        </Text>
+      )}
     </Animated.View>
   );
 };
@@ -284,6 +418,8 @@ export default function LoginScreen({ navigation }: Props) {
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [errors, setErrors] = useState({ email: "", password: "", name: "", confirmPassword: "" });
   const [alertConfig, setAlertConfig] = useState({
     visible: false,
     title: "",
@@ -292,6 +428,115 @@ export default function LoginScreen({ navigation }: Props) {
 
   const setAuthenticated = useAppStore((s) => s.setAuthenticated);
   const setUser = useAppStore((s) => s.setUser);
+
+  // Verificar disponibilidade de biometric authentication
+  useEffect(() => {
+    const checkBiometric = async () => {
+      try {
+        const compatible = await LocalAuthentication.hasHardwareAsync();
+        const enrolled = await LocalAuthentication.isEnrolledAsync();
+        setBiometricAvailable(compatible && enrolled);
+      } catch {
+        setBiometricAvailable(false);
+      }
+    };
+    checkBiometric();
+  }, []);
+
+  // Validação de email
+  const validateEmail = (emailValue: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(emailValue);
+  };
+
+  // Validação de password
+  const validatePassword = (passwordValue: string): boolean => {
+    return passwordValue.length >= 6;
+  };
+
+  // Atualizar erros em tempo real
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    if (text && !validateEmail(text)) {
+      setErrors((prev) => ({ ...prev, email: "Email inválido" }));
+    } else {
+      setErrors((prev) => ({ ...prev, email: "" }));
+    }
+  };
+
+  const handlePasswordChange = (text: string) => {
+    setPassword(text);
+    if (text && !validatePassword(text)) {
+      setErrors((prev) => ({ ...prev, password: "Mínimo 6 caracteres" }));
+    } else {
+      setErrors((prev) => ({ ...prev, password: "" }));
+    }
+  };
+
+  const handleNameChange = (text: string) => {
+    setName(text);
+    if (text && text.length < 2) {
+      setErrors((prev) => ({ ...prev, name: "Nome muito curto" }));
+    } else {
+      setErrors((prev) => ({ ...prev, name: "" }));
+    }
+  };
+
+  const handleConfirmPasswordChange = (text: string) => {
+    setConfirmPassword(text);
+    if (text && text !== password) {
+      setErrors((prev) => ({ ...prev, confirmPassword: "Senhas não coincidem" }));
+    } else {
+      setErrors((prev) => ({ ...prev, confirmPassword: "" }));
+    }
+  };
+
+  // Handler para Biometric Login
+  const handleBiometricLogin = async () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      const result = await LocalAuthentication.authenticateAsync({
+        disableDeviceFallback: false,
+      });
+
+      if (result.success) {
+        setIsLoading(true);
+        setTimeout(() => {
+          const mockUser: UserProfile = {
+            id: Date.now().toString(),
+            name: "Usuária",
+            email: "user@nossmaternidade.com",
+            avatarUrl: "",
+            stage: "pregnant" as PregnancyStage,
+            dueDate: undefined,
+            interests: [] as Interest[],
+            createdAt: new Date().toISOString(),
+            hasCompletedOnboarding: false,
+          };
+          setUser(mockUser);
+          setAuthenticated(true);
+          setIsLoading(false);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }, 1000);
+      }
+    } catch {
+      showAlert("Erro", "Falha na autenticação biométrica");
+    }
+  };
+
+  // Handlers para Social Login
+  const handleSocialLogin = async (provider: "apple" | "google") => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      showAlert(
+        `Login com ${provider === "apple" ? "Apple" : "Google"}`,
+        `Integrando com ${provider === "apple" ? "Apple" : "Google"}...`
+      );
+      // Integração real seria feita aqui com expo-auth-session
+    } catch {
+      showAlert("Erro", `Falha no login com ${provider}`);
+    }
+  };
 
   const buttonScale = useSharedValue(1);
 
@@ -316,14 +561,26 @@ export default function LoginScreen({ navigation }: Props) {
       return;
     }
 
-    if (!isLogin && password !== confirmPassword) {
-      showAlert("Senhas diferentes", "As senhas não coincidem.");
+    if (!validateEmail(email)) {
+      showAlert("Email inválido", "Por favor, insira um email válido.");
       return;
     }
 
-    if (!isLogin && !name) {
-      showAlert("Nome obrigatório", "Por favor, informe seu nome.");
+    if (!validatePassword(password)) {
+      showAlert("Senha fraca", "A senha deve ter no mínimo 6 caracteres.");
       return;
+    }
+
+    if (!isLogin) {
+      if (!name || name.length < 2) {
+        showAlert("Nome inválido", "Por favor, insira um nome válido.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showAlert("Senhas diferentes", "As senhas não coincidem.");
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -390,6 +647,9 @@ export default function LoginScreen({ navigation }: Props) {
             bounces={true}
             alwaysBounceVertical={false}
           >
+            {/* Hero Illustration */}
+            {isLogin && <HeroIllustration />}
+
             {/* Logo e Header - REDESIGN PREMIUM */}
             <Animated.View
               entering={FadeInUp.duration(800).springify()}
@@ -398,59 +658,62 @@ export default function LoginScreen({ navigation }: Props) {
                 marginBottom: SPACING["5xl"],
               }}
             >
-              {/* Logo Premium com sombra e destaque */}
-              <Animated.View
-                entering={FadeInUp.duration(800).springify()}
-                style={{
-                  marginBottom: SPACING["2xl"],
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <View
+              {/* Logo Premium com sombra e destaque - só para signup */}
+              {!isLogin && (
+                <Animated.View
+                  entering={FadeInUp.duration(800).springify()}
                   style={{
-                    shadowColor: COLORS.primary[500],
-                    shadowOffset: { width: 0, height: 12 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 28,
-                    elevation: 18,
-                    borderRadius: getResponsiveValue(36),
-                    backgroundColor: colors.background.secondary,
-                    padding: getResponsiveValue(20),
-                    borderWidth: 2,
-                    borderColor: isDark ? colors.primary[900] : colors.primary[100],
-                    overflow: "hidden",
+                    marginBottom: SPACING["2xl"],
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
                   <View
                     style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      backgroundColor: isDark ? colors.primary[900] + "1A" : colors.primary[50],
+                      shadowColor: COLORS.primary[500],
+                      shadowOffset: { width: 0, height: 12 },
+                      shadowOpacity: 0.3,
+                      shadowRadius: 28,
+                      elevation: 18,
+                      borderRadius: getResponsiveValue(36),
+                      backgroundColor: colors.background.secondary,
+                      padding: getResponsiveValue(20),
+                      borderWidth: 2,
+                      borderColor: isDark ? colors.primary[900] : colors.primary[100],
+                      overflow: "hidden",
                     }}
-                  />
-                  <Image
-                    source={require("../../assets/logo.png")}
-                    style={{
-                      width: getResponsiveValue(120, 1.4),
-                      height: getResponsiveValue(120, 1.4),
-                      resizeMode: "contain",
-                      zIndex: 1,
-                    }}
-                  />
-                </View>
-              </Animated.View>
+                  >
+                    <View
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: isDark ? colors.primary[900] + "1A" : colors.primary[50],
+                      }}
+                    />
+                    <Image
+                      source={require("../../assets/logo.png")}
+                      style={{
+                        width: getResponsiveValue(120, 1.4),
+                        height: getResponsiveValue(120, 1.4),
+                        resizeMode: "contain",
+                        zIndex: 1,
+                      }}
+                    />
+                  </View>
+                </Animated.View>
+              )}
 
               <Text
                 style={{
-                  fontSize: getResponsiveValue(30, 1.1),
+                  fontSize: getResponsiveValue(32, 1.1),
                   fontWeight: "700",
                   color: COLORS.neutral[900],
                   marginBottom: SPACING.xs,
                   letterSpacing: -0.8,
+                  fontFamily: "DMSerifDisplay_400Regular",
                 }}
               >
                 Nossa Maternidade
@@ -491,8 +754,10 @@ export default function LoginScreen({ navigation }: Props) {
                     icon="person-outline"
                     placeholder="Como você se chama?"
                     value={name}
-                    onChangeText={setName}
+                    onChangeText={handleNameChange}
                     autoCapitalize="words"
+                    error={errors.name || undefined}
+                    isValid={name.length >= 2}
                   />
                 </Animated.View>
               )}
@@ -513,10 +778,12 @@ export default function LoginScreen({ navigation }: Props) {
                 icon="mail-outline"
                 placeholder="seu@email.com"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={handleEmailChange}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
+                error={errors.email || undefined}
+                isValid={email ? validateEmail(email) : false}
               />
 
               {/* Senha */}
@@ -535,12 +802,14 @@ export default function LoginScreen({ navigation }: Props) {
                 icon="lock-closed-outline"
                 placeholder="********"
                 value={password}
-                onChangeText={setPassword}
+                onChangeText={handlePasswordChange}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
                 showPasswordToggle
                 showPassword={showPassword}
                 onTogglePassword={() => setShowPassword(!showPassword)}
+                error={errors.password || undefined}
+                isValid={password ? validatePassword(password) : false}
               />
 
               {/* Confirmar Senha (apenas cadastro) */}
@@ -561,9 +830,11 @@ export default function LoginScreen({ navigation }: Props) {
                     icon="lock-closed-outline"
                     placeholder="********"
                     value={confirmPassword}
-                    onChangeText={setConfirmPassword}
+                    onChangeText={handleConfirmPasswordChange}
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
+                    error={errors.confirmPassword || undefined}
+                    isValid={confirmPassword ? confirmPassword === password : false}
                   />
                 </Animated.View>
               )}
@@ -657,6 +928,109 @@ export default function LoginScreen({ navigation }: Props) {
                 </Pressable>
               </Animated.View>
 
+              {/* Social Login Buttons - apenas em login */}
+              {isLogin && (
+                <>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginVertical: SPACING["3xl"],
+                    }}
+                  >
+                    <View
+                      style={{
+                        flex: 1,
+                        height: 1,
+                        backgroundColor: COLORS.neutral[200],
+                      }}
+                    />
+                    <Text
+                      style={{
+                        paddingHorizontal: SPACING.lg,
+                        color: COLORS.neutral[400],
+                        fontSize: TYPOGRAPHY.labelSmall.fontSize,
+                        fontWeight: "600",
+                        textTransform: "uppercase",
+                        letterSpacing: 1,
+                      }}
+                    >
+                      ou
+                    </Text>
+                    <View
+                      style={{
+                        flex: 1,
+                        height: 1,
+                        backgroundColor: COLORS.neutral[200],
+                      }}
+                    />
+                  </View>
+
+                  {/* Social Login Buttons */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      gap: SPACING.md,
+                      marginBottom: SPACING["3xl"],
+                    }}
+                  >
+                    <SocialLoginButton
+                      platform="apple"
+                      icon="logo-apple"
+                      onPress={() => handleSocialLogin("apple")}
+                    />
+                    <SocialLoginButton
+                      platform="google"
+                      icon="logo-google"
+                      onPress={() => handleSocialLogin("google")}
+                    />
+                  </View>
+
+                  {/* Biometric Login Button */}
+                  {biometricAvailable && (
+                    <Animated.View
+                      entering={FadeInUp.duration(600)}
+                      style={{ marginBottom: SPACING.lg }}
+                    >
+                      <Pressable
+                        onPress={handleBiometricLogin}
+                        disabled={isLoading}
+                        style={{
+                          opacity: isLoading ? 0.7 : 1,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          paddingVertical: SPACING.md,
+                          backgroundColor: COLORS.neutral[50],
+                          borderRadius: RADIUS.lg,
+                          borderWidth: 1,
+                          borderColor: COLORS.neutral[200],
+                          gap: SPACING.sm,
+                        }}
+                        accessibilityLabel="Login com biometria"
+                        accessibilityRole="button"
+                        accessibilityState={{ disabled: isLoading }}
+                      >
+                        <Ionicons
+                          name="finger-print"
+                          size={20}
+                          color={COLORS.primary[500]}
+                        />
+                        <Text
+                          style={{
+                            fontSize: TYPOGRAPHY.labelMedium.fontSize,
+                            fontWeight: "600",
+                            color: COLORS.primary[500],
+                          }}
+                        >
+                          Login com Biometria
+                        </Text>
+                      </Pressable>
+                    </Animated.View>
+                  )}
+                </>
+              )}
+
               {/* Divisor - REDESIGN */}
               <View
                 style={{
@@ -682,7 +1056,7 @@ export default function LoginScreen({ navigation }: Props) {
                     letterSpacing: 1,
                   }}
                 >
-                  ou
+                  {isLogin ? "sem conta?" : "com conta?"}
                 </Text>
                 <View
                   style={{
