@@ -1,5 +1,6 @@
 ---
 name: "Build+Deploy Agent"
+description: "Agente especializado em builds, deployments e CI/CD"
 ---
 
 # Build+Deploy Agent

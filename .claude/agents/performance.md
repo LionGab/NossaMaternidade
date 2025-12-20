@@ -1,5 +1,6 @@
 ---
 name: "Performance Agent"
+description: "Agente especializado em otimização de performance"
 ---
 
 # Performance Agent

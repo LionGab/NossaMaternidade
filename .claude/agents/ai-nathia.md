@@ -1,5 +1,6 @@
 ---
 name: "AI/NathIA Agent"
+description: "Agente especializado na NathIA (assistente de IA) e integrações de AI"
 ---
 
 # AI/NathIA Agent

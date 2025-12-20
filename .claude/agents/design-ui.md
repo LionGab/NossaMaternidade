@@ -1,5 +1,6 @@
 ---
 name: "Design+UI Agent"
+description: "Agente especializado em design system, UI e acessibilidade"
 ---
 
 # Design+UI Agent
