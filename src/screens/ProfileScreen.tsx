@@ -93,55 +93,29 @@ export default function ProfileScreen({ navigation }: RootStackScreenProps<"Edit
 
   const handleSettingsPress = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("ComingSoon", {
-      title: "Configurações",
-      description: "Em breve você poderá personalizar todas as configurações do app.",
-      emoji: "⚙️",
-      primaryCtaLabel: "Voltar",
-    });
+    navigation.navigate("NotificationPreferences");
   };
 
   const handleMenuItemPress = async (itemId: string) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    // Navegação especial para Notificações (já implementada)
-    if (itemId === "notifications") {
-      navigation.navigate("NotificationPreferences");
-      return;
-    }
-
-    const menuConfig: Record<string, { title: string; description: string; emoji: string }> = {
-      edit: {
-        title: "Editar Perfil",
-        description: "Em breve você poderá editar suas informações pessoais e foto de perfil.",
-        emoji: "👤",
-      },
-      privacy: {
-        title: "Privacidade",
-        description: "Em breve você poderá gerenciar suas configurações de privacidade.",
-        emoji: "🔒",
-      },
-      help: {
-        title: "Ajuda e Suporte",
-        description: "Em breve teremos uma central de ajuda completa para você.",
-        emoji: "💬",
-      },
-      about: {
-        title: "Sobre o App",
-        description:
-          "Nossa Maternidade é um app criado com carinho por Nathália Valente para acompanhar você em toda a jornada da maternidade.",
-        emoji: "💜",
-      },
-    };
-
-    const config = menuConfig[itemId];
-    if (config) {
-      navigation.navigate("ComingSoon", {
-        ...config,
-        primaryCtaLabel: "Voltar",
-        secondaryCtaLabel: itemId === "help" ? "Falar com NathIA" : undefined,
-        relatedRoute: itemId === "help" ? "Assistant" : undefined,
-      });
+    // Navegação baseada no item do menu
+    switch (itemId) {
+      case "edit":
+        navigation.navigate("EditProfile");
+        break;
+      case "notifications":
+        navigation.navigate("NotificationPreferences");
+        break;
+      case "privacy":
+        navigation.navigate("PrivacySettings");
+        break;
+      case "help":
+        navigation.navigate("MainTabs", { screen: "Assistant" });
+        break;
+      case "about":
+        navigation.navigate("Legal");
+        break;
     }
   };
 

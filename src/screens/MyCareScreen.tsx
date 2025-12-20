@@ -157,61 +157,26 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
     } else if (id === "feelings") {
       navigation.navigate("DailyLog", {});
     } else if (id === "breathe") {
-      navigation.navigate("ComingSoon", {
-        title: "Respira Comigo",
-        description: "Em breve teremos exercícios guiados de respiração para te ajudar a relaxar.",
-        emoji: "🧘",
-        primaryCtaLabel: "Voltar",
-        secondaryCtaLabel: "Falar com NathIA",
-        relatedRoute: "Assistant",
-      });
+      navigation.navigate("BreathingExercise");
     } else if (id === "rest") {
-      navigation.navigate("ComingSoon", {
-        title: "Descanso",
-        description: "Em breve teremos sons relaxantes e meditações guiadas para você.",
-        emoji: "🌙",
-        primaryCtaLabel: "Voltar",
-        secondaryCtaLabel: "Ver Afirmações",
-        relatedRoute: "Assistant",
-      });
+      navigation.navigate("RestSounds");
     }
   };
 
   const handleQuickSupport = async (id: string) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    // Configurações com tom da Nathalia
-    const supportConfig: Record<string, { title: string; description: string; emoji: string }> = {
-      anxiety: {
-        title: "Ansiedade Materna",
-        description: "Ei, eu também sinto isso. Em breve vou compartilhar técnicas que me ajudam a lidar com a ansiedade do puerpério. 💕",
-        emoji: "🫂",
-      },
-      sleep: {
-        title: "Sono (ou a falta dele)",
-        description: "Vamos ser realistas: mãe não dorme bem. Mas em breve vou compartilhar como eu sobrevivo e dicas pra aguentar o tranco! 😴",
-        emoji: "😴",
-      },
-      feeding: {
-        title: "Amamentação",
-        description: "Essa jornada tem altos e baixos, né? Em breve vou contar minha experiência e dicas que aprendi. 🤱",
-        emoji: "🤱",
-      },
-      body: {
-        title: "Corpo Pós-Parto",
-        description: "Nosso corpo fez um milagre! Em breve vou falar sobre aceitar o tempo e cuidar de si sem pressão. 🩷",
-        emoji: "🩷",
-      },
+    // Mapeamento de quick support para contexto emocional da NathIA
+    const emotionalContextMap: Record<string, "ansiosa" | "cansada" | "bem" | "amada"> = {
+      anxiety: "ansiosa",
+      sleep: "cansada",
+      feeding: "bem",
+      body: "amada",
     };
 
-    const config = supportConfig[id];
-    if (config) {
-      navigation.navigate("ComingSoon", {
-        ...config,
-        primaryCtaLabel: "Voltar",
-        secondaryCtaLabel: "Falar com NathIA",
-        relatedRoute: "Assistant",
-      });
+    const emotionalContext = emotionalContextMap[id];
+    if (emotionalContext) {
+      navigation.navigate("Assistant", { emotionalContext });
     }
   };
 

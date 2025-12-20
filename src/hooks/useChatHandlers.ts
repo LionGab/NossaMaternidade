@@ -68,22 +68,14 @@ export function useChatHandlers(props: UseChatHandlersProps) {
 
   const handleMicPress = useCallback(async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("ComingSoon", {
-      title: "Mensagem de Voz",
-      description: "Em breve você poderá enviar mensagens de voz para a NathIA.",
-      emoji: "🎙️",
-      primaryCtaLabel: "Voltar",
-    });
+    // Mensagem de voz é feature premium
+    navigation.navigate("Paywall", { source: "voice_message" });
   }, [navigation]);
 
   const handleAttachment = useCallback(async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate("ComingSoon", {
-      title: "Anexos",
-      description: "Em breve você poderá enviar fotos e documentos para a NathIA analisar.",
-      emoji: "📎",
-      primaryCtaLabel: "Voltar",
-    });
+    // Anexos é feature premium
+    navigation.navigate("Paywall", { source: "attachments" });
   }, [navigation]);
 
   const handleClearChat = useCallback(async () => {

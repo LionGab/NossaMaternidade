@@ -832,14 +832,10 @@ export default function MundoDaNathScreen({ navigation }: Props) {
   }, []);
 
   const handleComment = useCallback(
-    async (_postId: string) => {
+    async (postId: string) => {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      // TODO: Navigate to comments/post detail with _postId
-      navigation.navigate("ComingSoon", {
-        title: "Comentários",
-        description: "Em breve você poderá comentar nos posts da Nath!",
-        emoji: "💬",
-      });
+      // Navegar para detalhes do post para ver/adicionar comentários
+      navigation.navigate("PostDetail", { postId });
     },
     [navigation]
   );
@@ -863,11 +859,8 @@ export default function MundoDaNathScreen({ navigation }: Props) {
   const handleStoryPress = useCallback(
     async (story: NathStory) => {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      navigation.navigate("ComingSoon", {
-        title: story.title,
-        description: `Conteúdos de ${story.title} da Nath em breve!`,
-        emoji: story.emoji,
-      });
+      // Stories são conteúdo premium
+      navigation.navigate("Paywall", { source: `story_${story.id}` });
     },
     [navigation]
   );
