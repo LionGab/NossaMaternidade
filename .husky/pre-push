@@ -2,7 +2,14 @@
 
 echo "Running pre-push validation..."
 
+# Use bun if available, otherwise fallback to npm
+if command -v bun > /dev/null 2>&1; then
+  PKG_RUNNER="bun"
+else
+  PKG_RUNNER="npm"
+fi
+
 # Run full quality gate
-bun run quality-gate || exit 1
+$PKG_RUNNER run quality-gate || exit 1
 
 echo "Ready to push!"

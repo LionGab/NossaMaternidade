@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script para limpar caches do projeto
-# Uso: bun run clean-cache
+# Uso: npm run clean (ou bun run clean)
 
 set -e
 
@@ -40,4 +40,4 @@ find . -name "*.tsbuildinfo" -type f -delete 2>/dev/null || true
 
 echo "✅ Caches limpos!"
 echo ""
-echo "Execute: bun start --clear para reiniciar com cache limpo"
+echo "Execute: npm run start:clear para reiniciar com cache limpo"

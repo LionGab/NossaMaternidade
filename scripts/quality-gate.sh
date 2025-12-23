@@ -1,15 +1,22 @@
 #!/bin/bash
 # Quality gate script - roda antes de PR/build
-# Uso: bun run quality-gate
+# Uso: npm run quality-gate (ou bun run quality-gate)
 
 set -e
 
 echo "🚀 Running quality gates for Nossa Maternidade..."
 
+# Use bun if available, otherwise fallback to npm
+if command -v bun > /dev/null 2>&1; then
+  PKG_RUNNER="bun"
+else
+  PKG_RUNNER="npm"
+fi
+
 # 1. TypeScript type check
 echo ""
 echo "📝 [1/4] TypeScript type check..."
-bun run typecheck
+$PKG_RUNNER run typecheck
 if [ $? -ne 0 ]; then
   echo "❌ TypeScript errors found!"
   exit 1
@@ -19,7 +26,7 @@ echo "✅ TypeScript check passed"
 # 2. ESLint
 echo ""
 echo "🔧 [2/4] ESLint check..."
-bun run lint
+$PKG_RUNNER run lint
 if [ $? -ne 0 ]; then
   echo "❌ ESLint errors found!"
   exit 1
@@ -29,7 +36,7 @@ echo "✅ ESLint check passed"
 # 3. Build readiness
 echo ""
 echo "🏗️  [3/4] Build readiness check..."
-bun run check-build-ready
+$PKG_RUNNER run check-build-ready
 if [ $? -ne 0 ]; then
   echo "❌ Build readiness check failed!"
   exit 1

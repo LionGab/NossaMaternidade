@@ -1,57 +1,62 @@
 #!/bin/bash
 # Script de setup do ambiente de desenvolvimento
-# Uso: bun run setup-dev
+# Uso: npm run setup-dev (ou bun run setup-dev)
 
 set -e
 
 echo "🚀 Configurando ambiente de desenvolvimento..."
 
-# Verificar se bun está instalado
-if ! command -v bun &> /dev/null; then
-  echo "❌ Bun não está instalado. Instale em: https://bun.sh"
-  exit 1
+# Use bun if available, otherwise fallback to npm
+if command -v bun > /dev/null 2>&1; then
+  PKG_RUNNER="bun"
+  PKG_INSTALL="bun install"
+else
+  PKG_RUNNER="npm"
+  PKG_INSTALL="npm install"
 fi
+
+echo "📦 Usando: $PKG_RUNNER"
 
 # Instalar dependências
 echo "📦 Instalando dependências..."
-bun install
+$PKG_INSTALL
 
 # Verificar variáveis de ambiente
-if [ ! -f .env ]; then
-  echo "⚠️  Arquivo .env não encontrado. Copiando template..."
-  if [ -f env.template ]; then
-    cp env.template .env
-    echo "✅ Arquivo .env criado. Configure as variáveis necessárias."
+if [ ! -f .env.local ]; then
+  echo "⚠️  Arquivo .env.local não encontrado. Copiando template..."
+  if [ -f .env.example ]; then
+    cp .env.example .env.local
+    echo "✅ Arquivo .env.local criado. Configure as variáveis necessárias."
   else
-    echo "⚠️  Template não encontrado. Crie um arquivo .env manualmente."
+    echo "⚠️  Template não encontrado. Crie um arquivo .env.local manualmente."
   fi
 else
-  echo "✅ Arquivo .env encontrado."
+  echo "✅ Arquivo .env.local encontrado."
 fi
 
 # Verificar TypeScript
 echo "🔍 Verificando TypeScript..."
-bun run typecheck || {
+$PKG_RUNNER run typecheck || {
   echo "⚠️  Erros de TypeScript encontrados. Corrija antes de continuar."
 }
 
 # Verificar ESLint
 echo "🔍 Verificando ESLint..."
-bun run lint || {
+$PKG_RUNNER run lint || {
   echo "⚠️  Erros de ESLint encontrados. Corrija antes de continuar."
 }
 
 # Verificar Prettier
 echo "🔍 Verificando formatação..."
-bun run format:check || {
-  echo "⚠️  Arquivos não formatados. Execute: bun run format"
+$PKG_RUNNER run format:check || {
+  echo "⚠️  Arquivos não formatados. Execute: $PKG_RUNNER run format"
 }
 
 echo ""
 echo "✅ Setup completo!"
 echo ""
 echo "Próximos passos:"
-echo "  1. Configure as variáveis em .env"
-echo "  2. Execute: bun start"
-echo "  3. Para iOS: bun run ios"
-echo "  4. Para Android: bun run android"
+echo "  1. Configure as variáveis em .env.local"
+echo "  2. Execute: $PKG_RUNNER start"
+echo "  3. Para Android: $PKG_RUNNER run android"
+echo "  4. Para iOS (macOS only): $PKG_RUNNER run ios"

@@ -12,6 +12,13 @@ NC='\033[0m' # No Color
 
 echo "🔍 Verificando prontidão para build..."
 
+# Use bun if available, otherwise fallback to npm
+if command -v bun > /dev/null 2>&1; then
+  PKG_RUNNER="bun"
+else
+  PKG_RUNNER="npm"
+fi
+
 ERRORS=0
 WARNINGS=0
 
@@ -64,29 +71,29 @@ fi
 
 # Verificar TypeScript
 echo "🔍 Verificando tipos TypeScript..."
-if bun run typecheck > /dev/null 2>&1; then
+if $PKG_RUNNER run typecheck > /dev/null 2>&1; then
     echo -e "${GREEN}✅ TypeScript sem erros${NC}"
 else
     echo -e "${RED}❌ Erros de TypeScript encontrados${NC}"
     ERRORS=$((ERRORS + 1))
-    bun run typecheck
+    $PKG_RUNNER run typecheck
 fi
 
 # Verificar ESLint
 echo "🔍 Verificando ESLint..."
-if bun run lint > /dev/null 2>&1; then
+if $PKG_RUNNER run lint > /dev/null 2>&1; then
     echo -e "${GREEN}✅ ESLint sem erros e warnings${NC}"
 else
     # ESLint retorna erro se tem warnings ou errors
     # Vamos verificar se são apenas warnings
-    LINT_OUTPUT=$(bun run lint 2>&1)
+    LINT_OUTPUT=$($PKG_RUNNER run lint 2>&1)
     if echo "$LINT_OUTPUT" | grep -q "0 errors"; then
         echo -e "${YELLOW}⚠️  Avisos do ESLint encontrados (aceitável)${NC}"
         WARNINGS=$((WARNINGS + 1))
     else
         echo -e "${RED}❌ Erros do ESLint encontrados${NC}"
         ERRORS=$((ERRORS + 1))
-        bun run lint
+        $PKG_RUNNER run lint
     fi
 fi
 

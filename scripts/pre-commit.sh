@@ -6,23 +6,30 @@ set -e
 
 echo "🔍 Running quality gates..."
 
+# Use bun if available, otherwise fallback to npm
+if command -v bun > /dev/null 2>&1; then
+  PKG_RUNNER="bun"
+else
+  PKG_RUNNER="npm"
+fi
+
 # Type check
 echo "📝 Running TypeScript type check..."
-bun run typecheck || {
+$PKG_RUNNER run typecheck || {
   echo "❌ TypeScript errors found. Please fix before committing."
   exit 1
 }
 
 # Lint
 echo "🔧 Running ESLint..."
-bun run lint || {
+$PKG_RUNNER run lint || {
   echo "❌ ESLint errors found. Please fix before committing."
   exit 1
 }
 
 # Build readiness check (opcional - pode ser lento)
 # echo "🏗️  Checking build readiness..."
-# bun run check-build-ready || {
+# $PKG_RUNNER run check-build-ready || {
 #   echo "⚠️  Build readiness check failed. Continue anyway? (y/n)"
 #   read -r response
 #   if [ "$response" != "y" ]; then
