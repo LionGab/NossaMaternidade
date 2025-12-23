@@ -64,29 +64,29 @@ fi
 
 # Verificar TypeScript
 echo "🔍 Verificando tipos TypeScript..."
-if bun run typecheck > /dev/null 2>&1; then
+if npm run typecheck > /dev/null 2>&1; then
     echo -e "${GREEN}✅ TypeScript sem erros${NC}"
 else
     echo -e "${RED}❌ Erros de TypeScript encontrados${NC}"
     ERRORS=$((ERRORS + 1))
-    bun run typecheck
+    npm run typecheck
 fi
 
 # Verificar ESLint
 echo "🔍 Verificando ESLint..."
-if bun run lint > /dev/null 2>&1; then
+if npm run lint > /dev/null 2>&1; then
     echo -e "${GREEN}✅ ESLint sem erros e warnings${NC}"
 else
     # ESLint retorna erro se tem warnings ou errors
     # Vamos verificar se são apenas warnings
-    LINT_OUTPUT=$(bun run lint 2>&1)
+    LINT_OUTPUT=$(npm run lint 2>&1)
     if echo "$LINT_OUTPUT" | grep -q "0 errors"; then
         echo -e "${YELLOW}⚠️  Avisos do ESLint encontrados (aceitável)${NC}"
         WARNINGS=$((WARNINGS + 1))
     else
         echo -e "${RED}❌ Erros do ESLint encontrados${NC}"
         ERRORS=$((ERRORS + 1))
-        bun run lint
+        npm run lint
     fi
 fi
 
