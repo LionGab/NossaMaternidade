@@ -3,6 +3,6 @@
 echo "Running pre-push validation..."
 
 # Run full quality gate
-bun run quality-gate || exit 1
+npm run quality-gate || exit 1
 
 echo "Ready to push!"
