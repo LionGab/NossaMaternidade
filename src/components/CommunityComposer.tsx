@@ -1,22 +1,46 @@
-import React, { useState, useMemo } from "react";
-import { View, Text, Pressable, TextInput, Image, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import Animated, { FadeIn, FadeInUp } from "react-native-reanimated";
-import { Avatar } from "./ui";
-import { useAppStore } from "../state/store";
-import { uploadImageToImgur } from "../api/imgur";
-import { logger } from "../utils/logger";
 import * as Haptics from "expo-haptics";
+import * as ImagePicker from "expo-image-picker";
+import React, { useMemo, useState } from "react";
+import { ActivityIndicator, Image, Pressable, Text, TextInput, View } from "react-native";
+import Animated, { FadeIn, FadeInUp } from "react-native-reanimated";
+import { uploadImageToImgur } from "../api/imgur";
 import { useToast } from "../context/ToastContext";
 import { useTheme } from "../hooks/useTheme";
-import { Tokens, COLORS, COLORS_DARK } from "../theme/tokens";
+import { useAppStore } from "../state/store";
+import { COLORS, COLORS_DARK, Tokens } from "../theme/tokens";
+import { logger } from "../utils/logger";
+import { Avatar } from "./ui";
 
 const POST_TYPES = [
-  { id: "duvida", label: "Dúvida", emoji: "❓", color: Tokens.brand.primary[500], bgColor: Tokens.brand.primary[50] },
-  { id: "desabafo", label: "Desabafo", emoji: "💭", color: Tokens.brand.secondary[500], bgColor: Tokens.brand.secondary[50] },
-  { id: "vitoria", label: "Vitória", emoji: "🎉", color: Tokens.semantic.light.success, bgColor: Tokens.semantic.light.successLight },
-  { id: "dica", label: "Dica", emoji: "💡", color: Tokens.semantic.light.warning, bgColor: Tokens.semantic.light.warningLight },
+  {
+    id: "duvida",
+    label: "Dúvida",
+    emoji: "❓",
+    color: Tokens.brand.primary[500],
+    bgColor: Tokens.brand.primary[50],
+  },
+  {
+    id: "desabafo",
+    label: "Desabafo",
+    emoji: "💭",
+    color: Tokens.brand.secondary[500],
+    bgColor: Tokens.brand.secondary[50],
+  },
+  {
+    id: "vitoria",
+    label: "Vitória",
+    emoji: "🎉",
+    color: Tokens.semantic.light.success,
+    bgColor: Tokens.semantic.light.successLight,
+  },
+  {
+    id: "dica",
+    label: "Dica",
+    emoji: "💡",
+    color: Tokens.semantic.light.warning,
+    bgColor: Tokens.semantic.light.warningLight,
+  },
 ];
 
 interface CommunityComposerProps {
@@ -34,16 +58,16 @@ const getComposerColors = (isDark: boolean) => {
     cardBg: colors.background.secondary,
     // Text
     placeholder: Tokens.neutral[400],
-    textPrimary: isDark ? Tokens.text.dark.primary : "#1F2937",
+    textPrimary: isDark ? Tokens.text.dark.primary : Tokens.text.light.primary,
     textSecondary: Tokens.neutral[400],
     // Actions
     addButton: Tokens.brand.primary[500],
     addIcon: Tokens.text.light.inverse,
-    actionBg: isDark ? Tokens.neutral[700] : "#F3F4F6",
+    actionBg: isDark ? Tokens.neutral[700] : Tokens.neutral[100],
     actionIcon: Tokens.neutral[500],
     // Post button
     postActive: Tokens.brand.primary[500],
-    postInactive: isDark ? Tokens.neutral[700] : "#F3F4F6",
+    postInactive: isDark ? Tokens.neutral[700] : Tokens.neutral[100],
     postTextActive: Tokens.text.light.inverse,
     postTextInactive: Tokens.neutral[400],
     // Avatar fallback
@@ -76,7 +100,7 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
 
   const handlePost = async () => {
     if (!content.trim() && !selectedImage) return;
-    
+
     setIsUploading(true);
     let imageUrl: string | undefined;
 
@@ -95,7 +119,11 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
       setSelectedImage(null);
       setIsExpanded(false);
     } catch (error) {
-      logger.error("Erro ao publicar post", "CommunityComposer", error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        "Erro ao publicar post",
+        "CommunityComposer",
+        error instanceof Error ? error : new Error(String(error))
+      );
       showError("Não foi possível publicar o post. Verifique sua conexão e tente novamente.");
     } finally {
       setIsUploading(false);
@@ -111,7 +139,7 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
 
   const handleImagePress = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
+
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
@@ -130,7 +158,11 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
         setSelectedImage(result.assets[0].uri);
       }
     } catch (error) {
-      logger.error("Erro ao selecionar imagem", "CommunityComposer", error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        "Erro ao selecionar imagem",
+        "CommunityComposer",
+        error instanceof Error ? error : new Error(String(error))
+      );
       showError("Não foi possível selecionar a imagem.");
     }
   };
@@ -243,10 +275,7 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
       {/* Type Selection */}
       <View className="flex-row mb-4">
         {POST_TYPES.map((type, index) => (
-          <Animated.View
-            key={type.id}
-            entering={FadeInUp.delay(index * 50).duration(200)}
-          >
+          <Animated.View key={type.id} entering={FadeInUp.delay(index * 50).duration(200)}>
             <Pressable
               onPress={() => handleTypeSelect(type.id)}
               style={{
@@ -352,7 +381,10 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
           onPress={handlePost}
           disabled={(!content.trim() && !selectedImage) || isUploading}
           style={{
-            backgroundColor: (content.trim() || selectedImage) && !isUploading ? composerColors.postActive : composerColors.postInactive,
+            backgroundColor:
+              (content.trim() || selectedImage) && !isUploading
+                ? composerColors.postActive
+                : composerColors.postInactive,
             paddingHorizontal: 20,
             paddingVertical: 10,
             borderRadius: 20,
@@ -362,7 +394,11 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
         >
           {isUploading ? (
             <>
-              <ActivityIndicator size="small" color={composerColors.postTextActive} style={{ marginRight: 8 }} />
+              <ActivityIndicator
+                size="small"
+                color={composerColors.postTextActive}
+                style={{ marginRight: 8 }}
+              />
               <Text
                 style={{
                   color: composerColors.postTextActive,
@@ -377,7 +413,10 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
             <>
               <Text
                 style={{
-                  color: (content.trim() || selectedImage) ? composerColors.postTextActive : composerColors.postTextInactive,
+                  color:
+                    content.trim() || selectedImage
+                      ? composerColors.postTextActive
+                      : composerColors.postTextInactive,
                   fontSize: 14,
                   fontWeight: "600",
                   marginRight: 4,
@@ -388,7 +427,11 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
               <Ionicons
                 name="send"
                 size={16}
-                color={(content.trim() || selectedImage) ? composerColors.postTextActive : composerColors.postTextInactive}
+                color={
+                  content.trim() || selectedImage
+                    ? composerColors.postTextActive
+                    : composerColors.postTextInactive
+                }
               />
             </>
           )}

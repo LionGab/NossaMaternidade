@@ -10,17 +10,17 @@
  * Este é o gateway para telemedicina (coming soon)
  */
 
-import React, { useCallback } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import Animated, { FadeInUp, FadeInRight } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import * as Haptics from "expo-haptics";
-import { useNavigation } from "@react-navigation/native";
 import type { NavigationProp } from "@react-navigation/native";
-import { useTheme } from "../../hooks/useTheme";
+import { useNavigation } from "@react-navigation/native";
+import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useCallback } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import Animated, { FadeInRight, FadeInUp } from "react-native-reanimated";
 import { useHealthInsights, type InsightPriority } from "../../hooks/useHealthInsights";
-import { spacing, radius, shadows, semantic } from "../../theme/tokens";
+import { useTheme } from "../../hooks/useTheme";
+import { brand, neutral, radius, semantic, shadows, spacing } from "../../theme/tokens";
 import type { RootStackParamList } from "../../types/navigation";
 
 // =======================
@@ -30,7 +30,7 @@ import type { RootStackParamList } from "../../types/navigation";
 const PRIORITY_GRADIENTS: Record<InsightPriority, readonly [string, string]> = {
   high: [semantic.light.errorLight, semantic.light.error] as const,
   medium: [semantic.light.warningLight, semantic.light.warning] as const,
-  low: ["#F3E8FF", "#D8B4FE"] as const,
+  low: [brand.secondary[100], brand.secondary[300]] as const,
 };
 
 const PRIORITY_ICONS: Record<InsightPriority, keyof typeof Ionicons.glyphMap> = {
@@ -148,10 +148,8 @@ export const HealthInsightCard: React.FC = () => {
                   { backgroundColor: gradient[1], opacity: pressed ? 0.8 : 1 },
                 ]}
               >
-                <Text style={styles.primaryButtonText}>
-                  {topInsight.actions.primary.label}
-                </Text>
-                <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
+                <Text style={styles.primaryButtonText}>{topInsight.actions.primary.label}</Text>
+                <Ionicons name="arrow-forward" size={16} color={neutral[0]} />
               </Pressable>
             </Animated.View>
           </View>
@@ -241,7 +239,7 @@ const styles = StyleSheet.create({
     minHeight: 44, // iOS HIG
   },
   primaryButtonText: {
-    color: "#FFFFFF",
+    color: neutral[0],
     fontSize: 14,
     fontWeight: "600",
     fontFamily: "Manrope_600SemiBold",

@@ -47,13 +47,13 @@ export function OfflineBanner({ onRetry, isRetrying = false }: OfflineBannerProp
       }
     : {
         bg: Tokens.semantic.light.warningLight,
-        border: "#FDE68A", // amber-200
-        iconBg: "#FDE68A",
-        iconColor: "#B45309", // amber-700
-        titleColor: "#92400E", // amber-800
-        textColor: "#B45309", // amber-700
-        buttonBg: "#FFFBEB", // amber-50
-        buttonBorder: "#FCD34D", // amber-300
+        border: Tokens.semantic.light.warningLight,
+        iconBg: Tokens.semantic.light.warningLight,
+        iconColor: Tokens.semantic.light.warningText,
+        titleColor: Tokens.semantic.light.warningText,
+        textColor: Tokens.semantic.light.warningText,
+        buttonBg: Tokens.semantic.light.warningLight,
+        buttonBorder: Tokens.semantic.light.warning,
       };
 
   const handleRetry = async () => {

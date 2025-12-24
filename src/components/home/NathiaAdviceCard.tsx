@@ -8,14 +8,14 @@
  * Usa tokens do preset calmFemtech - azul base, rosa pontual
  */
 
-import React, { useMemo, useCallback } from "react";
-import { View, Text, Pressable, StyleSheet, Image } from "react-native";
-import Animated, { FadeInUp } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import React, { useCallback, useMemo } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import Animated, { FadeInUp } from "react-native-reanimated";
 import { useTheme } from "../../hooks/useTheme";
 import { useCheckInStore } from "../../state/store";
-import { spacing, radius, shadows } from "../../theme/tokens";
+import { neutral, radius, shadows, spacing } from "../../theme/tokens";
 
 // Imagem real da Nath
 const NATH_PROFILE = require("../../../assets/onboarding/images/nath-profile-small.jpg");
@@ -33,9 +33,7 @@ const MOOD_TIPS: Record<number, string> = {
   1: "Uma respiração profunda pode ajudar. Estou aqui se precisar.",
 };
 
-export const NathiaAdviceCard: React.FC<NathiaAdviceCardProps> = ({
-  onPressChat,
-}) => {
+export const NathiaAdviceCard: React.FC<NathiaAdviceCardProps> = ({ onPressChat }) => {
   const { colors, isDark, brand, text: themeText } = useTheme();
 
   // Store
@@ -103,7 +101,7 @@ export const NathiaAdviceCard: React.FC<NathiaAdviceCardProps> = ({
 
         {/* CTA Button */}
         <View style={[styles.ctaButton, { backgroundColor: accentColor }]}>
-          <Ionicons name="chevron-forward" size={20} color="#FFFFFF" />
+          <Ionicons name="chevron-forward" size={20} color={neutral[0]} />
         </View>
       </Pressable>
     </Animated.View>

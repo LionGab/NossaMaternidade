@@ -5,9 +5,9 @@
  */
 
 import * as Haptics from "expo-haptics";
-import { LinearGradient } from "expo-linear-gradient";
 import { Image } from "expo-image";
-import React, { useEffect, useState, useCallback } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -18,24 +18,24 @@ import {
   Text,
   View,
 } from "react-native";
+import { PurchasesPackage } from "react-native-purchases";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { PurchasesPackage } from "react-native-purchases";
-import { ProgressBar } from "../../components/onboarding/ProgressBar";
-import { useNathJourneyOnboardingStore } from "../../state/nath-journey-onboarding-store";
-import { usePremiumStore } from "../../state/premium-store";
-import { useAppStore } from "../../state/store";
-import { useTheme } from "../../hooks/useTheme";
-import { Tokens } from "../../theme/tokens";
-import { RootStackScreenProps } from "../../types/navigation";
-import { logger } from "../../utils/logger";
 import { saveOnboardingData } from "../../api/onboarding-service";
+import { ProgressBar } from "../../components/onboarding/ProgressBar";
+import { useTheme } from "../../hooks/useTheme";
 import {
+  getIsConfigured,
   getOfferings,
   purchasePackage,
   restorePurchases,
-  getIsConfigured,
 } from "../../services/revenuecat";
+import { useNathJourneyOnboardingStore } from "../../state/nath-journey-onboarding-store";
+import { usePremiumStore } from "../../state/premium-store";
+import { useAppStore } from "../../state/store";
+import { Tokens } from "../../theme/tokens";
+import { RootStackScreenProps } from "../../types/navigation";
+import { logger } from "../../utils/logger";
 
 type Props = RootStackScreenProps<"OnboardingPaywall">;
 
@@ -46,8 +46,7 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { onboardingData } = route.params;
-  const { completeOnboarding, needsExtraCare, setCurrentScreen } =
-    useNathJourneyOnboardingStore();
+  const { completeOnboarding, needsExtraCare, setCurrentScreen } = useNathJourneyOnboardingStore();
 
   // Get real user ID from store
   const authUserId = useAppStore((s) => s.authUserId);
@@ -58,7 +57,7 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
   const setPremiumStatus = usePremiumStore((s) => s.setPremiumStatus);
 
   const [isSaving, setIsSaving] = useState(false);
-  const [_isLoadingOfferings, setIsLoadingOfferings] = useState(true);
+  const [, setIsLoadingOfferings] = useState(true);
   const [monthlyPackage, setMonthlyPackage] = useState<PurchasesPackage | null>(null);
   const [yearlyPackage, setYearlyPackage] = useState<PurchasesPackage | null>(null);
   const [selectedPackage] = useState<"monthly" | "yearly">("monthly");
@@ -92,8 +91,11 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
           });
         }
       } catch (error) {
-        logger.error("Failed to load offerings", "OnboardingPaywall",
-          error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          "Failed to load offerings",
+          "OnboardingPaywall",
+          error instanceof Error ? error : new Error(String(error))
+        );
       } finally {
         setIsLoadingOfferings(false);
       }
@@ -105,85 +107,6 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
   useEffect(() => {
     setCurrentScreen("OnboardingPaywall");
   }, [setCurrentScreen]);
-
-  const handleStartTrial = useCallback(async () => {
-    try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
-      // Se needsExtraCare, pular paywall e dar acesso gratuito
-      if (needsExtraCareFlag) {
-        logger.info("Skipping paywall for extra care user", "OnboardingPaywall");
-        await handleComplete();
-        return;
-      }
-
-      // Get the selected package
-      const packageToPurchase = selectedPackage === "yearly" ? yearlyPackage : monthlyPackage;
-
-      // If RevenueCat is not configured or no package available, complete without purchase
-      if (!getIsConfigured() || !packageToPurchase) {
-        logger.info("RevenueCat not available, completing without purchase", "OnboardingPaywall");
-        await handleComplete();
-        return;
-      }
-
-      // Start purchase flow
-      setPurchasing(true);
-      logger.info("Starting purchase", "OnboardingPaywall", { package: packageToPurchase.identifier });
-
-      const result = await purchasePackage(packageToPurchase);
-
-      if (result.success) {
-        logger.info("Purchase successful", "OnboardingPaywall");
-        setPremiumStatus(true);
-        await handleComplete();
-      } else if (result.error === "cancelled") {
-        logger.info("Purchase cancelled by user", "OnboardingPaywall");
-        // User cancelled, don't complete onboarding automatically
-      } else {
-        logger.error("Purchase failed", "OnboardingPaywall", new Error(result.error || "Unknown error"));
-        Alert.alert(
-          "Erro na compra",
-          "Não foi possível processar sua compra. Você pode tentar novamente ou continuar sem assinatura.",
-          [
-            { text: "Tentar novamente", onPress: handleStartTrial },
-            { text: "Continuar grátis", onPress: handleComplete },
-          ]
-        );
-      }
-    } catch (error) {
-      logger.error("Error starting trial", "OnboardingPaywall",
-        error instanceof Error ? error : new Error(String(error)));
-      await handleComplete();
-    } finally {
-      setPurchasing(false);
-    }
-  }, [needsExtraCareFlag, selectedPackage, monthlyPackage, yearlyPackage, setPurchasing, setPremiumStatus]);
-
-  const handleRestore = useCallback(async () => {
-    try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      setPurchasing(true);
-
-      const result = await restorePurchases();
-
-      if (result.success) {
-        logger.info("Restore successful", "OnboardingPaywall");
-        setPremiumStatus(true);
-        Alert.alert("Sucesso!", "Sua assinatura foi restaurada.", [
-          { text: "Continuar", onPress: handleComplete },
-        ]);
-      } else {
-        Alert.alert("Nenhuma assinatura encontrada", "Não encontramos uma assinatura ativa para restaurar.");
-      }
-    } catch (error) {
-      logger.error("Restore failed", "OnboardingPaywall",
-        error instanceof Error ? error : new Error(String(error)));
-      Alert.alert("Erro", "Não foi possível restaurar sua assinatura.");
-    } finally {
-      setPurchasing(false);
-    }
-  }, [setPurchasing, setPremiumStatus]);
 
   const handleComplete = useCallback(async () => {
     try {
@@ -198,10 +121,14 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
 
       // Salvar onboarding data no Supabase
       await saveOnboardingData(userId, {
-        stage: onboardingData.stage as import("../../types/nath-journey-onboarding.types").OnboardingStage,
+        stage:
+          onboardingData.stage as import("../../types/nath-journey-onboarding.types").OnboardingStage,
         date: onboardingData.date,
-        concerns: onboardingData.concerns as import("../../types/nath-journey-onboarding.types").OnboardingConcern[],
-        emotionalState: onboardingData.emotionalState as import("../../types/nath-journey-onboarding.types").EmotionalState | undefined,
+        concerns:
+          onboardingData.concerns as import("../../types/nath-journey-onboarding.types").OnboardingConcern[],
+        emotionalState: onboardingData.emotionalState as
+          | import("../../types/nath-journey-onboarding.types").EmotionalState
+          | undefined,
         dailyCheckIn: onboardingData.dailyCheckIn,
         checkInTime: onboardingData.checkInTime,
         seasonName: onboardingData.seasonName,
@@ -233,6 +160,108 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
       setIsSaving(false);
     }
   }, [authUserId, onboardingData, completeOnboarding, navigation]);
+
+  const handleStartTrial = useCallback(async () => {
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+      // Se needsExtraCare, pular paywall e dar acesso gratuito
+      if (needsExtraCareFlag) {
+        logger.info("Skipping paywall for extra care user", "OnboardingPaywall");
+        await handleComplete();
+        return;
+      }
+
+      // Get the selected package
+      const packageToPurchase = selectedPackage === "yearly" ? yearlyPackage : monthlyPackage;
+
+      // If RevenueCat is not configured or no package available, complete without purchase
+      if (!getIsConfigured() || !packageToPurchase) {
+        logger.info("RevenueCat not available, completing without purchase", "OnboardingPaywall");
+        await handleComplete();
+        return;
+      }
+
+      // Start purchase flow
+      setPurchasing(true);
+      logger.info("Starting purchase", "OnboardingPaywall", {
+        package: packageToPurchase.identifier,
+      });
+
+      const result = await purchasePackage(packageToPurchase);
+
+      if (result.success) {
+        logger.info("Purchase successful", "OnboardingPaywall");
+        setPremiumStatus(true);
+        await handleComplete();
+      } else if (result.error === "cancelled") {
+        logger.info("Purchase cancelled by user", "OnboardingPaywall");
+        // User cancelled, don't complete onboarding automatically
+      } else {
+        logger.error(
+          "Purchase failed",
+          "OnboardingPaywall",
+          new Error(result.error || "Unknown error")
+        );
+        Alert.alert(
+          "Erro na compra",
+          "Não foi possível processar sua compra. Você pode tentar novamente ou continuar sem assinatura.",
+          [
+            { text: "Tentar novamente", onPress: handleStartTrial },
+            { text: "Continuar grátis", onPress: handleComplete },
+          ]
+        );
+      }
+    } catch (error) {
+      logger.error(
+        "Error starting trial",
+        "OnboardingPaywall",
+        error instanceof Error ? error : new Error(String(error))
+      );
+      await handleComplete();
+    } finally {
+      setPurchasing(false);
+    }
+  }, [
+    needsExtraCareFlag,
+    selectedPackage,
+    monthlyPackage,
+    yearlyPackage,
+    setPurchasing,
+    setPremiumStatus,
+    handleComplete,
+  ]);
+
+  const handleRestore = useCallback(async () => {
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setPurchasing(true);
+
+      const result = await restorePurchases();
+
+      if (result.success) {
+        logger.info("Restore successful", "OnboardingPaywall");
+        setPremiumStatus(true);
+        Alert.alert("Sucesso!", "Sua assinatura foi restaurada.", [
+          { text: "Continuar", onPress: handleComplete },
+        ]);
+      } else {
+        Alert.alert(
+          "Nenhuma assinatura encontrada",
+          "Não encontramos uma assinatura ativa para restaurar."
+        );
+      }
+    } catch (error) {
+      logger.error(
+        "Restore failed",
+        "OnboardingPaywall",
+        error instanceof Error ? error : new Error(String(error))
+      );
+      Alert.alert("Erro", "Não foi possível restaurar sua assinatura.");
+    } finally {
+      setPurchasing(false);
+    }
+  }, [setPurchasing, setPremiumStatus, handleComplete]);
 
   const handleTerms = () => {
     Linking.openURL("https://nossamaternidade.app/termos");
@@ -302,11 +331,7 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
 
           {/* Image (replacing video) */}
           <View style={styles.imageContainer}>
-            <Image
-              source={PAYWALL_IMAGE}
-              style={styles.paywallImage}
-              contentFit="cover"
-            />
+            <Image source={PAYWALL_IMAGE} style={styles.paywallImage} contentFit="cover" />
           </View>
 
           {/* Texto explicativo */}
@@ -330,8 +355,8 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
             ]}
           >
             Mas preciso pagar a equipe, servidor... 7 DIAS GRÁTIS pra você testar tudo. Depois,
-            {getMonthlyPrice()}/mês - menos que um lanche no shopping. E parte do lucro vai pro projeto Zuzu
-            em Angola.
+            {getMonthlyPrice()}/mês - menos que um lanche no shopping. E parte do lucro vai pro
+            projeto Zuzu em Angola.
           </Text>
 
           {/* Card Plano */}
@@ -446,10 +471,7 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
         <Pressable
           onPress={handleStartTrial}
           disabled={isSaving || isPurchasing}
-          style={[
-            styles.primaryButton,
-            (isSaving || isPurchasing) && styles.primaryButtonDisabled,
-          ]}
+          style={[styles.primaryButton, (isSaving || isPurchasing) && styles.primaryButtonDisabled]}
           accessibilityLabel="Começar 7 dias grátis"
           accessibilityRole="button"
         >

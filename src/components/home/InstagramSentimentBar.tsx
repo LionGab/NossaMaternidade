@@ -10,18 +10,18 @@
  */
 
 import React, { useCallback, useMemo } from "react";
-import { View, StyleSheet, LayoutChangeEvent, AccessibilityActionEvent } from "react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  runOnJS,
-  interpolate,
-  Extrapolate,
-} from "react-native-reanimated";
+import { AccessibilityActionEvent, LayoutChangeEvent, StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  Extrapolate,
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 import { useTheme } from "../../hooks/useTheme";
-import { brand, spacing, shadows } from "../../theme/tokens";
+import { brand, neutral, shadows, spacing } from "../../theme/tokens";
 
 interface InstagramSentimentBarProps {
   /** Current value (0..1) */
@@ -75,58 +75,69 @@ export const InstagramSentimentBar: React.FC<InstagramSentimentBarProps> = ({
   }, [value, trackWidth, translateX, isDragging]);
 
   // Handle value change
-  const handleValueChange = useCallback((newValue: number) => {
-    onChange(newValue);
-  }, [onChange]);
+  const handleValueChange = useCallback(
+    (newValue: number) => {
+      onChange(newValue);
+    },
+    [onChange]
+  );
 
-  const handleValueEnd = useCallback((newValue: number) => {
-    onChangeEnd?.(newValue);
-  }, [onChangeEnd]);
+  const handleValueEnd = useCallback(
+    (newValue: number) => {
+      onChangeEnd?.(newValue);
+    },
+    [onChangeEnd]
+  );
 
   // Layout measurement
-  const onTrackLayout = useCallback((event: LayoutChangeEvent) => {
-    const { width } = event.nativeEvent.layout;
-    trackWidth.value = width;
-    translateX.value = value * width;
-  }, [value, trackWidth, translateX]);
+  const onTrackLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      const { width } = event.nativeEvent.layout;
+      trackWidth.value = width;
+      translateX.value = value * width;
+    },
+    [value, trackWidth, translateX]
+  );
 
   // Gesture handlers
-  const panGesture = useMemo(() =>
-    Gesture.Pan()
-      .enabled(!disabled)
-      .onStart(() => {
-        startX.value = translateX.value;
-        isDragging.value = true;
-      })
-      .onUpdate((event) => {
-        const newX = Math.max(0, Math.min(trackWidth.value, startX.value + event.translationX));
-        translateX.value = newX;
-        const newValue = trackWidth.value > 0 ? newX / trackWidth.value : 0;
-        runOnJS(handleValueChange)(newValue);
-      })
-      .onEnd(() => {
-        isDragging.value = false;
-        const finalValue = trackWidth.value > 0 ? translateX.value / trackWidth.value : 0;
-        runOnJS(handleValueEnd)(finalValue);
-      }),
+  const panGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .enabled(!disabled)
+        .onStart(() => {
+          startX.value = translateX.value;
+          isDragging.value = true;
+        })
+        .onUpdate((event) => {
+          const newX = Math.max(0, Math.min(trackWidth.value, startX.value + event.translationX));
+          translateX.value = newX;
+          const newValue = trackWidth.value > 0 ? newX / trackWidth.value : 0;
+          runOnJS(handleValueChange)(newValue);
+        })
+        .onEnd(() => {
+          isDragging.value = false;
+          const finalValue = trackWidth.value > 0 ? translateX.value / trackWidth.value : 0;
+          runOnJS(handleValueEnd)(finalValue);
+        }),
     [disabled, trackWidth, translateX, startX, isDragging, handleValueChange, handleValueEnd]
   );
 
-  const tapGesture = useMemo(() =>
-    Gesture.Tap()
-      .enabled(!disabled)
-      .onEnd((event) => {
-        const tappedX = Math.max(0, Math.min(trackWidth.value, event.x));
-        translateX.value = withSpring(tappedX, { damping: 15 });
-        const newValue = trackWidth.value > 0 ? tappedX / trackWidth.value : 0;
-        runOnJS(handleValueChange)(newValue);
-        runOnJS(handleValueEnd)(newValue);
-      }),
+  const tapGesture = useMemo(
+    () =>
+      Gesture.Tap()
+        .enabled(!disabled)
+        .onEnd((event) => {
+          const tappedX = Math.max(0, Math.min(trackWidth.value, event.x));
+          translateX.value = withSpring(tappedX, { damping: 15 });
+          const newValue = trackWidth.value > 0 ? tappedX / trackWidth.value : 0;
+          runOnJS(handleValueChange)(newValue);
+          runOnJS(handleValueEnd)(newValue);
+        }),
     [disabled, trackWidth, translateX, handleValueChange, handleValueEnd]
   );
 
-  const composedGesture = useMemo(() =>
-    Gesture.Exclusive(panGesture, tapGesture),
+  const composedGesture = useMemo(
+    () => Gesture.Exclusive(panGesture, tapGesture),
     [panGesture, tapGesture]
   );
 
@@ -143,30 +154,28 @@ export const InstagramSentimentBar: React.FC<InstagramSentimentBarProps> = ({
   }));
 
   const thumbShadowStyle = useAnimatedStyle(() => ({
-    shadowOpacity: interpolate(
-      isDragging.value ? 1 : 0,
-      [0, 1],
-      [0.15, 0.25],
-      Extrapolate.CLAMP
-    ),
+    shadowOpacity: interpolate(isDragging.value ? 1 : 0, [0, 1], [0.15, 0.25], Extrapolate.CLAMP),
   }));
 
   // Accessibility handlers
-  const handleAccessibilityAction = useCallback((event: AccessibilityActionEvent) => {
-    const step = 0.1;
-    let newValue = value;
+  const handleAccessibilityAction = useCallback(
+    (event: AccessibilityActionEvent) => {
+      const step = 0.1;
+      let newValue = value;
 
-    if (event.nativeEvent.actionName === "increment") {
-      newValue = Math.min(1, value + step);
-    } else if (event.nativeEvent.actionName === "decrement") {
-      newValue = Math.max(0, value - step);
-    }
+      if (event.nativeEvent.actionName === "increment") {
+        newValue = Math.min(1, value + step);
+      } else if (event.nativeEvent.actionName === "decrement") {
+        newValue = Math.max(0, value - step);
+      }
 
-    if (newValue !== value) {
-      onChange(newValue);
-      onChangeEnd?.(newValue);
-    }
-  }, [value, onChange, onChangeEnd]);
+      if (newValue !== value) {
+        onChange(newValue);
+        onChangeEnd?.(newValue);
+      }
+    },
+    [value, onChange, onChangeEnd]
+  );
 
   // Render segments overlay
   const renderSegments = () => {
@@ -181,9 +190,7 @@ export const InstagramSentimentBar: React.FC<InstagramSentimentBarProps> = ({
             styles.segmentSeparator,
             {
               left: `${(i / segments) * 100}%`,
-              backgroundColor: isDark
-                ? "rgba(255, 255, 255, 0.15)"
-                : "rgba(0, 0, 0, 0.05)",
+              backgroundColor: isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.05)",
             },
           ]}
         />
@@ -212,20 +219,10 @@ export const InstagramSentimentBar: React.FC<InstagramSentimentBarProps> = ({
           style={[styles.trackContainer, disabled && styles.disabled]}
         >
           {/* Track Background */}
-          <View
-            onLayout={onTrackLayout}
-            style={[
-              styles.track,
-              { backgroundColor: trackBgColor },
-            ]}
-          >
+          <View onLayout={onTrackLayout} style={[styles.track, { backgroundColor: trackBgColor }]}>
             {/* Track Fill */}
             <Animated.View
-              style={[
-                styles.trackFill,
-                { backgroundColor: trackFillColor },
-                fillStyle,
-              ]}
+              style={[styles.trackFill, { backgroundColor: trackFillColor }, fillStyle]}
             />
 
             {/* Segment Separators */}
@@ -238,7 +235,7 @@ export const InstagramSentimentBar: React.FC<InstagramSentimentBarProps> = ({
               styles.thumb,
               {
                 borderColor: thumbBorderColor,
-                backgroundColor: isDark ? colors.neutral[800] : "#FFFFFF",
+                backgroundColor: isDark ? colors.neutral[800] : neutral[0],
               },
               thumbStyle,
               thumbShadowStyle,
@@ -256,18 +253,12 @@ export const InstagramSentimentBar: React.FC<InstagramSentimentBarProps> = ({
       {/* Labels */}
       <View style={styles.labelsContainer}>
         <Animated.Text
-          style={[
-            styles.label,
-            { color: isDark ? colors.neutral[500] : colors.neutral[400] },
-          ]}
+          style={[styles.label, { color: isDark ? colors.neutral[500] : colors.neutral[400] }]}
         >
           BAIXO
         </Animated.Text>
         <Animated.Text
-          style={[
-            styles.label,
-            { color: isDark ? colors.neutral[500] : colors.neutral[400] },
-          ]}
+          style={[styles.label, { color: isDark ? colors.neutral[500] : colors.neutral[400] }]}
         >
           ALTO
         </Animated.Text>

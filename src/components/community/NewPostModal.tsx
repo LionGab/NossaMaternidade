@@ -19,11 +19,11 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Avatar } from "../ui";
 import { useToast } from "../../context/ToastContext";
 import { useTheme } from "../../hooks/useTheme";
 import { useAppStore } from "../../state/store";
 import { brand, neutral, radius, spacing } from "../../theme/tokens";
+import { Avatar } from "../ui";
 
 interface NewPostModalProps {
   visible: boolean;
@@ -31,11 +31,7 @@ interface NewPostModalProps {
   onSubmit: (content: string, mediaUri?: string, mediaType?: "image" | "video") => void;
 }
 
-export const NewPostModal: React.FC<NewPostModalProps> = ({
-  visible,
-  onClose,
-  onSubmit,
-}) => {
+export const NewPostModal: React.FC<NewPostModalProps> = ({ visible, onClose, onSubmit }) => {
   const insets = useSafeAreaInsets();
   const { isDark } = useTheme();
   const { showError, showSuccess } = useToast();
@@ -46,10 +42,10 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const textPrimary = isDark ? neutral[100] : "#1F2937";
-  const textSecondary = isDark ? neutral[400] : "#6B7280";
+  const textPrimary = isDark ? neutral[100] : neutral[800];
+  const textSecondary = isDark ? neutral[400] : neutral[500];
   const borderColor = isDark ? neutral[700] : neutral[200];
-  const bgColor = isDark ? neutral[900] : "#F7FBFD";
+  const bgColor = isDark ? neutral[900] : brand.primary[50];
   const inputBg = isDark ? neutral[800] : neutral[100];
 
   const handlePickImage = async () => {
@@ -192,9 +188,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
               style={styles.userAvatar}
             />
             <View style={styles.userInfo}>
-              <Text style={[styles.userName, { color: textPrimary }]}>
-                {user?.name || "Você"}
-              </Text>
+              <Text style={[styles.userName, { color: textPrimary }]}>{user?.name || "Você"}</Text>
               <Text style={[styles.userHint, { color: textSecondary }]}>
                 Compartilhe com a comunidade
               </Text>
@@ -215,7 +209,11 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
           {selectedMedia && (
             <View style={styles.mediaPreview}>
               {mediaType === "image" ? (
-                <Image source={{ uri: selectedMedia }} style={styles.mediaImage} contentFit="cover" />
+                <Image
+                  source={{ uri: selectedMedia }}
+                  style={styles.mediaImage}
+                  contentFit="cover"
+                />
               ) : (
                 <View style={styles.videoPlaceholder}>
                   <Ionicons name="videocam" size={48} color={neutral[500]} />

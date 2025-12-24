@@ -7,19 +7,27 @@
  * - Navegação para tabs existentes
  */
 
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import React, { useCallback } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   FadeInUp,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
-import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
 import { useTheme } from "../../hooks/useTheme";
 import { useHabitsStore } from "../../state/store";
-import { brand, spacing, radius, shadows, accessibility } from "../../theme/tokens";
+import {
+  accessibility,
+  brand,
+  neutral,
+  radius,
+  shadows,
+  spacing,
+  surface,
+} from "../../theme/tokens";
 
 interface QuickAction {
   id: string;
@@ -74,9 +82,7 @@ const QuickActionButton: React.FC<{
           {/* Badge */}
           {action.badge !== undefined && action.badge > 0 && (
             <View style={styles.badge}>
-              <Text style={styles.badgeText}>
-                {action.badge > 9 ? "9+" : action.badge}
-              </Text>
+              <Text style={styles.badgeText}>{action.badge > 9 ? "9+" : action.badge}</Text>
             </View>
           )}
         </View>
@@ -131,13 +137,16 @@ export const QuickActionsBar: React.FC<QuickActionsBarProps> = ({ onNavigate }) 
   ];
 
   // Handler de navegação
-  const handlePress = useCallback(async (route: string) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    onNavigate(route);
-  }, [onNavigate]);
+  const handlePress = useCallback(
+    async (route: string) => {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onNavigate(route);
+    },
+    [onNavigate]
+  );
 
   // Cores do tema
-  const cardBg = isDark ? colors.background.secondary : "#FFFFFF";
+  const cardBg = isDark ? colors.background.secondary : surface.light.card;
   const borderColor = isDark ? colors.neutral[700] : colors.neutral[200];
 
   return (
@@ -204,7 +213,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   badgeText: {
-    color: "#FFFFFF",
+    color: neutral[0],
     fontSize: 10,
     fontWeight: "800",
   },

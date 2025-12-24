@@ -47,7 +47,7 @@ import BreathingExerciseScreen from "../screens/BreathingExerciseScreen";
 import HabitsEnhancedScreen from "../screens/HabitsEnhancedScreen";
 import MaeValenteProgressScreen from "../screens/MaeValenteProgressScreen";
 import MundoDaNathScreen from "../screens/MundoDaNathScreen";
-import Paywall from "../screens/PaywallScreen";
+import Paywall from "../screens/PaywallScreenRedesign";
 import RestSoundsScreen from "../screens/RestSoundsScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

@@ -26,25 +26,30 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  useWindowDimensions,
   View,
+  useWindowDimensions,
 } from "react-native";
 import Animated, { FadeIn, FadeInUp } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { detectMedicalQuestion, estimateTokens, getNathIAResponse, imageUriToBase64 } from "../api/ai-service";
 import { preClassifyMessage } from "../ai/policies/nathia.preClassifier";
+import {
+  detectMedicalQuestion,
+  estimateTokens,
+  getNathIAResponse,
+  imageUriToBase64,
+} from "../api/ai-service";
+import { VoiceMessagePlayer } from "../components/VoiceMessagePlayer";
 import { AIConsentModal } from "../components/chat/AIConsentModal";
 import { ChatEmptyState } from "../components/chat/ChatEmptyState";
 import { ChatHistorySidebar } from "../components/chat/ChatHistorySidebar";
 import { Avatar, LoadingDots } from "../components/ui";
-import { VoiceMessagePlayer } from "../components/VoiceMessagePlayer";
 import {
-  containsSensitiveTopic,
   EmotionalMoodType,
+  SENSITIVE_TOPIC_DISCLAIMER,
+  containsSensitiveTopic,
   getEmotionalResponse,
   getRandomFallbackMessage,
   prepareMessagesForAPI,
-  SENSITIVE_TOPIC_DISCLAIMER,
 } from "../config/nathia";
 import { useChatHandlers } from "../hooks/useChatHandlers";
 import { useTheme } from "../hooks/useTheme";
@@ -52,7 +57,10 @@ import { useVoicePremiumGate } from "../hooks/useVoice";
 import { useVoiceRecording } from "../hooks/useVoiceRecording";
 import { useIsPremium } from "../state/premium-store";
 import { Conversation, useAppStore, useChatStore } from "../state/store";
-import { brand, neutral, spacing, radius, shadows, semantic } from "../theme/tokens";
+import { brand, neutral, radius, semantic, shadows, spacing } from "../theme/tokens";
+import { ChatMessage, MainTabScreenProps } from "../types/navigation";
+import { wp } from "../utils/dimensions";
+import { logger } from "../utils/logger";
 
 // Design system colors for light/dark mode
 const DS_COLORS = {
@@ -94,9 +102,6 @@ const COLORS_DARK = {
 const SPACING = spacing;
 const RADIUS = radius;
 const SHADOWS = shadows;
-import { ChatMessage, MainTabScreenProps } from "../types/navigation";
-import { wp } from "../utils/dimensions";
-import { logger } from "../utils/logger";
 
 // ============================================
 // DESIGN TOKENS - Usando design-system.ts
@@ -815,7 +820,11 @@ export default function AssistantScreen({ navigation, route }: MainTabScreenProp
             >
               {/* Attachment */}
               <Pressable onPress={handleAttachment} style={styles.inputButton}>
-                <Ionicons name="add-circle-outline" size={26} color={selectedImage ? THEME.primary : THEME.textMuted} />
+                <Ionicons
+                  name="add-circle-outline"
+                  size={26}
+                  color={selectedImage ? THEME.primary : THEME.textMuted}
+                />
               </Pressable>
 
               {/* Text Input */}
@@ -840,10 +849,14 @@ export default function AssistantScreen({ navigation, route }: MainTabScreenProp
                   <View style={styles.recordingIndicator}>
                     <Animated.View
                       entering={FadeIn}
-                      style={[styles.recordingDot, { backgroundColor: DS_COLORS.semantic.light.error }]}
+                      style={[
+                        styles.recordingDot,
+                        { backgroundColor: DS_COLORS.semantic.light.error },
+                      ]}
                     />
                     <Text style={[styles.recordingDuration, { color: THEME.textPrimary }]}>
-                      {Math.floor(voiceRecording.duration / 60)}:{(voiceRecording.duration % 60).toString().padStart(2, "0")}
+                      {Math.floor(voiceRecording.duration / 60)}:
+                      {(voiceRecording.duration % 60).toString().padStart(2, "0")}
                     </Text>
                   </View>
                   <Pressable
