@@ -4,7 +4,7 @@
  * Seleção única com foto + título + frase da Nath
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -25,8 +25,12 @@ type Props = RootStackScreenProps<"OnboardingStage">;
 export default function OnboardingStage({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
-  const { data, setStage, canProceed } =
+  const { data, setStage, canProceed, setCurrentScreen } =
     useNathJourneyOnboardingStore();
+
+  useEffect(() => {
+    setCurrentScreen("OnboardingStage");
+  }, [setCurrentScreen]);
 
   const handleSelectStage = async (stage: StageType) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -237,4 +241,3 @@ const styles = StyleSheet.create({
     color: Tokens.neutral[500],
   },
 });
-

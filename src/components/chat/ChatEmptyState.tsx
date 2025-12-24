@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useTheme } from "../../hooks/useTheme";
-import { COLORS, COLORS_DARK, SPACING } from "../../theme/design-system";
+import { COLORS, COLORS_DARK, spacing } from "../../theme/tokens";
 import { Avatar } from "../ui";
 
 interface SuggestedPrompt {
@@ -155,11 +155,11 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   avatarContainer: {
-    marginBottom: SPACING.md,
+    marginBottom: spacing.md,
   },
   promptsContainer: {
     width: "100%",
-    gap: SPACING.sm,
+    gap: spacing.sm,
   },
   promptItem: {
     width: "100%",

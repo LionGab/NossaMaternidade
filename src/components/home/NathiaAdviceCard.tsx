@@ -15,7 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "../../hooks/useTheme";
 import { useCheckInStore } from "../../state/store";
-import { SPACING, RADIUS, SHADOWS } from "../../theme/design-system";
+import { spacing, radius, shadows } from "../../theme/tokens";
 
 // Imagem real da Nath
 const NATH_PROFILE = require("../../../assets/onboarding/images/nath-profile-small.jpg");
@@ -114,11 +114,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.md,
-    borderRadius: RADIUS.xl,
-    padding: SPACING.lg,
+    gap: spacing.md,
+    borderRadius: radius.xl,
+    padding: spacing.lg,
     borderWidth: 1,
-    ...SHADOWS.sm,
+    ...shadows.sm,
   },
   iconContainer: {
     width: 44,

@@ -20,10 +20,14 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { useTheme } from "../../hooks/useTheme";
-import { Tokens } from "../../theme/tokens";
-import { RADIUS, SHADOWS, SPACING } from "../../theme/design-system";
+import { Tokens, radius, shadows, spacing } from "../../theme/tokens";
 import type { Post } from "../../types/navigation";
 import { formatTimeAgo } from "../../utils/formatters";
+
+// Aliases de compatibilidade
+const RADIUS = radius;
+const SHADOWS = shadows;
+const SPACING = spacing;
 
 // Imagem real da Nath para posts dela
 const NATH_AVATAR = require("../../../assets/onboarding/images/nath-profile-small.jpg");

@@ -39,8 +39,28 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { GESTACAO_POST, MAES_VALENTE_REEL, PARTO_REEL } from "../config/nath-content";
 import { useAdmin } from "../hooks/useAdmin";
 import { useTheme } from "../hooks/useTheme";
-import { COLORS, GRADIENTS, OVERLAY, RADIUS, SHADOWS, SPACING } from "../theme/design-system";
+import { spacing, radius, shadows, overlay, gradients, brand, neutral, surface } from "../theme/tokens";
 import { RootStackScreenProps } from "../types/navigation";
+
+// Compatibility aliases for existing code
+const GRADIENTS = gradients;
+const OVERLAY = overlay;
+const RADIUS = radius;
+const SHADOWS = shadows;
+const SPACING = spacing;
+const COLORS = {
+  primary: brand.primary,
+  accent: brand.accent,
+  neutral: neutral,
+  background: {
+    primary: surface.light.base,
+    card: surface.light.card,
+  },
+  text: {
+    primary: neutral[900],
+    secondary: neutral[600],
+  },
+};
 
 // URL da foto da Nathalia Valente
 const NATHALIA_AVATAR_URL = "https://i.imgur.com/37dbPJE.jpg";
@@ -453,7 +473,7 @@ const PostCard: React.FC<{
                   bottom: 0,
                   alignItems: "center",
                   justifyContent: "center",
-                  backgroundColor: OVERLAY.backdropLight,
+                  backgroundColor: OVERLAY.medium,
                 }}
               >
                 <View
@@ -485,7 +505,7 @@ const PostCard: React.FC<{
                   right: SPACING.sm,
                   flexDirection: "row",
                   alignItems: "center",
-                  backgroundColor: OVERLAY.scrim,
+                  backgroundColor: OVERLAY.heavy,
                   paddingHorizontal: SPACING.sm,
                   paddingVertical: 4,
                   borderRadius: RADIUS.full,
@@ -757,7 +777,7 @@ const NewPostModal: React.FC<{
                   position: "absolute",
                   top: SPACING.sm,
                   right: SPACING.sm,
-                  backgroundColor: OVERLAY.scrim,
+                  backgroundColor: OVERLAY.heavy,
                   borderRadius: RADIUS.full,
                   padding: SPACING.sm,
                 }}

@@ -6,7 +6,7 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,7 +23,12 @@ export default function OnboardingCheckIn({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { stage, date, concerns, emotionalState } = route.params;
-  const { data, setDailyCheckIn, setCheckInTime } = useNathJourneyOnboardingStore();
+  const { data, setDailyCheckIn, setCheckInTime, setCurrentScreen } =
+    useNathJourneyOnboardingStore();
+
+  useEffect(() => {
+    setCurrentScreen("OnboardingCheckIn");
+  }, [setCurrentScreen]);
 
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [time, setTime] = useState<Date>(() => {

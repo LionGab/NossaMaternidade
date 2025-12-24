@@ -20,8 +20,7 @@ import Animated, {
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "../../hooks/useTheme";
-import { brand, neutral, shadows } from "../../theme/tokens";
-import { RADIUS, SPACING } from "../../theme/design-system";
+import { brand, neutral, shadows, radius, spacing } from "../../theme/tokens";
 
 interface PremiumCardProps {
   children: React.ReactNode;
@@ -55,8 +54,8 @@ export function PremiumCard({
   pressable = false,
   onPress,
   noHaptic = false,
-  padding = SPACING.lg,
-  borderRadius = RADIUS.xl,
+  padding = spacing.lg,
+  borderRadius = radius.xl,
   animatedBorder = false,
   borderGradientColors,
   style,

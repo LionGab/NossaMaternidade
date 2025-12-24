@@ -21,7 +21,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useTheme } from "../../hooks/useTheme";
-import { COLORS, SPACING, SHADOWS, OVERLAY } from "../../theme/design-system";
+import { brand, spacing, shadows } from "../../theme/tokens";
 
 interface InstagramSentimentBarProps {
   /** Current value (0..1) */
@@ -61,8 +61,8 @@ export const InstagramSentimentBar: React.FC<InstagramSentimentBarProps> = ({
 
   // Colors based on theme
   const trackBgColor = isDark ? colors.neutral[700] : colors.neutral[200];
-  const trackFillColor = isDark ? colors.legacyAccent.sky : COLORS.primary[400];
-  const thumbBorderColor = isDark ? colors.legacyAccent.sky : COLORS.primary[500];
+  const trackFillColor = isDark ? colors.legacyAccent.sky : brand.primary[400];
+  const thumbBorderColor = isDark ? colors.legacyAccent.sky : brand.primary[500];
 
   // Sync shared value with prop
   React.useEffect(() => {
@@ -182,8 +182,8 @@ export const InstagramSentimentBar: React.FC<InstagramSentimentBarProps> = ({
             {
               left: `${(i / segments) * 100}%`,
               backgroundColor: isDark
-                ? OVERLAY.white.medium
-                : OVERLAY.pressLight,
+                ? "rgba(255, 255, 255, 0.15)"
+                : "rgba(0, 0, 0, 0.05)",
             },
           ]}
         />
@@ -279,7 +279,7 @@ export const InstagramSentimentBar: React.FC<InstagramSentimentBarProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    paddingVertical: SPACING.md,
+    paddingVertical: spacing.md,
   },
   trackContainer: {
     height: THUMB_SIZE + THUMB_HIT_SLOP * 2,
@@ -307,12 +307,12 @@ const styles = StyleSheet.create({
     height: THUMB_SIZE,
     borderRadius: THUMB_SIZE / 2,
     borderWidth: 2.5,
-    ...SHADOWS.md,
+    ...shadows.md,
   },
   labelsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: SPACING.sm,
+    marginTop: spacing.sm,
     paddingHorizontal: 2,
   },
   label: {

@@ -8,7 +8,7 @@
 import React from "react";
 import { Text, View, ViewStyle } from "react-native";
 import { useTheme } from "../../hooks/useTheme";
-import { RADIUS } from "../../theme/design-system";
+import { radius } from "../../theme/tokens";
 
 interface BadgeProps {
   /** Badge content (text or number) */
@@ -170,7 +170,7 @@ export function Badge({
           minWidth: currentSize.minWidth,
           height: currentSize.height,
           paddingHorizontal: currentSize.paddingHorizontal,
-          borderRadius: RADIUS.full,
+          borderRadius: radius.full,
           backgroundColor: outline ? colorConfig.bg : colorConfig.bgFilled,
           borderWidth: outline ? 1 : 0,
           borderColor: colorConfig.border,

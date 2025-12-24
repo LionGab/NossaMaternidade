@@ -17,9 +17,12 @@ import { ComposerCard, NewPostModal, PostCard } from "../components/community";
 import { FAB, ScreenHeader } from "../components/ui";
 import { useCommunity } from "../hooks/useCommunity";
 import { useTheme } from "../hooks/useTheme";
-import { Tokens } from "../theme/tokens";
-import { RADIUS, SPACING } from "../theme/design-system";
+import { Tokens, radius, spacing } from "../theme/tokens";
 import type { MainTabScreenProps } from "../types/navigation";
+
+// Aliases de compatibilidade
+const RADIUS = radius;
+const SPACING = spacing;
 
 // Logo Comunidade Mães Valente
 const MAES_VALENTE_LOGO_URL = "https://i.imgur.com/U5ttbqK.jpg";

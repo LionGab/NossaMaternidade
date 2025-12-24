@@ -23,7 +23,7 @@ import { Avatar } from "../ui";
 import { useToast } from "../../context/ToastContext";
 import { useTheme } from "../../hooks/useTheme";
 import { useAppStore } from "../../state/store";
-import { COLORS, RADIUS, SPACING } from "../../theme/design-system";
+import { brand, neutral, radius, spacing } from "../../theme/tokens";
 
 interface NewPostModalProps {
   visible: boolean;
@@ -46,11 +46,11 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const textPrimary = isDark ? COLORS.neutral[100] : COLORS.text.primary;
-  const textSecondary = isDark ? COLORS.neutral[400] : COLORS.text.secondary;
-  const borderColor = isDark ? COLORS.neutral[700] : COLORS.neutral[200];
-  const bgColor = isDark ? COLORS.neutral[900] : COLORS.background.primary;
-  const inputBg = isDark ? COLORS.neutral[800] : COLORS.neutral[100];
+  const textPrimary = isDark ? neutral[100] : "#1F2937";
+  const textSecondary = isDark ? neutral[400] : "#6B7280";
+  const borderColor = isDark ? neutral[700] : neutral[200];
+  const bgColor = isDark ? neutral[900] : "#F7FBFD";
+  const inputBg = isDark ? neutral[800] : neutral[100];
 
   const handlePickImage = async () => {
     try {
@@ -147,7 +147,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
           style={[
             styles.header,
             {
-              paddingTop: insets.top + SPACING.md,
+              paddingTop: insets.top + spacing.md,
               borderBottomColor: borderColor,
             },
           ]}
@@ -161,11 +161,11 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
             disabled={!canSubmit}
             style={[
               styles.submitButton,
-              { backgroundColor: canSubmit ? COLORS.primary[500] : COLORS.neutral[300] },
+              { backgroundColor: canSubmit ? brand.primary[500] : neutral[300] },
             ]}
           >
             {isSubmitting ? (
-              <ActivityIndicator size="small" color={COLORS.neutral[0]} />
+              <ActivityIndicator size="small" color={neutral[0]} />
             ) : (
               <Text style={styles.submitText}>Enviar</Text>
             )}
@@ -174,7 +174,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
 
         {/* Info de revisão */}
         <View style={styles.reviewInfo}>
-          <Ionicons name="shield-checkmark" size={16} color={COLORS.primary[500]} />
+          <Ionicons name="shield-checkmark" size={16} color={brand.primary[500]} />
           <Text style={styles.reviewText}>
             Seu post será revisado pela nossa equipe antes de ser publicado.
           </Text>
@@ -187,8 +187,8 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
               size={44}
               source={user?.avatarUrl ? { uri: user.avatarUrl } : null}
               fallbackIcon="person"
-              fallbackColor={COLORS.primary[500]}
-              fallbackBgColor={COLORS.primary[100]}
+              fallbackColor={brand.primary[500]}
+              fallbackBgColor={brand.primary[100]}
               style={styles.userAvatar}
             />
             <View style={styles.userInfo}>
@@ -205,7 +205,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
             value={content}
             onChangeText={setContent}
             placeholder="O que você gostaria de compartilhar?"
-            placeholderTextColor={COLORS.neutral[400]}
+            placeholderTextColor={neutral[400]}
             multiline
             autoFocus
             style={[styles.input, { color: textPrimary }]}
@@ -218,12 +218,12 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
                 <Image source={{ uri: selectedMedia }} style={styles.mediaImage} contentFit="cover" />
               ) : (
                 <View style={styles.videoPlaceholder}>
-                  <Ionicons name="videocam" size={48} color={COLORS.neutral[500]} />
+                  <Ionicons name="videocam" size={48} color={neutral[500]} />
                   <Text style={styles.videoText}>Vídeo selecionado</Text>
                 </View>
               )}
               <Pressable onPress={handleRemoveMedia} style={styles.removeMedia}>
-                <Ionicons name="close" size={20} color={COLORS.neutral[0]} />
+                <Ionicons name="close" size={20} color={neutral[0]} />
               </Pressable>
             </View>
           )}
@@ -234,7 +234,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
           style={[
             styles.actions,
             {
-              paddingBottom: insets.bottom + SPACING.lg,
+              paddingBottom: insets.bottom + spacing.lg,
               borderTopColor: borderColor,
             },
           ]}
@@ -244,7 +244,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
             disabled={isSubmitting}
             style={[styles.actionButton, { backgroundColor: inputBg }]}
           >
-            <Ionicons name="image-outline" size={20} color={COLORS.primary[500]} />
+            <Ionicons name="image-outline" size={20} color={brand.primary[500]} />
             <Text style={styles.actionText}>Foto</Text>
           </Pressable>
 
@@ -253,7 +253,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
             disabled={isSubmitting}
             style={[styles.actionButton, { backgroundColor: inputBg }]}
           >
-            <Ionicons name="videocam-outline" size={20} color={COLORS.primary[500]} />
+            <Ionicons name="videocam-outline" size={20} color={brand.primary[500]} />
             <Text style={styles.actionText}>Vídeo</Text>
           </Pressable>
         </View>
@@ -270,8 +270,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: SPACING["2xl"],
-    paddingBottom: SPACING.md,
+    paddingHorizontal: spacing["2xl"],
+    paddingBottom: spacing.md,
     borderBottomWidth: 1,
   },
   cancelText: {
@@ -282,38 +282,38 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   submitButton: {
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    borderRadius: RADIUS.full,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.full,
   },
   submitText: {
     fontSize: 14,
     fontWeight: "600",
-    color: COLORS.neutral[0],
+    color: neutral[0],
   },
   reviewInfo: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.primary[50],
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    gap: SPACING.sm,
+    backgroundColor: brand.primary[50],
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    gap: spacing.sm,
   },
   reviewText: {
     fontSize: 12,
-    color: COLORS.primary[600],
+    color: brand.primary[600],
     flex: 1,
   },
   composer: {
     flex: 1,
-    padding: SPACING["2xl"],
+    padding: spacing["2xl"],
   },
   userRow: {
     flexDirection: "row",
-    marginBottom: SPACING.lg,
+    marginBottom: spacing.lg,
   },
   userAvatar: {
-    marginRight: SPACING.md,
+    marginRight: spacing.md,
   },
   userInfo: {
     flex: 1,
@@ -331,58 +331,58 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     minHeight: 120,
     textAlignVertical: "top",
-    marginBottom: SPACING.lg,
+    marginBottom: spacing.lg,
   },
   mediaPreview: {
-    marginBottom: SPACING.lg,
+    marginBottom: spacing.lg,
     position: "relative",
   },
   mediaImage: {
     width: "100%",
     height: 200,
-    borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.neutral[200],
+    borderRadius: radius.xl,
+    backgroundColor: neutral[200],
   },
   videoPlaceholder: {
     width: "100%",
     height: 200,
-    borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.neutral[200],
+    borderRadius: radius.xl,
+    backgroundColor: neutral[200],
     alignItems: "center",
     justifyContent: "center",
   },
   videoText: {
     fontSize: 14,
-    color: COLORS.neutral[500],
-    marginTop: SPACING.sm,
+    color: neutral[500],
+    marginTop: spacing.sm,
   },
   removeMedia: {
     position: "absolute",
-    top: SPACING.sm,
-    right: SPACING.sm,
+    top: spacing.sm,
+    right: spacing.sm,
     backgroundColor: "rgba(0,0,0,0.6)",
-    borderRadius: RADIUS.full,
-    padding: SPACING.sm,
+    borderRadius: radius.full,
+    padding: spacing.sm,
   },
   actions: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: SPACING["2xl"],
-    paddingVertical: SPACING.lg,
+    paddingHorizontal: spacing["2xl"],
+    paddingVertical: spacing.lg,
     borderTopWidth: 1,
-    gap: SPACING.md,
+    gap: spacing.md,
   },
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.md,
-    borderRadius: RADIUS.lg,
-    gap: SPACING.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: radius.lg,
+    gap: spacing.sm,
   },
   actionText: {
     fontSize: 14,
     fontWeight: "500",
-    color: COLORS.primary[500],
+    color: brand.primary[500],
   },
 });

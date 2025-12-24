@@ -1,138 +1,159 @@
 /**
  * Sistema de Cores - Nossa Maternidade
  *
- * DEPRECADO: Este arquivo re-exporta de design-system.ts para compatibilidade.
- * TODO: Migrar todos os imports para usar design-system.ts diretamente
+ * DEPRECADO: Este arquivo re-exporta de tokens.ts para compatibilidade.
+ * TODO: Migrar todos os imports para usar tokens.ts diretamente
  *
- * Paleta oficial: Rosa vibrante #f4258c (design-system.ts)
+ * Paleta oficial: Calm FemTech (Azul + Rosa)
  * Baseado em Apple HIG e Material Design 3
  */
 
-import { COLORS, COLORS_DARK, GRADIENTS } from "../theme/design-system";
+import {
+  brand,
+  neutral,
+  semantic,
+  gradients,
+  feeling as feelingColors,
+} from "../theme/tokens";
 
-// Re-exporta colors do design system com compatibilidade
+// Re-exporta colors do tokens com compatibilidade
 export const Colors = {
-  // Cores Principais - Rosa Vibrante
+  // Cores Principais - Azul Primary (Calm FemTech)
   primary: {
-    DEFAULT: COLORS.primary[500], // #f4258c
-    50: COLORS.primary[50],
-    100: COLORS.primary[100],
-    200: COLORS.primary[200],
-    300: COLORS.primary[300],
-    400: COLORS.primary[400],
-    500: COLORS.primary[500], // Main primary
-    600: COLORS.primary[600],
-    700: COLORS.primary[700],
-    800: COLORS.primary[800],
-    900: COLORS.primary[900],
+    DEFAULT: brand.primary[500],
+    50: brand.primary[50],
+    100: brand.primary[100],
+    200: brand.primary[200],
+    300: brand.primary[300],
+    400: brand.primary[400],
+    500: brand.primary[500],
+    600: brand.primary[600],
+    700: brand.primary[700],
+    800: brand.primary[800],
+    900: brand.primary[900],
   },
 
   // Cores Secundárias - Lilac/Purple
   secondary: {
-    DEFAULT: COLORS.secondary[500],
-    50: COLORS.secondary[50],
-    100: COLORS.secondary[100],
-    200: COLORS.secondary[200],
-    300: COLORS.secondary[300],
-    400: COLORS.secondary[400],
-    500: COLORS.secondary[500], // Main secondary
-    600: COLORS.secondary[600],
-    700: COLORS.secondary[700],
-    800: COLORS.secondary[800],
-    900: COLORS.secondary[900],
+    DEFAULT: brand.secondary[500],
+    50: brand.secondary[50],
+    100: brand.secondary[100],
+    200: brand.secondary[200],
+    300: brand.secondary[300],
+    400: brand.secondary[400],
+    500: brand.secondary[500],
+    600: brand.secondary[600],
+    700: brand.secondary[700],
+    800: brand.secondary[800],
+    900: brand.secondary[900],
   },
 
-  // Azul Pastel Suave (mapeado para accent.sky)
+  // Rosa Accent (Calm FemTech)
+  accent: {
+    DEFAULT: brand.accent[500],
+    50: brand.accent[50],
+    100: brand.accent[100],
+    200: brand.accent[200],
+    300: brand.accent[300],
+    400: brand.accent[400],
+    500: brand.accent[500],
+    600: brand.accent[600],
+    700: brand.accent[700],
+    800: brand.accent[800],
+    900: brand.accent[900],
+  },
+
+  // Azul Pastel Suave (legacy compat)
   bluePastel: {
-    DEFAULT: COLORS.legacyAccent.sky, // #BAE6FD
+    DEFAULT: "#BAE6FD",
     50: "#F0F9FF",
     100: "#E0F2FE",
     200: "#BAE6FD",
     300: "#7DD3FC",
     400: "#38BDF8",
-    500: COLORS.legacyAccent.sky,
+    500: "#BAE6FD",
     600: "#0EA5E9",
     700: "#0284C7",
     800: "#0369A1",
     900: "#075985",
   },
 
-  // Cores de Sentimentos (Daily Feelings) - Mapeado para semantic
+  // Cores de Sentimentos (Daily Feelings) - Mapeado para tokens
   feeling: {
     sunny: {
-      color: "#FFD89B", // Amarelo pastel - Bem
+      color: feelingColors.bem.color,
       activeColor: "#FFE5B8",
       label: "Bem",
     },
     cloud: {
-      color: COLORS.legacyAccent.sky, // Azul pastel - Cansada
+      color: feelingColors.cansada.color,
       activeColor: "#D4E9FD",
       label: "Cansada",
     },
     rainy: {
-      color: COLORS.legacyAccent.lavender, // Roxo pastel - Enjoada
+      color: feelingColors.indisposta.color,
       activeColor: "#EDE9FE",
       label: "Enjoada",
     },
     heart: {
-      color: COLORS.primary[400], // Rosa vibrante - Amada
-      activeColor: COLORS.primary[300],
+      color: feelingColors.amada.color,
+      activeColor: brand.accent[300],
       label: "Amada",
     },
   },
 
   // Cores de Texto
   text: {
-    dark: COLORS.neutral[900], // Cinza escuro para textos principais
-    DEFAULT: COLORS.neutral[900],
-    light: COLORS.neutral[600],
-    muted: COLORS.neutral[500],
+    dark: neutral[900],
+    DEFAULT: neutral[900],
+    light: neutral[600],
+    muted: neutral[500],
     white: "#ffffff",
   },
 
   // Cores de Fundo
   background: {
-    DEFAULT: COLORS.background.primary, // #f8f5f7
-    light: COLORS.background.secondary,
-    soft: COLORS.background.tertiary,
-    cream: COLORS.background.tertiary,
+    DEFAULT: neutral[50],
+    light: neutral[100],
+    soft: neutral[200],
+    cream: neutral[200],
     blueTint: "#F0F9FF",
-    pinkTint: COLORS.primary[50],
+    pinkTint: brand.accent[50],
   },
 
   // Cores de Categorias
   category: {
-    nutricao: COLORS.primary[400],
-    exercicio: COLORS.legacyAccent.sky,
-    saude: COLORS.legacyAccent.lavender,
-    bemestar: COLORS.legacyAccent.peach,
+    nutricao: brand.accent[400],
+    exercicio: "#BAE6FD",
+    saude: "#DDD6FE",
+    bemestar: "#FECACA",
   },
 
   // Gradientes
   gradients: {
-    primary: GRADIENTS.primary,
-    primarySoft: [COLORS.primary[400], COLORS.primary[200]],
-    secondary: GRADIENTS.secondary,
-    warm: GRADIENTS.warm,
-    cool: GRADIENTS.cool,
-    sunset: GRADIENTS.sunset,
+    primary: gradients.primary,
+    primarySoft: [brand.accent[400], brand.accent[200]],
+    secondary: gradients.secondary,
+    warm: gradients.warm,
+    cool: gradients.cool,
+    sunset: gradients.sunset,
   },
 
   // Cores de Status
   status: {
-    success: COLORS.semantic.success,
-    warning: COLORS.semantic.warning,
-    error: COLORS.semantic.error,
-    info: COLORS.semantic.info,
+    success: semantic.light.success,
+    warning: semantic.light.warning,
+    error: semantic.light.error,
+    info: semantic.light.info,
   },
 
   // Cores de UI
   ui: {
-    border: COLORS.neutral[200],
-    borderLight: COLORS.neutral[100],
-    borderPink: COLORS.primary[200],
-    borderBlue: COLORS.legacyAccent.sky,
-    shadow: "rgba(244, 37, 140, 0.15)", // Sombra rosa vibrante
+    border: neutral[200],
+    borderLight: neutral[100],
+    borderPink: brand.accent[200],
+    borderBlue: "#BAE6FD",
+    shadow: "rgba(244, 37, 140, 0.15)",
     shadowStrong: "rgba(244, 37, 140, 0.25)",
     shadowBlue: "rgba(186, 230, 253, 0.15)",
   },
@@ -141,41 +162,55 @@ export const Colors = {
 // Dark Mode Colors
 export const ColorsDark = {
   primary: {
-    DEFAULT: COLORS.primary[400],
-    50: COLORS.neutral[900],
-    100: COLORS.neutral[800],
-    200: COLORS.neutral[700],
-    300: COLORS.neutral[600],
-    400: COLORS.primary[400],
-    500: COLORS.primary[500],
-    600: COLORS.primary[600],
-    700: COLORS.primary[700],
-    800: COLORS.primary[800],
-    900: COLORS.primary[900],
+    DEFAULT: brand.primary[400],
+    50: neutral[900],
+    100: neutral[800],
+    200: neutral[700],
+    300: neutral[600],
+    400: brand.primary[400],
+    500: brand.primary[500],
+    600: brand.primary[600],
+    700: brand.primary[700],
+    800: brand.primary[800],
+    900: brand.primary[900],
   },
 
   secondary: {
-    DEFAULT: COLORS.secondary[400],
-    50: COLORS.neutral[900],
-    100: COLORS.neutral[800],
-    200: COLORS.neutral[700],
-    300: COLORS.neutral[600],
-    400: COLORS.secondary[400],
-    500: COLORS.secondary[500],
-    600: COLORS.secondary[600],
-    700: COLORS.secondary[700],
-    800: COLORS.secondary[800],
-    900: COLORS.secondary[900],
+    DEFAULT: brand.secondary[400],
+    50: neutral[900],
+    100: neutral[800],
+    200: neutral[700],
+    300: neutral[600],
+    400: brand.secondary[400],
+    500: brand.secondary[500],
+    600: brand.secondary[600],
+    700: brand.secondary[700],
+    800: brand.secondary[800],
+    900: brand.secondary[900],
+  },
+
+  accent: {
+    DEFAULT: brand.accent[400],
+    50: neutral[900],
+    100: neutral[800],
+    200: neutral[700],
+    300: neutral[600],
+    400: brand.accent[400],
+    500: brand.accent[500],
+    600: brand.accent[600],
+    700: brand.accent[700],
+    800: brand.accent[800],
+    900: brand.accent[900],
   },
 
   bluePastel: {
-    DEFAULT: COLORS.legacyAccent.sky,
-    50: COLORS.neutral[900],
-    100: COLORS.neutral[800],
-    200: COLORS.neutral[700],
-    300: COLORS.neutral[600],
+    DEFAULT: "#BAE6FD",
+    50: neutral[900],
+    100: neutral[800],
+    200: neutral[700],
+    300: neutral[600],
     400: "#38BDF8",
-    500: COLORS.legacyAccent.sky,
+    500: "#BAE6FD",
     600: "#7DD3FC",
     700: "#BAE6FD",
     800: "#E0F2FE",
@@ -184,71 +219,71 @@ export const ColorsDark = {
 
   feeling: {
     sunny: {
-      color: "#FFD89B",
+      color: feelingColors.bem.color,
       activeColor: "#FFE5B8",
       label: "Bem",
     },
     cloud: {
-      color: COLORS.legacyAccent.sky,
+      color: feelingColors.cansada.color,
       activeColor: "#D4E9FD",
       label: "Cansada",
     },
     rainy: {
-      color: COLORS.legacyAccent.lavender,
+      color: feelingColors.indisposta.color,
       activeColor: "#EDE9FE",
       label: "Enjoada",
     },
     heart: {
-      color: COLORS.primary[400],
-      activeColor: COLORS.primary[300],
+      color: feelingColors.amada.color,
+      activeColor: brand.accent[300],
       label: "Amada",
     },
   },
 
   text: {
-    dark: COLORS.neutral[100],
-    DEFAULT: COLORS.neutral[100],
-    light: COLORS.neutral[400],
-    muted: COLORS.neutral[500],
+    dark: neutral[100],
+    DEFAULT: neutral[100],
+    light: neutral[400],
+    muted: neutral[500],
     white: "#ffffff",
   },
 
   background: {
-    DEFAULT: COLORS_DARK.background.primary,
-    light: COLORS_DARK.background.secondary,
-    soft: COLORS_DARK.background.tertiary,
-    cream: COLORS_DARK.background.tertiary,
+    DEFAULT: neutral[900],
+    light: neutral[800],
+    soft: neutral[700],
+    cream: neutral[700],
     blueTint: "#0F1419",
     pinkTint: "#1A0F14",
   },
 
   category: {
-    nutricao: COLORS.primary[400],
-    exercicio: COLORS.legacyAccent.sky,
-    saude: COLORS.legacyAccent.lavender,
-    bemestar: COLORS.legacyAccent.peach,
+    nutricao: brand.accent[400],
+    exercicio: "#BAE6FD",
+    saude: "#DDD6FE",
+    bemestar: "#FECACA",
   },
 
   gradients: {
-    primary: GRADIENTS.primary,
-    primarySoft: [COLORS.primary[400], COLORS.primary[300]],
-    secondary: GRADIENTS.secondary,
+    primary: gradients.primary,
+    primarySoft: [brand.accent[400], brand.accent[300]],
+    secondary: gradients.secondary,
     warm: ["#2D1A1F", "#1A0F14"],
     cool: ["#0F1419", "#0A0F14"],
-    sunset: GRADIENTS.sunset,
+    sunset: gradients.sunset,
   },
 
   status: {
-    success: COLORS.semantic.success,
-    warning: COLORS.semantic.warning,
-    error: COLORS.semantic.error,
-    info: COLORS.semantic.info,
+    success: semantic.dark.success,
+    warning: semantic.dark.warning,
+    error: semantic.dark.error,
+    info: semantic.dark.info,
   },
 
   ui: {
-    border: COLORS.neutral[700],
-    borderLight: COLORS.neutral[800],
-    borderPink: COLORS.primary[800],
+    border: neutral[700],
+    borderLight: neutral[800],
+    borderPink: brand.accent[800],
     borderBlue: "#1F3F7A",
     shadow: "rgba(0, 0, 0, 0.3)",
     shadowStrong: "rgba(0, 0, 0, 0.5)",
@@ -267,8 +302,9 @@ export const getGradient = (gradient: keyof typeof Colors.gradients) => {
 };
 
 // Exportar cor primária como constante para uso rápido
-export const PRIMARY_COLOR = Colors.primary.DEFAULT; // #f4258c
-export const SECONDARY_COLOR = Colors.secondary.DEFAULT; // #A855F7
-export const BLUE_PASTEL = Colors.bluePastel.DEFAULT; // #BAE6FD
-export const BACKGROUND_COLOR = Colors.background.DEFAULT; // #f8f5f7
+export const PRIMARY_COLOR = Colors.primary.DEFAULT;
+export const SECONDARY_COLOR = Colors.secondary.DEFAULT;
+export const ACCENT_COLOR = Colors.accent.DEFAULT;
+export const BLUE_PASTEL = Colors.bluePastel.DEFAULT;
+export const BACKGROUND_COLOR = Colors.background.DEFAULT;
 export const TEXT_DARK = Colors.text.dark;

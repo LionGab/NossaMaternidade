@@ -31,7 +31,7 @@ import { RootStackScreenProps, Post } from "../types/navigation";
 import { useCommunityStore, useAppStore } from "../state/store";
 import { useImageUpload } from "../hooks/useImageUpload";
 import { logger } from "../utils/logger";
-import { COLORS, RADIUS } from "../theme/design-system";
+import { Tokens } from "../theme/tokens";
 import { useToast } from "../context/ToastContext";
 
 const MAX_CONTENT_LENGTH = 500;
@@ -163,7 +163,7 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
           className={`px-5 py-2 rounded-full ${canPost && !isLoading ? "bg-rose-500" : "bg-warmGray-200"}`}
         >
           {isLoading ? (
-            <ActivityIndicator size="small" color={COLORS.neutral[0]} />
+            <ActivityIndicator size="small" color={Tokens.neutral[0]} />
           ) : (
             <Text className={`text-base font-semibold ${canPost ? "text-white" : "text-warmGray-400"}`}>
               Publicar
@@ -176,7 +176,7 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
       <View className="flex-1 px-4 pt-4">
         <View className="flex-row items-start">
           <View className="w-11 h-11 rounded-full bg-blush-200 items-center justify-center mr-3">
-            <Ionicons name="person" size={22} color={COLORS.primary[600]} />
+            <Ionicons name="person" size={22} color={Tokens.brand.primary[600]} />
           </View>
           <View className="flex-1">
             <Text className="text-warmGray-800 text-base font-semibold">{user?.name || "Você"}</Text>
@@ -184,7 +184,7 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
               value={content}
               onChangeText={(text) => setContent(text.slice(0, MAX_CONTENT_LENGTH))}
               placeholder="O que você quer compartilhar?"
-              placeholderTextColor={COLORS.text.tertiary}
+              placeholderTextColor={Tokens.neutral[400]}
               multiline
               autoFocus
               editable={!isLoading}
@@ -200,8 +200,8 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
                   style={{
                     width: "100%",
                     aspectRatio: 4 / 3,
-                    borderRadius: RADIUS.lg,
-                    backgroundColor: COLORS.neutral[100],
+                    borderRadius: Tokens.radius.lg,
+                    backgroundColor: Tokens.neutral[100],
                   }}
                   contentFit="cover"
                   transition={200}
@@ -214,16 +214,16 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
                   className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 items-center justify-center"
                   style={{ opacity: isLoading ? 0.5 : 1 }}
                 >
-                  <Ionicons name="close" size={20} color={COLORS.neutral[0]} />
+                  <Ionicons name="close" size={20} color={Tokens.neutral[0]} />
                 </Pressable>
 
                 {/* Upload progress overlay */}
                 {isImageLoading && (
                   <View
                     className="absolute inset-0 bg-black/40 items-center justify-center"
-                    style={{ borderRadius: RADIUS.lg }}
+                    style={{ borderRadius: Tokens.radius.lg }}
                   >
-                    <ActivityIndicator size="large" color={COLORS.neutral[0]} />
+                    <ActivityIndicator size="large" color={Tokens.neutral[0]} />
                     <Text className="text-white text-sm mt-2 font-medium">
                       {uploadProgress < 30 ? "Preparando..." : uploadProgress < 80 ? "Enviando..." : "Finalizando..."}
                     </Text>
@@ -239,7 +239,7 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
                 {/* Uploaded indicator */}
                 {uploadedImage && !isImageLoading && (
                   <View className="absolute bottom-2 left-2 flex-row items-center bg-black/50 px-2 py-1 rounded-full">
-                    <Ionicons name="checkmark-circle" size={14} color={COLORS.semantic.success} />
+                    <Ionicons name="checkmark-circle" size={14} color={Tokens.semantic.light.success} />
                     <Text className="text-white text-xs ml-1">Enviado</Text>
                   </View>
                 )}
@@ -263,7 +263,7 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
           <Ionicons
             name={selectedImage ? "image" : "image-outline"}
             size={24}
-            color={selectedImage ? COLORS.primary[600] : COLORS.primary[500]}
+            color={selectedImage ? Tokens.brand.primary[600] : Tokens.brand.primary[500]}
           />
           <Text className="ml-2 text-warmGray-500 text-sm">Foto</Text>
         </Pressable>
@@ -273,7 +273,7 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
           className="flex-row items-center"
           style={{ opacity: isLoading ? 0.5 : 1 }}
         >
-          <Ionicons name="camera-outline" size={24} color={COLORS.primary[500]} />
+          <Ionicons name="camera-outline" size={24} color={Tokens.brand.primary[500]} />
           <Text className="ml-2 text-warmGray-500 text-sm">Câmera</Text>
         </Pressable>
         <View className="flex-1" />
@@ -282,8 +282,8 @@ export default function NewPostScreen({ navigation }: RootStackScreenProps<"NewP
           style={{
             color:
               content.length > MAX_CONTENT_LENGTH * 0.9
-                ? COLORS.semantic.error
-                : COLORS.neutral[400],
+                ? Tokens.semantic.light.error
+                : Tokens.neutral[400],
           }}
         >
           {content.length}/{MAX_CONTENT_LENGTH}

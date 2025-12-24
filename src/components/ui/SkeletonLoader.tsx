@@ -5,7 +5,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { View, Animated } from "react-native";
-import { COLORS, SPACING, RADIUS } from "../../theme/design-system";
+import { neutral, spacing, radius } from "../../theme/tokens";
 
 interface SkeletonLoaderProps {
   width?: number | string;
@@ -17,7 +17,7 @@ interface SkeletonLoaderProps {
 export function SkeletonLoader({ 
   width = "100%", 
   height = 20, 
-  borderRadius = RADIUS.md,
+  borderRadius = radius.md,
   style 
 }: SkeletonLoaderProps) {
   const shimmerAnim = useRef(new Animated.Value(0)).current;
@@ -53,7 +53,7 @@ export function SkeletonLoader({
           width,
           height,
           borderRadius,
-          backgroundColor: COLORS.neutral[200],
+          backgroundColor: neutral[200],
           opacity,
         },
         style,
@@ -69,14 +69,14 @@ export function CardSkeleton() {
   return (
     <View
       style={{
-        backgroundColor: COLORS.neutral[0],
-        borderRadius: RADIUS.xl,
-        padding: SPACING.lg,
-        marginBottom: SPACING.lg,
+        backgroundColor: neutral[0],
+        borderRadius: radius.xl,
+        padding: spacing.lg,
+        marginBottom: spacing.lg,
       }}
     >
-      <SkeletonLoader width="60%" height={20} style={{ marginBottom: SPACING.md }} />
-      <SkeletonLoader width="100%" height={16} style={{ marginBottom: SPACING.xs }} />
+      <SkeletonLoader width="60%" height={20} style={{ marginBottom: spacing.md }} />
+      <SkeletonLoader width="100%" height={16} style={{ marginBottom: spacing.xs }} />
       <SkeletonLoader width="80%" height={16} />
     </View>
   );

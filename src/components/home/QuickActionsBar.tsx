@@ -19,7 +19,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "../../hooks/useTheme";
 import { useHabitsStore } from "../../state/store";
-import { COLORS, SPACING, RADIUS, SHADOWS, ACCESSIBILITY } from "../../theme/design-system";
+import { brand, spacing, radius, shadows, accessibility } from "../../theme/tokens";
 
 interface QuickAction {
   id: string;
@@ -149,7 +149,7 @@ export const QuickActionsBar: React.FC<QuickActionsBarProps> = ({ onNavigate }) 
           backgroundColor: cardBg,
           borderColor,
         },
-        SHADOWS.sm,
+        shadows.sm,
       ]}
     >
       {quickActions.map((action) => (
@@ -170,8 +170,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    borderRadius: RADIUS.xl,
-    padding: SPACING.md,
+    borderRadius: radius.xl,
+    padding: spacing.md,
     borderWidth: 1,
   },
   actionWrapper: {
@@ -180,13 +180,13 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     alignItems: "center",
-    minWidth: ACCESSIBILITY.minTapTarget,
-    paddingVertical: SPACING.xs,
+    minWidth: accessibility.minTapTarget,
+    paddingVertical: spacing.xs,
   },
   iconContainer: {
     width: 48,
     height: 48,
-    borderRadius: RADIUS.lg,
+    borderRadius: radius.lg,
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     minWidth: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: COLORS.primary[500],
+    backgroundColor: brand.primary[500],
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 4,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
   label: {
-    marginTop: SPACING.xs,
+    marginTop: spacing.xs,
     fontSize: 11,
     fontWeight: "600",
   },

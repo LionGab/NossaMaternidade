@@ -23,9 +23,13 @@ import Animated, {
 } from "react-native-reanimated";
 import { useTheme } from "../../hooks/useTheme";
 import { useCheckInStore } from "../../state/store";
-import { ACCESSIBILITY, RADIUS, SPACING } from "../../theme/design-system";
-import { brand, neutral, surface } from "../../theme/tokens";
+import { brand, neutral, surface, spacing, radius, accessibility } from "../../theme/tokens";
 import type { MainTabParamList } from "../../types/navigation";
+
+// Aliases de compatibilidade para migração gradual
+const SPACING = spacing;
+const RADIUS = radius;
+const ACCESSIBILITY = accessibility;
 
 // Tipos de mood
 type MoodType = "bem" | "cansada" | "indisposta" | "amada";

@@ -6,7 +6,7 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from "../../theme/design-system";
+import { brand, neutral, spacing, radius, typography, semantic } from "../../theme/tokens";
 
 interface ErrorStateProps {
   title?: string;
@@ -27,7 +27,7 @@ export function ErrorState({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        padding: SPACING["3xl"],
+        padding: spacing["3xl"],
       }}
     >
       <View
@@ -35,21 +35,21 @@ export function ErrorState({
           width: 80,
           height: 80,
           borderRadius: 40,
-          backgroundColor: COLORS.semantic.error + "15",
+          backgroundColor: semantic.light.errorLight,
           alignItems: "center",
           justifyContent: "center",
-          marginBottom: SPACING.xl,
+          marginBottom: spacing.xl,
         }}
       >
-        <Ionicons name="alert-circle" size={40} color={COLORS.semantic.error} />
+        <Ionicons name="alert-circle" size={40} color={semantic.light.error} />
       </View>
 
       <Text
         style={{
-          ...TYPOGRAPHY.headlineSmall,
-          color: COLORS.neutral[900],
+          ...typography.headlineSmall,
+          color: neutral[900],
           textAlign: "center",
-          marginBottom: SPACING.md,
+          marginBottom: spacing.md,
         }}
       >
         {title}
@@ -58,10 +58,10 @@ export function ErrorState({
       {message && (
         <Text
           style={{
-            ...TYPOGRAPHY.bodyMedium,
-            color: COLORS.neutral[600],
+            ...typography.bodyMedium,
+            color: neutral[600],
             textAlign: "center",
-            marginBottom: SPACING.xl,
+            marginBottom: spacing.xl,
           }}
         >
           {message}
@@ -71,11 +71,13 @@ export function ErrorState({
       {onRetry && (
         <Pressable
           onPress={onRetry}
+          accessibilityRole="button"
+          accessibilityLabel={retryLabel}
           style={{
-            backgroundColor: COLORS.primary[500],
-            paddingHorizontal: SPACING["2xl"],
-            paddingVertical: SPACING.lg,
-            borderRadius: RADIUS.lg,
+            backgroundColor: brand.primary[500],
+            paddingHorizontal: spacing["2xl"],
+            paddingVertical: spacing.lg,
+            borderRadius: radius.lg,
             minHeight: 44,
             alignItems: "center",
             justifyContent: "center",
@@ -83,8 +85,8 @@ export function ErrorState({
         >
           <Text
             style={{
-              ...TYPOGRAPHY.labelLarge,
-              color: COLORS.neutral[0],
+              ...typography.labelLarge,
+              color: neutral[0],
               fontWeight: "700",
             }}
           >

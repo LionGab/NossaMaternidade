@@ -11,7 +11,7 @@ import React from "react";
 import { Pressable, Text, View, ViewStyle } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useTheme } from "../../hooks/useTheme";
-import { ACCESSIBILITY, SPACING, TYPOGRAPHY } from "../../theme/design-system";
+import { accessibility, spacing as tokenSpacing, typography } from "../../theme/tokens";
 
 interface ScreenHeaderProps {
   /** Main title */
@@ -89,7 +89,7 @@ export function ScreenHeader({
   const textSecondary = isDark ? colors.neutral[400] : colors.neutral[500];
 
   // Typography sizes based on variant
-  const titleSize = variant === "large" ? TYPOGRAPHY.headlineSmall : TYPOGRAPHY.titleLarge;
+  const titleSize = variant === "large" ? typography.headlineSmall : typography.titleLarge;
 
   const content = (
     <View
@@ -97,8 +97,8 @@ export function ScreenHeader({
         {
           backgroundColor: bgColor,
           paddingHorizontal: spacing.xl,
-          paddingTop: SPACING.lg,
-          paddingBottom: SPACING.lg,
+          paddingTop: tokenSpacing.lg,
+          paddingBottom: tokenSpacing.lg,
         },
         style,
       ]}
@@ -118,12 +118,12 @@ export function ScreenHeader({
               accessibilityLabel={leftAction.label || "Voltar"}
               accessibilityRole="button"
               style={({ pressed }) => ({
-                width: ACCESSIBILITY.minTapTarget,
-                height: ACCESSIBILITY.minTapTarget,
-                borderRadius: ACCESSIBILITY.minTapTarget / 2,
+                width: accessibility.minTapTarget,
+                height: accessibility.minTapTarget,
+                borderRadius: accessibility.minTapTarget / 2,
                 alignItems: "center",
                 justifyContent: "center",
-                marginRight: SPACING.sm,
+                marginRight: tokenSpacing.sm,
                 backgroundColor: pressed
                   ? isDark
                     ? colors.neutral[800]
@@ -143,7 +143,7 @@ export function ScreenHeader({
           {logo && (
             <View
               style={{
-                marginRight: SPACING.sm,
+                marginRight: tokenSpacing.sm,
                 width: 32,
                 height: 32,
                 borderRadius: 16,
@@ -157,14 +157,14 @@ export function ScreenHeader({
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               {emoji && (
-                <Text style={{ fontSize: 22, marginRight: SPACING.sm }}>{emoji}</Text>
+                <Text style={{ fontSize: 22, marginRight: tokenSpacing.sm }}>{emoji}</Text>
               )}
               {icon && !emoji && (
                 <Ionicons
                   name={icon}
                   size={22}
                   color={colors.primary[500]}
-                  style={{ marginRight: SPACING.sm }}
+                  style={{ marginRight: tokenSpacing.sm }}
                 />
               )}
               <Text
@@ -173,7 +173,6 @@ export function ScreenHeader({
                   fontSize: titleSize.fontSize,
                   fontWeight: "700",
                   fontFamily: "Manrope_700Bold",
-                  letterSpacing: titleSize.letterSpacing,
                 }}
                 numberOfLines={1}
               >
@@ -185,7 +184,7 @@ export function ScreenHeader({
               <Text
                 style={{
                   color: textSecondary,
-                  fontSize: TYPOGRAPHY.bodySmall.fontSize,
+                  fontSize: typography.bodySmall.fontSize,
                   fontFamily: "Manrope_500Medium",
                   marginTop: 2,
                 }}
@@ -207,12 +206,12 @@ export function ScreenHeader({
                 accessibilityLabel={action.label || `Ação ${index + 1}`}
                 accessibilityRole="button"
                 style={({ pressed }) => ({
-                  width: ACCESSIBILITY.minTapTarget,
-                  height: ACCESSIBILITY.minTapTarget,
-                  borderRadius: ACCESSIBILITY.minTapTarget / 2,
+                  width: accessibility.minTapTarget,
+                  height: accessibility.minTapTarget,
+                  borderRadius: accessibility.minTapTarget / 2,
                   alignItems: "center",
                   justifyContent: "center",
-                  marginLeft: index > 0 ? SPACING.xs : 0,
+                  marginLeft: index > 0 ? tokenSpacing.xs : 0,
                   backgroundColor: pressed
                     ? isDark
                       ? colors.neutral[800]

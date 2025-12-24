@@ -4,7 +4,7 @@
  * Multi-select até 3 preocupações
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable, Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -29,8 +29,12 @@ export default function OnboardingConcerns({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { stage, date } = route.params;
-  const { data, toggleConcern, canProceed } =
+  const { data, toggleConcern, canProceed, setCurrentScreen } =
     useNathJourneyOnboardingStore();
+
+  useEffect(() => {
+    setCurrentScreen("OnboardingConcerns");
+  }, [setCurrentScreen]);
 
   const handleSelectConcern = async (concern: OnboardingConcern) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -248,4 +252,3 @@ const styles = StyleSheet.create({
     color: Tokens.neutral[500],
   },
 });
-

@@ -28,6 +28,7 @@ export function VideoPlayer({
   loop = false,
   muted = false,
   showControls = true,
+  style,
 }: VideoPlayerProps) {
   const theme = useTheme();
   const videoRef = useRef<Video>(null);
@@ -91,7 +92,7 @@ export function VideoPlayer({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <Video
         ref={videoRef}
         source={videoSource}

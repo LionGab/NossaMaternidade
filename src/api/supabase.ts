@@ -40,8 +40,9 @@ if (supabaseUrl && supabaseAnonKey) {
       storage: AsyncStorage,
       autoRefreshToken: true,
       persistSession: true,
-      // No web, detectar sessão na URL para OAuth callbacks
-      detectSessionInUrl: typeof window !== "undefined",
+      // CRÍTICO: detectSessionInUrl deve ser false em native (Expo)
+      // O fluxo OAuth manual via createSessionFromRedirect() cuida da sessão
+      detectSessionInUrl: false, // Padrão recomendado para React Native/Expo
     },
   });
 }

@@ -25,7 +25,7 @@
 import { supabase } from "@/api/supabase";
 import { navigationRef } from "@/navigation/navigationRef";
 import { useAppStore } from "@/state/store";
-import { COLORS } from "@/theme/design-system";
+import { COLORS } from "@/theme/tokens";
 import { logger } from "@/utils/logger";
 import Constants from "expo-constants";
 import * as Device from "expo-device";

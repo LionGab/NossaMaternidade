@@ -5,7 +5,7 @@
 
 import React from "react";
 import { View, ActivityIndicator, Text } from "react-native";
-import { COLORS, SPACING, TYPOGRAPHY } from "../../theme/design-system";
+import { brand, neutral, spacing, typography } from "../../theme/tokens";
 
 interface LoadingStateProps {
   message?: string;
@@ -19,16 +19,16 @@ export function LoadingState({ message, size = "large", fullScreen = false }: Lo
       style={{
         alignItems: "center",
         justifyContent: "center",
-        padding: SPACING["2xl"],
+        padding: spacing["2xl"],
       }}
     >
-      <ActivityIndicator size={size} color={COLORS.primary[500]} />
+      <ActivityIndicator size={size} color={brand.primary[500]} />
       {message && (
         <Text
           style={{
-            ...TYPOGRAPHY.bodyMedium,
-            color: COLORS.neutral[600],
-            marginTop: SPACING.lg,
+            ...typography.bodyMedium,
+            color: neutral[600],
+            marginTop: spacing.lg,
             textAlign: "center",
           }}
         >
@@ -45,7 +45,7 @@ export function LoadingState({ message, size = "large", fullScreen = false }: Lo
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: COLORS.background.primary,
+          backgroundColor: brand.primary[50],
         }}
       >
         {content}

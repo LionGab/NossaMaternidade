@@ -4,7 +4,7 @@
  * Date picker nativo com validação
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -25,8 +25,12 @@ export default function OnboardingDate({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { stage } = route.params;
-  const { data, setLastMenstruation, setDueDate, setBirthDate } =
+  const { data, setLastMenstruation, setDueDate, setBirthDate, setCurrentScreen } =
     useNathJourneyOnboardingStore();
+
+  useEffect(() => {
+    setCurrentScreen("OnboardingDate");
+  }, [setCurrentScreen]);
 
   const [showPicker, setShowPicker] = useState(false);
   const [date, setDate] = useState<Date>(new Date());
@@ -430,4 +434,3 @@ const styles = StyleSheet.create({
     color: Tokens.neutral[500],
   },
 });
-

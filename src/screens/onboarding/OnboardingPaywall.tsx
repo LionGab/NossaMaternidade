@@ -6,9 +6,11 @@
 
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+import { Image } from "expo-image";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Linking,
   Pressable,
   ScrollView,
@@ -18,61 +20,184 @@ import {
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { PurchasesPackage } from "react-native-purchases";
 import { ProgressBar } from "../../components/onboarding/ProgressBar";
-import { VideoPlayer } from "../../components/onboarding/VideoPlayer";
 import { useNathJourneyOnboardingStore } from "../../state/nath-journey-onboarding-store";
 import { usePremiumStore } from "../../state/premium-store";
+import { useAppStore } from "../../state/store";
 import { useTheme } from "../../hooks/useTheme";
 import { Tokens } from "../../theme/tokens";
 import { RootStackScreenProps } from "../../types/navigation";
 import { logger } from "../../utils/logger";
 import { saveOnboardingData } from "../../api/onboarding-service";
+import {
+  getOfferings,
+  purchasePackage,
+  restorePurchases,
+  getIsConfigured,
+} from "../../services/revenuecat";
 
 type Props = RootStackScreenProps<"OnboardingPaywall">;
 
-// Placeholder: vídeo será substituído por asset real depois
-const PAYWALL_VIDEO = {
-  uri: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-};
+// Imagem estática para o paywall
+const PAYWALL_IMAGE = require("../../../assets/onboarding/images/nath-profile-small.jpg");
 
 export default function OnboardingPaywall({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { onboardingData } = route.params;
-  const { completeOnboarding, needsExtraCare } = useNathJourneyOnboardingStore();
+  const { completeOnboarding, needsExtraCare, setCurrentScreen } =
+    useNathJourneyOnboardingStore();
+
+  // Get real user ID from store
+  const authUserId = useAppStore((s) => s.authUserId);
+
+  // Premium store
   const isPurchasing = usePremiumStore((s) => s.isPurchasing);
+  const setPurchasing = usePremiumStore((s) => s.setPurchasing);
+  const setPremiumStatus = usePremiumStore((s) => s.setPremiumStatus);
 
   const [isSaving, setIsSaving] = useState(false);
+  const [_isLoadingOfferings, setIsLoadingOfferings] = useState(true);
+  const [monthlyPackage, setMonthlyPackage] = useState<PurchasesPackage | null>(null);
+  const [yearlyPackage, setYearlyPackage] = useState<PurchasesPackage | null>(null);
+  const [selectedPackage] = useState<"monthly" | "yearly">("monthly");
   const needsExtraCareFlag = needsExtraCare();
 
-  const handleStartTrial = async () => {
+  // Load RevenueCat offerings
+  useEffect(() => {
+    async function loadOfferings() {
+      try {
+        if (!getIsConfigured()) {
+          logger.info("RevenueCat not configured (likely Expo Go)", "OnboardingPaywall");
+          setIsLoadingOfferings(false);
+          return;
+        }
+
+        const offerings = await getOfferings();
+        if (offerings?.availablePackages) {
+          const monthly = offerings.availablePackages.find(
+            (pkg) => pkg.packageType === "MONTHLY" || pkg.identifier.includes("monthly")
+          );
+          const yearly = offerings.availablePackages.find(
+            (pkg) => pkg.packageType === "ANNUAL" || pkg.identifier.includes("yearly")
+          );
+
+          setMonthlyPackage(monthly || null);
+          setYearlyPackage(yearly || null);
+
+          logger.info("Offerings loaded", "OnboardingPaywall", {
+            monthly: monthly?.identifier,
+            yearly: yearly?.identifier,
+          });
+        }
+      } catch (error) {
+        logger.error("Failed to load offerings", "OnboardingPaywall",
+          error instanceof Error ? error : new Error(String(error)));
+      } finally {
+        setIsLoadingOfferings(false);
+      }
+    }
+
+    loadOfferings();
+  }, []);
+
+  useEffect(() => {
+    setCurrentScreen("OnboardingPaywall");
+  }, [setCurrentScreen]);
+
+  const handleStartTrial = useCallback(async () => {
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-      // Se needsExtraCare, pular paywall e dar 7 dias grátis
+      // Se needsExtraCare, pular paywall e dar acesso gratuito
       if (needsExtraCareFlag) {
         logger.info("Skipping paywall for extra care user", "OnboardingPaywall");
         await handleComplete();
         return;
       }
 
-      // TODO: Implementar integração real com RevenueCat
-      // Por enquanto, completar onboarding diretamente
-      logger.info("Trial flow - completing onboarding", "OnboardingPaywall");
-      await handleComplete();
-    } catch (error) {
-      logger.error("Error starting trial", "OnboardingPaywall", error instanceof Error ? error : new Error(String(error)));
-      // Continuar mesmo se falhar
-      await handleComplete();
-    }
-  };
+      // Get the selected package
+      const packageToPurchase = selectedPackage === "yearly" ? yearlyPackage : monthlyPackage;
 
-  const handleComplete = async () => {
+      // If RevenueCat is not configured or no package available, complete without purchase
+      if (!getIsConfigured() || !packageToPurchase) {
+        logger.info("RevenueCat not available, completing without purchase", "OnboardingPaywall");
+        await handleComplete();
+        return;
+      }
+
+      // Start purchase flow
+      setPurchasing(true);
+      logger.info("Starting purchase", "OnboardingPaywall", { package: packageToPurchase.identifier });
+
+      const result = await purchasePackage(packageToPurchase);
+
+      if (result.success) {
+        logger.info("Purchase successful", "OnboardingPaywall");
+        setPremiumStatus(true);
+        await handleComplete();
+      } else if (result.error === "cancelled") {
+        logger.info("Purchase cancelled by user", "OnboardingPaywall");
+        // User cancelled, don't complete onboarding automatically
+      } else {
+        logger.error("Purchase failed", "OnboardingPaywall", new Error(result.error || "Unknown error"));
+        Alert.alert(
+          "Erro na compra",
+          "Não foi possível processar sua compra. Você pode tentar novamente ou continuar sem assinatura.",
+          [
+            { text: "Tentar novamente", onPress: handleStartTrial },
+            { text: "Continuar grátis", onPress: handleComplete },
+          ]
+        );
+      }
+    } catch (error) {
+      logger.error("Error starting trial", "OnboardingPaywall",
+        error instanceof Error ? error : new Error(String(error)));
+      await handleComplete();
+    } finally {
+      setPurchasing(false);
+    }
+  }, [needsExtraCareFlag, selectedPackage, monthlyPackage, yearlyPackage, setPurchasing, setPremiumStatus]);
+
+  const handleRestore = useCallback(async () => {
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setPurchasing(true);
+
+      const result = await restorePurchases();
+
+      if (result.success) {
+        logger.info("Restore successful", "OnboardingPaywall");
+        setPremiumStatus(true);
+        Alert.alert("Sucesso!", "Sua assinatura foi restaurada.", [
+          { text: "Continuar", onPress: handleComplete },
+        ]);
+      } else {
+        Alert.alert("Nenhuma assinatura encontrada", "Não encontramos uma assinatura ativa para restaurar.");
+      }
+    } catch (error) {
+      logger.error("Restore failed", "OnboardingPaywall",
+        error instanceof Error ? error : new Error(String(error)));
+      Alert.alert("Erro", "Não foi possível restaurar sua assinatura.");
+    } finally {
+      setPurchasing(false);
+    }
+  }, [setPurchasing, setPremiumStatus]);
+
+  const handleComplete = useCallback(async () => {
     try {
       setIsSaving(true);
 
-      // Salvar onboarding data no Supabase (stub por enquanto)
-      await saveOnboardingData("user-id-placeholder", {
+      // Use real user ID or fallback
+      const userId = authUserId || "anonymous";
+
+      if (!authUserId) {
+        logger.warn("No authUserId available, using anonymous", "OnboardingPaywall");
+      }
+
+      // Salvar onboarding data no Supabase
+      await saveOnboardingData(userId, {
         stage: onboardingData.stage as import("../../types/nath-journey-onboarding.types").OnboardingStage,
         date: onboardingData.date,
         concerns: onboardingData.concerns as import("../../types/nath-journey-onboarding.types").OnboardingConcern[],
@@ -86,7 +211,7 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
       // Marcar onboarding como completo
       completeOnboarding();
 
-      logger.info("Onboarding completed", "OnboardingPaywall");
+      logger.info("Onboarding completed", "OnboardingPaywall", { userId });
 
       // Navegar para Home
       navigation.reset({
@@ -107,11 +232,26 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [authUserId, onboardingData, completeOnboarding, navigation]);
 
   const handleTerms = () => {
     Linking.openURL("https://nossamaternidade.app/termos");
   };
+
+  const handlePrivacy = () => {
+    Linking.openURL("https://nossamaternidade.app/privacidade");
+  };
+
+  // Get display price from package or use fallback
+  const getMonthlyPrice = () => {
+    if (monthlyPackage?.product?.priceString) {
+      return monthlyPackage.product.priceString;
+    }
+    return "R$ 34,90";
+  };
+
+  // Note: yearlyPackage is loaded but yearly plan UI not yet implemented
+  void yearlyPackage; // Silence unused variable warning
 
   return (
     <View
@@ -160,14 +300,12 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
             </View>
           )}
 
-          {/* Video */}
-          <View style={styles.videoContainer}>
-            <VideoPlayer
-              videoSource={PAYWALL_VIDEO}
-              autoPlay
-              loop={false}
-              muted={false}
-              showControls={true}
+          {/* Image (replacing video) */}
+          <View style={styles.imageContainer}>
+            <Image
+              source={PAYWALL_IMAGE}
+              style={styles.paywallImage}
+              contentFit="cover"
             />
           </View>
 
@@ -192,7 +330,7 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
             ]}
           >
             Mas preciso pagar a equipe, servidor... 7 DIAS GRÁTIS pra você testar tudo. Depois,
-            R$ 34,90/mês - menos que um lanche no shopping. E parte do lucro vai pro projeto Zuzu
+            {getMonthlyPrice()}/mês - menos que um lanche no shopping. E parte do lucro vai pro projeto Zuzu
             em Angola.
           </Text>
 
@@ -225,7 +363,7 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
                   },
                 ]}
               >
-                Depois R$ 34,90/mês
+                Depois {getMonthlyPrice()}/mês
               </Text>
             </View>
 
@@ -330,9 +468,10 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
         </Pressable>
 
         <Pressable
-          onPress={handleComplete}
+          onPress={handleRestore}
+          disabled={isPurchasing}
           style={styles.secondaryButton}
-          accessibilityLabel="Já sou assinante"
+          accessibilityLabel="Restaurar compras anteriores"
           accessibilityRole="button"
         >
           <Text
@@ -347,18 +486,51 @@ export default function OnboardingPaywall({ route, navigation }: Props) {
           </Text>
         </Pressable>
 
-        <Pressable onPress={handleTerms} style={styles.termsButton}>
+        <Pressable
+          onPress={handleComplete}
+          style={styles.skipButton}
+          accessibilityLabel="Continuar sem assinatura"
+          accessibilityRole="button"
+        >
           <Text
             style={[
-              styles.termsText,
+              styles.skipText,
               {
                 color: theme.text.tertiary,
               },
             ]}
           >
-            Termos de uso
+            Continuar grátis
           </Text>
         </Pressable>
+
+        <View style={styles.legalLinks}>
+          <Pressable onPress={handleTerms} style={styles.termsButton}>
+            <Text
+              style={[
+                styles.termsText,
+                {
+                  color: theme.text.tertiary,
+                },
+              ]}
+            >
+              Termos de uso
+            </Text>
+          </Pressable>
+          <Text style={[styles.termsText, { color: theme.text.tertiary }]}> • </Text>
+          <Pressable onPress={handlePrivacy} style={styles.termsButton}>
+            <Text
+              style={[
+                styles.termsText,
+                {
+                  color: theme.text.tertiary,
+                },
+              ]}
+            >
+              Privacidade
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -399,12 +571,19 @@ const styles = StyleSheet.create({
     fontWeight: Tokens.typography.titleMedium.fontWeight,
     lineHeight: Tokens.typography.bodyMedium.lineHeight * 1.3,
   },
-  videoContainer: {
+  imageContainer: {
     width: "100%",
-    height: 200,
-    borderRadius: Tokens.radius.lg,
+    height: 180,
+    borderRadius: Tokens.radius.xl,
     overflow: "hidden",
     marginBottom: Tokens.spacing["2xl"],
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  paywallImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
   },
   title: {
     fontSize: Tokens.typography.headlineLarge.fontSize,
@@ -481,6 +660,19 @@ const styles = StyleSheet.create({
     fontSize: Tokens.typography.bodyMedium.fontSize,
     fontWeight: Tokens.typography.labelMedium.fontWeight,
   },
+  skipButton: {
+    paddingVertical: Tokens.spacing.sm,
+    alignItems: "center",
+  },
+  skipText: {
+    fontSize: Tokens.typography.bodySmall.fontSize,
+  },
+  legalLinks: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: Tokens.spacing.sm,
+  },
   termsButton: {
     paddingVertical: Tokens.spacing.sm,
     alignItems: "center",
@@ -490,4 +682,3 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
 });
-

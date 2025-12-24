@@ -32,12 +32,7 @@ import * as Haptics from "expo-haptics";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAppStore } from "../state/store";
 import { logger } from "../utils/logger";
-import {
-  COLORS,
-  SPACING,
-  RADIUS,
-  TYPOGRAPHY,
-} from "../theme/design-system";
+import { brand, neutral, spacing, radius, typography, semantic } from "../theme/tokens";
 import { PregnancyStage, Interest } from "../types/navigation";
 
 // Font constants
@@ -125,23 +120,23 @@ const OptionButton = ({
       <Pressable
         onPress={handlePress}
         style={{
-          backgroundColor: selected ? COLORS.primary[50] : COLORS.neutral[0],
-          borderRadius: RADIUS.lg,
-          padding: SPACING.lg,
+          backgroundColor: selected ? brand.primary[50] : neutral[0],
+          borderRadius: radius.lg,
+          padding: spacing.lg,
           borderWidth: selected ? 2 : 1,
-          borderColor: selected ? COLORS.primary[500] : COLORS.neutral[200],
-          marginBottom: SPACING.sm,
+          borderColor: selected ? brand.primary[500] : neutral[200],
+          marginBottom: spacing.sm,
           flexDirection: "row",
           alignItems: "center",
         }}
       >
-        <Text style={{ fontSize: 28, marginRight: SPACING.md }}>{emoji}</Text>
+        <Text style={{ fontSize: 28, marginRight: spacing.md }}>{emoji}</Text>
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              fontSize: TYPOGRAPHY.sizes.lg,
+              fontSize: typography.bodyLarge.fontSize,
               fontFamily: FONTS.semiBold,
-              color: selected ? COLORS.primary[700] : COLORS.neutral[800],
+              color: selected ? brand.primary[700] : neutral[800],
             }}
           >
             {label}
@@ -149,8 +144,8 @@ const OptionButton = ({
           {description && (
             <Text
               style={{
-                fontSize: TYPOGRAPHY.sizes.sm,
-                color: COLORS.neutral[500],
+                fontSize: typography.bodySmall.fontSize,
+                color: neutral[500],
                 marginTop: 2,
               }}
             >
@@ -159,7 +154,7 @@ const OptionButton = ({
           )}
         </View>
         {selected && (
-          <Ionicons name="checkmark-circle" size={24} color={COLORS.primary[500]} />
+          <Ionicons name="checkmark-circle" size={24} color={brand.primary[500]} />
         )}
       </Pressable>
     </Animated.View>
@@ -194,27 +189,27 @@ const InterestChip = ({
   };
 
   return (
-    <Animated.View style={[animatedStyle, { width: "48%", marginBottom: SPACING.sm }]}>
+    <Animated.View style={[animatedStyle, { width: "48%", marginBottom: spacing.sm }]}>
       <Pressable
         onPress={handlePress}
         style={{
-          backgroundColor: selected ? COLORS.primary[50] : COLORS.neutral[0],
-          borderRadius: RADIUS.lg,
-          paddingVertical: SPACING.md,
-          paddingHorizontal: SPACING.md,
+          backgroundColor: selected ? brand.primary[50] : neutral[0],
+          borderRadius: radius.lg,
+          paddingVertical: spacing.md,
+          paddingHorizontal: spacing.md,
           borderWidth: selected ? 2 : 1,
-          borderColor: selected ? COLORS.primary[500] : COLORS.neutral[200],
+          borderColor: selected ? brand.primary[500] : neutral[200],
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <Text style={{ fontSize: 20, marginRight: SPACING.xs }}>{emoji}</Text>
+        <Text style={{ fontSize: 20, marginRight: spacing.xs }}>{emoji}</Text>
         <Text
           style={{
-            fontSize: TYPOGRAPHY.sizes.sm,
+            fontSize: typography.bodySmall.fontSize,
             fontFamily: selected ? FONTS.semiBold : FONTS.medium,
-            color: selected ? COLORS.primary[700] : COLORS.neutral[700],
+            color: selected ? brand.primary[700] : neutral[700],
           }}
         >
           {label}
@@ -371,30 +366,30 @@ export default function OnboardingScreen() {
       case "welcome":
         return (
           <Animated.View entering={FadeIn.duration(500)} style={{ flex: 1, justifyContent: "center" }}>
-            <View style={{ alignItems: "center", marginBottom: SPACING.xl }}>
+            <View style={{ alignItems: "center", marginBottom: spacing.xl }}>
               <Image
                 source={require("../../assets/nathalia-avatar.jpg")}
-                style={{ width: 120, height: 120, borderRadius: 60, marginBottom: SPACING.lg }}
+                style={{ width: 120, height: 120, borderRadius: 60, marginBottom: spacing.lg }}
                 resizeMode="cover"
               />
               <Text
                 style={{
                   fontSize: 28,
                   fontFamily: FONTS.serif,
-                  color: COLORS.primary[600],
+                  color: brand.primary[600],
                   textAlign: "center",
-                  marginBottom: SPACING.sm,
+                  marginBottom: spacing.sm,
                 }}
               >
                 Bem-vinda ao{"\n"}Nossa Maternidade
               </Text>
               <Text
                 style={{
-                  fontSize: TYPOGRAPHY.sizes.lg,
+                  fontSize: typography.bodyLarge.fontSize,
                   fontFamily: FONTS.regular,
-                  color: COLORS.neutral[600],
+                  color: neutral[600],
                   textAlign: "center",
-                  paddingHorizontal: SPACING.lg,
+                  paddingHorizontal: spacing.lg,
                 }}
               >
                 Sou a Nathalia Valente e vou te acompanhar nessa jornada incrível
@@ -402,14 +397,14 @@ export default function OnboardingScreen() {
             </View>
 
             <Animated.View entering={FadeInUp.delay(300)}>
-              <View style={{ backgroundColor: COLORS.primary[50], borderRadius: RADIUS.lg, padding: SPACING.lg, marginHorizontal: SPACING.md }}>
-                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: SPACING.sm }}>
-                  <Ionicons name="heart" size={20} color={COLORS.primary[500]} />
-                  <Text style={{ marginLeft: SPACING.sm, fontFamily: FONTS.semiBold, color: COLORS.primary[700] }}>
+              <View style={{ backgroundColor: brand.primary[50], borderRadius: radius.lg, padding: spacing.lg, marginHorizontal: spacing.md }}>
+                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: spacing.sm }}>
+                  <Ionicons name="heart" size={20} color={brand.primary[500]} />
+                  <Text style={{ marginLeft: spacing.sm, fontFamily: FONTS.semiBold, color: brand.primary[700] }}>
                     O que você encontra aqui:
                   </Text>
                 </View>
-                <Text style={{ color: COLORS.neutral[700], lineHeight: 22, fontFamily: FONTS.regular }}>
+                <Text style={{ color: neutral[700], lineHeight: 22, fontFamily: FONTS.regular }}>
                   • Acompanhamento personalizado da gestação{"\n"}
                   • NathIA: sua assistente de IA 24/7{"\n"}
                   • Comunidade de mães para trocar experiências{"\n"}
@@ -427,19 +422,19 @@ export default function OnboardingScreen() {
               style={{
                 fontSize: 24,
                 fontFamily: FONTS.serif,
-                color: COLORS.primary[700],
+                color: brand.primary[700],
                 textAlign: "center",
-                marginBottom: SPACING.sm,
+                marginBottom: spacing.sm,
               }}
             >
               Escolha sua aparência
             </Text>
             <Text
               style={{
-                fontSize: TYPOGRAPHY.sizes.md,
-                color: COLORS.neutral[500],
+                fontSize: typography.bodyMedium.fontSize,
+                color: neutral[500],
                 textAlign: "center",
-                marginBottom: SPACING.xl,
+                marginBottom: spacing.xl,
                 fontFamily: FONTS.regular,
               }}
             >
@@ -447,21 +442,21 @@ export default function OnboardingScreen() {
             </Text>
 
             {/* Theme Preview Cards - Inspired by Instagram/WhatsApp */}
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: SPACING.lg }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: spacing.lg }}>
               {/* Light Theme Preview */}
               <Pressable
                 onPress={() => handleThemeSelect("light")}
                 style={{
                   flex: 1,
-                  marginRight: SPACING.sm,
-                  borderRadius: RADIUS.lg,
+                  marginRight: spacing.sm,
+                  borderRadius: radius.lg,
                   borderWidth: selectedTheme === "light" ? 3 : 1,
-                  borderColor: selectedTheme === "light" ? COLORS.primary[500] : COLORS.neutral[200],
+                  borderColor: selectedTheme === "light" ? brand.primary[500] : neutral[200],
                   overflow: "hidden",
                 }}
               >
                 {/* Mini Preview */}
-                <View style={{ backgroundColor: "#F8FAFC", padding: SPACING.md, height: 120 }}>
+                <View style={{ backgroundColor: "#F8FAFC", padding: spacing.md, height: 120 }}>
                   <View style={{ backgroundColor: "#FFFFFF", borderRadius: 8, padding: 8, marginBottom: 6 }}>
                     <View style={{ backgroundColor: "#E2E8F0", height: 8, width: "70%", borderRadius: 4 }} />
                   </View>
@@ -469,13 +464,13 @@ export default function OnboardingScreen() {
                     <View style={{ backgroundColor: "#E2E8F0", height: 8, width: "50%", borderRadius: 4 }} />
                   </View>
                 </View>
-                <View style={{ backgroundColor: COLORS.neutral[0], padding: SPACING.md, alignItems: "center" }}>
+                <View style={{ backgroundColor: neutral[0], padding: spacing.md, alignItems: "center" }}>
                   <Text style={{ fontSize: 24, marginBottom: 4 }}>☀️</Text>
-                  <Text style={{ fontFamily: FONTS.semiBold, color: COLORS.neutral[800] }}>Claro</Text>
+                  <Text style={{ fontFamily: FONTS.semiBold, color: neutral[800] }}>Claro</Text>
                 </View>
                 {selectedTheme === "light" && (
                   <View style={{ position: "absolute", top: 8, right: 8 }}>
-                    <Ionicons name="checkmark-circle" size={24} color={COLORS.primary[500]} />
+                    <Ionicons name="checkmark-circle" size={24} color={brand.primary[500]} />
                   </View>
                 )}
               </Pressable>
@@ -485,15 +480,15 @@ export default function OnboardingScreen() {
                 onPress={() => handleThemeSelect("dark")}
                 style={{
                   flex: 1,
-                  marginLeft: SPACING.sm,
-                  borderRadius: RADIUS.lg,
+                  marginLeft: spacing.sm,
+                  borderRadius: radius.lg,
                   borderWidth: selectedTheme === "dark" ? 3 : 1,
-                  borderColor: selectedTheme === "dark" ? COLORS.primary[500] : COLORS.neutral[200],
+                  borderColor: selectedTheme === "dark" ? brand.primary[500] : neutral[200],
                   overflow: "hidden",
                 }}
               >
                 {/* Mini Preview */}
-                <View style={{ backgroundColor: "#1E293B", padding: SPACING.md, height: 120 }}>
+                <View style={{ backgroundColor: "#1E293B", padding: spacing.md, height: 120 }}>
                   <View style={{ backgroundColor: "#334155", borderRadius: 8, padding: 8, marginBottom: 6 }}>
                     <View style={{ backgroundColor: "#475569", height: 8, width: "70%", borderRadius: 4 }} />
                   </View>
@@ -501,13 +496,13 @@ export default function OnboardingScreen() {
                     <View style={{ backgroundColor: "#475569", height: 8, width: "50%", borderRadius: 4 }} />
                   </View>
                 </View>
-                <View style={{ backgroundColor: "#0F172A", padding: SPACING.md, alignItems: "center" }}>
+                <View style={{ backgroundColor: "#0F172A", padding: spacing.md, alignItems: "center" }}>
                   <Text style={{ fontSize: 24, marginBottom: 4 }}>🌙</Text>
                   <Text style={{ fontFamily: FONTS.semiBold, color: "#F1F5F9" }}>Escuro</Text>
                 </View>
                 {selectedTheme === "dark" && (
                   <View style={{ position: "absolute", top: 8, right: 8 }}>
-                    <Ionicons name="checkmark-circle" size={24} color={COLORS.primary[500]} />
+                    <Ionicons name="checkmark-circle" size={24} color={brand.primary[500]} />
                   </View>
                 )}
               </Pressable>
@@ -517,30 +512,30 @@ export default function OnboardingScreen() {
             <Pressable
               onPress={() => handleThemeSelect("system")}
               style={{
-                backgroundColor: selectedTheme === "system" ? COLORS.primary[50] : COLORS.neutral[0],
-                borderRadius: RADIUS.lg,
-                padding: SPACING.lg,
+                backgroundColor: selectedTheme === "system" ? brand.primary[50] : neutral[0],
+                borderRadius: radius.lg,
+                padding: spacing.lg,
                 borderWidth: selectedTheme === "system" ? 2 : 1,
-                borderColor: selectedTheme === "system" ? COLORS.primary[500] : COLORS.neutral[200],
+                borderColor: selectedTheme === "system" ? brand.primary[500] : neutral[200],
                 flexDirection: "row",
                 alignItems: "center",
               }}
             >
-              <Text style={{ fontSize: 28, marginRight: SPACING.md }}>📱</Text>
+              <Text style={{ fontSize: 28, marginRight: spacing.md }}>📱</Text>
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
-                    fontSize: TYPOGRAPHY.sizes.lg,
+                    fontSize: typography.bodyLarge.fontSize,
                     fontFamily: FONTS.semiBold,
-                    color: selectedTheme === "system" ? COLORS.primary[700] : COLORS.neutral[800],
+                    color: selectedTheme === "system" ? brand.primary[700] : neutral[800],
                   }}
                 >
                   Automático
                 </Text>
                 <Text
                   style={{
-                    fontSize: TYPOGRAPHY.sizes.sm,
-                    color: COLORS.neutral[500],
+                    fontSize: typography.bodySmall.fontSize,
+                    color: neutral[500],
                     marginTop: 2,
                   }}
                 >
@@ -548,7 +543,7 @@ export default function OnboardingScreen() {
                 </Text>
               </View>
               {selectedTheme === "system" && (
-                <Ionicons name="checkmark-circle" size={24} color={COLORS.primary[500]} />
+                <Ionicons name="checkmark-circle" size={24} color={brand.primary[500]} />
               )}
             </Pressable>
           </Animated.View>
@@ -561,19 +556,19 @@ export default function OnboardingScreen() {
               style={{
                 fontSize: 24,
                 fontFamily: FONTS.serif,
-                color: COLORS.primary[700],
+                color: brand.primary[700],
                 textAlign: "center",
-                marginBottom: SPACING.sm,
+                marginBottom: spacing.sm,
               }}
             >
               Como posso te chamar?
             </Text>
             <Text
               style={{
-                fontSize: TYPOGRAPHY.sizes.md,
-                color: COLORS.neutral[500],
+                fontSize: typography.bodyMedium.fontSize,
+                color: neutral[500],
                 textAlign: "center",
-                marginBottom: SPACING.xl,
+                marginBottom: spacing.xl,
                 fontFamily: FONTS.regular,
               }}
             >
@@ -584,17 +579,17 @@ export default function OnboardingScreen() {
               value={name}
               onChangeText={setName}
               placeholder="Digite seu nome"
-              placeholderTextColor={COLORS.neutral[400]}
+              placeholderTextColor={neutral[400]}
               autoFocus
               style={{
-                backgroundColor: COLORS.neutral[0],
-                borderRadius: RADIUS.lg,
-                padding: SPACING.lg,
-                fontSize: TYPOGRAPHY.sizes.lg,
+                backgroundColor: neutral[0],
+                borderRadius: radius.lg,
+                padding: spacing.lg,
+                fontSize: typography.bodyLarge.fontSize,
                 fontFamily: FONTS.medium,
-                color: COLORS.neutral[800],
+                color: neutral[800],
                 borderWidth: 1,
-                borderColor: COLORS.neutral[200],
+                borderColor: neutral[200],
                 textAlign: "center",
               }}
             />
@@ -608,19 +603,19 @@ export default function OnboardingScreen() {
               style={{
                 fontSize: 24,
                 fontFamily: FONTS.serif,
-                color: COLORS.primary[700],
+                color: brand.primary[700],
                 textAlign: "center",
-                marginBottom: SPACING.sm,
+                marginBottom: spacing.sm,
               }}
             >
               Em qual fase você está?
             </Text>
             <Text
               style={{
-                fontSize: TYPOGRAPHY.sizes.md,
-                color: COLORS.neutral[500],
+                fontSize: typography.bodyMedium.fontSize,
+                color: neutral[500],
                 textAlign: "center",
-                marginBottom: SPACING.xl,
+                marginBottom: spacing.xl,
                 fontFamily: FONTS.regular,
               }}
             >
@@ -648,19 +643,19 @@ export default function OnboardingScreen() {
               style={{
                 fontSize: 24,
                 fontFamily: FONTS.serif,
-                color: COLORS.primary[700],
+                color: brand.primary[700],
                 textAlign: "center",
-                marginBottom: SPACING.sm,
+                marginBottom: spacing.sm,
               }}
             >
               {stage === "pregnant" ? "Qual a data prevista do parto?" : "Quando seu bebê nasceu?"}
             </Text>
             <Text
               style={{
-                fontSize: TYPOGRAPHY.sizes.md,
-                color: COLORS.neutral[500],
+                fontSize: typography.bodyMedium.fontSize,
+                color: neutral[500],
                 textAlign: "center",
-                marginBottom: SPACING.xl,
+                marginBottom: spacing.xl,
                 fontFamily: FONTS.regular,
               }}
             >
@@ -672,22 +667,22 @@ export default function OnboardingScreen() {
             <Pressable
               onPress={() => setShowDatePicker(true)}
               style={{
-                backgroundColor: COLORS.neutral[0],
-                borderRadius: RADIUS.lg,
-                padding: SPACING.lg,
+                backgroundColor: neutral[0],
+                borderRadius: radius.lg,
+                padding: spacing.lg,
                 borderWidth: 1,
-                borderColor: COLORS.neutral[200],
+                borderColor: neutral[200],
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Ionicons name="calendar" size={24} color={COLORS.primary[500]} style={{ marginRight: SPACING.sm }} />
+              <Ionicons name="calendar" size={24} color={brand.primary[500]} style={{ marginRight: spacing.sm }} />
               <Text
                 style={{
-                  fontSize: TYPOGRAPHY.sizes.lg,
+                  fontSize: typography.bodyLarge.fontSize,
                   fontFamily: FONTS.medium,
-                  color: (stage === "pregnant" ? dueDate : babyBirthDate) ? COLORS.neutral[800] : COLORS.neutral[400],
+                  color: (stage === "pregnant" ? dueDate : babyBirthDate) ? neutral[800] : neutral[400],
                 }}
               >
                 {(stage === "pregnant" ? dueDate : babyBirthDate)
@@ -716,19 +711,19 @@ export default function OnboardingScreen() {
               style={{
                 fontSize: 24,
                 fontFamily: FONTS.serif,
-                color: COLORS.primary[700],
+                color: brand.primary[700],
                 textAlign: "center",
-                marginBottom: SPACING.sm,
+                marginBottom: spacing.sm,
               }}
             >
               O que te interessa?
             </Text>
             <Text
               style={{
-                fontSize: TYPOGRAPHY.sizes.md,
-                color: COLORS.neutral[500],
+                fontSize: typography.bodyMedium.fontSize,
+                color: neutral[500],
                 textAlign: "center",
-                marginBottom: SPACING.xl,
+                marginBottom: spacing.xl,
                 fontFamily: FONTS.regular,
               }}
             >
@@ -760,13 +755,13 @@ export default function OnboardingScreen() {
                   width: 100,
                   height: 100,
                   borderRadius: 50,
-                  backgroundColor: COLORS.semantic.success + "20",
+                  backgroundColor: semantic.light.success + "20",
                   justifyContent: "center",
                   alignItems: "center",
-                  marginBottom: SPACING.xl,
+                  marginBottom: spacing.xl,
                 }}
               >
-                <Ionicons name="checkmark" size={50} color={COLORS.semantic.success} />
+                <Ionicons name="checkmark" size={50} color={semantic.light.success} />
               </Animated.View>
 
               <Animated.Text
@@ -774,9 +769,9 @@ export default function OnboardingScreen() {
                 style={{
                   fontSize: 24,
                   fontFamily: FONTS.serif,
-                  color: COLORS.primary[700],
+                  color: brand.primary[700],
                   textAlign: "center",
-                  marginBottom: SPACING.sm,
+                  marginBottom: spacing.sm,
                 }}
               >
                 Tudo pronto, {name}!
@@ -785,11 +780,11 @@ export default function OnboardingScreen() {
               <Animated.Text
                 entering={FadeInDown.delay(300)}
                 style={{
-                  fontSize: TYPOGRAPHY.sizes.md,
-                  color: COLORS.neutral[600],
+                  fontSize: typography.bodyMedium.fontSize,
+                  color: neutral[600],
                   textAlign: "center",
-                  paddingHorizontal: SPACING.lg,
-                  marginBottom: SPACING.xl,
+                  paddingHorizontal: spacing.lg,
+                  marginBottom: spacing.xl,
                   fontFamily: FONTS.regular,
                 }}
               >
@@ -799,31 +794,31 @@ export default function OnboardingScreen() {
               <Animated.View
                 entering={FadeInDown.delay(400)}
                 style={{
-                  backgroundColor: COLORS.primary[50],
-                  borderRadius: RADIUS.lg,
-                  padding: SPACING.lg,
+                  backgroundColor: brand.primary[50],
+                  borderRadius: radius.lg,
+                  padding: spacing.lg,
                   width: "100%",
                 }}
               >
-                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: SPACING.xs }}>
-                  <Text style={{ fontSize: 20, marginRight: SPACING.sm }}>
+                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: spacing.xs }}>
+                  <Text style={{ fontSize: 20, marginRight: spacing.sm }}>
                     {stage === "trying" ? "🌱" : stage === "pregnant" ? "🤰" : "👶"}
                   </Text>
-                  <Text style={{ fontFamily: FONTS.semiBold, color: COLORS.primary[700] }}>
+                  <Text style={{ fontFamily: FONTS.semiBold, color: brand.primary[700] }}>
                     {stage === "trying" ? "Tentante" : stage === "pregnant" ? "Gestante" : "Mãe"}
                   </Text>
                 </View>
                 {(stage === "pregnant" && dueDate) && (
-                  <Text style={{ color: COLORS.neutral[600], marginBottom: SPACING.xs, fontFamily: FONTS.regular }}>
+                  <Text style={{ color: neutral[600], marginBottom: spacing.xs, fontFamily: FONTS.regular }}>
                     DPP: {dueDate.toLocaleDateString("pt-BR")}
                   </Text>
                 )}
                 {(stage === "postpartum" && babyBirthDate) && (
-                  <Text style={{ color: COLORS.neutral[600], marginBottom: SPACING.xs, fontFamily: FONTS.regular }}>
+                  <Text style={{ color: neutral[600], marginBottom: spacing.xs, fontFamily: FONTS.regular }}>
                     Nascimento: {babyBirthDate.toLocaleDateString("pt-BR")}
                   </Text>
                 )}
-                <Text style={{ color: COLORS.neutral[500], fontSize: TYPOGRAPHY.sizes.sm, fontFamily: FONTS.regular }}>
+                <Text style={{ color: neutral[500], fontSize: typography.bodySmall.fontSize, fontFamily: FONTS.regular }}>
                   Interesses: {interests.map((i) => INTEREST_OPTIONS.find((o) => o.id === i)?.label).join(", ")}
                 </Text>
               </Animated.View>
@@ -839,7 +834,7 @@ export default function OnboardingScreen() {
   return (
     <View style={{ flex: 1 }}>
       <LinearGradient
-        colors={[COLORS.background.primary, COLORS.neutral[0]]}
+        colors={[brand.primary[50], neutral[0]]}
         style={{ flex: 1 }}
       >
         <KeyboardAvoidingView
@@ -849,24 +844,24 @@ export default function OnboardingScreen() {
           {/* Header */}
           <View
             style={{
-              paddingTop: insets.top + SPACING.sm,
-              paddingHorizontal: SPACING.lg,
-              paddingBottom: SPACING.md,
+              paddingTop: insets.top + spacing.sm,
+              paddingHorizontal: spacing.lg,
+              paddingBottom: spacing.md,
             }}
           >
             {/* Progress bar */}
             <View
               style={{
                 height: 4,
-                backgroundColor: COLORS.neutral[200],
+                backgroundColor: neutral[200],
                 borderRadius: 2,
-                marginBottom: SPACING.md,
+                marginBottom: spacing.md,
               }}
             >
               <Animated.View
                 style={{
                   height: 4,
-                  backgroundColor: COLORS.primary[500],
+                  backgroundColor: brand.primary[500],
                   borderRadius: 2,
                   width: `${progress}%`,
                 }}
@@ -880,11 +875,11 @@ export default function OnboardingScreen() {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  paddingVertical: SPACING.xs,
+                  paddingVertical: spacing.xs,
                 }}
               >
-                <Ionicons name="chevron-back" size={24} color={COLORS.neutral[600]} />
-                <Text style={{ color: COLORS.neutral[600], marginLeft: SPACING.xs, fontFamily: FONTS.regular }}>
+                <Ionicons name="chevron-back" size={24} color={neutral[600]} />
+                <Text style={{ color: neutral[600], marginLeft: spacing.xs, fontFamily: FONTS.regular }}>
                   Voltar
                 </Text>
               </Pressable>
@@ -895,8 +890,8 @@ export default function OnboardingScreen() {
           <ScrollView
             contentContainerStyle={{
               flexGrow: 1,
-              paddingHorizontal: SPACING.lg,
-              paddingBottom: SPACING.xl,
+              paddingHorizontal: spacing.lg,
+              paddingBottom: spacing.xl,
             }}
             keyboardShouldPersistTaps="handled"
           >
@@ -906,26 +901,26 @@ export default function OnboardingScreen() {
           {/* Footer Button */}
           <View
             style={{
-              paddingHorizontal: SPACING.lg,
-              paddingBottom: insets.bottom + SPACING.md,
-              paddingTop: SPACING.md,
+              paddingHorizontal: spacing.lg,
+              paddingBottom: insets.bottom + spacing.md,
+              paddingTop: spacing.md,
             }}
           >
             <Pressable
               onPress={currentStep === "complete" ? completeOnboarding : goNext}
               disabled={!canProceed() || isSubmitting}
               style={{
-                backgroundColor: canProceed() ? COLORS.primary[500] : COLORS.neutral[300],
-                borderRadius: RADIUS.full,
-                paddingVertical: SPACING.md,
+                backgroundColor: canProceed() ? brand.primary[500] : neutral[300],
+                borderRadius: radius.full,
+                paddingVertical: spacing.md,
                 alignItems: "center",
                 opacity: isSubmitting ? 0.7 : 1,
               }}
             >
               <Text
                 style={{
-                  color: COLORS.neutral[0],
-                  fontSize: TYPOGRAPHY.sizes.lg,
+                  color: neutral[0],
+                  fontSize: typography.bodyLarge.fontSize,
                   fontFamily: FONTS.semiBold,
                 }}
               >

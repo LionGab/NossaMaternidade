@@ -52,7 +52,48 @@ import { useVoicePremiumGate } from "../hooks/useVoice";
 import { useVoiceRecording } from "../hooks/useVoiceRecording";
 import { useIsPremium } from "../state/premium-store";
 import { Conversation, useAppStore, useChatStore } from "../state/store";
-import { COLORS_DARK, COLORS as DS_COLORS, RADIUS, SHADOWS, SPACING } from "../theme/design-system";
+import { brand, neutral, spacing, radius, shadows, semantic } from "../theme/tokens";
+
+// Design system colors for light/dark mode
+const DS_COLORS = {
+  primary: brand.primary,
+  accent: brand.accent,
+  neutral: neutral,
+  background: {
+    primary: neutral[50],
+    secondary: neutral[100],
+    tertiary: neutral[200],
+  },
+  text: {
+    primary: neutral[900],
+    secondary: neutral[600],
+    tertiary: neutral[500],
+    muted: neutral[400],
+    inverse: neutral[0],
+  },
+  semantic: semantic,
+};
+const COLORS_DARK = {
+  primary: brand.primary,
+  accent: brand.accent,
+  neutral: neutral,
+  background: {
+    primary: neutral[900],
+    secondary: neutral[800],
+    tertiary: neutral[700],
+  },
+  text: {
+    primary: neutral[50],
+    secondary: neutral[300],
+    tertiary: neutral[400],
+    muted: neutral[500],
+    inverse: neutral[900],
+  },
+  semantic: semantic,
+};
+const SPACING = spacing;
+const RADIUS = radius;
+const SHADOWS = shadows;
 import { ChatMessage, MainTabScreenProps } from "../types/navigation";
 import { wp } from "../utils/dimensions";
 import { logger } from "../utils/logger";
@@ -760,7 +801,7 @@ export default function AssistantScreen({ navigation, route }: MainTabScreenProp
               <Animated.View entering={FadeIn} style={styles.imagePreviewContainer}>
                 <Image source={{ uri: selectedImage.uri }} style={styles.imagePreview} />
                 <Pressable onPress={handleClearImage} style={styles.imagePreviewClose}>
-                  <Ionicons name="close-circle" size={24} color={DS_COLORS.semantic.error} />
+                  <Ionicons name="close-circle" size={24} color={DS_COLORS.semantic.light.error} />
                 </Pressable>
               </Animated.View>
             )}
@@ -794,12 +835,12 @@ export default function AssistantScreen({ navigation, route }: MainTabScreenProp
                 // Recording state
                 <View style={styles.recordingContainer}>
                   <Pressable onPress={handleCancelRecording} style={styles.cancelRecordingButton}>
-                    <Ionicons name="close" size={20} color={DS_COLORS.semantic.error} />
+                    <Ionicons name="close" size={20} color={DS_COLORS.semantic.light.error} />
                   </Pressable>
                   <View style={styles.recordingIndicator}>
                     <Animated.View
                       entering={FadeIn}
-                      style={[styles.recordingDot, { backgroundColor: DS_COLORS.semantic.error }]}
+                      style={[styles.recordingDot, { backgroundColor: DS_COLORS.semantic.light.error }]}
                     />
                     <Text style={[styles.recordingDuration, { color: THEME.textPrimary }]}>
                       {Math.floor(voiceRecording.duration / 60)}:{(voiceRecording.duration % 60).toString().padStart(2, "0")}
@@ -807,7 +848,7 @@ export default function AssistantScreen({ navigation, route }: MainTabScreenProp
                   </View>
                   <Pressable
                     onPress={handleMicPress}
-                    style={[styles.sendButton, { backgroundColor: DS_COLORS.semantic.error }]}
+                    style={[styles.sendButton, { backgroundColor: DS_COLORS.semantic.light.error }]}
                   >
                     <Ionicons name="stop" size={18} color={DS_COLORS.text.inverse} />
                   </Pressable>

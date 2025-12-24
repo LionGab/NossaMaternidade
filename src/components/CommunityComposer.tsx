@@ -10,13 +10,13 @@ import { logger } from "../utils/logger";
 import * as Haptics from "expo-haptics";
 import { useToast } from "../context/ToastContext";
 import { useTheme } from "../hooks/useTheme";
-import { COLORS as DS_COLORS, SHADOWS } from "../theme/design-system";
+import { Tokens, COLORS, COLORS_DARK } from "../theme/tokens";
 
 const POST_TYPES = [
-  { id: "duvida", label: "Dúvida", emoji: "❓", color: DS_COLORS.primary[500], bgColor: DS_COLORS.primary[50] },
-  { id: "desabafo", label: "Desabafo", emoji: "💭", color: DS_COLORS.secondary[500], bgColor: DS_COLORS.secondary[50] },
-  { id: "vitoria", label: "Vitória", emoji: "🎉", color: DS_COLORS.semantic.success, bgColor: DS_COLORS.semantic.successLight },
-  { id: "dica", label: "Dica", emoji: "💡", color: DS_COLORS.semantic.warning, bgColor: DS_COLORS.semantic.warningLight },
+  { id: "duvida", label: "Dúvida", emoji: "❓", color: Tokens.brand.primary[500], bgColor: Tokens.brand.primary[50] },
+  { id: "desabafo", label: "Desabafo", emoji: "💭", color: Tokens.brand.secondary[500], bgColor: Tokens.brand.secondary[50] },
+  { id: "vitoria", label: "Vitória", emoji: "🎉", color: Tokens.semantic.light.success, bgColor: Tokens.semantic.light.successLight },
+  { id: "dica", label: "Dica", emoji: "💡", color: Tokens.semantic.light.warning, bgColor: Tokens.semantic.light.warningLight },
 ];
 
 interface CommunityComposerProps {
@@ -27,27 +27,30 @@ interface CommunityComposerProps {
 /**
  * Cores semânticas para composer com suporte a dark mode
  */
-const getComposerColors = (isDark: boolean) => ({
-  // Card backgrounds
-  cardBg: isDark ? DS_COLORS.background.secondary : DS_COLORS.text.inverse,
-  // Text
-  placeholder: DS_COLORS.neutral[400],
-  textPrimary: isDark ? DS_COLORS.text.primary : "#1F2937",
-  textSecondary: DS_COLORS.neutral[400],
-  // Actions
-  addButton: DS_COLORS.primary[500],
-  addIcon: DS_COLORS.text.inverse,
-  actionBg: isDark ? DS_COLORS.neutral[700] : "#F3F4F6",
-  actionIcon: DS_COLORS.neutral[500],
-  // Post button
-  postActive: DS_COLORS.primary[500],
-  postInactive: isDark ? DS_COLORS.neutral[700] : "#F3F4F6",
-  postTextActive: DS_COLORS.text.inverse,
-  postTextInactive: DS_COLORS.neutral[400],
-  // Avatar fallback
-  avatarColor: DS_COLORS.primary[500],
-  avatarBg: DS_COLORS.primary[50],
-});
+const getComposerColors = (isDark: boolean) => {
+  const colors = isDark ? COLORS_DARK : COLORS;
+  return {
+    // Card backgrounds
+    cardBg: colors.background.secondary,
+    // Text
+    placeholder: Tokens.neutral[400],
+    textPrimary: isDark ? Tokens.text.dark.primary : "#1F2937",
+    textSecondary: Tokens.neutral[400],
+    // Actions
+    addButton: Tokens.brand.primary[500],
+    addIcon: Tokens.text.light.inverse,
+    actionBg: isDark ? Tokens.neutral[700] : "#F3F4F6",
+    actionIcon: Tokens.neutral[500],
+    // Post button
+    postActive: Tokens.brand.primary[500],
+    postInactive: isDark ? Tokens.neutral[700] : "#F3F4F6",
+    postTextActive: Tokens.text.light.inverse,
+    postTextInactive: Tokens.neutral[400],
+    // Avatar fallback
+    avatarColor: Tokens.brand.primary[500],
+    avatarBg: Tokens.brand.primary[50],
+  };
+};
 
 export default function CommunityComposer({ onPost, onExpand }: CommunityComposerProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -145,7 +148,7 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
           borderRadius: 20,
           padding: 16,
           marginBottom: 16,
-          ...SHADOWS.sm,
+          ...Tokens.shadows.sm,
         }}
       >
         <View className="flex-row items-center">
@@ -213,7 +216,7 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
         borderRadius: 20,
         padding: 16,
         marginBottom: 16,
-        ...SHADOWS.md,
+        ...Tokens.shadows.md,
       }}
     >
       {/* Header */}
@@ -259,7 +262,7 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
               <Text style={{ fontSize: 14, marginRight: 4 }}>{type.emoji}</Text>
               <Text
                 style={{
-                  color: selectedType === type.id ? DS_COLORS.text.inverse : type.color,
+                  color: selectedType === type.id ? Tokens.text.light.inverse : type.color,
                   fontSize: 13,
                   fontWeight: "500",
                 }}
@@ -308,7 +311,7 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
               padding: 8,
             }}
           >
-            <Ionicons name="close" size={20} color={DS_COLORS.text.inverse} />
+            <Ionicons name="close" size={20} color={Tokens.text.light.inverse} />
           </Pressable>
         </View>
       )}

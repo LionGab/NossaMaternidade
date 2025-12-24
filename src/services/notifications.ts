@@ -17,7 +17,7 @@ import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import { supabase } from "../api/supabase";
-import { COLORS } from "../theme/design-system";
+import { COLORS } from "../theme/tokens";
 import { logger } from "../utils/logger";
 
 // Configure notification handler

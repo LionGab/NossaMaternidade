@@ -1,7 +1,7 @@
 /**
  * Tela 0: OnboardingWelcome
- * Vídeo de boas-vindas da Nath (15seg) com overlay escuro
- * Botão "Começar" aparece após 8 segundos
+ * Vídeo de boas-vindas da Nath com overlay escuro
+ * Botão "Começar" aparece após 3 segundos ou ao fim do vídeo
  */
 
 import * as Haptics from "expo-haptics";
@@ -11,30 +11,32 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { VideoPlayer } from "../../components/onboarding/VideoPlayer";
+import { useNathJourneyOnboardingStore } from "../../state/nath-journey-onboarding-store";
 import { Tokens } from "../../theme/tokens";
 import { RootStackScreenProps } from "../../types/navigation";
 import { logger } from "../../utils/logger";
 
 type Props = RootStackScreenProps<"OnboardingWelcome">;
 
-// Placeholder: vídeo será substituído por asset real depois
-// Por enquanto, usar uma imagem estática ou vídeo placeholder
-// TODO: Substituir por require('@/assets/onboarding/videos/welcome.mp4')
-const WELCOME_VIDEO = {
-  uri: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-};
+// Vídeo da Nath para welcome screen (Nath se emociona)
+const WELCOME_VIDEO = require("../../../assets/onboarding/videos/mundo-nath-africa.mp4");
 
 export default function OnboardingWelcome({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [showButton, setShowButton] = useState(false);
+  const setCurrentScreen = useNathJourneyOnboardingStore((s) => s.setCurrentScreen);
 
-  // Mostrar botão após 8 segundos
+  // Mostrar botão após 3 segundos (reduzido de 8s pois não há mais vídeo)
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowButton(true);
-    }, 8000);
+    }, 3000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    setCurrentScreen("OnboardingWelcome");
+  }, [setCurrentScreen]);
 
   const handleSkip = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -50,13 +52,15 @@ export default function OnboardingWelcome({ navigation }: Props) {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Background Video */}
       <VideoPlayer
         videoSource={WELCOME_VIDEO}
         autoPlay
-        loop={false}
+        loop
         muted={false}
         showControls={false}
         onVideoEnd={() => setShowButton(true)}
+        style={StyleSheet.absoluteFill}
       />
 
       {/* Overlay escuro (40%) */}

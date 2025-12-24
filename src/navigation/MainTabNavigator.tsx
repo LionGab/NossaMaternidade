@@ -14,8 +14,7 @@ import React from "react";
 import { Image, Platform, Pressable, Text, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { COLORS, SHADOWS, SPACING } from "../theme/design-system";
-import { brand } from "../theme/presets/calmFemtech";
+import { COLORS, SHADOWS, SPACING, brand } from "../theme/tokens";
 import { MainTabParamList, MainTabScreenProps } from "../types/navigation";
 
 // Screens

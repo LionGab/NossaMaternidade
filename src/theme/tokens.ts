@@ -257,6 +257,12 @@ export const feeling = {
     active: "#FFE4C7",
     icon: "#F97316",
   },
+  /** Enjoada - Lavanda (indisposição) - alias for indisposta */
+  enjoada: {
+    color: "#DDD6FE",
+    active: "#EDE9FE",
+    icon: "#A855F7",
+  },
 } as const;
 
 // ===========================================
@@ -429,9 +435,40 @@ export const gradients = {
   warmth: [brand.accent[100], brand.accent[50], "#FFFFFF"] as const,
   serenity: [brand.secondary[100], brand.secondary[50], "#FFFFFF"] as const,
 
+  // Additional hero backgrounds
+  warm: [brand.accent[50], "#FFF9F3", brand.primary[50]] as const,
+  cool: [brand.primary[100], brand.primary[50], "#FFFFFF"] as const,
+  sunset: ["#FDE68A", "#FBBF24", "#F59E0B"] as const,
+
+  // NathIA Onboarding gradient
+  nathiaOnboarding: [brand.accent[400], brand.accent[500]] as const,
+
   // Glass/Overlay
   glass: ["rgba(255,255,255,0.8)", "rgba(247,251,253,0.4)"] as const,
   overlay: ["rgba(0,0,0,0.6)", "rgba(0,0,0,0.3)"] as const,
+
+  // Affirmations gradients (for affirmation cards/backgrounds)
+  affirmations: {
+    oceano: ["#1E3A8A", "#3B82F6", "#60A5FA"] as const,
+    ametista: ["#4C1D95", "#7C3AED", "#A78BFA"] as const,
+    lavanda: ["#6B21A8", "#A855F7", "#C4B5FD"] as const,
+    poente: ["#9A3412", "#EA580C", "#FDBA74"] as const,
+    floresta: ["#166534", "#22C55E", "#86EFAC"] as const,
+    nuvem: ["#1E40AF", "#60A5FA", "#BFDBFE"] as const,
+    coral: ["#9F1239", "#FB7185", "#FECDD3"] as const,
+    amanhecer: ["#B45309", "#FBBF24", "#FEF3C7"] as const,
+    noite: ["#312E81", "#4F46E5", "#818CF8"] as const,
+    esperanca: ["#0F766E", "#14B8A6", "#99F6E4"] as const,
+  },
+
+  // Cycle gradients (for menstrual cycle phases)
+  cycle: {
+    menstrual: ["#F43F5E", "#FB7185"] as const,
+    follicular: ["#60A5FA", "#93C5FD"] as const,
+    ovulation: ["#34D399", "#6EE7B7"] as const,
+    luteal: ["#FBBF24", "#FDE68A"] as const,
+    fertile: ["#A78BFA", "#C4B5FD"] as const, // Lilac for fertile window
+  },
 } as const;
 
 // ===========================================
@@ -578,6 +615,45 @@ export const elevation = {
 } as const;
 
 // ===========================================
+// OVERLAY TOKENS
+// ===========================================
+
+export const overlay = {
+  light: "rgba(0, 0, 0, 0.1)",
+  medium: "rgba(0, 0, 0, 0.3)",
+  dark: "rgba(0, 0, 0, 0.5)",
+  heavy: "rgba(0, 0, 0, 0.7)",
+  backdrop: "rgba(0, 0, 0, 0.85)",
+} as const;
+
+// ===========================================
+// MOOD TOKENS (for emotion/mood tracking)
+// ===========================================
+
+export const mood = {
+  happy: "#10B981",
+  calm: "#6366F1",
+  energetic: "#F59E0B",
+  anxious: "#EF4444",
+  sad: "#3B82F6",
+  irritated: "#F97316",
+  sensitive: "#EC4899",
+  tired: "#8B5CF6",
+} as const;
+
+// ===========================================
+// CYCLE PHASE COLORS (single colors for cycle tracking)
+// ===========================================
+
+export const cycleColors = {
+  menstrual: "#F43F5E",
+  follicular: "#60A5FA",
+  ovulation: "#34D399",
+  luteal: "#FBBF24",
+  fertile: "#A78BFA",
+} as const;
+
+// ===========================================
 // THEME HELPER - Resolve tokens por modo
 // ===========================================
 
@@ -654,6 +730,16 @@ export const COLORS = {
     indisposta: feeling.indisposta.color,
     amada: feeling.amada.color,
   },
+  mood: {
+    happy: "#10B981",
+    calm: "#6366F1",
+    energetic: "#F59E0B",
+    anxious: "#EF4444",
+    sad: "#3B82F6",
+    irritated: "#F97316",
+    sensitive: "#EC4899",
+    tired: "#8B5CF6",
+  },
   legacyAccent: {
     sage: "#86EFAC",
     peach: "#FED7AA",
@@ -696,6 +782,7 @@ export const COLORS_DARK = {
     indisposta: "rgba(167, 139, 250, 0.2)",
     amada: "rgba(254, 205, 211, 0.2)",
   },
+  mood: COLORS.mood,
   legacyAccent: COLORS.legacyAccent,
 } as const;
 
@@ -726,4 +813,7 @@ export const Tokens = {
   components,
   layout,
   elevation,
+  overlay,
+  mood,
+  cycleColors,
 } as const;

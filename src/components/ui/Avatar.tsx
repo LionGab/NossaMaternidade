@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Image, ImageSourcePropType, View, ViewStyle } from "react-native";
-import { COLORS, OVERLAY } from "../../theme/design-system";
+import { neutral } from "../../theme/tokens";
 import { cn } from "../../utils/cn";
 
 // Imagem real da Nath para avatares
@@ -25,8 +25,8 @@ const Avatar = React.memo(
     size = 40,
     source,
     fallbackIcon = "person",
-    fallbackColor = COLORS.neutral[600],
-    fallbackBgColor = OVERLAY.white.soft,
+    fallbackColor = neutral[600],
+    fallbackBgColor = "rgba(255, 255, 255, 0.1)",
     isNathalia = false,
     isNathIA = false,
     isCommunity = false,

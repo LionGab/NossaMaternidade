@@ -14,13 +14,30 @@ import * as Haptics from "expo-haptics";
 import { useNavigation } from "@react-navigation/native";
 import {
   COLORS,
-  GRADIENTS,
   SPACING,
   RADIUS,
   TYPOGRAPHY,
   SHADOWS,
-  OVERLAY,
-} from "../theme/design-system";
+} from "../theme/tokens";
+
+// Overlay compatibility mapping
+const OVERLAY = {
+  white: {
+    text: "rgba(255, 255, 255, 0.7)",
+    textStrong: "rgba(255, 255, 255, 0.8)",
+    strong: "rgba(255, 255, 255, 0.2)",
+  },
+} as const;
+
+// Gradients compatibility (from design-system.ts)
+const GRADIENTS = {
+  successGradient: ["#10B981", "#5A9D68", "#4A8C58"] as const,
+  streakBg: "#FEF3C7",
+  streakIcon: "#F59E0B",
+  streakText: "#B45309",
+  completionLight: "#D4EDD9",
+  completionMedium: "#A7D4B4",
+} as const;
 
 type ViewMode = "today" | "week" | "month";
 

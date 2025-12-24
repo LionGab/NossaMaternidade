@@ -14,7 +14,7 @@ import { isDevBypassActive } from "../config/dev-bypass";
 import { hasAskedNotificationPermission } from "../services/notifications";
 import { useNathIAOnboardingStore } from "../state/nathia-onboarding-store";
 import { useAppStore } from "../state/store";
-import { COLORS } from "../theme/design-system";
+import { COLORS } from "../theme/tokens";
 import { RootStackParamList } from "../types/navigation";
 
 // Auth & Onboarding Screens

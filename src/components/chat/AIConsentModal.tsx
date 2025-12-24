@@ -7,7 +7,7 @@ import React from "react";
 import { View, Text, Modal, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInUp } from "react-native-reanimated";
-import { COLORS } from "../../theme/design-system";
+import { COLORS, COLORS_DARK } from "../../theme/tokens";
 import { useTheme } from "../../hooks/useTheme";
 
 interface AIConsentModalProps {
@@ -24,7 +24,7 @@ export const AIConsentModal: React.FC<AIConsentModalProps> = ({
   onNavigateToLegal,
 }) => {
   const { isDark } = useTheme();
-  const palette = isDark ? COLORS : COLORS;
+  const palette = isDark ? COLORS_DARK : COLORS;
   const bgSecondary = palette.background.secondary;
   const textPrimary = palette.text.primary;
   const textSecondary = palette.text.secondary;

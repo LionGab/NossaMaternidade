@@ -12,7 +12,7 @@ import { View, Text, Pressable, ScrollView, useColorScheme } from "react-native"
 import { Ionicons } from "@expo/vector-icons";
 import { CommonActions, NavigationProp } from "@react-navigation/native";
 import { logger } from "../utils/logger";
-import { COLORS, COLORS_DARK } from "../theme/design-system";
+import { Tokens, COLORS, COLORS_DARK } from "../theme/tokens";
 
 interface Props {
   children: ReactNode;
@@ -48,11 +48,11 @@ function ScreenErrorFallbackUI({
 
   const colors = isDark ? COLORS_DARK : COLORS;
   const bgColor = colors.background.primary;
-  const titleColor = isDark ? colors.neutral[900] : colors.neutral[800];
-  const textColor = isDark ? colors.neutral[700] : colors.neutral[500];
-  const errorColor = colors.semantic.error;
-  const errorBg = colors.semantic.errorLight;
-  const primaryColor = colors.primary[500];
+  const titleColor = isDark ? Tokens.neutral[900] : Tokens.neutral[800];
+  const textColor = isDark ? Tokens.neutral[700] : Tokens.neutral[500];
+  const errorColor = Tokens.semantic.light.error;
+  const errorBg = Tokens.semantic.light.errorLight;
+  const primaryColor = Tokens.brand.primary[500];
 
   return (
     <View
@@ -143,10 +143,10 @@ function ScreenErrorFallbackUI({
               gap: 8,
             })}
           >
-            <Ionicons name="refresh" size={20} color={COLORS.text.inverse} />
+            <Ionicons name="refresh" size={20} color={Tokens.text.light.inverse} />
             <Text
               style={{
-                color: COLORS.text.inverse,
+                color: Tokens.text.light.inverse,
                 fontSize: 16,
                 fontWeight: "600",
               }}
@@ -171,10 +171,10 @@ function ScreenErrorFallbackUI({
                 gap: 8,
               })}
             >
-              <Ionicons name="home" size={20} color={COLORS.text.inverse} />
+              <Ionicons name="home" size={20} color={Tokens.text.light.inverse} />
               <Text
                 style={{
-                  color: COLORS.text.inverse,
+                  color: Tokens.text.light.inverse,
                   fontSize: 16,
                   fontWeight: "600",
                 }}

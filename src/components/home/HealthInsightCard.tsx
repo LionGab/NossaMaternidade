@@ -20,7 +20,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NavigationProp } from "@react-navigation/native";
 import { useTheme } from "../../hooks/useTheme";
 import { useHealthInsights, type InsightPriority } from "../../hooks/useHealthInsights";
-import { SPACING, RADIUS, SHADOWS, COLORS } from "../../theme/design-system";
+import { spacing, radius, shadows, semantic } from "../../theme/tokens";
 import type { RootStackParamList } from "../../types/navigation";
 
 // =======================
@@ -28,9 +28,9 @@ import type { RootStackParamList } from "../../types/navigation";
 // =======================
 
 const PRIORITY_GRADIENTS: Record<InsightPriority, readonly [string, string]> = {
-  high: [COLORS.semantic.errorLight, COLORS.semantic.error] as const,
-  medium: [COLORS.semantic.warningLight, COLORS.semantic.warning] as const,
-  low: [COLORS.secondary[100], COLORS.secondary[300]] as const,
+  high: [semantic.light.errorLight, semantic.light.error] as const,
+  medium: [semantic.light.warningLight, semantic.light.warning] as const,
+  low: ["#F3E8FF", "#D8B4FE"] as const,
 };
 
 const PRIORITY_ICONS: Record<InsightPriority, keyof typeof Ionicons.glyphMap> = {
@@ -85,7 +85,7 @@ export const HealthInsightCard: React.FC = () => {
   // Estilo especial para alta prioridade
   const isHighPriority = topInsight.priority === "high";
   const containerStyle = isHighPriority
-    ? { borderColor: COLORS.semantic.error, borderWidth: 2 }
+    ? { borderColor: semantic.light.error, borderWidth: 2 }
     : { borderColor, borderWidth: 1 };
 
   return (
@@ -121,8 +121,8 @@ export const HealthInsightCard: React.FC = () => {
               <Text style={styles.emoji}>{topInsight.emoji}</Text>
             </View>
             {isHighPriority && (
-              <View style={[styles.priorityBadge, { backgroundColor: COLORS.semantic.errorLight }]}>
-                <Text style={[styles.priorityText, { color: COLORS.semantic.error }]}>
+              <View style={[styles.priorityBadge, { backgroundColor: semantic.light.errorLight }]}>
+                <Text style={[styles.priorityText, { color: semantic.light.error }]}>
                   Importante
                 </Text>
               </View>
@@ -178,17 +178,17 @@ export const HealthInsightCard: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    borderRadius: RADIUS.xl,
+    borderRadius: radius.xl,
     overflow: "hidden",
-    ...SHADOWS.md,
+    ...shadows.md,
   },
   accentBar: {
     width: 6,
   },
   contentWrapper: {
     flex: 1,
-    padding: SPACING.lg,
-    gap: SPACING.sm,
+    padding: spacing.lg,
+    gap: spacing.sm,
   },
   header: {
     flexDirection: "row",
@@ -198,15 +198,15 @@ const styles = StyleSheet.create({
   iconRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.xs,
+    gap: spacing.xs,
   },
   emoji: {
     fontSize: 20,
   },
   priorityBadge: {
-    paddingHorizontal: SPACING.sm,
+    paddingHorizontal: spacing.sm,
     paddingVertical: 2,
-    borderRadius: RADIUS.full,
+    borderRadius: radius.full,
   },
   priorityText: {
     fontSize: 11,
@@ -228,16 +228,16 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: SPACING.sm,
-    marginTop: SPACING.xs,
+    gap: spacing.sm,
+    marginTop: spacing.xs,
   },
   primaryButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.xs,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: RADIUS.lg,
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.lg,
     minHeight: 44, // iOS HIG
   },
   primaryButtonText: {
@@ -249,10 +249,10 @@ const styles = StyleSheet.create({
   secondaryButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.xs,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: RADIUS.lg,
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.lg,
     borderWidth: 1.5,
     minHeight: 44, // iOS HIG
   },
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    marginTop: SPACING.xs,
+    marginTop: spacing.xs,
   },
   footerText: {
     fontSize: 11,

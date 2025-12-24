@@ -11,7 +11,7 @@ import React from "react";
 import { Pressable, Text, View, ViewStyle } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { useTheme } from "../../hooks/useTheme";
-import { RADIUS, SPACING } from "../../theme/design-system";
+import { radius, spacing } from "../../theme/tokens";
 
 interface RowCardProps {
   /** Ícone à esquerda (Ionicons name) */
@@ -89,9 +89,9 @@ export function RowCard({
           {
             flexDirection: "row",
             alignItems: "center",
-            gap: SPACING.md,
-            borderRadius: RADIUS.xl,
-            padding: SPACING.lg,
+            gap: spacing.md,
+            borderRadius: radius.xl,
+            padding: spacing.lg,
             borderWidth: 1,
             borderColor,
             backgroundColor: cardBg,
@@ -127,7 +127,7 @@ export function RowCard({
                 fontWeight: "700",
                 fontFamily: "Manrope_700Bold",
                 color: textMain,
-                marginRight: badge ? SPACING.sm : 0,
+                marginRight: badge ? spacing.sm : 0,
               }}
             >
               {title}
@@ -136,9 +136,9 @@ export function RowCard({
               <View
                 style={{
                   backgroundColor: badgeBg,
-                  paddingHorizontal: SPACING.xs,
+                  paddingHorizontal: spacing.xs,
                   paddingVertical: 2,
-                  borderRadius: RADIUS.sm,
+                  borderRadius: radius.sm,
                 }}
               >
                 <Text

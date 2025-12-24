@@ -10,7 +10,12 @@ import { shadowPresets } from "../utils/shadow";
 import * as Haptics from "expo-haptics";
 import { useToast } from "../context/ToastContext";
 import { useTheme } from "../hooks/useTheme";
-import { COLORS as DS_COLORS } from "../theme/design-system";
+import { Tokens, semantic } from "../theme/tokens";
+
+// Design system colors alias
+const DS_COLORS = {
+  semantic: semantic.light,
+};
 
 // URLs dos documentos legais via expo-constants (definidos em app.json extra.legal)
 const legalConfig = Constants.expoConfig?.extra?.legal as {
@@ -40,7 +45,7 @@ const LEGAL_ITEMS: LegalItem[] = [
     title: "Política de Privacidade",
     description: "Como coletamos, usamos e protegemos seus dados",
     icon: "shield-checkmark-outline",
-    color: DS_COLORS.primary[500],
+    color: Tokens.brand.primary[500],
     url: LEGAL_URLS.privacy,
   },
   {
@@ -48,7 +53,7 @@ const LEGAL_ITEMS: LegalItem[] = [
     title: "Termos de Uso",
     description: "Regras e condições para usar o app",
     icon: "document-text-outline",
-    color: DS_COLORS.secondary[500],
+    color: Tokens.brand.secondary[500],
     url: LEGAL_URLS.terms,
   },
   {
@@ -56,7 +61,7 @@ const LEGAL_ITEMS: LegalItem[] = [
     title: "Uso de Inteligência Artificial",
     description: "Informações sobre a NathIA e uso de IA no app",
     icon: "sparkles-outline",
-    color: DS_COLORS.legacyAccent.coral,
+    color: Tokens.brand.accent[500],
     url: LEGAL_URLS.aiDisclaimer,
   },
 ];
@@ -87,30 +92,30 @@ const INFO_ITEMS = [
  */
 const getLegalColors = (isDark: boolean) => ({
   // Backgrounds
-  cardBg: isDark ? DS_COLORS.background.secondary : DS_COLORS.text.inverse,
+  cardBg: isDark ? Tokens.neutral[800] : Tokens.neutral[0],
   // Medical warning - using semantic error colors
-  medicalBg: isDark ? DS_COLORS.semantic.errorLight : DS_COLORS.semantic.errorLight,
-  medicalBorder: isDark ? `${DS_COLORS.semantic.error}30` : DS_COLORS.legacyAccent.coral,
-  medicalIconBg: isDark ? `${DS_COLORS.semantic.error}20` : DS_COLORS.semantic.errorLight,
-  medicalTitle: DS_COLORS.semantic.error,
-  medicalText: DS_COLORS.semantic.error,
+  medicalBg: isDark ? Tokens.semantic.light.errorLight : Tokens.semantic.light.errorLight,
+  medicalBorder: isDark ? `${Tokens.semantic.light.error}30` : Tokens.brand.accent[500],
+  medicalIconBg: isDark ? `${Tokens.semantic.light.error}20` : Tokens.semantic.light.errorLight,
+  medicalTitle: Tokens.semantic.light.error,
+  medicalText: Tokens.semantic.light.error,
   // LGPD - using info/primary colors
-  lgpdCheckBg: isDark ? DS_COLORS.semantic.infoLight : DS_COLORS.semantic.infoLight,
-  lgpdCheck: DS_COLORS.primary[500],
-  lgpdContactBg: isDark ? `${DS_COLORS.primary[500]}10` : DS_COLORS.primary[50],
-  lgpdContactText: DS_COLORS.primary[500],
+  lgpdCheckBg: isDark ? Tokens.semantic.light.infoLight : Tokens.semantic.light.infoLight,
+  lgpdCheck: Tokens.brand.primary[500],
+  lgpdContactBg: isDark ? `${Tokens.brand.primary[500]}10` : Tokens.brand.primary[50],
+  lgpdContactText: Tokens.brand.primary[500],
   // AI section - using secondary colors
-  aiBg: isDark ? `${DS_COLORS.secondary[500]}10` : DS_COLORS.secondary[50],
-  aiBorder: isDark ? `${DS_COLORS.secondary[300]}20` : DS_COLORS.secondary[200],
-  aiIconBg: isDark ? `${DS_COLORS.secondary[400]}15` : DS_COLORS.secondary[100],
-  aiTitle: isDark ? DS_COLORS.secondary[300] : DS_COLORS.secondary[700],
-  aiText: isDark ? DS_COLORS.secondary[400] : DS_COLORS.secondary[600],
-  aiInfo: isDark ? DS_COLORS.secondary[400] : DS_COLORS.secondary[500],
-  aiInfoText: isDark ? DS_COLORS.secondary[300] : DS_COLORS.secondary[600],
+  aiBg: isDark ? `${Tokens.brand.secondary[500]}10` : Tokens.brand.secondary[50],
+  aiBorder: isDark ? `${Tokens.brand.secondary[300]}20` : Tokens.brand.secondary[200],
+  aiIconBg: isDark ? `${Tokens.brand.secondary[400]}15` : Tokens.brand.secondary[100],
+  aiTitle: isDark ? Tokens.brand.secondary[300] : Tokens.brand.secondary[700],
+  aiText: isDark ? Tokens.brand.secondary[400] : Tokens.brand.secondary[600],
+  aiInfo: isDark ? Tokens.brand.secondary[400] : Tokens.brand.secondary[500],
+  aiInfoText: isDark ? Tokens.brand.secondary[300] : Tokens.brand.secondary[600],
   // Gradient for header - using primary soft gradient
   headerGradient: isDark
-    ? [DS_COLORS.background.primary, DS_COLORS.background.secondary, DS_COLORS.background.tertiary] as const
-    : [DS_COLORS.primary[50], DS_COLORS.secondary[50], DS_COLORS.background.secondary] as const,
+    ? [Tokens.neutral[900], Tokens.neutral[800], Tokens.neutral[700]] as const
+    : [Tokens.brand.primary[50], Tokens.brand.secondary[50], Tokens.neutral[50]] as const,
 });
 
 export default function LegalScreen({ navigation }: RootStackScreenProps<"Legal">) {
@@ -272,7 +277,7 @@ export default function LegalScreen({ navigation }: RootStackScreenProps<"Legal"
                   backgroundColor: legalColors.medicalIconBg,
                 }}
               >
-                <Ionicons name="medkit-outline" size={20} color={DS_COLORS.semantic.error} />
+                <Ionicons name="medkit-outline" size={20} color={Tokens.semantic.light.error} />
               </View>
               <Text style={{ color: legalColors.medicalTitle, fontSize: 16, fontWeight: "700", flex: 1 }}>
                 Aviso Médico Importante
@@ -374,7 +379,7 @@ export default function LegalScreen({ navigation }: RootStackScreenProps<"Legal"
                   backgroundColor: legalColors.aiIconBg,
                 }}
               >
-                <Ionicons name="sparkles" size={20} color={DS_COLORS.secondary[500]} />
+                <Ionicons name="sparkles" size={20} color={Tokens.brand.secondary[500]} />
               </View>
               <Text style={{ color: legalColors.aiTitle, fontSize: 16, fontWeight: "700", flex: 1 }}>
                 NathIA - Sua Assistente

@@ -7,7 +7,7 @@
 import { differenceInWeeks, parseISO } from "date-fns";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,18 +22,16 @@ import { logger } from "../../utils/logger";
 
 type Props = RootStackScreenProps<"OnboardingSummary">;
 
-// Placeholder para imagens
-// TODO: Substituir por assets reais
-// const PLACEHOLDER_IMAGE = {
-//   uri: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400",
-// };
-
 export default function OnboardingSummary({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { stage, date, concerns, emotionalState, dailyCheckIn, checkInTime, seasonName } =
     route.params;
-  const { needsExtraCare } = useNathJourneyOnboardingStore();
+  const { needsExtraCare, setCurrentScreen } = useNathJourneyOnboardingStore();
+
+  useEffect(() => {
+    setCurrentScreen("OnboardingSummary");
+  }, [setCurrentScreen]);
 
   // Calcular semana da gravidez (se aplicável)
   const getPregnancyWeek = (): number | null => {

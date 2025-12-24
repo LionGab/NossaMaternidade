@@ -9,7 +9,82 @@ import { useAppStore } from "../state/store";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "../hooks/useTheme";
 import { IconName } from "../types/icons";
-import { COLORS as DS_COLORS, SPACING, RADIUS, OVERLAY } from "../theme/design-system";
+import { SPACING, RADIUS } from "../theme/tokens";
+
+// COLORS compatibility mapping (from design-system.ts)
+const DS_COLORS = {
+  primary: {
+    50: "#F7FBFD",
+    100: "#E8F3F9",
+    200: "#DCE9F1",
+    300: "#B4D7E8",
+    400: "#96C7DE",
+    500: "#7DB9D5",
+    600: "#5BA3C7",
+    700: "#4488AB",
+    800: "#376E8C",
+    900: "#2B576D",
+  },
+  secondary: {
+    50: "#FAF5FF",
+    100: "#F3E8FF",
+    200: "#E9D5FF",
+    300: "#D8B4FE",
+    400: "#C084FC",
+    500: "#A855F7",
+    600: "#9333EA",
+    700: "#7C3AED",
+    800: "#6B21A8",
+    900: "#581C87",
+  },
+  accent: {
+    50: "#F0FDFA",
+    100: "#CCFBF1",
+    200: "#99F6E4",
+    300: "#5EEAD4",
+    400: "#2DD4BF",
+    500: "#14B8A6",
+    600: "#0D9488",
+    700: "#0F766E",
+    800: "#115E59",
+    900: "#134E4A",
+  },
+  neutral: {
+    0: "#FFFFFF",
+    50: "#F9FAFB",
+    100: "#F3F4F6",
+    200: "#E5E7EB",
+    300: "#D1D5DB",
+    400: "#9CA3AF",
+    500: "#6B7280",
+    600: "#4B5563",
+    700: "#374151",
+    800: "#1F2937",
+    900: "#111827",
+  },
+  surface: {
+    roseSoft: "#FDF0F0",
+    peachSoft: "#FDF6F2",
+    lilacBorder: "#E0D4F0",
+    roseBorder: "#F5E0E0",
+    blueBorder: "#D6E6F2",
+  },
+  feeling: {
+    amada: "#FB7185",
+  },
+  legacyAccent: {
+    peach: "#FED7AA",
+  },
+} as const;
+
+// Overlay compatibility mapping
+const OVERLAY = {
+  white: {
+    strong: "rgba(255, 255, 255, 0.2)",
+    text: "rgba(255, 255, 255, 0.7)",
+    textStrong: "rgba(255, 255, 255, 0.8)",
+  },
+} as const;
 
 // Foto da Nathalia com o bebê Thales
 const NATHALIA_AVATAR_URL = "https://i.imgur.com/37dbPJE.jpg";

@@ -13,13 +13,26 @@ import * as Haptics from "expo-haptics";
 import { useAppStore, useCheckInStore } from "../state/store";
 import {
   COLORS,
-  GRADIENTS,
   SPACING,
   RADIUS,
   SHADOWS,
   TYPOGRAPHY,
-  OVERLAY,
-} from "../theme/design-system";
+} from "../theme/tokens";
+
+// Overlay compatibility mapping
+const OVERLAY = {
+  white: {
+    text: "rgba(255, 255, 255, 0.7)",
+    textStrong: "rgba(255, 255, 255, 0.8)",
+    strong: "rgba(255, 255, 255, 0.2)",
+    prominent: "rgba(255, 255, 255, 0.6)",
+  },
+} as const;
+
+// Gradients compatibility (from design-system.ts)
+const GRADIENTS = {
+  streakIcon: "#F59E0B",
+} as const;
 
 type ViewMode = "week" | "month" | "year";
 

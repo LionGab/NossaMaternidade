@@ -15,7 +15,7 @@ import {
 import { onAuthStateChange } from "../api/auth";
 import { getUserProfile } from "../api/database";
 import { logger } from "../utils/logger";
-import { COLORS } from "../theme/design-system";
+import { COLORS } from "../theme/tokens";
 
 interface AppState {
   // User & Auth

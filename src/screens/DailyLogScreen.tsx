@@ -17,19 +17,19 @@ import { RootStackScreenProps, DailyLog } from "../types/navigation";
 import * as Haptics from "expo-haptics";
 import { wp } from "../utils/dimensions";
 import { useTheme } from "../hooks/useTheme";
-import { COLORS } from "../theme/design-system";
+import { Tokens } from "../theme/tokens";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const MOODS = [
-  { id: "happy", emoji: "😊", label: "Feliz", color: COLORS.mood.happy },
-  { id: "calm", emoji: "😌", label: "Calma", color: COLORS.mood.calm },
-  { id: "energetic", emoji: "⚡", label: "Energica", color: COLORS.mood.energetic },
-  { id: "anxious", emoji: "😰", label: "Ansiosa", color: COLORS.mood.anxious },
-  { id: "sad", emoji: "😢", label: "Triste", color: COLORS.mood.sad },
-  { id: "irritated", emoji: "😤", label: "Irritada", color: COLORS.mood.irritated },
-  { id: "sensitive", emoji: "🥺", label: "Sensivel", color: COLORS.mood.sensitive },
-  { id: "tired", emoji: "😴", label: "Cansada", color: COLORS.mood.tired },
+  { id: "happy", emoji: "😊", label: "Feliz", color: Tokens.mood.happy },
+  { id: "calm", emoji: "😌", label: "Calma", color: Tokens.mood.calm },
+  { id: "energetic", emoji: "⚡", label: "Energica", color: Tokens.mood.energetic },
+  { id: "anxious", emoji: "😰", label: "Ansiosa", color: Tokens.mood.anxious },
+  { id: "sad", emoji: "😢", label: "Triste", color: Tokens.mood.sad },
+  { id: "irritated", emoji: "😤", label: "Irritada", color: Tokens.mood.irritated },
+  { id: "sensitive", emoji: "🥺", label: "Sensivel", color: Tokens.mood.sensitive },
+  { id: "tired", emoji: "😴", label: "Cansada", color: Tokens.mood.tired },
 ];
 
 export default function DailyLogScreen({ navigation, route }: RootStackScreenProps<"DailyLog">) {
@@ -307,10 +307,10 @@ export default function DailyLogScreen({ navigation, route }: RootStackScreenPro
                       width: 60,
                       height: 60,
                       borderRadius: 30,
-                      backgroundColor: selectedMoodData?.color || COLORS.primary[500],
+                      backgroundColor: selectedMoodData?.color || Tokens.brand.primary[500],
                       alignItems: "center",
                       justifyContent: "center",
-                      shadowColor: selectedMoodData?.color || COLORS.primary[500],
+                      shadowColor: selectedMoodData?.color || Tokens.brand.primary[500],
                       shadowOffset: { width: 0, height: 4 },
                       shadowOpacity: 0.4,
                       shadowRadius: 12,

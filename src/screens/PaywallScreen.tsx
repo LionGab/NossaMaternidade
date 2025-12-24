@@ -23,7 +23,6 @@ import Animated, {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useToast } from "../context/ToastContext";
 import { usePremiumStore } from "../state/premium-store";
-import { COLORS, GRADIENTS } from "../theme/design-system";
 import { Tokens } from "../theme/tokens";
 import { IconName } from "../types/icons";
 import { RootStackParamList } from "../types/navigation";
@@ -32,7 +31,7 @@ import { cn } from "../utils/cn";
 import { logger } from "../utils/logger";
 import { isExpoGo } from "../utils/expo";
 
-const PRIMARY_COLOR = COLORS.primary[500];
+const PRIMARY_COLOR = Tokens.brand.primary[500];
 
 // ============================================
 // TIPOS
@@ -76,7 +75,7 @@ const SparkleIcon = () => {
   return (
     <Animated.View style={animatedStyle}>
       <LinearGradient
-        colors={[PRIMARY_COLOR, GRADIENTS.cycle.luteal]}
+        colors={[PRIMARY_COLOR, Tokens.brand.accent[400]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={{
@@ -87,7 +86,7 @@ const SparkleIcon = () => {
           alignItems: "center",
         }}
       >
-        <Ionicons name="diamond" size={40} color={COLORS.text.inverse} />
+        <Ionicons name="diamond" size={40} color={Tokens.neutral[0]} />
       </LinearGradient>
     </Animated.View>
   );
@@ -450,7 +449,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
   // Placeholder para Expo Go
   if (runningInExpoGo) {
     return (
-      <LinearGradient colors={GRADIENTS.paywallPink} style={{ flex: 1 }}>
+      <LinearGradient colors={[...Tokens.gradients.heroAccent]} style={{ flex: 1 }}>
         <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
           {/* Header com botao fechar */}
           <View className="flex-row justify-end px-4 py-2">
@@ -458,7 +457,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
               onPress={() => navigation.goBack()}
               className="w-10 h-10 rounded-full bg-white/80 items-center justify-center"
             >
-              <Ionicons name="close" size={24} color={COLORS.neutral[700]} />
+              <Ionicons name="close" size={24} color={Tokens.neutral[700]} />
             </Pressable>
           </View>
 
@@ -505,7 +504,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
   }
 
   return (
-    <LinearGradient colors={GRADIENTS.paywallPink} style={{ flex: 1 }}>
+    <LinearGradient colors={[...Tokens.gradients.heroAccent]} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
         {/* Header com botao fechar */}
         <View className="flex-row justify-end px-4 py-2">
@@ -513,7 +512,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
             onPress={() => navigation.goBack()}
             className="w-10 h-10 rounded-full bg-white/80 items-center justify-center"
           >
-            <Ionicons name="close" size={24} color={COLORS.neutral[700]} />
+            <Ionicons name="close" size={24} color={Tokens.neutral[700]} />
           </Pressable>
         </View>
 
@@ -584,7 +583,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
           {/* Garantia */}
           <View className="px-6 mt-6">
             <View className="flex-row items-center justify-center bg-white/60 rounded-xl p-3">
-              <Ionicons name="shield-checkmark-outline" size={20} color={COLORS.semantic.success} />
+              <Ionicons name="shield-checkmark-outline" size={20} color={Tokens.semantic.light.success} />
               <Text className="text-sm text-gray-600 ml-2">
                 Cancele a qualquer momento. Sem compromisso.
               </Text>
@@ -611,7 +610,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
             style={{ backgroundColor: PRIMARY_COLOR }}
           >
             {isPurchasing ? (
-              <ActivityIndicator color={COLORS.text.inverse} />
+              <ActivityIndicator color={Tokens.neutral[0]} />
             ) : (
               <Text className="text-white text-lg font-bold">
                 {pricing.trialDays > 0

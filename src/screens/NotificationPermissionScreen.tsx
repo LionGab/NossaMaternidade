@@ -33,14 +33,7 @@ import {
   markNotificationSetupComplete,
   skipNotificationSetup,
 } from "../services/notifications";
-import {
-  COLORS,
-  GRADIENTS,
-  SPACING,
-  RADIUS,
-  SHADOWS,
-  TYPOGRAPHY,
-} from "../theme/design-system";
+import { Tokens } from "../theme/tokens";
 import { RootStackScreenProps } from "../types/navigation";
 import { Button } from "../components/ui/Button";
 
@@ -83,6 +76,20 @@ interface ResponsiveSizes {
 // CONSTANTS
 // ============================================================================
 
+// Aliases de compatibilidade
+const SPACING = Tokens.spacing;
+const RADIUS = Tokens.radius;
+const SHADOWS = Tokens.shadows;
+const TYPOGRAPHY = Tokens.typography;
+const GRADIENTS = {
+  nathiaOnboarding: Tokens.gradients.heroAccent,
+  notification: {
+    morning: "#F59E0B",
+    checkIn: "#10B981",
+    evening: "#6366F1",
+  },
+};
+
 // Breakpoints para responsividade cross-platform
 const BREAKPOINTS = {
   // Altura (iPhone SE, mini, Android compactos)
@@ -97,14 +104,14 @@ const NOTIFICATION_PREVIEWS = [
     title: "Nossa Maternidade",
     message: "Bom dia! Como você está se sentindo hoje? 💕",
     time: "agora",
-    colors: [COLORS.primary[400], COLORS.primary[500]] as const,
+    colors: [Tokens.brand.primary[400], Tokens.brand.primary[500]] as const,
   },
   {
     icon: "sparkles" as const,
     title: "Sua afirmação do dia",
     message: "Você é forte e capaz. Confie no processo ✨",
     time: "8:00",
-    colors: [COLORS.secondary[400], COLORS.secondary[500]] as const,
+    colors: [Tokens.brand.primary[400], Tokens.brand.primary[500]] as const,
   },
 ];
 
@@ -113,7 +120,7 @@ const BENEFITS = [
   {
     icon: "sparkles" as const,
     text: "Afirmações positivas às 8h",
-    color: COLORS.secondary[500],
+    color: Tokens.brand.secondary[500],
   },
   {
     icon: "leaf" as const,
@@ -211,7 +218,7 @@ const NotificationPreview = memo(function NotificationPreview({
           marginRight: isCompact ? SPACING.sm : SPACING.md,
         }}
       >
-        <Ionicons name={icon} size={iconInnerSize} color={COLORS.neutral[0]} />
+        <Ionicons name={icon} size={iconInnerSize} color={Tokens.neutral[0]} />
       </LinearGradient>
 
       <View style={{ flex: 1 }}>
@@ -219,7 +226,7 @@ const NotificationPreview = memo(function NotificationPreview({
           style={{
             fontSize: isCompact ? 12 : 13,
             fontWeight: "600",
-            color: COLORS.neutral[800],
+            color: Tokens.neutral[800],
             marginBottom: 1,
           }}
         >
@@ -228,7 +235,7 @@ const NotificationPreview = memo(function NotificationPreview({
         <Text
           style={{
             fontSize: isCompact ? 11 : 12,
-            color: COLORS.neutral[600],
+            color: Tokens.neutral[600],
           }}
           numberOfLines={1}
         >
@@ -239,7 +246,7 @@ const NotificationPreview = memo(function NotificationPreview({
       <Text
         style={{
           fontSize: isCompact ? 10 : 11,
-          color: COLORS.neutral[400],
+          color: Tokens.neutral[400],
         }}
       >
         {time}
@@ -287,7 +294,7 @@ const BenefitItem = memo(function BenefitItem({
       <Text
         style={{
           fontSize: isCompact ? 13 : TYPOGRAPHY.bodyMedium.fontSize,
-          color: COLORS.neutral[700],
+          color: Tokens.neutral[700],
           flex: 1,
         }}
       >
@@ -297,7 +304,7 @@ const BenefitItem = memo(function BenefitItem({
       <Ionicons
         name="checkmark-circle"
         size={isCompact ? 18 : 20}
-        color={COLORS.semantic.success}
+        color={Tokens.semantic.light.success}
       />
     </View>
   );
@@ -326,7 +333,7 @@ const Header = memo(function Header() {
         }}
       >
         <LinearGradient
-          colors={[COLORS.primary[400], COLORS.secondary[400]]}
+          colors={[Tokens.brand.primary[400], Tokens.brand.secondary[400]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
@@ -340,7 +347,7 @@ const Header = memo(function Header() {
           <Ionicons
             name="notifications"
             size={sizes.bellIconSize}
-            color={COLORS.neutral[0]}
+            color={Tokens.neutral[0]}
           />
         </LinearGradient>
       </View>
@@ -388,7 +395,7 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
 
   return (
     <LinearGradient
-      colors={[...GRADIENTS.nathiaOnboarding, COLORS.neutral[0]]}
+      colors={[...GRADIENTS.nathiaOnboarding, Tokens.neutral[0]]}
       locations={[0, 0.5, 1]}
       style={{ flex: 1 }}
     >
@@ -417,7 +424,7 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
             style={{
               fontSize: sizes.titleSize,
               fontWeight: "700",
-              color: COLORS.neutral[900],
+              color: Tokens.neutral[900],
               textAlign: "center",
               letterSpacing: -0.8,
               lineHeight: sizes.titleLineHeight,
@@ -437,7 +444,7 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
           <Text
             style={{
               fontSize: sizes.isCompact ? 14 : TYPOGRAPHY.bodyLarge.fontSize,
-              color: COLORS.neutral[600],
+              color: Tokens.neutral[600],
               textAlign: "center",
               lineHeight: sizes.isCompact ? 20 : 24,
               paddingHorizontal: sizes.isCompact ? 0 : SPACING.md,
@@ -528,7 +535,7 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
           >
             <Text
               style={{
-                color: COLORS.neutral[500],
+                color: Tokens.neutral[500],
                 fontSize: sizes.isCompact ? 13 : TYPOGRAPHY.bodyMedium.fontSize,
                 fontWeight: "500",
               }}
@@ -547,7 +554,7 @@ export default function NotificationPermissionScreen({ navigation }: Props) {
           >
             <Text
               style={{
-                color: COLORS.neutral[400],
+                color: Tokens.neutral[400],
                 fontSize: sizes.isCompact ? 10 : 11,
                 textAlign: "center",
               }}

@@ -11,7 +11,7 @@ import React from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeIn, FadeInUp } from "react-native-reanimated";
 import { useTheme } from "../../hooks/useTheme";
-import { ACCESSIBILITY, RADIUS, SPACING, TYPOGRAPHY } from "../../theme/design-system";
+import { accessibility, radius, spacing, typography } from "../../theme/tokens";
 
 interface EmptyStateProps {
   /** Icon to display (Ionicons name) */
@@ -74,7 +74,7 @@ export function EmptyState({
   const buttonTextColor = colors.neutral[0];
 
   // Variant-specific padding
-  const containerPadding = variant === "compact" ? SPACING.xl : SPACING["3xl"];
+  const containerPadding = variant === "compact" ? spacing.xl : spacing["3xl"];
   const iconSize = variant === "compact" ? 64 : 80;
   const emojiSize = variant === "compact" ? 32 : 40;
 
@@ -97,7 +97,7 @@ export function EmptyState({
           backgroundColor: iconBgColor,
           alignItems: "center",
           justifyContent: "center",
-          marginBottom: SPACING.xl,
+          marginBottom: spacing.xl,
         }}
       >
         {emoji ? (
@@ -111,10 +111,10 @@ export function EmptyState({
       <Animated.Text
         entering={animated ? FadeInUp.delay(200).duration(400) : undefined}
         style={{
-          ...TYPOGRAPHY.headlineSmall,
+          ...typography.headlineSmall,
           color: titleColor,
           textAlign: "center",
-          marginBottom: message ? SPACING.md : actionLabel ? SPACING.xl : 0,
+          marginBottom: message ? spacing.md : actionLabel ? spacing.xl : 0,
           fontFamily: "Manrope_700Bold",
         }}
       >
@@ -126,10 +126,10 @@ export function EmptyState({
         <Animated.Text
           entering={animated ? FadeInUp.delay(300).duration(400) : undefined}
           style={{
-            ...TYPOGRAPHY.bodyMedium,
+            ...typography.bodyMedium,
             color: messageColor,
             textAlign: "center",
-            marginBottom: actionLabel ? SPACING.xl : 0,
+            marginBottom: actionLabel ? spacing.xl : 0,
             lineHeight: 22,
             maxWidth: 280,
           }}
@@ -147,10 +147,10 @@ export function EmptyState({
             accessibilityLabel={actionLabel}
             style={({ pressed }) => ({
               backgroundColor: buttonBgColor,
-              paddingHorizontal: SPACING["2xl"],
-              paddingVertical: SPACING.lg,
-              borderRadius: RADIUS.lg,
-              minHeight: ACCESSIBILITY.minTapTarget,
+              paddingHorizontal: spacing["2xl"],
+              paddingVertical: spacing.lg,
+              borderRadius: radius.lg,
+              minHeight: accessibility.minTapTarget,
               alignItems: "center",
               justifyContent: "center",
               opacity: pressed ? 0.9 : 1,
@@ -159,7 +159,7 @@ export function EmptyState({
           >
             <Text
               style={{
-                ...TYPOGRAPHY.labelLarge,
+                ...typography.labelLarge,
                 color: buttonTextColor,
                 fontWeight: "700",
                 fontFamily: "Manrope_700Bold",

@@ -5,7 +5,7 @@ import Animated, { FadeIn, FadeInUp, ZoomIn } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useCheckInStore } from "../state/store";
 import { useTheme } from "../hooks/useTheme";
-import { COLORS as DS_COLORS, OVERLAY } from "../theme/design-system";
+import { Tokens, COLORS, surface } from "../theme/tokens";
 
 const MOOD_OPTIONS = [
   { value: 1, emoji: "😢", label: "Difícil" },
@@ -16,11 +16,11 @@ const MOOD_OPTIONS = [
 ];
 
 const ENERGY_OPTIONS = [
-  { value: 1, emoji: "🔋", label: "Esgotada", color: DS_COLORS.semantic.error },
-  { value: 2, emoji: "🪫", label: "Cansada", color: DS_COLORS.semantic.warning },
-  { value: 3, emoji: "⚡", label: "Normal", color: DS_COLORS.legacyAccent.peach },
-  { value: 4, emoji: "✨", label: "Boa", color: DS_COLORS.semantic.success },
-  { value: 5, emoji: "🌟", label: "Plena", color: DS_COLORS.accent[500] },
+  { value: 1, emoji: "🔋", label: "Esgotada", color: Tokens.semantic.light.error },
+  { value: 2, emoji: "🪫", label: "Cansada", color: Tokens.semantic.light.warning },
+  { value: 3, emoji: "⚡", label: "Normal", color: COLORS.legacyAccent.peach },
+  { value: 4, emoji: "✨", label: "Boa", color: Tokens.semantic.light.success },
+  { value: 5, emoji: "🌟", label: "Plena", color: Tokens.brand.accent[500] },
 ];
 
 const SLEEP_OPTIONS = [
@@ -43,32 +43,32 @@ interface DailyCheckInProps {
  */
 const getCheckInColors = (isDark: boolean) => ({
   // Estado completo - verde suave
-  completeBg: isDark ? "rgba(20, 184, 166, 0.15)" : DS_COLORS.semantic.successLight,
-  completeBorder: isDark ? "rgba(20, 184, 166, 0.3)" : DS_COLORS.semantic.successLight,
-  completeIcon: DS_COLORS.semantic.success,
-  completeText: isDark ? DS_COLORS.accent[300] : DS_COLORS.accent[900],
-  completeSubtext: isDark ? DS_COLORS.accent[400] : DS_COLORS.accent[700],
+  completeBg: isDark ? "rgba(20, 184, 166, 0.15)" : Tokens.semantic.light.successLight,
+  completeBorder: isDark ? "rgba(20, 184, 166, 0.3)" : Tokens.semantic.light.successLight,
+  completeIcon: Tokens.semantic.light.success,
+  completeText: isDark ? Tokens.brand.accent[300] : Tokens.brand.accent[900],
+  completeSubtext: isDark ? Tokens.brand.accent[400] : Tokens.brand.accent[700],
   // Estado pendente - amarelo suave
-  pendingBg: isDark ? "rgba(245, 158, 11, 0.15)" : DS_COLORS.semantic.warningLight,
-  pendingBorder: isDark ? "rgba(245, 158, 11, 0.3)" : DS_COLORS.semantic.warningLight,
-  pendingIcon: DS_COLORS.semantic.warning,
-  pendingText: isDark ? DS_COLORS.legacyAccent.peach : DS_COLORS.neutral[800],
-  pendingSubtext: isDark ? DS_COLORS.neutral[400] : DS_COLORS.neutral[600],
-  pendingChevron: isDark ? DS_COLORS.neutral[400] : DS_COLORS.semantic.warning,
+  pendingBg: isDark ? "rgba(245, 158, 11, 0.15)" : Tokens.semantic.light.warningLight,
+  pendingBorder: isDark ? "rgba(245, 158, 11, 0.3)" : Tokens.semantic.light.warningLight,
+  pendingIcon: Tokens.semantic.light.warning,
+  pendingText: isDark ? COLORS.legacyAccent.peach : Tokens.neutral[800],
+  pendingSubtext: isDark ? Tokens.neutral[400] : Tokens.neutral[600],
+  pendingChevron: isDark ? Tokens.neutral[400] : Tokens.semantic.light.warning,
   // Modal
-  modalBg: isDark ? DS_COLORS.background.secondary : DS_COLORS.text.inverse,
-  modalOverlay: OVERLAY.backdropStrong,
-  closeBg: isDark ? DS_COLORS.neutral[700] : DS_COLORS.neutral[100],
-  closeIcon: DS_COLORS.neutral[500],
+  modalBg: isDark ? surface.dark.card : Tokens.text.light.inverse,
+  modalOverlay: "rgba(0, 0, 0, 0.7)",
+  closeBg: isDark ? Tokens.neutral[700] : Tokens.neutral[100],
+  closeIcon: Tokens.neutral[500],
   // Progress bar
-  progressActive: DS_COLORS.primary[500],
-  progressComplete: DS_COLORS.semantic.success,
-  progressPending: isDark ? DS_COLORS.neutral[600] : DS_COLORS.neutral[200],
+  progressActive: Tokens.brand.primary[500],
+  progressComplete: Tokens.semantic.light.success,
+  progressPending: isDark ? Tokens.neutral[600] : Tokens.neutral[200],
   // Text
-  title: isDark ? DS_COLORS.text.primary : DS_COLORS.text.primary,
-  subtitle: DS_COLORS.neutral[500],
+  title: isDark ? Tokens.text.dark.primary : Tokens.text.light.primary,
+  subtitle: Tokens.neutral[500],
   // Options
-  optionBg: isDark ? DS_COLORS.neutral[700] : DS_COLORS.background.warm,
+  optionBg: isDark ? Tokens.neutral[700] : COLORS.background.warm,
 });
 
 export default function DailyCheckIn({ onComplete }: DailyCheckInProps) {
@@ -166,7 +166,7 @@ export default function DailyCheckIn({ onComplete }: DailyCheckInProps) {
                   marginRight: 12,
                 }}
               >
-                <Ionicons name="checkmark" size={22} color={DS_COLORS.text.inverse} />
+                <Ionicons name="checkmark" size={22} color={Tokens.text.light.inverse} />
               </View>
               <View>
                 <Text style={{ color: checkInColors.completeText, fontSize: 15, fontWeight: "600" }}>
@@ -319,7 +319,7 @@ export default function DailyCheckIn({ onComplete }: DailyCheckInProps) {
                     marginBottom: 16,
                   }}
                 >
-                  <Ionicons name="checkmark" size={40} color={DS_COLORS.text.inverse} />
+                  <Ionicons name="checkmark" size={40} color={Tokens.text.light.inverse} />
                 </View>
                 <Text style={{ fontSize: 16, color: checkInColors.subtitle, textAlign: "center" }}>
                   Obrigada por cuidar de você!

@@ -11,7 +11,13 @@ import React from "react";
 import { Modal, Pressable, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../hooks/useTheme";
-import { COLORS, TYPOGRAPHY, SPACING, ACCESSIBILITY } from "../../theme/design-system";
+import { neutral, typography, spacing, accessibility } from "../../theme/tokens";
+
+// Local aliases for cleaner code
+const COLORS = { neutral };
+const TYPOGRAPHY = typography;
+const SPACING = spacing;
+const ACCESSIBILITY = accessibility;
 
 export interface AlertButton {
   text: string;

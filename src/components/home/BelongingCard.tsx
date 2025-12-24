@@ -18,14 +18,14 @@ import Animated, {
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "../../hooks/useTheme";
-import { COLORS, SPACING, RADIUS, OVERLAY } from "../../theme/design-system";
+import { brand, spacing, radius, neutral } from "../../theme/tokens";
 
 interface BelongingCardProps {
   onPress: () => void;
 }
 
 export const BelongingCard: React.FC<BelongingCardProps> = ({ onPress }) => {
-  const { colors, isDark } = useTheme();
+  const { isDark } = useTheme();
   const scale = useSharedValue(1);
 
   const handlePressIn = () => {
@@ -46,11 +46,11 @@ export const BelongingCard: React.FC<BelongingCardProps> = ({ onPress }) => {
   }));
 
   // Cores discretas (sem gradiente chamativo)
-  const cardBg = isDark ? OVERLAY.hoverDark : COLORS.primary[50];
-  const borderColor = isDark ? OVERLAY.pressDark : COLORS.primary[100];
-  const textMain = isDark ? COLORS.primary[300] : COLORS.primary[700];
-  const textMuted = isDark ? colors.neutral[400] : COLORS.primary[600];
-  const iconColor = isDark ? COLORS.primary[400] : COLORS.primary[500];
+  const cardBg = isDark ? "rgba(0, 0, 0, 0.3)" : brand.primary[50];
+  const borderColor = isDark ? "rgba(0, 0, 0, 0.5)" : brand.primary[100];
+  const textMain = isDark ? brand.primary[300] : brand.primary[700];
+  const textMuted = isDark ? neutral[400] : brand.primary[600];
+  const iconColor = isDark ? brand.primary[400] : brand.primary[500];
 
   return (
     <Animated.View entering={FadeInUp.delay(150).duration(500)} style={animatedStyle}>
@@ -95,17 +95,17 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.md,
-    borderRadius: RADIUS.lg,
-    padding: SPACING.md,
-    paddingRight: SPACING.lg,
+    gap: spacing.md,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    paddingRight: spacing.lg,
     borderWidth: 1,
   },
   iconContainer: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: OVERLAY.light,
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
     alignItems: "center",
     justifyContent: "center",
   },

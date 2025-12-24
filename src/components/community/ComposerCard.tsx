@@ -9,8 +9,12 @@ import React from "react";
 import { Pressable, StyleSheet, Text, View, ScrollView } from "react-native";
 import { COMMUNITY_TOPICS } from "../../config/community";
 import { useTheme } from "../../hooks/useTheme";
-import { Tokens } from "../../theme/tokens";
-import { RADIUS, SHADOWS, SPACING } from "../../theme/design-system";
+import { Tokens, radius, shadows, spacing } from "../../theme/tokens";
+
+// Aliases de compatibilidade
+const RADIUS = radius;
+const SHADOWS = shadows;
+const SPACING = spacing;
 
 interface ComposerCardProps {
   onPress: () => void;

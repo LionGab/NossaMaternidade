@@ -10,6 +10,7 @@
 
 import * as AppleAuthentication from "expo-apple-authentication";
 import * as AuthSession from "expo-auth-session";
+import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as WebBrowser from "expo-web-browser";
 import { Platform } from "react-native";
 import { logger } from "../utils/logger";
@@ -40,13 +41,18 @@ function getRedirectUri(): string {
     return `${origin}/auth/callback`;
   }
 
-  // Native: usar o scheme do app
+  // Native: usar o scheme do app (deve corresponder ao app.config.js)
+  // CRÍTICO: O formato deve ser exatamente: scheme://path (sem barras extras)
   const uri = AuthSession.makeRedirectUri({
     scheme: "nossamaternidade",
-    path: "auth/callback",
+    path: "auth-callback",
   });
 
-  return uri || "nossamaternidade://auth/callback";
+  // Log para debug
+  const finalUri = uri || "nossamaternidade://auth-callback";
+  logger.info("Redirect URI gerado", "SocialAuth", { uri: finalUri, platform: Platform.OS });
+  
+  return finalUri;
 }
 
 const REDIRECT_URI = getRedirectUri();
@@ -61,6 +67,63 @@ function checkSupabase() {
     );
   }
   return supabase;
+}
+
+/**
+ * Cria sessão a partir da URL de redirect do OAuth
+ * Suporta tanto PKCE (code) quanto implicit flow (access_token/refresh_token)
+ * 
+ * Baseado no padrão oficial do Supabase para Expo:
+ * https://supabase.com/docs/guides/auth/social-login/auth-google#expo
+ */
+async function createSessionFromRedirect(url: string) {
+  const client = checkSupabase();
+  
+  try {
+    const { params, errorCode } = QueryParams.getQueryParams(url);
+    
+    if (errorCode) {
+      throw new Error(`OAuth error: ${errorCode}`);
+    }
+
+    // 1) PKCE flow (vem code=...)
+    if (params?.code) {
+      logger.info("Processando PKCE flow (code)", "SocialAuth");
+      const { data, error } = await client.auth.exchangeCodeForSession(params.code as string);
+      
+      if (error) {
+        logger.error("Erro ao trocar code por sessão", "SocialAuth", error);
+        throw error;
+      }
+      
+      return data.session;
+    }
+
+    // 2) Implicit flow (vem access_token/refresh_token)
+    const access_token = params?.access_token as string | undefined;
+    const refresh_token = params?.refresh_token as string | undefined;
+
+    if (!access_token || !refresh_token) {
+      logger.warn("Tokens não encontrados na URL", "SocialAuth", { url });
+      return null;
+    }
+
+    logger.info("Processando implicit flow (tokens)", "SocialAuth");
+    const { data, error } = await client.auth.setSession({
+      access_token,
+      refresh_token,
+    });
+
+    if (error) {
+      logger.error("Erro ao definir sessão", "SocialAuth", error);
+      throw error;
+    }
+
+    return data.session;
+  } catch (error) {
+    logger.error("Erro ao criar sessão do redirect", "SocialAuth", error instanceof Error ? error : new Error(String(error)));
+    throw error;
+  }
 }
 
 /**
@@ -139,20 +202,19 @@ export async function signInWithGoogle(): Promise<SocialAuthResult> {
       };
     }
 
-    // Native: usar WebBrowser
+    // Native: usar WebBrowser com fluxo PKCE
     let data: { provider: string; url: string | null } | null = null;
     let error: unknown = null;
 
     try {
+      // CRÍTICO: Usar fluxo PKCE (padrão Supabase para mobile)
+      // Não passar queryParams que podem causar erro 400
       const result = await client.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: REDIRECT_URI,
           skipBrowserRedirect: true,
-          queryParams: {
-            access_type: "offline",
-            prompt: "consent",
-          },
+          // PKCE é habilitado automaticamente pelo Supabase quando skipBrowserRedirect: true
         },
       });
 
@@ -205,55 +267,46 @@ export async function signInWithGoogle(): Promise<SocialAuthResult> {
     }
 
     if (browserResult.type === "success" && browserResult.url) {
-      // Extrair tokens da URL
-      let accessToken: string | null = null;
-      let refreshToken: string | null = null;
-
+      // Criar sessão usando o padrão correto do Supabase
       try {
-        const url = new URL(browserResult.url);
-        const params = new URLSearchParams(url.hash.substring(1));
-        accessToken = params.get("access_token");
-        refreshToken = params.get("refresh_token");
-      } catch (err) {
-        logger.error("Erro ao parsear URL de callback", "SocialAuth", err as Error);
-        return {
-          success: false,
-          error: "Erro ao processar resposta de autenticação",
-        };
-      }
+        const session = await createSessionFromRedirect(browserResult.url);
 
-      if (accessToken) {
-        // Definir sessão com os tokens
-        const { data: sessionData, error: sessionError } = await client.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken || "",
-        });
-
-        if (sessionError) {
+        if (!session) {
           return {
             success: false,
-            error: sessionError.message,
+            error: "Não foi possível criar sessão a partir do redirect",
           };
         }
 
-        if (sessionData.user) {
-          logger.info("Login Google bem sucedido", "SocialAuth", {
-            userId: sessionData.user.id,
-          });
+        // Obter dados do usuário atualizado
+        const { data: { user }, error: userError } = await client.auth.getUser();
 
+        if (userError || !user) {
           return {
-            success: true,
-            user: {
-              id: sessionData.user.id,
-              email: sessionData.user.email || "",
-              name:
-                sessionData.user.user_metadata?.full_name || sessionData.user.user_metadata?.name,
-              avatarUrl:
-                sessionData.user.user_metadata?.avatar_url ||
-                sessionData.user.user_metadata?.picture,
-            },
+            success: false,
+            error: userError?.message || "Usuário não encontrado após autenticação",
           };
         }
+
+        logger.info("Login Google bem sucedido", "SocialAuth", {
+          userId: user.id,
+        });
+
+        return {
+          success: true,
+          user: {
+            id: user.id,
+            email: user.email || "",
+            name: user.user_metadata?.full_name || user.user_metadata?.name,
+            avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture,
+          },
+        };
+      } catch (error) {
+        logger.error("Erro ao processar redirect do Google", "SocialAuth", error instanceof Error ? error : new Error(String(error)));
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : "Erro ao processar resposta de autenticação",
+        };
       }
     }
 
@@ -428,16 +481,18 @@ async function signInWithAppleOAuth(
     };
   }
 
-  // Native: usar WebBrowser
+  // Native: usar WebBrowser com fluxo PKCE
   let data: { provider: string; url: string | null } | null = null;
   let error: unknown = null;
 
   try {
+    // CRÍTICO: Usar fluxo PKCE (padrão Supabase para mobile)
     const result = await client.auth.signInWithOAuth({
       provider: "apple",
       options: {
         redirectTo: REDIRECT_URI,
         skipBrowserRedirect: true,
+        // PKCE é habilitado automaticamente pelo Supabase quando skipBrowserRedirect: true
       },
     });
 
@@ -489,50 +544,46 @@ async function signInWithAppleOAuth(
   }
 
   if (browserResult.type === "success" && browserResult.url) {
-    let accessToken: string | null = null;
-    let refreshToken: string | null = null;
-
+    // Criar sessão usando o padrão correto do Supabase
     try {
-      const url = new URL(browserResult.url);
-      const params = new URLSearchParams(url.hash.substring(1));
-      accessToken = params.get("access_token");
-      refreshToken = params.get("refresh_token");
-    } catch (err) {
-      logger.error("Erro ao parsear URL de callback (Apple)", "SocialAuth", err as Error);
-      return {
-        success: false,
-        error: "Erro ao processar resposta de autenticação",
-      };
-    }
+      const session = await createSessionFromRedirect(browserResult.url);
 
-    if (accessToken) {
-      const { data: sessionData, error: sessionError } = await client.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken || "",
-      });
-
-      if (sessionError) {
+      if (!session) {
         return {
           success: false,
-          error: sessionError.message,
+          error: "Não foi possível criar sessão a partir do redirect",
         };
       }
 
-      if (sessionData.user) {
-        logger.info("Login Apple OAuth bem sucedido", "SocialAuth", {
-          userId: sessionData.user.id,
-        });
+      // Obter dados do usuário atualizado
+      const { data: { user }, error: userError } = await client.auth.getUser();
 
+      if (userError || !user) {
         return {
-          success: true,
-          user: {
-            id: sessionData.user.id,
-            email: sessionData.user.email || "",
-            name: sessionData.user.user_metadata?.full_name,
-            avatarUrl: sessionData.user.user_metadata?.avatar_url,
-          },
+          success: false,
+          error: userError?.message || "Usuário não encontrado após autenticação",
         };
       }
+
+      logger.info("Login Apple OAuth bem sucedido", "SocialAuth", {
+        userId: user.id,
+      });
+
+      return {
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email || "",
+          name: user.user_metadata?.full_name,
+          avatarUrl: user.user_metadata?.avatar_url,
+        },
+      };
+    } catch (error) {
+      logger.error("Erro ao processar redirect do Apple", "SocialAuth", error instanceof Error ? error : new Error(String(error)));
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Erro ao processar resposta de autenticação",
+      };
     }
   }
 
@@ -594,17 +645,19 @@ export async function signInWithFacebook(): Promise<SocialAuthResult> {
       };
     }
 
-    // Native: usar WebBrowser
+    // Native: usar WebBrowser com fluxo PKCE
     let data: { provider: string; url: string | null } | null = null;
     let error: unknown = null;
 
     try {
+      // CRÍTICO: Usar fluxo PKCE (padrão Supabase para mobile)
       const result = await client.auth.signInWithOAuth({
         provider: "facebook",
         options: {
           redirectTo: REDIRECT_URI,
           skipBrowserRedirect: true,
           scopes: "email,public_profile",
+          // PKCE é habilitado automaticamente pelo Supabase quando skipBrowserRedirect: true
         },
       });
 
@@ -656,53 +709,46 @@ export async function signInWithFacebook(): Promise<SocialAuthResult> {
     }
 
     if (browserResult.type === "success" && browserResult.url) {
-      let accessToken: string | null = null;
-      let refreshToken: string | null = null;
-
+      // Criar sessão usando o padrão correto do Supabase
       try {
-        const url = new URL(browserResult.url);
-        const params = new URLSearchParams(url.hash.substring(1));
-        accessToken = params.get("access_token");
-        refreshToken = params.get("refresh_token");
-      } catch (err) {
-        logger.error("Erro ao parsear URL de callback (Facebook)", "SocialAuth", err as Error);
-        return {
-          success: false,
-          error: "Erro ao processar resposta de autenticação",
-        };
-      }
+        const session = await createSessionFromRedirect(browserResult.url);
 
-      if (accessToken) {
-        const { data: sessionData, error: sessionError } = await client.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken || "",
-        });
-
-        if (sessionError) {
+        if (!session) {
           return {
             success: false,
-            error: sessionError.message,
+            error: "Não foi possível criar sessão a partir do redirect",
           };
         }
 
-        if (sessionData.user) {
-          logger.info("Login Facebook bem sucedido", "SocialAuth", {
-            userId: sessionData.user.id,
-          });
+        // Obter dados do usuário atualizado
+        const { data: { user }, error: userError } = await client.auth.getUser();
 
+        if (userError || !user) {
           return {
-            success: true,
-            user: {
-              id: sessionData.user.id,
-              email: sessionData.user.email || "",
-              name:
-                sessionData.user.user_metadata?.full_name || sessionData.user.user_metadata?.name,
-              avatarUrl:
-                sessionData.user.user_metadata?.avatar_url ||
-                sessionData.user.user_metadata?.picture,
-            },
+            success: false,
+            error: userError?.message || "Usuário não encontrado após autenticação",
           };
         }
+
+        logger.info("Login Facebook bem sucedido", "SocialAuth", {
+          userId: user.id,
+        });
+
+        return {
+          success: true,
+          user: {
+            id: user.id,
+            email: user.email || "",
+            name: user.user_metadata?.full_name || user.user_metadata?.name,
+            avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture,
+          },
+        };
+      } catch (error) {
+        logger.error("Erro ao processar redirect do Facebook", "SocialAuth", error instanceof Error ? error : new Error(String(error)));
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : "Erro ao processar resposta de autenticação",
+        };
       }
     }
 

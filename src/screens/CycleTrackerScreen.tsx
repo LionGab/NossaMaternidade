@@ -9,7 +9,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useCycleStore } from "../state/store";
 import { useTheme } from "../hooks/useTheme";
-import { COLORS, GRADIENTS } from "../theme/design-system";
+import { Tokens } from "../theme/tokens";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const DAY_SIZE = (SCREEN_WIDTH - 64) / 7;
@@ -71,24 +71,24 @@ export default function CycleTrackerScreen() {
 
     let phase = "Folicular";
     let phaseDescription = "Seu corpo esta se preparando para a ovulacao";
-    let phaseColor: string = GRADIENTS.cycle.fertile;
+    let phaseColor: string = Tokens.cycleColors.fertile;
 
     if (isInPeriod) {
       phase = "Menstruacao";
       phaseDescription = "Periodo menstrual";
-      phaseColor = GRADIENTS.cycle.menstrual;
+      phaseColor = Tokens.cycleColors.menstrual;
     } else if (isOvulationDay) {
       phase = "Ovulacao";
       phaseDescription = "Dia mais fertil do ciclo";
-      phaseColor = GRADIENTS.cycle.follicular;
+      phaseColor = Tokens.cycleColors.follicular;
     } else if (isInFertileWindow) {
       phase = "Janela Fertil";
       phaseDescription = "Alta chance de concepcao";
-      phaseColor = GRADIENTS.cycle.ovulation;
+      phaseColor = Tokens.cycleColors.ovulation;
     } else if (currentCycleDay > ovulationDay) {
       phase = "Lutea";
       phaseDescription = "Corpo se preparando para o proximo ciclo";
-      phaseColor = GRADIENTS.cycle.luteal;
+      phaseColor = Tokens.cycleColors.luteal;
     }
 
     return {
@@ -474,7 +474,7 @@ export default function CycleTrackerScreen() {
             }}
           >
             <View className="flex-row items-center justify-center">
-              <Ionicons name="add-circle" size={24} color={COLORS.text.inverse} />
+              <Ionicons name="add-circle" size={24} color={Tokens.neutral[0]} />
               <Text className="text-white text-base font-semibold ml-2">
                 {selectedDate ? "Marcar Periodo Neste Dia" : "Registrar Menstruacao"}
               </Text>

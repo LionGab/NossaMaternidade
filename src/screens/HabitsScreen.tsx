@@ -22,7 +22,10 @@ import * as Haptics from "expo-haptics";
 import { Card } from "../components/ui";
 import { useTheme } from "../hooks/useTheme";
 import { IconName } from "../types/icons";
-import { COLORS, SPACING, RADIUS, ACCESSIBILITY } from "../theme/design-system";
+import { Tokens, spacing } from "../theme/tokens";
+
+// Local alias for cleaner code
+const SPACING = spacing;
 
 // Microtextos de validação após marcar cada cuidado
 const FEEDBACK_MESSAGES: Record<string, string> = {
@@ -94,7 +97,7 @@ export default function HabitsScreen() {
                   ? `${habit.color}25`
                   : `${habit.color}12`
                 : bgCard,
-              borderRadius: RADIUS.xl,
+              borderRadius: Tokens.radius.xl,
               borderWidth: 1.5,
               borderColor: habit.completed ? habit.color : borderColor,
               overflow: "hidden",
@@ -104,7 +107,7 @@ export default function HabitsScreen() {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                padding: SPACING.lg,
+                padding: Tokens.spacing.lg,
               }}
             >
               {/* Icon Container */}
@@ -112,10 +115,10 @@ export default function HabitsScreen() {
                 style={{
                   width: 52,
                   height: 52,
-                  borderRadius: RADIUS.lg,
+                  borderRadius: Tokens.radius.lg,
                   alignItems: "center",
                   justifyContent: "center",
-                  marginRight: SPACING.md,
+                  marginRight: Tokens.spacing.md,
                   backgroundColor: habit.completed ? habit.color : `${habit.color}15`,
                 }}
               >
@@ -150,12 +153,12 @@ export default function HabitsScreen() {
                 </Text>
               </View>
 
-              {/* Checkbox - Using ACCESSIBILITY.minTapTarget for iOS HIG compliance */}
+              {/* Checkbox - Using accessibility.minTapTarget for iOS HIG compliance */}
               <View
                 style={{
-                  width: ACCESSIBILITY.minTapTarget,
-                  height: ACCESSIBILITY.minTapTarget,
-                  borderRadius: ACCESSIBILITY.minTapTarget / 2,
+                  width: Tokens.accessibility.minTapTarget,
+                  height: Tokens.accessibility.minTapTarget,
+                  borderRadius: Tokens.accessibility.minTapTarget / 2,
                   alignItems: "center",
                   justifyContent: "center",
                   backgroundColor: habit.completed ? habit.color : "transparent",
@@ -184,10 +187,10 @@ export default function HabitsScreen() {
         <View style={{ paddingTop: insets.top }}>
           <View
             style={{
-              paddingHorizontal: SPACING.xl,
-              paddingTop: SPACING.lg,
-              paddingBottom: SPACING.lg,
-              backgroundColor: isDark ? colors.neutral[900] : COLORS.primary[50],
+              paddingHorizontal: Tokens.spacing.xl,
+              paddingTop: Tokens.spacing.lg,
+              paddingBottom: Tokens.spacing.lg,
+              backgroundColor: isDark ? colors.neutral[900] : Tokens.brand.primary[50],
             }}
           >
             <Animated.View entering={FadeInDown.duration(600).springify()}>
@@ -221,21 +224,21 @@ export default function HabitsScreen() {
           <Animated.View
             entering={FadeIn.duration(300)}
             style={{
-              marginHorizontal: SPACING.xl,
-              marginTop: SPACING.md,
-              marginBottom: SPACING.sm,
-              backgroundColor: isDark ? COLORS.primary[900] : COLORS.primary[50],
-              borderRadius: RADIUS.lg,
-              padding: SPACING.md,
+              marginHorizontal: Tokens.spacing.xl,
+              marginTop: Tokens.spacing.md,
+              marginBottom: Tokens.spacing.sm,
+              backgroundColor: isDark ? Tokens.brand.primary[900] : Tokens.brand.primary[50],
+              borderRadius: Tokens.radius.lg,
+              padding: Tokens.spacing.md,
               borderWidth: 1,
-              borderColor: isDark ? COLORS.primary[700] : COLORS.primary[100],
+              borderColor: isDark ? Tokens.brand.primary[700] : Tokens.brand.primary[100],
             }}
           >
             <Text
               style={{
                 fontSize: 14,
                 fontWeight: "500",
-                color: isDark ? COLORS.primary[200] : COLORS.primary[700],
+                color: isDark ? Tokens.brand.primary[200] : Tokens.brand.primary[700],
                 textAlign: "center",
                 fontFamily: "Manrope_500Medium",
               }}
@@ -249,14 +252,14 @@ export default function HabitsScreen() {
         <Animated.View
           entering={FadeIn.delay(200).duration(500)}
           style={{
-            marginHorizontal: SPACING.xl,
-            marginTop: SPACING.md,
-            marginBottom: SPACING.lg,
+            marginHorizontal: Tokens.spacing.xl,
+            marginTop: Tokens.spacing.md,
+            marginBottom: Tokens.spacing.lg,
           }}
         >
           <Card variant="outlined" padding="lg" radius="xl">
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={{ fontSize: 20, marginRight: SPACING.sm }}>
+              <Text style={{ fontSize: 20, marginRight: Tokens.spacing.sm }}>
                 {completedCount === 0 ? "🌙" : completedCount >= habits.length ? "🌟" : "💫"}
               </Text>
               <Text
@@ -279,7 +282,7 @@ export default function HabitsScreen() {
         </Animated.View>
 
         {/* Habits List (flat, no categories) */}
-        <View style={{ paddingHorizontal: SPACING.xl }}>
+        <View style={{ paddingHorizontal: Tokens.spacing.xl }}>
           {habits.map((habit, index) => renderHabitCard(habit, index))}
         </View>
 
@@ -287,13 +290,13 @@ export default function HabitsScreen() {
         <Animated.View
           entering={FadeInUp.delay(500).duration(600).springify()}
           style={{
-            marginHorizontal: SPACING.xl,
-            marginTop: SPACING.xl,
+            marginHorizontal: Tokens.spacing.xl,
+            marginTop: Tokens.spacing.xl,
           }}
         >
           <Card variant="soft" padding="lg" radius="xl">
             <View style={{ alignItems: "center" }}>
-              <Text style={{ fontSize: 24, marginBottom: SPACING.sm }}>💕</Text>
+              <Text style={{ fontSize: 24, marginBottom: Tokens.spacing.sm }}>💕</Text>
               <Text
                 style={{
                   fontSize: 15,

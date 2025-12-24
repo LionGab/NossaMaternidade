@@ -25,6 +25,7 @@
     "test:oauth": "node scripts/test-oauth-providers.mjs",
     "create:admin": "node scripts/create-admin-user.mjs",
     "setup-secrets": "bash scripts/setup-secrets.sh",
+    "download:reels": "node scripts/download-reels.js",
     "deploy-functions": "bash scripts/deploy-edge-functions.sh",
     "verify-setup": "bash scripts/verify-complete-setup.sh",
     "clean": "node scripts/clean-cache.js",

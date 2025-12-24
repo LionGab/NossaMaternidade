@@ -1,4 +1,4 @@
-import { SPACING } from "../theme/design-system";
+import { SPACING } from "../theme/tokens";
 
 type SpacingKey = keyof typeof SPACING;
 

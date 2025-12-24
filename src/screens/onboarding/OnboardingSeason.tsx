@@ -6,7 +6,7 @@
 
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -25,7 +25,12 @@ export default function OnboardingSeason({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { stage, date, concerns, emotionalState, dailyCheckIn, checkInTime } = route.params;
-  const { data, setSeasonName, canProceed } = useNathJourneyOnboardingStore();
+  const { data, setSeasonName, canProceed, setCurrentScreen } =
+    useNathJourneyOnboardingStore();
+
+  useEffect(() => {
+    setCurrentScreen("OnboardingSeason");
+  }, [setCurrentScreen]);
 
   const [customSeason, setCustomSeason] = useState(data.seasonName || "");
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);

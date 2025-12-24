@@ -17,10 +17,10 @@ import Animated, {
   withSequence,
 } from "react-native-reanimated";
 import { useVoice, useVoicePremiumGate } from "../hooks/useVoice";
-import { COLORS } from "../theme/design-system";
+import { Tokens } from "../theme/tokens";
 import { cn } from "../utils/cn";
 
-const PRIMARY_COLOR = COLORS.primary[500];
+const PRIMARY_COLOR = Tokens.brand.primary[500];
 
 // ============================================
 // TIPOS

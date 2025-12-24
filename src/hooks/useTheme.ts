@@ -8,7 +8,6 @@
 import React, { useMemo } from "react";
 import { useColorScheme } from "react-native";
 import { useAppStore } from "../state/store";
-import { COLORS, COLORS_DARK } from "../theme/design-system";
 import {
   neutral,
   feeling,
@@ -19,12 +18,87 @@ import {
   components,
   layout,
   getThemeTokens,
-} from "../theme/tokens";
-import {
   brand,
   gradients,
+} from "../theme/tokens";
+import {
   getPresetTokens,
+  border as presetBorder,
+  surface as presetSurface,
+  text as presetText,
+  semantic as presetSemantic,
 } from "../theme/presets/calmFemtech";
+
+// Cores derivadas de tokens para compatibilidade
+const COLORS = {
+  primary: brand.primary,
+  secondary: brand.secondary,
+  accent: brand.accent,
+  neutral: neutral,
+  background: {
+    primary: neutral[50],
+    secondary: neutral[100],
+    tertiary: neutral[200],
+    card: presetSurface.light.card,
+    canvas: presetSurface.light.canvas,
+    elevated: presetSurface.light.elevated,
+  },
+  text: {
+    primary: neutral[900],
+    secondary: neutral[600],
+    tertiary: neutral[500],
+    muted: neutral[400],
+    inverse: presetText.light.inverse,
+  },
+  border: presetBorder.light,
+  semantic: {
+    // Nested for backward compat
+    light: presetSemantic.light,
+    dark: presetSemantic.dark,
+    // Flat access for convenience
+    ...presetSemantic.light,
+  },
+  legacyAccent: {
+    sky: "#BAE6FD",
+    lavender: "#DDD6FE",
+    peach: "#FECACA",
+  },
+};
+
+const COLORS_DARK = {
+  primary: brand.primary,
+  secondary: brand.secondary,
+  accent: brand.accent,
+  neutral: neutral,
+  background: {
+    primary: neutral[900],
+    secondary: neutral[800],
+    tertiary: neutral[700],
+    card: presetSurface.dark.card,
+    canvas: presetSurface.dark.canvas,
+    elevated: presetSurface.dark.elevated,
+  },
+  text: {
+    primary: neutral[100],
+    secondary: neutral[400],
+    tertiary: neutral[500],
+    muted: neutral[600],
+    inverse: presetText.dark.inverse,
+  },
+  border: presetBorder.dark,
+  semantic: {
+    // Nested for backward compat
+    light: presetSemantic.light,
+    dark: presetSemantic.dark,
+    // Flat access for convenience
+    ...presetSemantic.dark,
+  },
+  legacyAccent: {
+    sky: "#BAE6FD",
+    lavender: "#DDD6FE",
+    peach: "#FECACA",
+  },
+};
 
 export type ThemeMode = "light" | "dark" | "system";
 

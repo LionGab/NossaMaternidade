@@ -6,7 +6,14 @@
 import React, { useCallback, useEffect } from "react";
 import { View, Text, Pressable, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { COLORS, SPACING, RADIUS, SHADOWS, TYPOGRAPHY } from "../../theme/design-system";
+import { neutral, spacing, radius, shadows, typography, semantic } from "../../theme/tokens";
+
+// Local aliases for cleaner code
+const COLORS = { neutral, semantic: semantic.light };
+const SPACING = spacing;
+const RADIUS = radius;
+const SHADOWS = shadows;
+const TYPOGRAPHY = typography;
 
 export type ToastType = "success" | "error" | "info" | "warning";
 

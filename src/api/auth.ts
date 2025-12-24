@@ -1,4 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import * as AuthSession from "expo-auth-session";
+import { Platform } from "react-native";
 import { supabase, Database } from "./supabase";
 import { logger } from "../utils/logger";
 
@@ -18,6 +20,20 @@ function checkSupabase(): SupabaseClient<Database> {
     throw new Error("Supabase is not configured. Please add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY to your environment variables.");
   }
   return supabase;
+}
+
+function getEmailRedirectUri(): string {
+  if (Platform.OS === "web") {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    return `${origin}/auth/callback`;
+  }
+
+  const uri = AuthSession.makeRedirectUri({
+    scheme: "nossamaternidade",
+    path: "auth/callback",
+  });
+
+  return uri || "nossamaternidade://auth/callback";
 }
 
 /**
@@ -74,6 +90,28 @@ export async function signIn(email: string, password: string) {
   } catch (error) {
     logger.error("Sign in error", "Auth", error as Error);
     return { user: null, session: null, error };
+  }
+}
+
+/**
+ * Sign in with magic link (email OTP)
+ */
+export async function signInWithMagicLink(email: string) {
+  try {
+    const client = checkSupabase();
+    const { error } = await client.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: getEmailRedirectUri(),
+      },
+    });
+
+    if (error) throw error;
+
+    return { error: null };
+  } catch (error) {
+    logger.error("Magic link sign in error", "Auth", error as Error);
+    return { error };
   }
 }
 

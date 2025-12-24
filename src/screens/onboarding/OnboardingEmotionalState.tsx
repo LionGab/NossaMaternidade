@@ -6,7 +6,7 @@
 
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -31,7 +31,12 @@ export default function OnboardingEmotionalState({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { stage, date, concerns } = route.params;
-  const { data, setEmotionalState, canProceed } = useNathJourneyOnboardingStore();
+  const { data, setEmotionalState, canProceed, setCurrentScreen } =
+    useNathJourneyOnboardingStore();
+
+  useEffect(() => {
+    setCurrentScreen("OnboardingEmotionalState");
+  }, [setCurrentScreen]);
 
   const handleSelectState = async (state: EmotionalState) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

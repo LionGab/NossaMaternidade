@@ -42,14 +42,23 @@ import {
   TONE_OPTIONS,
   NOTIFICATION_OPTIONS,
 } from "../types/nathia-onboarding";
-import {
-  COLORS,
-  GRADIENTS,
-  SPACING,
-  RADIUS,
-  TYPOGRAPHY,
-} from "../theme/design-system";
+import { brand, neutral, spacing, radius, typography, surface, gradients } from "../theme/tokens";
 import { RootStackScreenProps } from "../types/navigation";
+
+// Compatibility aliases for existing code
+const GRADIENTS = gradients;
+const COLORS = {
+  primary: brand.primary,
+  accent: brand.accent,
+  neutral: neutral,
+  background: {
+    primary: surface.light.base,
+    card: surface.light.card,
+  }
+};
+const SPACING = spacing;
+const RADIUS = radius;
+const TYPOGRAPHY = typography;
 
 type Props = RootStackScreenProps<"NathIAOnboarding">;
 
@@ -1434,7 +1443,7 @@ export default function NathIAOnboardingScreen({ navigation }: Props) {
       }}
     >
       <LinearGradient
-        colors={[...GRADIENTS.nathiaOnboarding, COLORS.background.primary]}
+        colors={[GRADIENTS.nathiaOnboarding[0], GRADIENTS.nathiaOnboarding[1], COLORS.background.primary]}
         locations={[0, 0.3, 1]}
         style={{
           position: "absolute",

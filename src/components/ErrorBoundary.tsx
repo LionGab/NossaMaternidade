@@ -2,7 +2,7 @@ import React, { Component, ReactNode } from "react";
 import { View, Text, Pressable, ScrollView, useColorScheme } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { logger } from "../utils/logger";
-import { COLORS, COLORS_DARK } from "../theme/design-system";
+import { Tokens, COLORS, COLORS_DARK } from "../theme/tokens";
 
 interface Props {
   children: ReactNode;
@@ -34,10 +34,10 @@ function ErrorFallbackUI({
   // Cores adaptadas para o tema
   const colors = isDark ? COLORS_DARK : COLORS;
   const bgColor = colors.background.primary;
-  const titleColor = isDark ? colors.neutral[900] : colors.neutral[800];
-  const textColor = isDark ? colors.neutral[700] : colors.neutral[500];
-  const errorColor = colors.semantic.error;
-  const errorBg = colors.semantic.errorLight;
+  const titleColor = isDark ? Tokens.neutral[900] : Tokens.neutral[800];
+  const textColor = isDark ? Tokens.neutral[700] : Tokens.neutral[500];
+  const errorColor = Tokens.semantic.light.error;
+  const errorBg = Tokens.semantic.light.errorLight;
 
   return (
     <View
@@ -119,7 +119,7 @@ function ErrorFallbackUI({
         >
           <Text
             style={{
-              color: COLORS.text.inverse,
+              color: Tokens.text.light.inverse,
               fontSize: 16,
               fontWeight: "600",
             }}

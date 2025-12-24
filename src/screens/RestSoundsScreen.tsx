@@ -17,7 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 // expo-av deprecated, será migrado para expo-audio em versão futura
 import { Audio } from "expo-av";
 import { useTheme } from "../hooks/useTheme";
-import { COLORS, GRADIENTS, OVERLAY, RADIUS, SPACING, TYPOGRAPHY } from "../theme/design-system";
+import { Tokens } from "../theme/tokens";
 
 type SoundCategory = "nature" | "meditation" | "sleep";
 
@@ -40,7 +40,7 @@ const SOUNDS: SoundItem[] = [
     subtitle: "Som relaxante de chuva",
     duration: "30 min",
     icon: "rainy",
-    color: COLORS.primary[400],
+    color: Tokens.brand.primary[400],
     category: "nature",
   },
   {
@@ -49,7 +49,7 @@ const SOUNDS: SoundItem[] = [
     subtitle: "Paz do oceano",
     duration: "45 min",
     icon: "water",
-    color: COLORS.accent[500],
+    color: Tokens.brand.accent[500],
     category: "nature",
   },
   {
@@ -58,7 +58,7 @@ const SOUNDS: SoundItem[] = [
     subtitle: "Passaros e natureza",
     duration: "40 min",
     icon: "leaf",
-    color: COLORS.semantic.success,
+    color: Tokens.semantic.light.success,
     category: "nature",
   },
   {
@@ -67,7 +67,7 @@ const SOUNDS: SoundItem[] = [
     subtitle: "Crepitar do fogo",
     duration: "60 min",
     icon: "flame",
-    color: COLORS.semantic.warning,
+    color: Tokens.semantic.light.warning,
     category: "nature",
   },
 
@@ -78,7 +78,7 @@ const SOUNDS: SoundItem[] = [
     subtitle: "Para maes",
     duration: "10 min",
     icon: "heart",
-    color: COLORS.primary[500],
+    color: Tokens.brand.primary[500],
     category: "meditation",
   },
   {
@@ -87,7 +87,7 @@ const SOUNDS: SoundItem[] = [
     subtitle: "Meditacao guiada",
     duration: "15 min",
     icon: "body",
-    color: COLORS.secondary[500],
+    color: Tokens.brand.secondary[500],
     category: "meditation",
   },
   {
@@ -96,7 +96,7 @@ const SOUNDS: SoundItem[] = [
     subtitle: "Meditacao de bondade",
     duration: "12 min",
     icon: "sparkles",
-    color: COLORS.legacyAccent.coral,
+    color: Tokens.brand.accent[500],
     category: "meditation",
   },
 
@@ -107,7 +107,7 @@ const SOUNDS: SoundItem[] = [
     subtitle: "Para voce e seu bebe",
     duration: "20 min",
     icon: "musical-notes",
-    color: COLORS.secondary[500],
+    color: Tokens.brand.secondary[500],
     category: "sleep",
   },
   {
@@ -116,7 +116,7 @@ const SOUNDS: SoundItem[] = [
     subtitle: "Narracao tranquila",
     duration: "25 min",
     icon: "book",
-    color: COLORS.primary[500],
+    color: Tokens.brand.primary[500],
     category: "sleep",
   },
   {
@@ -125,7 +125,7 @@ const SOUNDS: SoundItem[] = [
     subtitle: "Som continuo suave",
     duration: "60 min",
     icon: "radio",
-    color: COLORS.neutral[400],
+    color: Tokens.neutral[400],
     category: "sleep",
   },
 ];
@@ -136,26 +136,26 @@ const SOUNDS: SoundItem[] = [
  */
 const getRestColors = (_isDark: boolean) => ({
   // Backgrounds - always dark for relaxation
-  bgPrimary: GRADIENTS.rest.bgPrimary,
-  bgSecondary: GRADIENTS.rest.bgSecondary,
-  cardBg: OVERLAY.white.soft,
+  bgPrimary: "#1F2937",
+  bgSecondary: "#111827",
+  cardBg: Tokens.overlay.light,
   cardBgActive: (color: string) => `${color}20`,
   // Text
-  textPrimary: COLORS.text.inverse,
-  textSecondary: COLORS.neutral[400],
-  textMuted: OVERLAY.white.prominent,
+  textPrimary: Tokens.neutral[0],
+  textSecondary: Tokens.neutral[400],
+  textMuted: Tokens.overlay.heavy,
   // UI elements
-  iconBg: GRADIENTS.rest.iconBg,
+  iconBg: "#374151",
   iconBgActive: (color: string) => color,
-  border: OVERLAY.white.soft,
+  border: Tokens.overlay.light,
   borderActive: (color: string) => color,
   // Info card
-  infoBg: OVERLAY.white.soft,
+  infoBg: Tokens.overlay.light,
   infoIconBg: "rgba(192, 132, 252, 0.2)", // Purple theme for rest screen
-  infoIcon: GRADIENTS.rest.infoIcon,
+  infoIcon: "#C084FC",
   // Tab
-  tabBg: OVERLAY.white.soft,
-  tabActive: OVERLAY.white.strong,
+  tabBg: Tokens.overlay.light,
+  tabActive: Tokens.overlay.heavy,
   // Tip - Purple theme for rest screen
   tipBg: "rgba(168, 85, 247, 0.1)",
   tipBorder: "rgba(168, 85, 247, 0.2)",
@@ -227,9 +227,9 @@ export default function RestSoundsScreen() {
       <LinearGradient
         colors={[restColors.bgPrimary, restColors.bgSecondary]}
         style={{
-          paddingTop: insets.top + SPACING.lg,
-          paddingBottom: SPACING.xl,
-          paddingHorizontal: SPACING["2xl"],
+          paddingTop: insets.top + Tokens.spacing.lg,
+          paddingBottom: Tokens.spacing.xl,
+          paddingHorizontal: Tokens.spacing["2xl"],
         }}
       >
         <View
@@ -237,16 +237,16 @@ export default function RestSoundsScreen() {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
-            marginBottom: SPACING["2xl"],
+            marginBottom: Tokens.spacing["2xl"],
           }}
         >
-          <Pressable onPress={handleClose} style={{ padding: SPACING.sm }}>
+          <Pressable onPress={handleClose} style={{ padding: Tokens.spacing.sm }}>
             <Ionicons name="close" size={28} color={restColors.textPrimary} />
           </Pressable>
           <Text
             style={{
               color: restColors.textPrimary,
-              fontSize: TYPOGRAPHY.titleMedium.fontSize,
+              fontSize: Tokens.typography.headlineSmall.fontSize,
               fontWeight: "700",
             }}
           >
@@ -259,18 +259,18 @@ export default function RestSoundsScreen() {
         <View
           style={{
             backgroundColor: restColors.infoBg,
-            borderRadius: RADIUS["2xl"],
-            padding: SPACING.lg,
-            marginBottom: SPACING.lg,
+            borderRadius: Tokens.radius["2xl"],
+            padding: Tokens.spacing.lg,
+            marginBottom: Tokens.spacing.lg,
           }}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <View
               style={{
                 backgroundColor: restColors.infoIconBg,
-                borderRadius: RADIUS.full,
-                padding: SPACING.sm,
-                marginRight: SPACING.md,
+                borderRadius: Tokens.radius.full,
+                padding: Tokens.spacing.sm,
+                marginRight: Tokens.spacing.md,
               }}
             >
               <Ionicons name="moon" size={20} color={restColors.infoIcon} />
@@ -279,7 +279,7 @@ export default function RestSoundsScreen() {
               <Text
                 style={{
                   color: restColors.textPrimary,
-                  fontSize: TYPOGRAPHY.bodySmall.fontSize,
+                  fontSize: Tokens.typography.bodyMedium.fontSize,
                   fontWeight: "600",
                 }}
               >
@@ -288,7 +288,7 @@ export default function RestSoundsScreen() {
               <Text
                 style={{
                   color: restColors.textMuted,
-                  fontSize: TYPOGRAPHY.labelSmall.fontSize,
+                  fontSize: Tokens.typography.caption.fontSize,
                   marginTop: 2,
                 }}
               >
@@ -303,8 +303,8 @@ export default function RestSoundsScreen() {
           style={{
             flexDirection: "row",
             backgroundColor: restColors.tabBg,
-            borderRadius: RADIUS.full,
-            padding: SPACING.xs,
+            borderRadius: Tokens.radius.full,
+            padding: Tokens.spacing.xs,
           }}
         >
           {CATEGORIES.map((cat) => (
@@ -315,8 +315,8 @@ export default function RestSoundsScreen() {
             >
               <View
                 style={{
-                  paddingVertical: SPACING.sm + 2,
-                  borderRadius: RADIUS.full,
+                  paddingVertical: Tokens.spacing.sm + 2,
+                  borderRadius: Tokens.radius.full,
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center",
@@ -333,8 +333,8 @@ export default function RestSoundsScreen() {
                 />
                 <Text
                   style={{
-                    marginLeft: SPACING.sm,
-                    fontSize: TYPOGRAPHY.bodySmall.fontSize,
+                    marginLeft: Tokens.spacing.sm,
+                    fontSize: Tokens.typography.bodyMedium.fontSize,
                     fontWeight: "600",
                     color:
                       selectedCategory === cat.id
@@ -354,16 +354,16 @@ export default function RestSoundsScreen() {
       <ScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: SPACING["2xl"] }}
+        contentContainerStyle={{ paddingBottom: Tokens.spacing["2xl"] }}
       >
-        <View style={{ paddingHorizontal: SPACING["2xl"], paddingTop: SPACING.lg }}>
+        <View style={{ paddingHorizontal: Tokens.spacing["2xl"], paddingTop: Tokens.spacing.lg }}>
           {filteredSounds.map((item, index) => (
             <Animated.View
               key={item.id}
               entering={FadeInUp.delay(index * 80)
                 .duration(500)
                 .springify()}
-              style={{ marginBottom: SPACING.lg }}
+              style={{ marginBottom: Tokens.spacing.lg }}
             >
               <Pressable onPress={() => handlePlaySound(item.id)}>
                 <View
@@ -372,8 +372,8 @@ export default function RestSoundsScreen() {
                       playingSound === item.id
                         ? restColors.cardBgActive(item.color)
                         : restColors.cardBg,
-                    borderRadius: RADIUS["2xl"],
-                    padding: SPACING.xl,
+                    borderRadius: Tokens.radius["2xl"],
+                    padding: Tokens.spacing.xl,
                     borderWidth: 1,
                     borderColor:
                       playingSound === item.id
@@ -394,7 +394,7 @@ export default function RestSoundsScreen() {
                             : restColors.iconBg,
                         alignItems: "center",
                         justifyContent: "center",
-                        marginRight: SPACING.lg,
+                        marginRight: Tokens.spacing.lg,
                       }}
                     >
                       {playingSound === item.id ? (
@@ -413,7 +413,7 @@ export default function RestSoundsScreen() {
                       <Text
                         style={{
                           color: restColors.textPrimary,
-                          fontSize: TYPOGRAPHY.bodyLarge.fontSize,
+                          fontSize: Tokens.typography.bodyMedium.fontSize,
                           fontWeight: "700",
                           marginBottom: 2,
                         }}
@@ -423,8 +423,8 @@ export default function RestSoundsScreen() {
                       <Text
                         style={{
                           color: restColors.textSecondary,
-                          fontSize: TYPOGRAPHY.bodySmall.fontSize,
-                          marginBottom: SPACING.sm,
+                          fontSize: Tokens.typography.bodyMedium.fontSize,
+                          marginBottom: Tokens.spacing.sm,
                         }}
                       >
                         {item.subtitle}
@@ -434,7 +434,7 @@ export default function RestSoundsScreen() {
                         <Text
                           style={{
                             color: restColors.textSecondary,
-                            fontSize: TYPOGRAPHY.labelSmall.fontSize,
+                            fontSize: Tokens.typography.caption.fontSize,
                             marginLeft: 4,
                           }}
                         >
@@ -470,8 +470,8 @@ export default function RestSoundsScreen() {
                     <Animated.View
                       entering={FadeInDown.duration(400)}
                       style={{
-                        marginTop: SPACING.lg,
-                        paddingTop: SPACING.lg,
+                        marginTop: Tokens.spacing.lg,
+                        paddingTop: Tokens.spacing.lg,
                         borderTopWidth: 1,
                         borderTopColor: restColors.border,
                       }}
@@ -486,7 +486,7 @@ export default function RestSoundsScreen() {
                         <Text
                           style={{
                             color: restColors.textMuted,
-                            fontSize: TYPOGRAPHY.labelSmall.fontSize,
+                            fontSize: Tokens.typography.caption.fontSize,
                           }}
                         >
                           Tocando...
@@ -514,24 +514,24 @@ export default function RestSoundsScreen() {
         </View>
 
         {/* Bottom Tip */}
-        <View style={{ paddingHorizontal: SPACING["2xl"], marginTop: SPACING.lg }}>
+        <View style={{ paddingHorizontal: Tokens.spacing["2xl"], marginTop: Tokens.spacing.lg }}>
           <View
             style={{
               backgroundColor: restColors.tipBg,
-              borderRadius: RADIUS["2xl"],
-              padding: SPACING.xl,
+              borderRadius: Tokens.radius["2xl"],
+              padding: Tokens.spacing.xl,
               borderWidth: 1,
               borderColor: restColors.tipBorder,
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-              <Text style={{ fontSize: 24, marginRight: SPACING.md }}>💡</Text>
+              <Text style={{ fontSize: 24, marginRight: Tokens.spacing.md }}>💡</Text>
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
                     color: restColors.textPrimary,
                     fontWeight: "600",
-                    marginBottom: SPACING.sm,
+                    marginBottom: Tokens.spacing.sm,
                   }}
                 >
                   Dica
@@ -539,7 +539,7 @@ export default function RestSoundsScreen() {
                 <Text
                   style={{
                     color: restColors.textMuted,
-                    fontSize: TYPOGRAPHY.bodySmall.fontSize,
+                    fontSize: Tokens.typography.bodyMedium.fontSize,
                     lineHeight: 20,
                   }}
                 >

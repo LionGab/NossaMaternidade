@@ -12,7 +12,7 @@ import React from "react";
 import { Pressable, ViewStyle } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { useTheme } from "../../hooks/useTheme";
-import { SHADOWS } from "../../theme/design-system";
+import { shadows } from "../../theme/tokens";
 
 interface FABProps {
   /** Icon to display (Ionicons name) */
@@ -128,7 +128,7 @@ export function FAB({
         },
         !colorConfig.gradient && {
           backgroundColor: colorConfig.bg,
-          ...SHADOWS.lg,
+          ...shadows.lg,
           shadowColor: colorConfig.shadow,
         },
         style,
@@ -143,7 +143,7 @@ export function FAB({
             borderRadius: currentSize.container / 2,
             alignItems: "center",
             justifyContent: "center",
-            ...SHADOWS.lg,
+            ...shadows.lg,
           }}
         >
           <Ionicons name={icon} size={currentSize.icon} color={colorConfig.icon} />

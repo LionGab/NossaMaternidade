@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeIn, FadeOut, SlideInUp, SlideOutUp } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "../hooks/useTheme";
-import { COLORS, COLORS_DARK } from "../theme/design-system";
+import { Tokens } from "../theme/tokens";
 
 interface OfflineBannerProps {
   /** Called when user taps retry button */
@@ -39,14 +39,14 @@ export function OfflineBanner({ onRetry, isRetrying = false }: OfflineBannerProp
         bg: "rgba(245, 158, 11, 0.15)", // warning com transparência
         border: "rgba(245, 158, 11, 0.3)",
         iconBg: "rgba(245, 158, 11, 0.25)",
-        iconColor: COLORS_DARK.semantic.warning,
-        titleColor: COLORS_DARK.semantic.warning,
+        iconColor: Tokens.semantic.dark.warning,
+        titleColor: Tokens.semantic.dark.warning,
         textColor: "rgba(251, 191, 36, 0.9)", // amber-400
         buttonBg: "rgba(245, 158, 11, 0.2)",
         buttonBorder: "rgba(245, 158, 11, 0.4)",
       }
     : {
-        bg: COLORS.semantic.warningLight,
+        bg: Tokens.semantic.light.warningLight,
         border: "#FDE68A", // amber-200
         iconBg: "#FDE68A",
         iconColor: "#B45309", // amber-700
