@@ -97,8 +97,8 @@
       "ios": {
         "language": "pt-BR",
         "sku": "NOSSA_MATERNIDADE_2025",
-        "ascAppId": "YOUR_APP_STORE_CONNECT_APP_ID",
-        "appleTeamId": "YOUR_APPLE_TEAM_ID"
+        "ascAppId": "SEU_APP_STORE_CONNECT_ID_AQUI", // Substituir
+        "appleTeamId": "SEU_TEAM_ID_AQUI" // Substituir
       },
       "android": {
         "serviceAccountKeyPath": "./google-play-service-account.json",
@@ -142,4 +142,3 @@
     }
   }
 }
-

@@ -65,6 +65,9 @@ docs/archive/
 .cursor/
 core
 
+# Google Play Service Account (credenciais sensíveis)
+google-play-service-account.json
+
 # Arquivos temporários de análise
 Analise.md
 README - cópia.md
@@ -72,3 +75,5 @@ README - cópia.md
 docs/ANALISE_*.md
 
 supabase/.temp/
+
+.env.local

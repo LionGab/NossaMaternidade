@@ -1,7 +1,7 @@
 /**
  * Nossa Maternidade - RevenueCat Service
  * Service layer para integração com RevenueCat SDK
- * 
+ *
  * @module revenuecat
  */
 
@@ -61,6 +61,16 @@ export async function initializePurchases(userId?: string): Promise<void> {
   // RevenueCat não funciona no web
   if (Platform.OS === "web") {
     logger.debug("RevenueCat skipped on web platform", "RevenueCat");
+    isConfigured = false;
+    return;
+  }
+
+  // Expo Go não suporta IAP real (módulo nativo). Use Dev Client.
+  if (Constants.appOwnership === "expo") {
+    logger.info(
+      "Expo Go detectado: RevenueCat desabilitado (use Dev Client para IAP).",
+      "RevenueCat"
+    );
     isConfigured = false;
     return;
   }
@@ -361,4 +371,3 @@ export function getTrialInfo(pkg: PurchasesPackage): {
 
   return { hasTrialPeriod: false, trialDays: 0 };
 }
-

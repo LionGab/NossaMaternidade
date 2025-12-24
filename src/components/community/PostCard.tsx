@@ -61,11 +61,16 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
 
     return (
       <Animated.View
-        entering={FadeInUp.delay(index * 60).duration(450).springify()}
+        entering={FadeInUp.delay(index * 60)
+          .duration(450)
+          .springify()}
         style={[styles.container, animatedStyle]}
       >
         <Pressable
           onPress={() => onPress(post.id)}
+          accessibilityRole="button"
+          accessibilityLabel={`Post de ${post.authorName}. ${post.content.substring(0, 100)}${post.content.length > 100 ? "..." : ""}`}
+          accessibilityHint="Toque para ver detalhes do post"
           style={({ pressed }) => [
             styles.card,
             {
@@ -79,12 +84,12 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
           {/* Status de revisão */}
           {isPending && (
             <View
+              accessibilityRole="text"
+              accessibilityLabel="Este post está em revisão pelos moderadores"
               style={[
                 styles.pendingBadge,
                 {
-                  backgroundColor: isDark
-                    ? Tokens.brand.primary[900]
-                    : Tokens.brand.primary[50],
+                  backgroundColor: isDark ? Tokens.brand.primary[900] : Tokens.brand.primary[50],
                 },
               ]}
             >
@@ -101,23 +106,22 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
               style={[
                 styles.avatar,
                 {
-                  backgroundColor: isDark
-                    ? Tokens.brand.primary[900]
-                    : Tokens.brand.primary[100],
+                  backgroundColor: isDark ? Tokens.brand.primary[900] : Tokens.brand.primary[100],
                 },
               ]}
             >
               <Ionicons name="person" size={22} color={Tokens.brand.primary[500]} />
             </View>
             <View style={styles.authorInfo}>
-              <Text style={[styles.authorName, { color: textPrimary }]}>
-                {post.authorName}
-              </Text>
+              <Text style={[styles.authorName, { color: textPrimary }]}>{post.authorName}</Text>
               <Text style={[styles.timeAgo, { color: textSecondary }]}>
                 {formatTimeAgo(post.createdAt)}
               </Text>
             </View>
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Mais opções do post"
+              accessibilityHint="Toque para ver opções adicionais"
               style={({ pressed }) => [styles.moreButton, { opacity: pressed ? 0.6 : 1 }]}
               onPress={() => onPress(post.id)}
             >
@@ -127,9 +131,7 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
 
           {/* Content */}
           <View style={styles.contentWrapper}>
-            <Text style={[styles.content, { color: textPrimary }]}>
-              {post.content}
-            </Text>
+            <Text style={[styles.content, { color: textPrimary }]}>{post.content}</Text>
           </View>
 
           {/* Image */}
@@ -142,6 +144,8 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
                   { backgroundColor: isDark ? Tokens.neutral[700] : Tokens.neutral[200] },
                 ]}
                 contentFit="cover"
+                accessibilityLabel={`Imagem do post de ${post.authorName}`}
+                accessibilityRole="image"
               />
             </View>
           )}
@@ -152,6 +156,13 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
               {/* Like */}
               <Pressable
                 onPress={handleLikePress}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  post.isLiked
+                    ? `Descurtir. ${post.likesCount} curtidas`
+                    : `Curtir. ${post.likesCount} curtidas`
+                }
+                accessibilityState={{ selected: post.isLiked }}
                 style={({ pressed }) => [styles.actionButton, { opacity: pressed ? 0.7 : 1 }]}
               >
                 <Ionicons
@@ -172,6 +183,9 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
               {/* Comment */}
               <Pressable
                 onPress={() => onComment(post.id)}
+                accessibilityRole="button"
+                accessibilityLabel={`Comentar. ${post.commentsCount} comentários`}
+                accessibilityHint="Toque para ver ou adicionar comentários"
                 style={({ pressed }) => [styles.actionButton, { opacity: pressed ? 0.7 : 1 }]}
               >
                 <Ionicons name="chatbubble-outline" size={22} color={textSecondary} />
@@ -183,6 +197,9 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
               {/* Share */}
               <Pressable
                 onPress={() => onShare(post)}
+                accessibilityRole="button"
+                accessibilityLabel="Compartilhar post"
+                accessibilityHint="Toque para compartilhar este post"
                 style={({ pressed }) => [styles.shareButton, { opacity: pressed ? 0.7 : 1 }]}
               >
                 <Ionicons name="share-outline" size={22} color={textSecondary} />

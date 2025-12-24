@@ -208,10 +208,8 @@ module.exports = {
       [
         "expo-camera",
         {
-          cameraPermission:
-            "O app precisa acessar a câmera para você tirar fotos e gravar vídeos.",
-          microphonePermission:
-            "O app precisa do microfone para gravar áudio em vídeos.",
+          cameraPermission: "O app precisa acessar a câmera para você tirar fotos e gravar vídeos.",
+          microphonePermission: "O app precisa do microfone para gravar áudio em vídeos.",
           recordAudioAndroid: true,
         },
       ],
@@ -220,8 +218,7 @@ module.exports = {
       [
         "expo-av",
         {
-          microphonePermission:
-            "O app precisa do microfone para você gravar mensagens de áudio.",
+          microphonePermission: "O app precisa do microfone para você gravar mensagens de áudio.",
         },
       ],
 
@@ -266,8 +263,7 @@ module.exports = {
       [
         "expo-local-authentication",
         {
-          faceIDPermission:
-            "Permitir $(PRODUCT_NAME) usar Face ID para autenticação rápida.",
+          faceIDPermission: "Permitir $(PRODUCT_NAME) usar Face ID para autenticação rápida.",
         },
       ],
 
@@ -279,8 +275,7 @@ module.exports = {
             "Permitir $(PRODUCT_NAME) acessar sua localização para conectar você com mães próximas.",
           locationAlwaysPermission:
             "Permitir $(PRODUCT_NAME) acessar sua localização em segundo plano.",
-          locationWhenInUsePermission:
-            "Permitir $(PRODUCT_NAME) acessar sua localização.",
+          locationWhenInUsePermission: "Permitir $(PRODUCT_NAME) acessar sua localização.",
           isAndroidBackgroundLocationEnabled: false,
           isIosBackgroundLocationEnabled: false,
         },
@@ -292,8 +287,7 @@ module.exports = {
         {
           photosPermission:
             "Permitir $(PRODUCT_NAME) acessar suas fotos para salvar e compartilhar.",
-          savePhotosPermission:
-            "Permitir $(PRODUCT_NAME) salvar fotos na sua galeria.",
+          savePhotosPermission: "Permitir $(PRODUCT_NAME) salvar fotos na sua galeria.",
           isAccessMediaLocationEnabled: true,
         },
       ],
@@ -324,10 +318,10 @@ module.exports = {
 
       // Sentry (Error tracking)
       [
-        "@sentry/react-native",
+        "@sentry/react-native/expo",
         {
-          organization: process.env.SENTRY_ORG || "nossa-maternidade",
-          project: process.env.SENTRY_PROJECT || "mobile",
+          organization: process.env.SENTRY_ORG || "nossamaternidade",
+          project: process.env.SENTRY_PROJECT || "react-native-j3",
         },
       ],
 

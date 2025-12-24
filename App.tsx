@@ -93,6 +93,15 @@ function App() {
     // Initialize RevenueCat on app startup (with Expo Go fallback)
     const initPremium = async () => {
       try {
+        // Expo Go não suporta IAP real. Evita inicialização para não gerar erro/ruído em runtime.
+        if (Constants.appOwnership === "expo") {
+          logger.info(
+            "Expo Go detectado: RevenueCat desabilitado (use Dev Client para IAP).",
+            "App"
+          );
+          return;
+        }
+
         const revenuecat = await import("./src/services/revenuecat");
         await revenuecat.initializePurchases();
 
@@ -139,7 +148,14 @@ function App() {
 
   if (!fontsLoaded) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background.primary }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: colors.background.primary,
+        }}
+      >
         <ActivityIndicator size="large" color={colors.primary[500]} />
       </View>
     );
@@ -163,5 +179,5 @@ function App() {
   );
 }
 
-// Wrap with Sentry for error boundary (only in production)
-export default Sentry.wrap(App);
+// Em DEV (inclui Expo Go), não envolver com Sentry para evitar warning de init.
+export default __DEV__ ? App : Sentry.wrap(App);

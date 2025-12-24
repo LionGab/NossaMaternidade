@@ -10,14 +10,7 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import {
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { FlatList, Image, StyleSheet, Text, TextInput, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { ComposerCard, NewPostModal, PostCard } from "../components/community";
@@ -184,8 +177,9 @@ const styles = StyleSheet.create({
   sectionDivider: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: SPACING["2xl"], // Aumentado de xl
-    gap: SPACING.lg, // Aumentado de md
+    marginTop: SPACING["2xl"], // Espaço acima do separador
+    marginBottom: SPACING.xl, // Espaço abaixo do separador
+    gap: SPACING.lg,
   },
   dividerLine: {
     flex: 1,

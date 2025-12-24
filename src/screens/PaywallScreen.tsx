@@ -6,40 +6,29 @@
  * Integrada com RevenueCat para compras.
  */
 
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  ActivityIndicator,
-  Linking,
-} from "react-native";
-import Constants from "expo-constants";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import Constants from "expo-constants";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View } from "react-native";
 import Animated, {
-  FadeInUp,
   FadeInDown,
-  useSharedValue,
+  FadeInUp,
   useAnimatedStyle,
+  useSharedValue,
   withRepeat,
-  withTiming,
   withSequence,
+  withTiming,
 } from "react-native-reanimated";
-import { usePremiumStore } from "../state/premium-store";
-import {
-  PREMIUM_FEATURES,
-  DEFAULT_PRICING,
-  type PricingConfig,
-} from "../types/premium";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useToast } from "../context/ToastContext";
-import { RootStackParamList } from "../types/navigation";
-import { IconName } from "../types/icons";
+import { usePremiumStore } from "../state/premium-store";
 import { COLORS, GRADIENTS } from "../theme/design-system";
 import { Tokens } from "../theme/tokens";
+import { IconName } from "../types/icons";
+import { RootStackParamList } from "../types/navigation";
+import { DEFAULT_PRICING, PREMIUM_FEATURES, type PricingConfig } from "../types/premium";
 import { cn } from "../utils/cn";
 import { logger } from "../utils/logger";
 
@@ -74,10 +63,7 @@ const SparkleIcon = () => {
 
   useEffect(() => {
     scale.value = withRepeat(
-      withSequence(
-        withTiming(1.2, { duration: 1000 }),
-        withTiming(1, { duration: 1000 })
-      ),
+      withSequence(withTiming(1.2, { duration: 1000 }), withTiming(1, { duration: 1000 })),
       -1,
       true
     );
@@ -139,11 +125,7 @@ const FeatureCard = ({
         className="w-12 h-12 rounded-full items-center justify-center mr-4"
         style={{ backgroundColor: `${color || PRIMARY_COLOR}20` }}
       >
-        <Ionicons
-          name={icon as IconName}
-          size={24}
-          color={color || PRIMARY_COLOR}
-        />
+        <Ionicons name={icon as IconName} size={24} color={color || PRIMARY_COLOR} />
       </View>
       <View className="flex-1">
         <Text className="text-base font-semibold text-gray-900">{title}</Text>
@@ -203,9 +185,7 @@ const PlanButton = ({
             isSelected ? "border-primary" : "border-gray-300"
           )}
         >
-          {isSelected && (
-            <View className="w-3 h-3 rounded-full bg-primary" />
-          )}
+          {isSelected && <View className="w-3 h-3 rounded-full bg-primary" />}
         </View>
         <Text className="text-base font-semibold text-gray-900 capitalize">
           {plan.type === "yearly" ? "Anual" : "Mensal"}
@@ -246,6 +226,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
 
   // Store
   const { syncWithRevenueCat, setError } = usePremiumStore();
+  const debugTogglePremium = usePremiumStore((s) => s.debugTogglePremium);
+  const isPremium = usePremiumStore((s) => s.isPremium);
 
   // Source para analytics
   const source = route.params?.source || "unknown";
@@ -269,35 +251,28 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
       const packages = await revenuecat.getPackages();
 
       if (packages && packages.length > 0) {
-        const monthlyPkg = packages.find((p) =>
-          p.identifier?.toLowerCase().includes("monthly")
-        );
-        const yearlyPkg = packages.find((p) =>
-          p.identifier?.toLowerCase().includes("yearly")
-        );
+        const monthlyPkg = packages.find((p) => p.identifier?.toLowerCase().includes("monthly"));
+        const yearlyPkg = packages.find((p) => p.identifier?.toLowerCase().includes("yearly"));
 
         if (monthlyPkg || yearlyPkg) {
           setPricing({
             monthly: {
               productId: monthlyPkg?.identifier || DEFAULT_PRICING.monthly.productId,
               price: monthlyPkg?.product.price || DEFAULT_PRICING.monthly.price,
-              priceString:
-                monthlyPkg?.product.priceString || DEFAULT_PRICING.monthly.priceString,
+              priceString: monthlyPkg?.product.priceString || DEFAULT_PRICING.monthly.priceString,
               currency: monthlyPkg?.product.currencyCode || DEFAULT_PRICING.monthly.currency,
               period: "mes",
             },
             yearly: {
               productId: yearlyPkg?.identifier || DEFAULT_PRICING.yearly.productId,
               price: yearlyPkg?.product.price || DEFAULT_PRICING.yearly.price,
-              priceString:
-                yearlyPkg?.product.priceString || DEFAULT_PRICING.yearly.priceString,
+              priceString: yearlyPkg?.product.priceString || DEFAULT_PRICING.yearly.priceString,
               currency: yearlyPkg?.product.currencyCode || DEFAULT_PRICING.yearly.currency,
               period: "ano",
               savingsPercent: 50,
-              monthlyEquivalent:
-                yearlyPkg?.product.price
-                  ? parseFloat((yearlyPkg.product.price / 12).toFixed(2))
-                  : DEFAULT_PRICING.yearly.monthlyEquivalent,
+              monthlyEquivalent: yearlyPkg?.product.price
+                ? parseFloat((yearlyPkg.product.price / 12).toFixed(2))
+                : DEFAULT_PRICING.yearly.monthlyEquivalent,
             },
             trialDays: DEFAULT_PRICING.trialDays,
           });
@@ -332,9 +307,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
     }
 
     const productId =
-      selectedPlan === "yearly"
-        ? pricing.yearly.productId
-        : pricing.monthly.productId;
+      selectedPlan === "yearly" ? pricing.yearly.productId : pricing.monthly.productId;
 
     try {
       setIsPurchasing(true);
@@ -379,11 +352,23 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
       );
 
       setError("Erro ao processar compra. Tente novamente.");
-      showError("Não foi possível completar a compra. Tente novamente ou entre em contato com o suporte.");
+      showError(
+        "Não foi possível completar a compra. Tente novamente ou entre em contato com o suporte."
+      );
     } finally {
       setIsPurchasing(false);
     }
-  }, [selectedPlan, pricing, syncWithRevenueCat, setError, navigation, source, isExpoGo, showInfo, showError]);
+  }, [
+    selectedPlan,
+    pricing,
+    syncWithRevenueCat,
+    setError,
+    navigation,
+    source,
+    isExpoGo,
+    showInfo,
+    showError,
+  ]);
 
   /**
    * Restaura compras
@@ -403,8 +388,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
       if (result.success && result.customerInfo) {
         await syncWithRevenueCat();
 
-        const hasActive =
-          Object.keys(result.customerInfo.entitlements.active).length > 0;
+        const hasActive = Object.keys(result.customerInfo.entitlements.active).length > 0;
 
         if (hasActive) {
           showInfo("Sua assinatura foi restaurada com sucesso!");
@@ -466,10 +450,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
   // Placeholder para Expo Go
   if (isExpoGo) {
     return (
-      <LinearGradient
-        colors={GRADIENTS.paywallPink}
-        style={{ flex: 1 }}
-      >
+      <LinearGradient colors={GRADIENTS.paywallPink} style={{ flex: 1 }}>
         <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
           {/* Header com botao fechar */}
           <View className="flex-row justify-end px-4 py-2">
@@ -487,7 +468,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
               Premium Disponível em{"\n"}Build Nativo
             </Text>
             <Text className="text-base text-gray-600 mt-4 text-center leading-6">
-              O sistema de assinatura Premium está disponível apenas em builds nativos (Dev Client ou EAS Build).
+              O sistema de assinatura Premium está disponível apenas em builds nativos (Dev Client
+              ou EAS Build).
             </Text>
             <Text className="text-sm text-gray-500 mt-4 text-center leading-5">
               Para testar compras, faça um build de desenvolvimento:
@@ -497,6 +479,25 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
                 eas build --profile preview --platform ios
               </Text>
             </View>
+
+            {/* DEV ONLY: simular premium para testar gates/fluxos sem Store */}
+            {__DEV__ && (
+              <Pressable
+                onPress={() => {
+                  debugTogglePremium();
+                  showInfo(
+                    isPremium ? "Premium desativado (simulação)" : "Premium ativado (simulação)"
+                  );
+                }}
+                className="mt-6 w-full rounded-xl bg-white/90 px-4 py-3 items-center"
+                accessibilityRole="button"
+                accessibilityLabel="Simular Premium (apenas desenvolvimento)"
+              >
+                <Text className="text-sm font-bold text-gray-900">
+                  {isPremium ? "Desativar Premium (DEV)" : "Ativar Premium (DEV)"}
+                </Text>
+              </Pressable>
+            )}
           </View>
         </SafeAreaView>
       </LinearGradient>
@@ -504,10 +505,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
   }
 
   return (
-    <LinearGradient
-      colors={GRADIENTS.paywallPink}
-      style={{ flex: 1 }}
-    >
+    <LinearGradient colors={GRADIENTS.paywallPink} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
         {/* Header com botao fechar */}
         <View className="flex-row justify-end px-4 py-2">
@@ -525,10 +523,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
           showsVerticalScrollIndicator={false}
         >
           {/* Hero */}
-          <Animated.View
-            entering={FadeInDown.springify()}
-            className="items-center px-6 pt-4 pb-8"
-          >
+          <Animated.View entering={FadeInDown.springify()} className="items-center px-6 pt-4 pb-8">
             <SparkleIcon />
 
             <Text className="text-3xl font-bold text-gray-900 mt-6 text-center">
@@ -536,8 +531,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
             </Text>
 
             <Text className="text-base text-gray-600 mt-3 text-center leading-6">
-              Sua companheira de maternidade com voz, exercicios exclusivos e
-              suporte ilimitado
+              Sua companheira de maternidade com voz, exercicios exclusivos e suporte ilimitado
             </Text>
 
             {/* Trial badge */}
@@ -613,10 +607,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
           <Pressable
             onPress={handlePurchase}
             disabled={isPurchasing || isLoadingPrices}
-            className={cn(
-              "w-full rounded-2xl py-4 items-center",
-              isPurchasing && "opacity-80"
-            )}
+            className={cn("w-full rounded-2xl py-4 items-center", isPurchasing && "opacity-80")}
             style={{ backgroundColor: PRIMARY_COLOR }}
           >
             {isPurchasing ? (

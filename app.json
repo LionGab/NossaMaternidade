@@ -121,6 +121,14 @@
           "photosPermission": "O app precisa acessar suas fotos para você compartilhar na comunidade.",
           "cameraPermission": "O app precisa da câmera para você tirar fotos."
         }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "react-native-j3",
+          "organization": "nossamaternidade"
+        }
       ]
     ],
     "extra": {
