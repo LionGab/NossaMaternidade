@@ -24,16 +24,8 @@ import NathIAOnboardingScreen from "../screens/NathIAOnboardingScreen";
 import NotificationPermissionScreen from "../screens/NotificationPermissionScreen";
 import OnboardingScreen from "../screens/OnboardingScreen";
 
-// Nath Journey Onboarding (new)
-import OnboardingWelcome from "../screens/onboarding/OnboardingWelcome";
-import OnboardingStage from "../screens/onboarding/OnboardingStage";
-import OnboardingDate from "../screens/onboarding/OnboardingDate";
-import OnboardingConcerns from "../screens/onboarding/OnboardingConcerns";
-import OnboardingEmotionalState from "../screens/onboarding/OnboardingEmotionalState";
-import OnboardingCheckIn from "../screens/onboarding/OnboardingCheckIn";
-import OnboardingSeason from "../screens/onboarding/OnboardingSeason";
-import OnboardingSummary from "../screens/onboarding/OnboardingSummary";
-import OnboardingPaywall from "../screens/onboarding/OnboardingPaywall";
+// Nath Journey Onboarding - Stories Format (NEW)
+import OnboardingStoriesScreen from "../screens/OnboardingStoriesScreen";
 import { useNathJourneyOnboardingStore } from "../state/nath-journey-onboarding-store";
 
 // Main Navigator
@@ -175,55 +167,16 @@ export default function RootNavigator() {
         />
       )}
 
-      {/* Stage 2.5: Nath Journey Onboarding (NEW - 8 telas) */}
+      {/* Stage 2.5: Nath Journey Onboarding - Stories Format */}
       {shouldShowNathJourneyOnboarding && (
-        <>
-          <Stack.Screen
-            name="OnboardingWelcome"
-            component={OnboardingWelcome}
-            options={{ animation: "fade" }}
-          />
-          <Stack.Screen
-            name="OnboardingStage"
-            component={OnboardingStage}
-            options={{ animation: "slide_from_right" }}
-          />
-          <Stack.Screen
-            name="OnboardingDate"
-            component={OnboardingDate}
-            options={{ animation: "slide_from_right" }}
-          />
-          <Stack.Screen
-            name="OnboardingConcerns"
-            component={OnboardingConcerns}
-            options={{ animation: "slide_from_right" }}
-          />
-          <Stack.Screen
-            name="OnboardingEmotionalState"
-            component={OnboardingEmotionalState}
-            options={{ animation: "slide_from_right" }}
-          />
-          <Stack.Screen
-            name="OnboardingCheckIn"
-            component={OnboardingCheckIn}
-            options={{ animation: "slide_from_right" }}
-          />
-          <Stack.Screen
-            name="OnboardingSeason"
-            component={OnboardingSeason}
-            options={{ animation: "slide_from_right" }}
-          />
-          <Stack.Screen
-            name="OnboardingSummary"
-            component={OnboardingSummary}
-            options={{ animation: "slide_from_right" }}
-          />
-          <Stack.Screen
-            name="OnboardingPaywall"
-            component={OnboardingPaywall}
-            options={{ animation: "slide_from_right" }}
-          />
-        </>
+        <Stack.Screen
+          name="OnboardingStories"
+          component={OnboardingStoriesScreen}
+          options={{
+            animation: "fade",
+            gestureEnabled: false,
+          }}
+        />
       )}
 
       {/* Stage 3: Main Onboarding (name, stage, interests) - LEGACY */}

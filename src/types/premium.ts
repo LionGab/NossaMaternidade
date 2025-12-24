@@ -160,12 +160,12 @@ export const DEFAULT_PRICING: PricingConfig = {
   },
   yearly: {
     productId: PRODUCT_IDS.YEARLY,
-    price: 99.00,
-    priceString: "R$ 99,00",
+    price: 79.90,
+    priceString: "R$ 79,90",
     currency: "BRL",
     period: "ano",
-    savingsPercent: 58,
-    monthlyEquivalent: 8.25,
+    savingsPercent: 67,
+    monthlyEquivalent: 6.66,
   },
   trialDays: 7,
 };

@@ -13,8 +13,11 @@ export type RootStackParamList = {
 
   // Main App
   Onboarding: undefined;
-  
-  // Nath Journey Onboarding (new)
+
+  // Nath Journey Onboarding - Stories Format
+  OnboardingStories: undefined;
+
+  // Nath Journey Onboarding (legacy - individual screens)
   OnboardingWelcome: undefined;
   OnboardingStage: undefined;
   OnboardingDate: { stage: string };

@@ -251,24 +251,34 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
 
       if (packages && packages.length > 0) {
         const monthlyPkg = packages.find((p) => p.identifier?.toLowerCase().includes("monthly"));
-        const yearlyPkg = packages.find((p) => p.identifier?.toLowerCase().includes("yearly"));
+        const yearlyPkg = packages.find((p) =>
+          p.identifier?.toLowerCase().includes("yearly") ||
+          p.identifier?.toLowerCase().includes("annual")
+        );
 
         if (monthlyPkg || yearlyPkg) {
           setPricing({
             monthly: {
-              productId: monthlyPkg?.identifier || DEFAULT_PRICING.monthly.productId,
+              productId: monthlyPkg?.product.identifier || DEFAULT_PRICING.monthly.productId,
               price: monthlyPkg?.product.price || DEFAULT_PRICING.monthly.price,
               priceString: monthlyPkg?.product.priceString || DEFAULT_PRICING.monthly.priceString,
               currency: monthlyPkg?.product.currencyCode || DEFAULT_PRICING.monthly.currency,
               period: "mes",
             },
             yearly: {
-              productId: yearlyPkg?.identifier || DEFAULT_PRICING.yearly.productId,
+              productId: yearlyPkg?.product.identifier || DEFAULT_PRICING.yearly.productId,
               price: yearlyPkg?.product.price || DEFAULT_PRICING.yearly.price,
               priceString: yearlyPkg?.product.priceString || DEFAULT_PRICING.yearly.priceString,
               currency: yearlyPkg?.product.currencyCode || DEFAULT_PRICING.yearly.currency,
               period: "ano",
-              savingsPercent: 50,
+              savingsPercent:
+                monthlyPkg?.product.price && yearlyPkg?.product.price
+                  ? Math.round(
+                      ((monthlyPkg.product.price * 12 - yearlyPkg.product.price) /
+                        (monthlyPkg.product.price * 12)) *
+                        100
+                    )
+                  : DEFAULT_PRICING.yearly.savingsPercent,
               monthlyEquivalent: yearlyPkg?.product.price
                 ? parseFloat((yearlyPkg.product.price / 12).toFixed(2))
                 : DEFAULT_PRICING.yearly.monthlyEquivalent,
@@ -320,7 +330,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
 
       const revenuecat = await import("../services/revenuecat");
       const packages = await revenuecat.getPackages();
-      const selectedPackage = packages?.find((p) => p.identifier === productId);
+      const selectedPackage = packages?.find((p) => p.product.identifier === productId);
 
       if (!selectedPackage) {
         throw new Error("Pacote nao encontrado");

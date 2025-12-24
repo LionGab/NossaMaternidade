@@ -24,7 +24,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.nossamaternidade.app",
+      "bundleIdentifier": "br.com.nossamaternidade.app",
       "buildNumber": "1",
       "icon": "./assets/icon.png",
       "requireFullScreen": false,

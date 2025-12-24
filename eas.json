@@ -96,9 +96,9 @@
     "production": {
       "ios": {
         "language": "pt-BR",
-        "sku": "NOSSA_MATERNIDADE_2025",
-        "ascAppId": "SEU_APP_STORE_CONNECT_ID_AQUI", // Substituir
-        "appleTeamId": "SEU_TEAM_ID_AQUI" // Substituir
+        "sku": "nossamaternidade001",
+        "ascAppId": "6756980888",
+        "appleTeamId": "KZPW4S77UH"
       },
       "android": {
         "serviceAccountKeyPath": "./google-play-service-account.json",
@@ -110,7 +110,7 @@
     "staging": {
       "ios": {
         "language": "pt-BR",
-        "sku": "NOSSA_MATERNIDADE_2025"
+        "sku": "nossamaternidade001"
       },
       "android": {
         "serviceAccountKeyPath": "./google-play-service-account.json",
@@ -121,7 +121,7 @@
     "internal": {
       "ios": {
         "language": "pt-BR",
-        "sku": "NOSSA_MATERNIDADE_2025"
+        "sku": "nossamaternidade001"
       },
       "android": {
         "serviceAccountKeyPath": "./google-play-service-account.json",
@@ -132,7 +132,7 @@
     "beta": {
       "ios": {
         "language": "pt-BR",
-        "sku": "NOSSA_MATERNIDADE_2025"
+        "sku": "nossamaternidade001"
       },
       "android": {
         "serviceAccountKeyPath": "./google-play-service-account.json",
