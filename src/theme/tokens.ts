@@ -99,6 +99,29 @@ export const brand = {
 } as const;
 
 // ===========================================
+// BORDER TOKENS
+// ===========================================
+
+export const border = {
+  light: {
+    /** Subtle border for cards and dividers */
+    subtle: "#E8F0F8",
+    /** Default border */
+    default: "#DCE9F1",
+    /** Strong border */
+    strong: "#B4D7E8",
+  },
+  dark: {
+    /** Subtle border for cards (barely visible on black) */
+    subtle: "#2A2A2A",
+    /** Default border (visible separation) */
+    default: "#3D3D3D",
+    /** Strong border (clear separation) */
+    strong: "#4D4D4D",
+  },
+} as const;
+
+// ===========================================
 // SURFACE TOKENS - Superfícies e Backgrounds
 // ===========================================
 
@@ -591,6 +614,7 @@ export const getThemeTokens = (mode: ThemeMode) => ({
   surface: surface[mode],
   text: text[mode],
   semantic: semantic[mode],
+  border: border[mode],
   neutral,
   feeling,
   typography,
@@ -715,6 +739,7 @@ export const Tokens = {
   text,
   semantic,
   surface,
+  border,
   gradients,
   typography,
   spacing,

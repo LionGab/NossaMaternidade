@@ -19,6 +19,7 @@ import {
   components,
   layout,
   getThemeTokens,
+  border,
 } from "../theme/tokens";
 import {
   brand,
@@ -84,6 +85,7 @@ export function useTheme() {
     // =========================================
     tokens: legacyTokens,
     neutral,
+    border: border[shouldUseDark ? "dark" : "light"],
     feeling,
     typography,
     spacing,

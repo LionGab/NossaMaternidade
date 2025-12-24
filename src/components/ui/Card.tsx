@@ -77,7 +77,7 @@ export function Card({
   style,
   ...props
 }: CardProps) {
-  const { card: cardTokens, brand, isDark } = useTheme();
+  const { card: cardTokens, brand, border: borderTokens, isDark } = useTheme();
 
   const baseStyle = useMemo(
     () => ({
@@ -92,7 +92,7 @@ export function Card({
     () => ({
       default: {
         borderWidth: isDark ? 0.5 : 1,  // Subtle border in dark mode
-        borderColor: isDark ? "#2A2A2A" : cardTokens.base.border,
+        borderColor: isDark ? borderTokens.subtle : cardTokens.base.border,
       },
       elevated: {
         backgroundColor: color || cardTokens.elevated.background,
@@ -100,7 +100,7 @@ export function Card({
         ...(isDark
           ? {
               borderWidth: 0.5,
-              borderColor: "#3D3D3D",
+              borderColor: borderTokens.default,
             }
           : {
               shadowColor: brand.primary[900],
@@ -113,12 +113,12 @@ export function Card({
       outlined: {
         backgroundColor: color || cardTokens.outlined.background,
         borderWidth: isDark ? 1 : 1,
-        borderColor: isDark ? "#3D3D3D" : cardTokens.outlined.border,
+        borderColor: isDark ? borderTokens.default : cardTokens.outlined.border,
       },
       soft: {
         backgroundColor: color || brand.primary[isDark ? 900 : 50],
         borderWidth: isDark ? 0.5 : 0,  // Add subtle border in dark
-        borderColor: isDark ? "#2A2A2A" : "transparent",
+        borderColor: isDark ? borderTokens.subtle : "transparent",
       },
       accent: {
         borderWidth: 1.5,
@@ -128,7 +128,7 @@ export function Card({
           : brand.accent[50],
       },
     }),
-    [isDark, cardTokens, brand, color]
+    [isDark, cardTokens, brand, borderTokens, color]
   );
 
   const combinedStyle = [baseStyle, variantStyle[variant], style];

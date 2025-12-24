@@ -156,7 +156,7 @@ export function Button({
         bgDisabled: secondary.backgroundDisabled,
         textDisabled: secondary.textDisabled,
         shadow: undefined,
-        borderWidth: isDark ? 1.5 : 1.5,  // Thicker border in dark for visibility
+        borderWidth: 1.5,  // Thicker border for visibility
       },
       // Outline customizável
       outline: {
@@ -167,7 +167,7 @@ export function Button({
         bgDisabled: "transparent",
         textDisabled: neutral[400],
         shadow: undefined,
-        borderWidth: isDark ? 1.5 : 1.5,
+        borderWidth: 1.5,  // Thicker border for visibility
       },
       // Sem fundo - Terciário
       ghost: {

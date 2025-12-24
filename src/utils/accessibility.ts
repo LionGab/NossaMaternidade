@@ -142,7 +142,18 @@ export function tapTargetStyle(width?: number, height?: number) {
  * @see https://www.w3.org/TR/WCAG21/#dfn-relative-luminance
  */
 export function getLuminance(hex: string): number {
-  const rgb = parseInt(hex.slice(1), 16);
+  // Validate and normalize hex input
+  if (!hex || typeof hex !== 'string') {
+    throw new Error('Invalid hex color: must be a non-empty string');
+  }
+  
+  const cleanHex = hex.startsWith('#') ? hex.slice(1) : hex;
+  
+  if (!/^[0-9A-Fa-f]{6}$/.test(cleanHex)) {
+    throw new Error(`Invalid hex color format: ${hex}. Expected format: #RRGGBB`);
+  }
+  
+  const rgb = parseInt(cleanHex, 16);
   const r = (rgb >> 16) & 0xff;
   const g = (rgb >> 8) & 0xff;
   const b = (rgb >> 0) & 0xff;
