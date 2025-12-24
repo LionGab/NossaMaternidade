@@ -5,7 +5,7 @@
  * Posts são enviados para revisão antes de serem publicados
  * Suporta: texto, imagem, vídeo
  *
- * Design: Calm FemTech - Design System 2025
+ * Design: Calm FemTech 2025 - Espaçamentos generosos, hierarquia clara
  */
 
 import { Ionicons } from "@expo/vector-icons";
@@ -24,7 +24,8 @@ import { ComposerCard, NewPostModal, PostCard } from "../components/community";
 import { FAB, ScreenHeader } from "../components/ui";
 import { useCommunity } from "../hooks/useCommunity";
 import { useTheme } from "../hooks/useTheme";
-import { COLORS, RADIUS, SPACING } from "../theme/design-system";
+import { Tokens } from "../theme/tokens";
+import { RADIUS, SPACING } from "../theme/design-system";
 import type { MainTabScreenProps } from "../types/navigation";
 
 // Logo Comunidade Mães Valente
@@ -32,17 +33,17 @@ const MAES_VALENTE_LOGO_URL = "https://i.imgur.com/U5ttbqK.jpg";
 
 export default function CommunityScreen({ navigation }: MainTabScreenProps<"Community">) {
   const insets = useSafeAreaInsets();
-  const { colors, isDark, spacing } = useTheme();
+  const { isDark, spacing } = useTheme();
 
   // Hook com toda a lógica
   const community = useCommunity(navigation);
 
-  // Theme colors
-  const bgPrimary = colors.background.primary;
-  const textMain = isDark ? colors.neutral[100] : colors.neutral[900];
-  const textMuted = isDark ? colors.neutral[400] : colors.neutral[500];
-  const textSecondary = isDark ? colors.neutral[400] : COLORS.text.secondary;
-  const borderColor = isDark ? colors.neutral[700] : COLORS.neutral[200];
+  // Theme colors usando Tokens
+  const bgPrimary = isDark ? Tokens.surface.dark.base : Tokens.surface.light.base;
+  const textMain = isDark ? Tokens.neutral[100] : Tokens.neutral[900];
+  const textMuted = isDark ? Tokens.neutral[400] : Tokens.neutral[500];
+  const textSecondary = isDark ? Tokens.neutral[400] : Tokens.text.light.secondary;
+  const borderColor = isDark ? Tokens.neutral[700] : Tokens.neutral[200];
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: bgPrimary }]} edges={["top"]}>
@@ -54,7 +55,7 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
           logo={
             <Image
               source={{ uri: MAES_VALENTE_LOGO_URL }}
-              style={{ width: 32, height: 32 }}
+              style={{ width: 36, height: 36, borderRadius: 18 }}
             />
           }
           rightActions={[
@@ -73,14 +74,14 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
             style={[
               styles.searchInput,
               {
-                backgroundColor: isDark ? colors.neutral[800] : COLORS.neutral[0],
+                backgroundColor: isDark ? Tokens.neutral[800] : Tokens.neutral[0],
                 borderColor,
                 marginHorizontal: spacing.xl,
-                marginBottom: SPACING.md,
+                marginBottom: SPACING.lg,
               },
             ]}
           >
-            <Ionicons name="search" size={18} color={textSecondary} />
+            <Ionicons name="search" size={20} color={textSecondary} />
             <TextInput
               value={community.searchQuery}
               onChangeText={community.setSearchQuery}
@@ -109,11 +110,11 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
           ListHeaderComponent={
             <View>
               <ComposerCard onPress={community.openNewPostModal} />
-              {/* Separador de seção */}
+              {/* Separador de seção - MELHORADO */}
               <View style={styles.sectionDivider}>
                 <View style={[styles.dividerLine, { backgroundColor: borderColor }]} />
                 <Text style={[styles.sectionLabel, { color: textMuted }]}>
-                  Publicações recentes
+                  PUBLICAÇÕES RECENTES
                 </Text>
                 <View style={[styles.dividerLine, { backgroundColor: borderColor }]} />
               </View>
@@ -124,7 +125,7 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
             styles.listContent,
             {
               paddingHorizontal: spacing.xl,
-              paddingBottom: 120 + insets.bottom,
+              paddingBottom: 140 + insets.bottom, // Mais espaço para FAB
             },
           ]}
           initialNumToRender={5}
@@ -134,7 +135,7 @@ export default function CommunityScreen({ navigation }: MainTabScreenProps<"Comm
         />
 
         {/* FAB - Using FAB component */}
-        <View style={[styles.fabContainer, { bottom: insets.bottom + SPACING.xl }]}>
+        <View style={[styles.fabContainer, { bottom: insets.bottom + SPACING["2xl"] }]}>
           <FAB
             icon="add"
             onPress={community.openNewPostModal}
@@ -165,39 +166,40 @@ const styles = StyleSheet.create({
   searchInput: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: RADIUS.lg,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.xl, // Aumentado de lg
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
     borderWidth: 1,
   },
   searchTextInput: {
     flex: 1,
-    marginLeft: SPACING.sm,
-    fontSize: 15,
-    paddingVertical: SPACING.xs,
+    marginLeft: SPACING.md,
+    fontSize: 16, // Aumentado de 15
+    paddingVertical: SPACING.sm,
+    fontFamily: "Manrope_500Medium",
   },
   listContent: {
-    paddingTop: SPACING.lg,
+    paddingTop: SPACING.xl, // Aumentado de lg
   },
   sectionDivider: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: SPACING.xl,
-    gap: SPACING.md,
+    marginVertical: SPACING["2xl"], // Aumentado de xl
+    gap: SPACING.lg, // Aumentado de md
   },
   dividerLine: {
     flex: 1,
     height: 1,
   },
   sectionLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    fontFamily: "Manrope_600SemiBold",
+    fontSize: 11, // Reduzido de 12
+    fontWeight: "700", // Aumentado de 600
+    fontFamily: "Manrope_700Bold",
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 1.2, // Aumentado de 0.5
   },
   fabContainer: {
     position: "absolute",
-    right: SPACING.xl,
+    right: SPACING["2xl"], // Aumentado de xl
   },
 });

@@ -1,10 +1,11 @@
 /**
  * PostCard - Card de post da comunidade
  *
- * Design: Inspirado no Instagram/Twitter
+ * Design: Calm FemTech 2025 - Inspirado no Instagram
  * - Cards com espaçamento generoso
  * - Hierarquia visual clara
  * - Ações bem espaçadas
+ * - Tokens unificados
  */
 
 import { Ionicons } from "@expo/vector-icons";
@@ -19,7 +20,8 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { useTheme } from "../../hooks/useTheme";
-import { COLORS, RADIUS, SHADOWS, SPACING } from "../../theme/design-system";
+import { Tokens } from "../../theme/tokens";
+import { RADIUS, SHADOWS, SPACING } from "../../theme/design-system";
 import type { Post } from "../../types/navigation";
 import { formatTimeAgo } from "../../utils/formatters";
 
@@ -50,11 +52,11 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
       onLike(post.id);
     };
 
-    // Theme colors
-    const bgCard = isDark ? COLORS.neutral[800] : COLORS.neutral[0];
-    const textPrimary = isDark ? COLORS.neutral[100] : COLORS.text.primary;
-    const textSecondary = isDark ? COLORS.neutral[400] : COLORS.text.secondary;
-    const borderColor = isDark ? COLORS.neutral[700] : COLORS.neutral[200];
+    // Theme colors usando Tokens
+    const bgCard = isDark ? Tokens.neutral[800] : Tokens.neutral[0];
+    const textPrimary = isDark ? Tokens.neutral[100] : Tokens.text.light.primary;
+    const textSecondary = isDark ? Tokens.neutral[400] : Tokens.text.light.secondary;
+    const borderColor = isDark ? Tokens.neutral[700] : Tokens.neutral[200];
     const isPending = post.status === "pending";
 
     return (
@@ -68,7 +70,7 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
             styles.card,
             {
               backgroundColor: bgCard,
-              borderColor: isPending ? COLORS.primary[300] : borderColor,
+              borderColor: isPending ? Tokens.brand.primary[300] : borderColor,
               opacity: pressed ? 0.98 : 1,
               transform: [{ scale: pressed ? 0.995 : 1 }],
             },
@@ -76,16 +78,36 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
         >
           {/* Status de revisão */}
           {isPending && (
-            <View style={styles.pendingBadge}>
-              <Ionicons name="time-outline" size={12} color={COLORS.primary[500]} />
-              <Text style={styles.pendingText}>Em revisão</Text>
+            <View
+              style={[
+                styles.pendingBadge,
+                {
+                  backgroundColor: isDark
+                    ? Tokens.brand.primary[900]
+                    : Tokens.brand.primary[50],
+                },
+              ]}
+            >
+              <Ionicons name="time-outline" size={13} color={Tokens.brand.primary[500]} />
+              <Text style={[styles.pendingText, { color: Tokens.brand.primary[600] }]}>
+                Em revisão
+              </Text>
             </View>
           )}
 
           {/* Header */}
           <View style={styles.header}>
-            <View style={[styles.avatar, { backgroundColor: isDark ? COLORS.primary[900] : COLORS.primary[100] }]}>
-              <Ionicons name="person" size={20} color={COLORS.primary[500]} />
+            <View
+              style={[
+                styles.avatar,
+                {
+                  backgroundColor: isDark
+                    ? Tokens.brand.primary[900]
+                    : Tokens.brand.primary[100],
+                },
+              ]}
+            >
+              <Ionicons name="person" size={22} color={Tokens.brand.primary[500]} />
             </View>
             <View style={styles.authorInfo}>
               <Text style={[styles.authorName, { color: textPrimary }]}>
@@ -99,7 +121,7 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
               style={({ pressed }) => [styles.moreButton, { opacity: pressed ? 0.6 : 1 }]}
               onPress={() => onPress(post.id)}
             >
-              <Ionicons name="ellipsis-horizontal" size={18} color={textSecondary} />
+              <Ionicons name="ellipsis-horizontal" size={20} color={textSecondary} />
             </Pressable>
           </View>
 
@@ -115,7 +137,10 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
             <View style={styles.imageWrapper}>
               <Image
                 source={{ uri: post.imageUrl }}
-                style={styles.image}
+                style={[
+                  styles.image,
+                  { backgroundColor: isDark ? Tokens.neutral[700] : Tokens.neutral[200] },
+                ]}
                 contentFit="cover"
               />
             </View>
@@ -131,13 +156,13 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
               >
                 <Ionicons
                   name={post.isLiked ? "heart" : "heart-outline"}
-                  size={22}
-                  color={post.isLiked ? COLORS.accent[500] : textSecondary}
+                  size={24}
+                  color={post.isLiked ? Tokens.brand.accent[500] : textSecondary}
                 />
                 <Text
                   style={[
                     styles.actionText,
-                    { color: post.isLiked ? COLORS.accent[500] : textSecondary },
+                    { color: post.isLiked ? Tokens.brand.accent[500] : textSecondary },
                   ]}
                 >
                   {post.likesCount}
@@ -149,7 +174,7 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
                 onPress={() => onComment(post.id)}
                 style={({ pressed }) => [styles.actionButton, { opacity: pressed ? 0.7 : 1 }]}
               >
-                <Ionicons name="chatbubble-outline" size={20} color={textSecondary} />
+                <Ionicons name="chatbubble-outline" size={22} color={textSecondary} />
                 <Text style={[styles.actionText, { color: textSecondary }]}>
                   {post.commentsCount}
                 </Text>
@@ -160,7 +185,7 @@ export const PostCard: React.FC<PostCardProps> = React.memo(
                 onPress={() => onShare(post)}
                 style={({ pressed }) => [styles.shareButton, { opacity: pressed ? 0.7 : 1 }]}
               >
-                <Ionicons name="share-outline" size={20} color={textSecondary} />
+                <Ionicons name="share-outline" size={22} color={textSecondary} />
               </Pressable>
             </View>
           </View>
@@ -174,10 +199,10 @@ PostCard.displayName = "PostCard";
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: SPACING.xl, // 20pt entre cards (era 16pt)
+    marginBottom: SPACING["2xl"], // 24pt entre cards (aumentado de 20pt)
   },
   card: {
-    borderRadius: RADIUS["2xl"], // 24pt border radius
+    borderRadius: RADIUS["2xl"], // 32pt border radius (aumentado de 24pt)
     borderWidth: 1,
     ...SHADOWS.md,
     overflow: "hidden",
@@ -187,29 +212,28 @@ const styles = StyleSheet.create({
   pendingBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.primary[50],
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    gap: SPACING.xs,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    gap: SPACING.sm,
   },
   pendingText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "600",
     fontFamily: "Manrope_600SemiBold",
-    color: COLORS.primary[600],
+    letterSpacing: -0.2,
   },
 
   // === HEADER ===
   header: {
     flexDirection: "row",
     alignItems: "center",
-    padding: SPACING.lg, // 16pt padding
+    padding: SPACING.lg,
     paddingBottom: SPACING.md,
   },
   avatar: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -221,6 +245,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     fontFamily: "Manrope_600SemiBold",
+    letterSpacing: -0.3,
   },
   timeAgo: {
     fontSize: 13,
@@ -228,9 +253,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   moreButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -238,12 +263,13 @@ const styles = StyleSheet.create({
   // === CONTENT ===
   contentWrapper: {
     paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.lg,
+    paddingBottom: SPACING.md,
   },
   content: {
     fontSize: 15,
     lineHeight: 24,
     fontFamily: "Manrope_500Medium",
+    letterSpacing: -0.2,
   },
 
   // === IMAGE ===
@@ -253,9 +279,8 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 200,
+    height: 240, // Aumentado de 200pt
     borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.neutral[200],
   },
 
   // === ACTIONS ===
@@ -276,9 +301,10 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   actionText: {
-    fontSize: 14,
+    fontSize: 15, // Aumentado de 14
     fontWeight: "600",
     fontFamily: "Manrope_600SemiBold",
+    letterSpacing: -0.2,
   },
   shareButton: {
     marginLeft: "auto",
