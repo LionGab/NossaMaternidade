@@ -71,3 +71,4 @@ README - cópia.md
 *.deprecated
 docs/ANALISE_*.md
 
+supabase/.temp/
