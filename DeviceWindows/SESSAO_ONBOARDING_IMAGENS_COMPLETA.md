@@ -3,6 +3,7 @@
 ## 🎯 Contexto da Sessão
 
 Esta sessão focou em:
+
 1. **Implementação completa** do onboarding narrativo "Jornada da Nath" (8 telas)
 2. **Tentativa de download automático** de imagens do Instagram da Nathália Valente
 3. **Documentação e organização** de assets para o onboarding
@@ -224,12 +225,14 @@ assets/onboarding/
 ### Setup Inicial
 
 1. **Clonar repositório**
+
    ```bash
    git clone <repo-url>
    cd NossaMaternidade
    ```
 
 2. **Instalar dependências**
+
    ```bash
    npm install
    # ou
@@ -320,6 +323,7 @@ dir assets\onboarding\images
 #### Problema: Scripts não executam
 
 **Solução:**
+
 ```bash
 # Usar Git Bash ou PowerShell
 # Para scripts .sh, usar Git Bash
@@ -332,12 +336,14 @@ node scripts/download-instagram-images.js
 #### Problema: Paths com barras invertidas
 
 **Solução:**
+
 - O código usa paths Unix (`/`) que funcionam no Windows também
 - Se necessário, usar `path.join()` do Node.js
 
 #### Problema: LightningCSS no Windows
 
 **Solução:**
+
 - Script `scripts/fix-lightningcss.js` roda automaticamente no `postinstall`
 - Se falhar, executar manualmente:
   ```bash
@@ -433,10 +439,11 @@ src/
 ### Estado
 
 - **Zustand selectors**: Usar selectores individuais
+
   ```typescript
   // ✅ BOM
   const user = useAppStore((s) => s.user);
-  
+
   // ❌ RUIM (cria nova ref)
   const { user } = useAppStore((s) => ({ user: s.user }));
   ```
@@ -565,4 +572,3 @@ MainApp
 **Última atualização**: 24 de dezembro de 2024
 **Sessão**: Onboarding "Jornada da Nath" + Download de Imagens Instagram
 **Status**: Implementação completa, aguardando assets reais
-
