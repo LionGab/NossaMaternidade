@@ -5,7 +5,7 @@
  */
 
 import React, { memo } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Platform, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
@@ -18,6 +18,8 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useTheme } from "../../hooks/useTheme";
 import { Tokens } from "../../theme/tokens";
 import { StageCardData } from "../../types/nath-journey-onboarding.types";
+
+const isWeb = Platform.OS === "web";
 
 interface StageCardProps {
   data: StageCardData;
@@ -71,74 +73,94 @@ function StageCardComponent({ data, isSelected, onPress }: StageCardProps) {
     opacity: checkmarkScale.value,
   }));
 
+  // Card content (shared between web and native)
+  const cardContent = (
+    <>
+      {/* Image with gradient overlay */}
+      <View style={styles.imageContainer}>
+        <Image
+          source={data.image}
+          style={styles.image}
+          resizeMode="cover"
+          defaultSource={data.image}
+          accessible
+          accessibilityLabel={`${data.title}. ${data.quote}`}
+          accessibilityRole="button"
+        />
+        <LinearGradient
+          colors={["transparent", "rgba(0,0,0,0.6)"]}
+          style={styles.imageOverlay}
+        />
+
+        {/* Checkmark com animação */}
+        <Animated.View style={[styles.checkmarkContainer, animatedCheckmarkStyle]}>
+          <LinearGradient
+            colors={Tokens.gradients.accent}
+            style={styles.checkmark}
+          >
+            <Ionicons name="checkmark" size={20} color={Tokens.neutral[0]} />
+          </LinearGradient>
+        </Animated.View>
+
+        {/* Icon flutuando na imagem */}
+        <View style={styles.iconContainer}>
+          <Text style={styles.icon}>{data.icon}</Text>
+        </View>
+      </View>
+
+      {/* Content */}
+      <View style={[styles.content, { backgroundColor: theme.surface.card }]}>
+        <Text
+          style={[
+            styles.title,
+            { color: theme.text.primary },
+          ]}
+          numberOfLines={1}
+        >
+          {data.title}
+        </Text>
+        <Text
+          style={[
+            styles.quote,
+            { color: theme.text.secondary },
+          ]}
+          numberOfLines={2}
+        >
+          {'"'}{data.quote}{'"'}
+        </Text>
+      </View>
+
+      {/* Selection glow effect */}
+      {isSelected && (
+        <View style={styles.glowEffect} pointerEvents="none">
+          <LinearGradient
+            colors={[`${Tokens.brand.accent[500]}20`, "transparent"]}
+            style={StyleSheet.absoluteFill}
+          />
+        </View>
+      )}
+    </>
+  );
+
+  // Use Pressable for web, GestureDetector for native (better animation support)
+  if (isWeb) {
+    return (
+      <Pressable onPress={onPress}>
+        <AnimatedView
+          style={[styles.card, animatedCardStyle, animatedSelectionStyle]}
+        >
+          {cardContent}
+        </AnimatedView>
+      </Pressable>
+    );
+  }
+
   return (
     <GestureDetector gesture={tapGesture}>
       <AnimatedView
         style={[styles.card, animatedCardStyle, animatedSelectionStyle]}
       >
-        {/* Image with gradient overlay */}
-        <View style={styles.imageContainer}>
-          <Image
-            source={data.image}
-            style={styles.image}
-            resizeMode="cover"
-            defaultSource={data.image}
-            accessible
-            accessibilityLabel={`${data.title}. ${data.quote}`}
-            accessibilityRole="button"
-          />
-          <LinearGradient
-            colors={["transparent", "rgba(0,0,0,0.6)"]}
-            style={styles.imageOverlay}
-          />
-
-          {/* Checkmark com animação */}
-          <Animated.View style={[styles.checkmarkContainer, animatedCheckmarkStyle]}>
-            <LinearGradient
-              colors={Tokens.gradients.accent}
-              style={styles.checkmark}
-            >
-              <Ionicons name="checkmark" size={20} color={Tokens.neutral[0]} />
-            </LinearGradient>
-          </Animated.View>
-
-          {/* Icon flutuando na imagem */}
-          <View style={styles.iconContainer}>
-            <Text style={styles.icon}>{data.icon}</Text>
-          </View>
-        </View>
-
-        {/* Content */}
-        <View style={[styles.content, { backgroundColor: theme.surface.card }]}>
-          <Text
-            style={[
-              styles.title,
-              { color: theme.text.primary },
-            ]}
-            numberOfLines={1}
-          >
-            {data.title}
-          </Text>
-          <Text
-            style={[
-              styles.quote,
-              { color: theme.text.secondary },
-            ]}
-            numberOfLines={2}
-          >
-            {'"'}{data.quote}{'"'}
-          </Text>
-        </View>
-
-        {/* Selection glow effect */}
-        {isSelected && (
-          <View style={styles.glowEffect} pointerEvents="none">
-            <LinearGradient
-              colors={[`${Tokens.brand.accent[500]}20`, "transparent"]}
-              style={StyleSheet.absoluteFill}
-            />
-          </View>
-        )}
+        {cardContent}
       </AnimatedView>
     </GestureDetector>
   );

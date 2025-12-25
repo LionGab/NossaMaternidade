@@ -5,7 +5,7 @@
  */
 
 import React, { memo } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Platform, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
@@ -19,6 +19,8 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useTheme } from "../../hooks/useTheme";
 import { Tokens } from "../../theme/tokens";
 import { ConcernCardData } from "../../types/nath-journey-onboarding.types";
+
+const isWeb = Platform.OS === "web";
 
 interface ConcernCardProps {
   data: ConcernCardData;
@@ -79,6 +81,92 @@ function ConcernCardComponent({ data, isSelected, onPress, disabled }: ConcernCa
     opacity: badgeScale.value,
   }));
 
+  // Card content (shared between web and native)
+  const cardContent = (
+    <>
+      {/* Image com overlay */}
+      <View style={styles.imageContainer}>
+        <Image
+          source={data.image}
+          style={styles.image}
+          resizeMode="cover"
+          defaultSource={data.image}
+        />
+        <LinearGradient
+          colors={["transparent", "rgba(0,0,0,0.4)"]}
+          style={styles.imageOverlay}
+        />
+
+        {/* Badge de remoção */}
+        <Animated.View style={[styles.badge, animatedBadgeStyle]}>
+          <LinearGradient
+            colors={Tokens.gradients.accent}
+            style={styles.badgeGradient}
+          >
+            <Ionicons name="checkmark" size={14} color={Tokens.neutral[0]} />
+          </LinearGradient>
+        </Animated.View>
+      </View>
+
+      {/* Content */}
+      <View style={styles.content}>
+        <Animated.Text style={[styles.emoji, animatedEmojiStyle]}>
+          {data.emoji}
+        </Animated.Text>
+        <Text
+          style={[
+            styles.title,
+            { color: theme.text.primary },
+          ]}
+          numberOfLines={1}
+        >
+          {data.title}
+        </Text>
+        <Text
+          style={[
+            styles.quote,
+            { color: theme.text.secondary },
+          ]}
+          numberOfLines={2}
+        >
+          {'"'}{data.quote}{'"'}
+        </Text>
+      </View>
+
+      {/* Selection highlight */}
+      {isSelected && (
+        <View style={styles.selectionHighlight} pointerEvents="none">
+          <LinearGradient
+            colors={[`${Tokens.brand.accent[500]}15`, "transparent"]}
+            style={StyleSheet.absoluteFill}
+          />
+        </View>
+      )}
+    </>
+  );
+
+  // Use Pressable for web, GestureDetector for native
+  if (isWeb) {
+    return (
+      <Pressable onPress={disabled ? undefined : onPress} disabled={disabled}>
+        <AnimatedView
+          style={[
+            styles.card,
+            { backgroundColor: theme.surface.card },
+            animatedCardStyle,
+            disabled && !isSelected && styles.cardDisabled,
+          ]}
+          accessible
+          accessibilityLabel={`${data.title}. ${data.quote}`}
+          accessibilityRole="button"
+          accessibilityState={{ selected: isSelected, disabled }}
+        >
+          {cardContent}
+        </AnimatedView>
+      </Pressable>
+    );
+  }
+
   return (
     <GestureDetector gesture={tapGesture}>
       <AnimatedView
@@ -93,64 +181,7 @@ function ConcernCardComponent({ data, isSelected, onPress, disabled }: ConcernCa
         accessibilityRole="button"
         accessibilityState={{ selected: isSelected, disabled }}
       >
-        {/* Image com overlay */}
-        <View style={styles.imageContainer}>
-          <Image
-            source={data.image}
-            style={styles.image}
-            resizeMode="cover"
-            defaultSource={data.image}
-          />
-          <LinearGradient
-            colors={["transparent", "rgba(0,0,0,0.4)"]}
-            style={styles.imageOverlay}
-          />
-
-          {/* Badge de remoção */}
-          <Animated.View style={[styles.badge, animatedBadgeStyle]}>
-            <LinearGradient
-              colors={Tokens.gradients.accent}
-              style={styles.badgeGradient}
-            >
-              <Ionicons name="checkmark" size={14} color={Tokens.neutral[0]} />
-            </LinearGradient>
-          </Animated.View>
-        </View>
-
-        {/* Content */}
-        <View style={styles.content}>
-          <Animated.Text style={[styles.emoji, animatedEmojiStyle]}>
-            {data.emoji}
-          </Animated.Text>
-          <Text
-            style={[
-              styles.title,
-              { color: theme.text.primary },
-            ]}
-            numberOfLines={1}
-          >
-            {data.title}
-          </Text>
-          <Text
-            style={[
-              styles.quote,
-              { color: theme.text.secondary },
-            ]}
-            numberOfLines={2}
-          >
-            {'"'}{data.quote}{'"'}
-          </Text>
-        </View>
-
-        {/* Selection highlight */}
-        {isSelected && (
-          <View style={styles.selectionHighlight} pointerEvents="none">
-            <LinearGradient
-              colors={[`${Tokens.brand.accent[500]}15`, "transparent"]}
-              style={StyleSheet.absoluteFill}
-            />
-          </View>
-        )}
+        {cardContent}
       </AnimatedView>
     </GestureDetector>
   );

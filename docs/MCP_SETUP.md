@@ -36,13 +36,15 @@ supabase link --project-ref <SEU_PROJECT_REF>
 npx -y @smithery/cli@latest install @upstash/context7-mcp --client claude
 
 # Expo MCP (via Claude Desktop CLI)
-claude mcp add --transport http expo-mcp https://mcp.expo.dev/mcp
+# Se 'claude' apresentar erro EPERM, use npx:
+npx -y @anthropic-ai/claude-code mcp add --transport http expo-mcp https://mcp.expo.dev/mcp
+# Ou configure manualmente em ~/Library/Application Support/Cursor/User/settings.json
 
 # Memory (persistência de contexto)
-claude mcp add memory-keeper -- npx -y mcp-memory-keeper
+npx -y @anthropic-ai/claude-code mcp add memory-keeper -- npx -y mcp-memory-keeper
 
 # Playwright (testes visuais)
-claude mcp add playwright -- npx -y @anthropic/mcp-server-playwright
+npx -y @anthropic-ai/claude-code mcp add playwright -- npx -y @anthropic/mcp-server-playwright
 npx playwright install chromium
 ```
 
@@ -78,20 +80,20 @@ No Windows, os MCPs são configurados via arquivo de configuração do Cursor:
 
 ## Slash Commands Disponíveis
 
-| Comando | Descrição |
-|---------|-----------|
-| `/build-ios` | Build iOS com quality gate |
+| Comando          | Descrição                      |
+| ---------------- | ------------------------------ |
+| `/build-ios`     | Build iOS com quality gate     |
 | `/build-android` | Build Android com quality gate |
-| `/db-migrate` | Gerenciar migrations Supabase |
-| `/db-types` | Gerar tipos TypeScript |
-| `/ai-debug` | Debug NathIA/Edge Functions |
-| `/ota-update` | Deploy OTA updates |
+| `/db-migrate`    | Gerenciar migrations Supabase  |
+| `/db-types`      | Gerar tipos TypeScript         |
+| `/ai-debug`      | Debug NathIA/Edge Functions    |
+| `/ota-update`    | Deploy OTA updates             |
 | `/context7-docs` | Buscar documentação atualizada |
-| `/perf-check` | Verificações de performance |
-| `/design-check` | Verificar design system |
-| `/design-tokens` | Listar tokens disponíveis |
-| `/audit-colors` | Auditar cores hardcoded |
-| `/audit-a11y` | Auditoria de acessibilidade |
+| `/perf-check`    | Verificações de performance    |
+| `/design-check`  | Verificar design system        |
+| `/design-tokens` | Listar tokens disponíveis      |
+| `/audit-colors`  | Auditar cores hardcoded        |
+| `/audit-a11y`    | Auditoria de acessibilidade    |
 
 ## MCPs Configurados
 
@@ -133,7 +135,7 @@ supabase link --project-ref YOUR_PROJECT_REF
 Para **Claude Desktop**:
 
 ```bash
-claude mcp add --transport http expo-mcp https://mcp.expo.dev/mcp
+npx -y @anthropic-ai/claude-code mcp add --transport http expo-mcp https://mcp.expo.dev/mcp
 ```
 
 **Autenticação**:
@@ -292,7 +294,7 @@ mcp_Playwright_browser_take_screenshot({ fullPage: true });
 **Instalação**:
 
 ```bash
-claude mcp add memory-keeper -- npx -y mcp-memory-keeper
+npx -y @anthropic-ai/claude-code mcp add memory-keeper -- npx -y mcp-memory-keeper
 ```
 
 **Configuração** (adicionar a `~/.claude/settings.json`):
@@ -353,13 +355,15 @@ Para verificar quais MCPs estão disponíveis, use:
 ### Expo MCP não funciona
 
 **Windows:**
+
 - Verifique se o servidor está configurado em `%APPDATA%\Cursor\User\settings.json`
 - Abra Cursor Settings (Ctrl+,) e busque por "MCP" para verificar configuração
 - Certifique-se de estar autenticado no Expo: `npx expo login` ou `eas login`
 - Reinicie o Cursor após adicionar o MCP
 
 **macOS/Linux:**
-- Verifique se o comando foi executado corretamente: `claude mcp add --transport http expo-mcp https://mcp.expo.dev/mcp`
+
+- Verifique se o comando foi executado corretamente: `npx -y @anthropic-ai/claude-code mcp add --transport http expo-mcp https://mcp.expo.dev/mcp`
 - Certifique-se de estar autenticado no Expo: `npx expo login` ou `eas login`
 - Se necessário, autentique via OAuth 2.0 usando `/mcp` no Claude Desktop
 - Verifique se você tem acesso ao projeto Expo configurado
@@ -368,3 +372,14 @@ Para verificar quais MCPs estão disponíveis, use:
 
 - Verifique se a API Key está configurada corretamente
 - Confirme que você tem permissões no workspace Linear
+
+### Termius MCP
+
+**Status**: ⚠️ Não existe servidor MCP oficial do Termius
+
+**Alternativas**:
+
+- Use SSH diretamente no terminal integrado do Cursor
+- Crie um servidor MCP customizado (veja [TERMIUS_MCP_SETUP.md](./TERMIUS_MCP_SETUP.md))
+
+**Documentação completa**: [TERMIUS_MCP_SETUP.md](./TERMIUS_MCP_SETUP.md)

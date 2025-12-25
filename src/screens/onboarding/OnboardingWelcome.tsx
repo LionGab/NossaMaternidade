@@ -38,14 +38,22 @@ export default function OnboardingWelcome({ navigation }: Props) {
     setCurrentScreen("OnboardingWelcome");
   }, [setCurrentScreen]);
 
-  const handleSkip = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const handleSkip = () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     logger.info("Onboarding welcome skipped", "OnboardingWelcome");
     navigation.navigate("OnboardingStage");
   };
 
-  const handleStart = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  const handleStart = () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     logger.info("Onboarding welcome completed", "OnboardingWelcome");
     navigation.navigate("OnboardingStage");
   };

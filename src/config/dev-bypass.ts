@@ -14,8 +14,8 @@
  */
 
 export const DEV_CONFIG = {
-  // Set to true to bypass login/onboarding
-  ENABLE_DEV_BYPASS: false,
+  // Master switch - must be true for any bypass to work
+  ENABLE_DEV_BYPASS: true,
 
   // Mock user data when bypass is enabled
   MOCK_USER: {
@@ -28,18 +28,48 @@ export const DEV_CONFIG = {
     createdAt: new Date().toISOString(),
   },
 
-  // What to bypass
-  BYPASS_LOGIN: true,
-  BYPASS_NOTIFICATION_PERMISSION: true,
-  BYPASS_ONBOARDING: true,
-  BYPASS_NATHIA_ONBOARDING: true,
+  // Granular bypass flags - set individually to test specific flows
+  BYPASS_LOGIN: true,                    // Skip auth screens
+  BYPASS_NOTIFICATION_PERMISSION: true,  // Skip notification permission
+  BYPASS_ONBOARDING: false,              // FALSE = Test onboarding flow!
 };
 
 /**
- * Helper function to check if dev bypass is active
+ * Check if full bypass is active (skips ALL flows to MainApp)
+ * Returns true only if ALL bypass flags are enabled
  */
 export const isDevBypassActive = () => {
-  // Only allow bypass in development environment
   const isDev = __DEV__;
-  return isDev && DEV_CONFIG.ENABLE_DEV_BYPASS;
+  if (!isDev || !DEV_CONFIG.ENABLE_DEV_BYPASS) return false;
+
+  // Only full bypass if ALL individual bypasses are true
+  return (
+    DEV_CONFIG.BYPASS_LOGIN &&
+    DEV_CONFIG.BYPASS_NOTIFICATION_PERMISSION &&
+    DEV_CONFIG.BYPASS_ONBOARDING
+  );
+};
+
+/**
+ * Check if login bypass is active
+ */
+export const isLoginBypassActive = () => {
+  const isDev = __DEV__;
+  return isDev && DEV_CONFIG.ENABLE_DEV_BYPASS && DEV_CONFIG.BYPASS_LOGIN;
+};
+
+/**
+ * Check if notification permission bypass is active
+ */
+export const isNotificationBypassActive = () => {
+  const isDev = __DEV__;
+  return isDev && DEV_CONFIG.ENABLE_DEV_BYPASS && DEV_CONFIG.BYPASS_NOTIFICATION_PERMISSION;
+};
+
+/**
+ * Check if onboarding bypass is active
+ */
+export const isOnboardingBypassActive = () => {
+  const isDev = __DEV__;
+  return isDev && DEV_CONFIG.ENABLE_DEV_BYPASS && DEV_CONFIG.BYPASS_ONBOARDING;
 };

@@ -4,6 +4,7 @@
  * Inclui retry + timeout para melhor reliability
  */
 
+import { getImgurClientId } from "../config/env";
 import { logger } from "../utils/logger";
 import { fetchWithRetry, TIMEOUT_PRESETS } from "../utils/fetch-utils";
 import {
@@ -14,7 +15,6 @@ import {
 } from "../utils/error-handler";
 
 const IMGUR_API_URL = "https://api.imgur.com/3/image";
-const IMGUR_CLIENT_ID = process.env.EXPO_PUBLIC_IMGUR_CLIENT_ID;
 
 export interface ImgurUploadResponse {
   success: boolean;
@@ -37,7 +37,9 @@ export interface ImgurUploadResponse {
  * @throws AppError se configuração inválida ou upload falhar
  */
 export async function uploadImageToImgur(imageUri: string): Promise<string> {
-  if (!IMGUR_CLIENT_ID) {
+  const imgurClientId = getImgurClientId();
+
+  if (!imgurClientId) {
     throw new AppError(
       "IMGUR_CLIENT_ID not configured",
       ErrorCode.UPLOAD_FAILED,
@@ -84,7 +86,7 @@ export async function uploadImageToImgur(imageUri: string): Promise<string> {
       {
         method: "POST",
         headers: {
-          Authorization: `Client-ID ${IMGUR_CLIENT_ID}`,
+          Authorization: `Client-ID ${imgurClientId}`,
         },
         body: formData,
         // Upload pode demorar dependendo do tamanho

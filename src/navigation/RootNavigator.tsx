@@ -1,31 +1,43 @@
 /**
  * Nossa Maternidade - Root Navigator
- * 5-stage authentication flow:
- * 1. !isAuthenticated → LoginScreen
+ * 4-stage authentication flow (simplified):
+ * 1. !isAuthenticated → Login (AuthLanding + EmailAuth)
  * 2. !notificationSetup → NotificationPermissionScreen
- * 3. !isOnboardingComplete → OnboardingScreen (name, stage, interests)
- * 4. !nathIAOnboardingComplete → NathIAOnboardingScreen (AI personalization)
- * 5. Authenticated → MainTabs + Modal Screens
+ * 3. !nathJourneyOnboarding → Nath Journey Onboarding (9 modular screens)
+ * 4. Authenticated → MainTabs + Modal Screens
+ *
+ * Uses flowResolver for deterministic navigation decisions (no polling).
  */
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import React, { useEffect, useState } from "react";
-import { isDevBypassActive } from "../config/dev-bypass";
-import { hasAskedNotificationPermission } from "../services/notifications";
-import { useNathIAOnboardingStore } from "../state/nathia-onboarding-store";
+import React from "react";
+import {
+  isDevBypassActive,
+  isLoginBypassActive,
+  isNotificationBypassActive,
+  isOnboardingBypassActive
+} from "../config/dev-bypass";
+import { useNotificationSetup } from "../hooks/useNotificationSetup";
 import { useAppStore } from "../state/store";
 import { COLORS } from "../theme/tokens";
 import { RootStackParamList } from "../types/navigation";
+import { resolveNavigationFlags, FlowState } from "./flowResolver";
 
-// Auth & Onboarding Screens
+// Auth Screens
 import { AuthLandingScreen, EmailAuthScreen } from "../screens/auth";
 import LoginScreen from "../screens/LoginScreenRedesign";
-import NathIAOnboardingScreen from "../screens/NathIAOnboardingScreen";
 import NotificationPermissionScreen from "../screens/NotificationPermissionScreen";
-import OnboardingScreen from "../screens/OnboardingScreen";
 
-// Nath Journey Onboarding - Stories Format (NEW)
-import OnboardingStoriesScreen from "../screens/OnboardingStoriesScreen";
+// Nath Journey Onboarding - Modular Screens (9 screens)
+import OnboardingWelcome from "../screens/onboarding/OnboardingWelcome";
+import OnboardingStage from "../screens/onboarding/OnboardingStage";
+import OnboardingDate from "../screens/onboarding/OnboardingDate";
+import OnboardingConcerns from "../screens/onboarding/OnboardingConcerns";
+import OnboardingEmotionalState from "../screens/onboarding/OnboardingEmotionalState";
+import OnboardingCheckIn from "../screens/onboarding/OnboardingCheckIn";
+import OnboardingSeason from "../screens/onboarding/OnboardingSeason";
+import OnboardingSummary from "../screens/onboarding/OnboardingSummary";
+import OnboardingPaywall from "../screens/onboarding/OnboardingPaywall";
 import { useNathJourneyOnboardingStore } from "../state/nath-journey-onboarding-store";
 
 // Main Navigator
@@ -53,77 +65,44 @@ import RestSoundsScreen from "../screens/RestSoundsScreen";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
-  // App state
-  const isAuthenticated = useAppStore((s) => s.isAuthenticated);
-  const isOnboardingComplete = useAppStore((s) => s.isOnboardingComplete);
+  // App state (reactive - triggers re-render on change)
+  const isAuthenticatedFromStore = useAppStore((s) => s.isAuthenticated);
 
-  // NathIA onboarding state
-  const isNathIAOnboardingComplete = useNathIAOnboardingStore((s) => s.isComplete);
-
-  // Nath Journey onboarding state (new)
-  const isNathJourneyOnboardingComplete = useNathJourneyOnboardingStore(
+  // Nath Journey onboarding state (reactive) - this is the ONLY onboarding now
+  const isNathJourneyOnboardingCompleteFromStore = useNathJourneyOnboardingStore(
     (s: { isComplete: boolean }) => s.isComplete
   );
 
-  // Notification permission state
-  const [notificationSetupDone, setNotificationSetupDone] = useState<boolean | null>(null);
-
-  // Check notification permission status on mount and poll for changes
-  useEffect(() => {
-    const checkNotificationSetup = async () => {
-      const hasAsked = await hasAskedNotificationPermission();
-      setNotificationSetupDone(hasAsked);
-    };
-
-    // Initial check
-    checkNotificationSetup();
-
-    // Poll every 500ms to detect changes (workaround for web)
-    const interval = setInterval(checkNotificationSetup, 500);
-
-    return () => clearInterval(interval);
-  }, []);
+  // Notification permission state (reactive - no polling needed)
+  const { isSetupDone: notificationSetupDoneFromHook } = useNotificationSetup();
 
   // Loading state while checking notification permission
-  if (notificationSetupDone === null) {
+  if (notificationSetupDoneFromHook === null) {
     return null;
   }
 
-  // Determine which screen to show based on auth state
-  // Flow: Login → NotificationPermission → NathJourneyOnboarding → Onboarding → NathIAOnboarding → MainApp
-  const shouldShowLogin = isDevBypassActive() ? false : !isAuthenticated;
+  // Apply granular dev bypasses for testing
+  const isAuthenticated = isAuthenticatedFromStore || isLoginBypassActive();
+  const notificationSetupDone = notificationSetupDoneFromHook || isNotificationBypassActive();
+  const isNathJourneyOnboardingComplete = isNathJourneyOnboardingCompleteFromStore || isOnboardingBypassActive();
 
-  const shouldShowNotificationPermission = isDevBypassActive()
-    ? false
-    : isAuthenticated && !notificationSetupDone;
+  // Build flow state for resolver (simplified - no more legacy onboarding or NathIA)
+  const flowState: FlowState = {
+    isAuthenticated,
+    notificationSetupDone,
+    isNathJourneyOnboardingComplete,
+    // These are now always true since we removed the duplicates
+    isOnboardingComplete: true,
+    isNathIAOnboardingComplete: true,
+  };
 
-  // NEW: Nath Journey Onboarding (prioritário sobre onboarding antigo)
-  const shouldShowNathJourneyOnboarding = isDevBypassActive()
-    ? false
-    : isAuthenticated && notificationSetupDone && !isNathJourneyOnboardingComplete;
-
-  const shouldShowOnboarding = isDevBypassActive()
-    ? false
-    : isAuthenticated &&
-      notificationSetupDone &&
-      isNathJourneyOnboardingComplete &&
-      !isOnboardingComplete;
-
-  const shouldShowNathIAOnboarding = isDevBypassActive()
-    ? false
-    : isAuthenticated &&
-      notificationSetupDone &&
-      isNathJourneyOnboardingComplete &&
-      isOnboardingComplete &&
-      !isNathIAOnboardingComplete;
-
-  const shouldShowMainApp = isDevBypassActive()
-    ? true
-    : isAuthenticated &&
-      notificationSetupDone &&
-      isNathJourneyOnboardingComplete &&
-      isOnboardingComplete &&
-      isNathIAOnboardingComplete;
+  // Use flowResolver for deterministic navigation (no polling, no race conditions)
+  const {
+    shouldShowLogin,
+    shouldShowNotificationPermission,
+    shouldShowNathJourneyOnboarding,
+    shouldShowMainApp,
+  } = resolveNavigationFlags(flowState, isDevBypassActive());
 
   return (
     <Stack.Navigator
@@ -167,34 +146,55 @@ export default function RootNavigator() {
         />
       )}
 
-      {/* Stage 2.5: Nath Journey Onboarding - Stories Format */}
+      {/* Stage 3: Nath Journey Onboarding - 9 Modular Screens */}
       {shouldShowNathJourneyOnboarding && (
-        <Stack.Screen
-          name="OnboardingStories"
-          component={OnboardingStoriesScreen}
-          options={{
-            animation: "fade",
-            gestureEnabled: false,
-          }}
-        />
-      )}
-
-      {/* Stage 3: Main Onboarding (name, stage, interests) - LEGACY */}
-      {shouldShowOnboarding && (
-        <Stack.Screen
-          name="Onboarding"
-          component={OnboardingScreen}
-          options={{ animation: "fade" }}
-        />
-      )}
-
-      {/* Stage 4: NathIA Onboarding (AI personalization) */}
-      {shouldShowNathIAOnboarding && (
-        <Stack.Screen
-          name="NathIAOnboarding"
-          component={NathIAOnboardingScreen}
-          options={{ animation: "fade" }}
-        />
+        <>
+          <Stack.Screen
+            name="OnboardingWelcome"
+            component={OnboardingWelcome}
+            options={{ animation: "fade", gestureEnabled: false }}
+          />
+          <Stack.Screen
+            name="OnboardingStage"
+            component={OnboardingStage}
+            options={{ animation: "slide_from_right" }}
+          />
+          <Stack.Screen
+            name="OnboardingDate"
+            component={OnboardingDate}
+            options={{ animation: "slide_from_right" }}
+          />
+          <Stack.Screen
+            name="OnboardingConcerns"
+            component={OnboardingConcerns}
+            options={{ animation: "slide_from_right" }}
+          />
+          <Stack.Screen
+            name="OnboardingEmotionalState"
+            component={OnboardingEmotionalState}
+            options={{ animation: "slide_from_right" }}
+          />
+          <Stack.Screen
+            name="OnboardingCheckIn"
+            component={OnboardingCheckIn}
+            options={{ animation: "slide_from_right" }}
+          />
+          <Stack.Screen
+            name="OnboardingSeason"
+            component={OnboardingSeason}
+            options={{ animation: "slide_from_right" }}
+          />
+          <Stack.Screen
+            name="OnboardingSummary"
+            component={OnboardingSummary}
+            options={{ animation: "slide_from_right" }}
+          />
+          <Stack.Screen
+            name="OnboardingPaywall"
+            component={OnboardingPaywall}
+            options={{ animation: "slide_from_right", gestureEnabled: false }}
+          />
+        </>
       )}
 
       {/* Stage 5: Main App */}

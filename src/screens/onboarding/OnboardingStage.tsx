@@ -32,16 +32,24 @@ export default function OnboardingStage({ navigation }: Props) {
     setCurrentScreen("OnboardingStage");
   }, [setCurrentScreen]);
 
-  const handleSelectStage = async (stage: StageType) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const handleSelectStage = (stage: StageType) => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     setStage(stage);
     logger.info(`Stage selected: ${stage}`, "OnboardingStage");
   };
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (!canProceed()) return;
 
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     logger.info("Continuing to date screen", "OnboardingStage");
     navigation.navigate("OnboardingDate", { stage: data.stage! });
   };

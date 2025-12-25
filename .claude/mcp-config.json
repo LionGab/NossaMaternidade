@@ -57,9 +57,7 @@
     "context7": {
       "description": "Documentacao atualizada de libs",
       "status": "available",
-      "capabilities": [
-        "get_library_docs"
-      ],
+      "capabilities": ["get_library_docs"],
       "supportedLibraries": [
         "react-navigation",
         "expo-notifications",
@@ -79,6 +77,17 @@
         "browser_click",
         "browser_type"
       ]
+    },
+
+    "termius": {
+      "description": "Termius SSH/SFTP (sem servidor MCP oficial)",
+      "status": "not_available",
+      "note": "Não existe servidor MCP oficial. Use SSH direto no terminal ou crie servidor customizado.",
+      "alternatives": [
+        "SSH direto no terminal integrado do Cursor",
+        "Servidor MCP customizado (ver docs/TERMIUS_MCP_SETUP.md)"
+      ],
+      "documentation": "docs/TERMIUS_MCP_SETUP.md"
     }
   },
 

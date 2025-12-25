@@ -47,7 +47,20 @@ const REQUIRED_VARS = [
 ];
 
 // Variáveis recomendadas (para features principais)
-const RECOMMENDED_VARS = [];
+const RECOMMENDED_VARS = [
+  {
+    name: 'EXPO_PUBLIC_REVENUECAT_IOS_KEY',
+    description: 'Chave pública do RevenueCat para iOS',
+    feature: 'In-App Purchases (iOS)',
+    link: 'https://app.revenuecat.com/apps/',
+  },
+  {
+    name: 'EXPO_PUBLIC_REVENUECAT_ANDROID_KEY',
+    description: 'Chave pública do RevenueCat para Android',
+    feature: 'In-App Purchases (Android)',
+    link: 'https://app.revenuecat.com/apps/',
+  },
+];
 
 // Variáveis opcionais
 const OPTIONAL_VARS = [

@@ -13,13 +13,9 @@ import Purchases, {
   PurchasesError,
 } from "react-native-purchases";
 import { Platform } from "react-native";
-import Constants from "expo-constants";
+import { getRevenueCatKey } from "../config/env";
 import { logger } from "../utils/logger";
 import { isExpoGo } from "../utils/expo";
-
-// RevenueCat API Keys (from environment)
-const REVENUECAT_IOS_KEY = Constants.expoConfig?.extra?.revenueCatIosKey || "";
-const REVENUECAT_ANDROID_KEY = Constants.expoConfig?.extra?.revenueCatAndroidKey || "";
 
 // Entitlement ID - must match RevenueCat dashboard
 export const PREMIUM_ENTITLEMENT = "premium";
@@ -76,7 +72,7 @@ export async function initializePurchases(userId?: string): Promise<void> {
     return;
   }
 
-  const apiKey = Platform.OS === "ios" ? REVENUECAT_IOS_KEY : REVENUECAT_ANDROID_KEY;
+  const apiKey = getRevenueCatKey(Platform.OS === "ios" ? "ios" : "android");
 
   if (!apiKey) {
     logger.warn(`No API key configured for ${Platform.OS}`, "RevenueCat");

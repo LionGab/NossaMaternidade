@@ -221,5 +221,6 @@
   "editor.guides.indentation": false,
   "claudeCode.allowDangerouslySkipPermissions": true,
   "claudeCode.disableLoginPrompt": true,
-  "claudeCode.useCtrlEnterToSend": false
+  "claudeCode.useCtrlEnterToSend": false,
+  "claudeCode.useTerminal": true
 }

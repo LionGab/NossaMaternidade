@@ -17,6 +17,8 @@ import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import { supabase } from "../api/supabase";
+import { getSupabaseFunctionsUrl } from "../config/env";
+import { markNotificationSetupDone } from "../hooks/useNotificationSetup";
 import { COLORS } from "../theme/tokens";
 import { logger } from "../utils/logger";
 
@@ -61,8 +63,8 @@ const PROJECT_ID =
 // Primary color from design system for Android notification light
 const NOTIFICATION_LIGHT_COLOR = COLORS.primary[500];
 
-// Edge Function URL
-const NOTIFICATIONS_FUNCTION_URL = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/notifications`;
+// Edge Function URL - uses unified env getter
+const NOTIFICATIONS_FUNCTION_URL = `${getSupabaseFunctionsUrl()}/notifications`;
 
 // =======================
 // SUPABASE SYNC FUNCTIONS
@@ -604,6 +606,7 @@ export async function initializeNotifications(): Promise<void> {
 
 /**
  * Mark notification setup as complete (for onboarding flow)
+ * Also updates the reactive store for navigation
  */
 export async function markNotificationSetupComplete(): Promise<void> {
   await AsyncStorage.setItem("@notification_setup_complete", "true");
@@ -612,6 +615,8 @@ export async function markNotificationSetupComplete(): Promise<void> {
   if (!existing) {
     await AsyncStorage.setItem("@notification_permission", "granted");
   }
+  // Update reactive store for navigation (no polling needed)
+  markNotificationSetupDone();
 }
 
 /**
@@ -624,10 +629,13 @@ export async function isNotificationSetupComplete(): Promise<boolean> {
 
 /**
  * Skip notification setup (user chose "Agora não")
+ * Also updates the reactive store for navigation
  */
 export async function skipNotificationSetup(): Promise<void> {
   await AsyncStorage.setItem("@notification_setup_complete", "skipped");
   await AsyncStorage.setItem("@notification_permission", "skipped");
+  // Update reactive store for navigation (no polling needed)
+  markNotificationSetupDone();
 }
 
 // =======================

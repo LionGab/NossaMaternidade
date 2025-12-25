@@ -15,7 +15,10 @@
       "mcp__*",
       "mcp__github__get_issue",
       "mcp__memory-keeper__context_save",
-      "mcp__sequential-thinking__sequentialthinking"
+      "mcp__sequential-thinking__sequentialthinking",
+      "mcp__memory-keeper__context_session_start",
+      "mcp__memory-keeper__context_batch_save",
+      "mcp__memory-keeper__context_checkpoint"
     ],
     "deny": [],
     "defaultMode": "bypassPermissions"
