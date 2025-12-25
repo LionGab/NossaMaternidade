@@ -5,7 +5,8 @@
  */
 
 import React, { memo } from "react";
-import { View, Text, Image, StyleSheet, Platform, Pressable } from "react-native";
+import { View, Text, StyleSheet, Platform, Pressable } from "react-native";
+import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
@@ -55,9 +56,9 @@ function StageCardComponent({ data, isSelected, onPress }: StageCardProps) {
 
   const animatedSelectionStyle = useAnimatedStyle(() => ({
     borderColor: isSelected
-      ? Tokens.brand.accent[500]
+      ? Tokens.brand.accent[300] // Rosa mais suave
       : theme.colors.border.subtle,
-    borderWidth: withSpring(isSelected ? 3 : 1.5, { damping: 20 }),
+    borderWidth: withSpring(isSelected ? 2 : 1, { damping: 20 }),
   }));
 
   const checkmarkScale = useSharedValue(isSelected ? 1 : 0);
@@ -81,11 +82,11 @@ function StageCardComponent({ data, isSelected, onPress }: StageCardProps) {
         <Image
           source={data.image}
           style={styles.image}
-          resizeMode="cover"
-          defaultSource={data.image}
+          contentFit="cover"
+          contentPosition="top"
+          placeholder={data.image}
           accessible
           accessibilityLabel={`${data.title}. ${data.quote}`}
-          accessibilityRole="button"
         />
         <LinearGradient
           colors={["transparent", "rgba(0,0,0,0.6)"]}
@@ -95,10 +96,10 @@ function StageCardComponent({ data, isSelected, onPress }: StageCardProps) {
         {/* Checkmark com animação */}
         <Animated.View style={[styles.checkmarkContainer, animatedCheckmarkStyle]}>
           <LinearGradient
-            colors={Tokens.gradients.accent}
+            colors={[Tokens.brand.accent[300], Tokens.brand.accent[400]]}
             style={styles.checkmark}
           >
-            <Ionicons name="checkmark" size={20} color={Tokens.neutral[0]} />
+            <Ionicons name="checkmark" size={18} color={Tokens.neutral[0]} />
           </LinearGradient>
         </Animated.View>
 
@@ -130,11 +131,11 @@ function StageCardComponent({ data, isSelected, onPress }: StageCardProps) {
         </Text>
       </View>
 
-      {/* Selection glow effect */}
+      {/* Selection glow effect - mais suave */}
       {isSelected && (
         <View style={styles.glowEffect} pointerEvents="none">
           <LinearGradient
-            colors={[`${Tokens.brand.accent[500]}20`, "transparent"]}
+            colors={[`${Tokens.brand.accent[200]}30`, "transparent"]}
             style={StyleSheet.absoluteFill}
           />
         </View>
@@ -170,15 +171,16 @@ export const StageCard = memo(StageCardComponent);
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: Tokens.radius["2xl"],
+    borderRadius: Tokens.radius.xl,
     overflow: "hidden",
-    minHeight: 220,
-    ...Tokens.shadows.md,
+    flex: 1,
+    ...Tokens.shadows.sm, // Sombra mais suave
   },
   imageContainer: {
     width: "100%",
-    height: 140,
+    height: 120,
     position: "relative",
+    backgroundColor: Tokens.neutral[100],
   },
   image: {
     width: "100%",
@@ -189,47 +191,47 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     position: "absolute",
-    bottom: Tokens.spacing.md,
-    left: Tokens.spacing.md,
+    bottom: Tokens.spacing.xs,
+    left: Tokens.spacing.xs,
     backgroundColor: "rgba(255,255,255,0.95)",
-    width: 44,
-    height: 44,
-    borderRadius: Tokens.radius.lg,
+    width: 28,
+    height: 28,
+    borderRadius: Tokens.radius.sm,
     justifyContent: "center",
     alignItems: "center",
     ...Tokens.shadows.sm,
   },
   icon: {
-    fontSize: 24,
+    fontSize: 16,
   },
   checkmarkContainer: {
     position: "absolute",
-    top: Tokens.spacing.md,
-    right: Tokens.spacing.md,
+    top: Tokens.spacing.xs,
+    right: Tokens.spacing.xs,
   },
   checkmark: {
-    width: 36,
-    height: 36,
+    width: 24,
+    height: 24,
     borderRadius: Tokens.radius.full,
     justifyContent: "center",
     alignItems: "center",
-    ...Tokens.shadows.md,
+    ...Tokens.shadows.sm,
   },
   content: {
     flex: 1,
-    padding: Tokens.spacing.lg,
-    gap: Tokens.spacing.xs,
+    padding: Tokens.spacing.sm,
+    gap: 2,
     justifyContent: "center",
   },
   title: {
-    fontSize: Tokens.typography.titleMedium.fontSize,
-    fontWeight: Tokens.typography.titleMedium.fontWeight,
-    lineHeight: Tokens.typography.titleMedium.lineHeight,
+    fontSize: Tokens.typography.labelMedium.fontSize,
+    fontWeight: Tokens.typography.labelMedium.fontWeight,
+    lineHeight: Tokens.typography.labelMedium.lineHeight,
   },
   quote: {
-    fontSize: Tokens.typography.bodySmall.fontSize,
+    fontSize: Tokens.typography.caption.fontSize,
     fontStyle: "italic",
-    lineHeight: Tokens.typography.bodySmall.lineHeight,
+    lineHeight: Tokens.typography.caption.lineHeight,
   },
   glowEffect: {
     ...StyleSheet.absoluteFillObject,

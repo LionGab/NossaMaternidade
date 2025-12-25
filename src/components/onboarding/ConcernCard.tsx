@@ -5,7 +5,8 @@
  */
 
 import React, { memo } from "react";
-import { View, Text, Image, StyleSheet, Platform, Pressable } from "react-native";
+import { View, Text, StyleSheet, Platform, Pressable } from "react-native";
+import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
@@ -56,11 +57,11 @@ function ConcernCardComponent({ data, isSelected, onPress, disabled }: ConcernCa
       runOnJS(onPress)();
     });
 
-  // Animated styles
+  // Animated styles - cores mais suaves
   const animatedCardStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
-    borderColor: isSelected ? Tokens.brand.accent[500] : theme.colors.border.subtle,
-    borderWidth: withSpring(isSelected ? 2.5 : 1, { damping: 20 }),
+    borderColor: isSelected ? Tokens.brand.accent[300] : theme.colors.border.subtle,
+    borderWidth: withSpring(isSelected ? 2 : 1, { damping: 20 }),
   }));
 
   const animatedEmojiStyle = useAnimatedStyle(() => ({
@@ -89,18 +90,19 @@ function ConcernCardComponent({ data, isSelected, onPress, disabled }: ConcernCa
         <Image
           source={data.image}
           style={styles.image}
-          resizeMode="cover"
-          defaultSource={data.image}
+          contentFit="cover"
+          contentPosition="top"
+          placeholder={data.image}
         />
         <LinearGradient
           colors={["transparent", "rgba(0,0,0,0.4)"]}
           style={styles.imageOverlay}
         />
 
-        {/* Badge de remoção */}
+        {/* Badge de seleção - cores suaves */}
         <Animated.View style={[styles.badge, animatedBadgeStyle]}>
           <LinearGradient
-            colors={Tokens.gradients.accent}
+            colors={[Tokens.brand.accent[300], Tokens.brand.accent[400]]}
             style={styles.badgeGradient}
           >
             <Ionicons name="checkmark" size={14} color={Tokens.neutral[0]} />
@@ -133,11 +135,11 @@ function ConcernCardComponent({ data, isSelected, onPress, disabled }: ConcernCa
         </Text>
       </View>
 
-      {/* Selection highlight */}
+      {/* Selection highlight - mais suave */}
       {isSelected && (
         <View style={styles.selectionHighlight} pointerEvents="none">
           <LinearGradient
-            colors={[`${Tokens.brand.accent[500]}15`, "transparent"]}
+            colors={[`${Tokens.brand.accent[200]}25`, "transparent"]}
             style={StyleSheet.absoluteFill}
           />
         </View>
@@ -191,7 +193,7 @@ export const ConcernCard = memo(ConcernCardComponent);
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: Tokens.radius.xl,
+    borderRadius: Tokens.radius.lg, // Bordas mais suaves
     overflow: "hidden",
     ...Tokens.shadows.sm,
   },
@@ -200,8 +202,9 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: "100%",
-    height: 100,
+    height: 130,
     position: "relative",
+    backgroundColor: Tokens.neutral[100],
   },
   image: {
     width: "100%",

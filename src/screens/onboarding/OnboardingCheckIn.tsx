@@ -5,11 +5,15 @@
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import { Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+// Imagem da Nath com Thales
+const CHECKIN_IMAGE = require("../../../assets/onboarding/images/checkin-nath-thales.jpg");
 import { ProgressBar } from "../../components/onboarding/ProgressBar";
 import { useTheme } from "../../hooks/useTheme";
 import { useNathJourneyOnboardingStore } from "../../state/nath-journey-onboarding-store";
@@ -44,8 +48,12 @@ export default function OnboardingCheckIn({ route, navigation }: Props) {
     return date;
   });
 
-  const handleToggleCheckIn = async (enabled: boolean) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const handleToggleCheckIn = (enabled: boolean) => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     setDailyCheckIn(enabled);
     if (enabled && !data.checkInTime) {
       setCheckInTime("20:00");
@@ -68,8 +76,12 @@ export default function OnboardingCheckIn({ route, navigation }: Props) {
     }
   };
 
-  const handleContinue = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  const handleContinue = () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     navigation.navigate("OnboardingSeason", {
       stage,
       date,
@@ -114,25 +126,18 @@ export default function OnboardingCheckIn({ route, navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <Animated.View entering={FadeInDown.duration(300)}>
-          {/* Placeholder para foto da Nath com Thales */}
-          <View
-            style={[
-              styles.imagePlaceholder,
-              {
-                backgroundColor: theme.surface.tertiary,
-              },
-            ]}
-          >
-            <Text
-              style={[
-                styles.imagePlaceholderText,
-                {
-                  color: theme.text.tertiary,
-                },
-              ]}
-            >
-              📸 Foto: Nath checando celular com Thales
-            </Text>
+          {/* Foto da Nath com Thales */}
+          <View style={styles.imageContainer}>
+            <Image
+              source={CHECKIN_IMAGE}
+              style={styles.image}
+              contentFit="cover"
+              contentPosition="top"
+            />
+            <LinearGradient
+              colors={["transparent", "rgba(0,0,0,0.3)"]}
+              style={styles.imageOverlay}
+            />
           </View>
 
           <Text
@@ -205,10 +210,10 @@ export default function OnboardingCheckIn({ route, navigation }: Props) {
               value={data.dailyCheckIn}
               onValueChange={handleToggleCheckIn}
               trackColor={{
-                false: Tokens.neutral[300],
-                true: Tokens.brand.accent[300],
+                false: Tokens.neutral[200],
+                true: Tokens.brand.accent[200],
               }}
-              thumbColor={data.dailyCheckIn ? Tokens.brand.accent[500] : Tokens.neutral[500]}
+              thumbColor={data.dailyCheckIn ? Tokens.brand.accent[400] : Tokens.neutral[400]}
             />
           </View>
 
@@ -330,16 +335,20 @@ const styles = StyleSheet.create({
     paddingTop: Tokens.spacing.lg,
     paddingBottom: Tokens.spacing["4xl"],
   },
-  imagePlaceholder: {
+  imageContainer: {
     width: "100%",
-    height: 200,
+    height: 180,
     borderRadius: Tokens.radius.lg,
-    justifyContent: "center",
-    alignItems: "center",
+    overflow: "hidden",
     marginBottom: Tokens.spacing["2xl"],
+    position: "relative",
   },
-  imagePlaceholderText: {
-    fontSize: Tokens.typography.bodyMedium.fontSize,
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+  imageOverlay: {
+    ...StyleSheet.absoluteFillObject,
   },
   title: {
     fontSize: Tokens.typography.headlineLarge.fontSize,
@@ -360,6 +369,7 @@ const styles = StyleSheet.create({
     borderRadius: Tokens.radius.lg,
     borderWidth: 1,
     marginBottom: Tokens.spacing.lg,
+    ...Tokens.shadows.sm,
   },
   toggleContent: {
     flex: 1,
@@ -384,7 +394,7 @@ const styles = StyleSheet.create({
     paddingVertical: Tokens.spacing.lg,
     paddingHorizontal: Tokens.spacing["2xl"],
     borderRadius: Tokens.radius.lg,
-    borderWidth: 2,
+    borderWidth: 1.5,
     alignItems: "center",
     minHeight: Tokens.accessibility.minTapTarget,
     justifyContent: "center",
@@ -405,7 +415,7 @@ const styles = StyleSheet.create({
   continueButton: {
     borderRadius: Tokens.radius.lg,
     overflow: "hidden",
-    ...Tokens.shadows.md,
+    ...Tokens.shadows.sm,
   },
   continueButtonGradient: {
     paddingVertical: Tokens.spacing.lg,

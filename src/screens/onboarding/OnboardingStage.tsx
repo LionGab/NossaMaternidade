@@ -216,10 +216,13 @@ const styles = StyleSheet.create({
     marginBottom: Tokens.spacing["2xl"],
   },
   cardsContainer: {
-    gap: Tokens.spacing.lg,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: Tokens.spacing.md,
   },
   cardWrapper: {
-    marginBottom: Tokens.spacing.md,
+    width: "48%",
   },
   footer: {
     paddingHorizontal: Tokens.spacing["2xl"],
@@ -228,7 +231,7 @@ const styles = StyleSheet.create({
   continueButton: {
     borderRadius: Tokens.radius.lg,
     overflow: "hidden",
-    ...Tokens.shadows.md,
+    ...Tokens.shadows.sm,
   },
   continueButtonDisabled: {
     opacity: 0.5,

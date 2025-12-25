@@ -61,8 +61,12 @@ export default function OnboardingSummary({ route, navigation }: Props) {
     FINANCAS: "Grana",
   };
 
-  const handleContinue = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  const handleContinue = () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     logger.info("Navigating to paywall", "OnboardingSummary");
     navigation.navigate("OnboardingPaywall", {
       onboardingData: {
@@ -357,15 +361,16 @@ const styles = StyleSheet.create({
     marginBottom: Tokens.spacing["2xl"],
   },
   card: {
-    padding: Tokens.spacing["2xl"],
-    borderRadius: Tokens.radius["2xl"],
+    padding: Tokens.spacing.xl,
+    borderRadius: Tokens.radius.lg,
     borderWidth: 1,
-    marginBottom: Tokens.spacing.lg,
+    marginBottom: Tokens.spacing.md,
     alignItems: "center",
+    ...Tokens.shadows.sm,
   },
   cardEmoji: {
-    fontSize: 48,
-    marginBottom: Tokens.spacing.md,
+    fontSize: 36,
+    marginBottom: Tokens.spacing.sm,
   },
   cardImage: {
     width: 120,
@@ -391,7 +396,7 @@ const styles = StyleSheet.create({
   continueButton: {
     borderRadius: Tokens.radius.lg,
     overflow: "hidden",
-    ...Tokens.shadows.lg,
+    ...Tokens.shadows.sm,
   },
   continueButtonGradient: {
     paddingVertical: Tokens.spacing.lg,

@@ -98,13 +98,17 @@ export default function OnboardingDate({ route, navigation }: Props) {
     }
   };
 
-  const handleContinue = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
-    const dateValue = isTentante 
-      ? data.lastMenstruation 
-      : isGravida 
-      ? data.dueDate 
+  const handleContinue = () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
+
+    const dateValue = isTentante
+      ? data.lastMenstruation
+      : isGravida
+      ? data.dueDate
       : data.birthDate;
 
     if (!dateValue && !dontKnow) {
@@ -388,7 +392,7 @@ const styles = StyleSheet.create({
     paddingVertical: Tokens.spacing.lg,
     paddingHorizontal: Tokens.spacing["2xl"],
     borderRadius: Tokens.radius.lg,
-    borderWidth: 2,
+    borderWidth: 1.5,
     alignItems: "center",
     minHeight: Tokens.accessibility.minTapTarget,
     justifyContent: "center",
@@ -413,7 +417,7 @@ const styles = StyleSheet.create({
   continueButton: {
     borderRadius: Tokens.radius.lg,
     overflow: "hidden",
-    ...Tokens.shadows.md,
+    ...Tokens.shadows.sm,
   },
   continueButtonDisabled: {
     opacity: 0.5,

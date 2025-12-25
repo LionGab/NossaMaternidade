@@ -538,7 +538,8 @@ export const gradients = {
   // Brand gradients
   primary: [brand.primary[500], brand.primary[600]] as const,
   primarySoft: [brand.primary[50], brand.primary[100]] as const,
-  accent: [brand.accent[400], brand.accent[500]] as const,
+  accent: [brand.accent[300], brand.accent[400]] as const, // Cores mais suaves
+  accentVibrant: [brand.accent[400], brand.accent[500]] as const, // Versão vibrante
   accentSoft: [brand.accent[50], brand.accent[100]] as const,
   secondary: [brand.secondary[400], brand.secondary[500]] as const,
   secondarySoft: [brand.secondary[50], brand.secondary[100]] as const,

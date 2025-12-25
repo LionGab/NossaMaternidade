@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable, Dimensions } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -22,9 +22,6 @@ import { OnboardingConcern } from "../../types/nath-journey-onboarding.types";
 
 type Props = RootStackScreenProps<"OnboardingConcerns">;
 
-const { width } = Dimensions.get("window");
-const CARD_WIDTH = (width - Tokens.spacing["2xl"] * 2 - Tokens.spacing.md) / 2;
-
 export default function OnboardingConcerns({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
@@ -36,16 +33,24 @@ export default function OnboardingConcerns({ route, navigation }: Props) {
     setCurrentScreen("OnboardingConcerns");
   }, [setCurrentScreen]);
 
-  const handleSelectConcern = async (concern: OnboardingConcern) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const handleSelectConcern = (concern: OnboardingConcern) => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     toggleConcern(concern);
     logger.info(`Concern toggled: ${concern}`, "OnboardingConcerns");
   };
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (!canProceed()) return;
 
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     navigation.navigate("OnboardingEmotionalState", {
       stage,
       date,
@@ -120,10 +125,7 @@ export default function OnboardingConcerns({ route, navigation }: Props) {
                 <Animated.View
                   key={cardData.concern}
                   entering={FadeInDown.delay(index * 50).duration(300)}
-                  style={[
-                    styles.cardWrapper,
-                    { width: CARD_WIDTH },
-                  ]}
+                  style={styles.cardWrapper}
                 >
                   <ConcernCard
                     data={cardData}
@@ -219,10 +221,11 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
+    justifyContent: "space-between",
     gap: Tokens.spacing.md,
   },
   cardWrapper: {
-    marginBottom: Tokens.spacing.md,
+    width: "48%",
   },
   footer: {
     paddingHorizontal: Tokens.spacing["2xl"],
@@ -231,7 +234,7 @@ const styles = StyleSheet.create({
   continueButton: {
     borderRadius: Tokens.radius.lg,
     overflow: "hidden",
-    ...Tokens.shadows.md,
+    ...Tokens.shadows.sm,
   },
   continueButtonDisabled: {
     opacity: 0.5,

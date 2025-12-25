@@ -5,13 +5,13 @@
  */
 
 import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ProgressBar } from "../../components/onboarding/ProgressBar";
-import { VideoPlayer } from "../../components/onboarding/VideoPlayer";
 import { EMOTIONAL_STATE_OPTIONS } from "../../config/nath-journey-onboarding-data";
 import { useTheme } from "../../hooks/useTheme";
 import { useNathJourneyOnboardingStore } from "../../state/nath-journey-onboarding-store";
@@ -21,11 +21,6 @@ import { RootStackScreenProps } from "../../types/navigation";
 import { logger } from "../../utils/logger";
 
 type Props = RootStackScreenProps<"OnboardingEmotionalState">;
-
-// Placeholder: vídeo será substituído por asset real depois
-const EMOTIONAL_VIDEO = {
-  uri: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-};
 
 export default function OnboardingEmotionalState({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
@@ -38,16 +33,24 @@ export default function OnboardingEmotionalState({ route, navigation }: Props) {
     setCurrentScreen("OnboardingEmotionalState");
   }, [setCurrentScreen]);
 
-  const handleSelectState = async (state: EmotionalState) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  const handleSelectState = (state: EmotionalState) => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     setEmotionalState(state);
     logger.info(`Emotional state selected: ${state}`, "OnboardingEmotionalState");
   };
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (!canProceed()) return;
 
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     navigation.navigate("OnboardingCheckIn", {
       stage,
       date,
@@ -90,17 +93,6 @@ export default function OnboardingEmotionalState({ route, navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <Animated.View entering={FadeInDown.duration(300)}>
-          {/* Video */}
-          <View style={styles.videoContainer}>
-            <VideoPlayer
-              videoSource={EMOTIONAL_VIDEO}
-              autoPlay
-              loop={false}
-              muted={false}
-              showControls={true}
-            />
-          </View>
-
           <Text
             style={[
               styles.title,
@@ -112,14 +104,15 @@ export default function OnboardingEmotionalState({ route, navigation }: Props) {
             Como você está se sentindo nos últimos dias?
           </Text>
 
-          {/* Emotional State Options */}
-          <View style={styles.optionsContainer}>
+          {/* Emotional State Options - Grid 2x2 */}
+          <View style={styles.optionsGrid}>
             {EMOTIONAL_STATE_OPTIONS.map((option, index) => {
               const isSelected = data.emotionalState === option.state;
               return (
                 <Animated.View
                   key={option.state}
-                  entering={FadeInDown.delay(index * 100).duration(300)}
+                  entering={FadeInDown.delay(index * 80).duration(300)}
+                  style={styles.optionWrapper}
                 >
                   <Pressable
                     onPress={() => handleSelectState(option.state)}
@@ -127,7 +120,7 @@ export default function OnboardingEmotionalState({ route, navigation }: Props) {
                       styles.optionCard,
                       isSelected && styles.optionCardSelected,
                       {
-                        borderColor: isSelected ? Tokens.brand.accent[500] : theme.colors.border.subtle,
+                        borderColor: isSelected ? Tokens.brand.accent[300] : theme.colors.border.subtle,
                         backgroundColor: theme.surface.card,
                       },
                     ]}
@@ -136,7 +129,18 @@ export default function OnboardingEmotionalState({ route, navigation }: Props) {
                     accessibilityState={{ selected: isSelected }}
                   >
                     {option.image && (
-                      <Image source={option.image} style={styles.optionImage} resizeMode="cover" />
+                      <View style={styles.optionImageContainer}>
+                        <Image
+                          source={option.image}
+                          style={styles.optionImage}
+                          contentFit="cover"
+                          contentPosition="top"
+                        />
+                        <LinearGradient
+                          colors={["transparent", "rgba(0,0,0,0.4)"]}
+                          style={styles.optionImageOverlay}
+                        />
+                      </View>
                     )}
                     <View style={styles.optionContent}>
                       <Text style={styles.optionEmoji}>{option.emoji}</Text>
@@ -147,6 +151,7 @@ export default function OnboardingEmotionalState({ route, navigation }: Props) {
                             color: theme.text.primary,
                           },
                         ]}
+                        numberOfLines={1}
                       >
                         {option.title}
                       </Text>
@@ -157,6 +162,7 @@ export default function OnboardingEmotionalState({ route, navigation }: Props) {
                             color: theme.text.secondary,
                           },
                         ]}
+                        numberOfLines={2}
                       >
                         {option.response}
                       </Text>
@@ -164,7 +170,7 @@ export default function OnboardingEmotionalState({ route, navigation }: Props) {
                     {isSelected && (
                       <View style={styles.checkmark}>
                         <LinearGradient
-                          colors={Tokens.gradients.accent}
+                          colors={[Tokens.brand.accent[300], Tokens.brand.accent[400]]}
                           style={styles.checkmarkGradient}
                         >
                           <Text style={styles.checkmarkText}>✓</Text>
@@ -256,70 +262,79 @@ const styles = StyleSheet.create({
     paddingTop: Tokens.spacing.lg,
     paddingBottom: Tokens.spacing["4xl"],
   },
-  videoContainer: {
-    width: "100%",
-    height: 200,
-    borderRadius: Tokens.radius.lg,
-    overflow: "hidden",
-    marginBottom: Tokens.spacing["2xl"],
-  },
   title: {
     fontSize: Tokens.typography.headlineLarge.fontSize,
     fontWeight: Tokens.typography.headlineLarge.fontWeight,
     lineHeight: Tokens.typography.headlineLarge.lineHeight,
-    marginBottom: Tokens.spacing["2xl"],
+    marginBottom: Tokens.spacing.xl,
   },
-  optionsContainer: {
+  optionsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     gap: Tokens.spacing.md,
     marginBottom: Tokens.spacing.lg,
   },
+  optionWrapper: {
+    width: "48%",
+  },
   optionCard: {
-    borderRadius: Tokens.radius.lg,
-    borderWidth: 2,
+    borderRadius: Tokens.radius.lg, // Bordas mais suaves
+    borderWidth: 1.5,
     overflow: "hidden",
-    flexDirection: "row",
-    minHeight: 100,
     position: "relative",
+    ...Tokens.shadows.sm,
   },
   optionCardSelected: {
-    ...Tokens.shadows.md,
+    borderWidth: 2,
+  },
+  optionImageContainer: {
+    width: "100%",
+    height: 100,
+    position: "relative",
+    backgroundColor: Tokens.neutral[100],
   },
   optionImage: {
-    width: 100,
+    width: "100%",
     height: "100%",
   },
+  optionImageOverlay: {
+    ...StyleSheet.absoluteFillObject,
+  },
   optionContent: {
-    flex: 1,
-    padding: Tokens.spacing.lg,
-    justifyContent: "center",
-    gap: Tokens.spacing.xs,
+    padding: Tokens.spacing.sm,
+    alignItems: "center",
+    gap: 2,
   },
   optionEmoji: {
-    fontSize: 32,
+    fontSize: 24,
   },
   optionTitle: {
-    fontSize: Tokens.typography.titleMedium.fontSize,
-    fontWeight: Tokens.typography.titleMedium.fontWeight,
+    fontSize: Tokens.typography.labelMedium.fontSize,
+    fontWeight: Tokens.typography.labelMedium.fontWeight,
+    textAlign: "center",
   },
   optionResponse: {
-    fontSize: Tokens.typography.bodySmall.fontSize,
+    fontSize: Tokens.typography.caption.fontSize,
     fontStyle: "italic",
+    textAlign: "center",
+    lineHeight: Tokens.typography.caption.lineHeight,
   },
   checkmark: {
     position: "absolute",
-    top: Tokens.spacing.md,
-    right: Tokens.spacing.md,
+    top: Tokens.spacing.xs,
+    right: Tokens.spacing.xs,
   },
   checkmarkGradient: {
-    width: 32,
-    height: 32,
+    width: 24,
+    height: 24,
     borderRadius: Tokens.radius.full,
     justifyContent: "center",
     alignItems: "center",
   },
   checkmarkText: {
     color: Tokens.neutral[0],
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
   },
   microcopy: {
@@ -334,7 +349,7 @@ const styles = StyleSheet.create({
   continueButton: {
     borderRadius: Tokens.radius.lg,
     overflow: "hidden",
-    ...Tokens.shadows.md,
+    ...Tokens.shadows.sm,
   },
   continueButtonDisabled: {
     opacity: 0.5,

@@ -35,8 +35,12 @@ export default function OnboardingSeason({ route, navigation }: Props) {
   const [customSeason, setCustomSeason] = useState(data.seasonName || "");
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
 
-  const handleSelectPreset = async (preset: string) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const handleSelectPreset = (preset: string) => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     setSelectedPreset(preset);
     setCustomSeason("");
     setSeasonName(preset);
@@ -51,10 +55,14 @@ export default function OnboardingSeason({ route, navigation }: Props) {
     }
   };
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (!canProceed()) return;
 
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    } catch {
+      // Haptics não disponível no simulador
+    }
     navigation.navigate("OnboardingSummary", {
       stage,
       date,
@@ -284,13 +292,13 @@ const styles = StyleSheet.create({
     paddingVertical: Tokens.spacing.lg,
     paddingHorizontal: Tokens.spacing["2xl"],
     borderRadius: Tokens.radius.lg,
-    borderWidth: 2,
+    borderWidth: 1.5,
     alignItems: "center",
     minHeight: Tokens.accessibility.minTapTarget,
     justifyContent: "center",
   },
   presetButtonSelected: {
-    ...Tokens.shadows.md,
+    ...Tokens.shadows.sm,
   },
   presetText: {
     fontSize: Tokens.typography.bodyLarge.fontSize,
@@ -308,7 +316,7 @@ const styles = StyleSheet.create({
     paddingVertical: Tokens.spacing.lg,
     paddingHorizontal: Tokens.spacing.lg,
     borderRadius: Tokens.radius.lg,
-    borderWidth: 2,
+    borderWidth: 1.5,
     fontSize: Tokens.typography.bodyLarge.fontSize,
     minHeight: Tokens.accessibility.minTapTarget + 8,
   },
@@ -332,7 +340,7 @@ const styles = StyleSheet.create({
   continueButton: {
     borderRadius: Tokens.radius.lg,
     overflow: "hidden",
-    ...Tokens.shadows.md,
+    ...Tokens.shadows.sm,
   },
   continueButtonDisabled: {
     opacity: 0.5,
