@@ -45,8 +45,8 @@ module.exports = {
 
     splash: {
       image: "./assets/splash.png",
-      resizeMode: "cover",
-      backgroundColor: COLORS.splash,
+      resizeMode: "contain",
+      backgroundColor: "#FFFFFF", // Fundo branco limpo e profissional
     },
     updates: {
       enabled: true,
@@ -140,7 +140,8 @@ module.exports = {
       favicon: "./assets/favicon.png",
       // Mobile-first viewport configuration
       meta: {
-        viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+        viewport:
+          "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
         "mobile-web-app-capable": "yes",
         "apple-mobile-web-app-capable": "yes",
         "apple-mobile-web-app-status-bar-style": "default",

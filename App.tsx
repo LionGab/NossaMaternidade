@@ -17,11 +17,12 @@ import { NavigationContainer } from "@react-navigation/native";
 import * as Sentry from "@sentry/react-native";
 import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
-import { ActivityIndicator, Platform, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { supabase } from "./src/api/supabase";
+import { AnimatedSplashScreen } from "./src/components/AnimatedSplashScreen";
 import { ErrorBoundary } from "./src/components/ErrorBoundary";
 import { OfflineBanner } from "./src/components/OfflineBanner";
 import { ToastProvider } from "./src/context/ToastContext";
@@ -74,6 +75,8 @@ function App() {
     DMSans_700Bold,
     DMSerifDisplay_400Regular,
   });
+
+  const [isSplashVisible, setIsSplashVisible] = useState(true);
 
   // Monitor network status for offline banner
   const { isOffline, isChecking, retry } = useNetworkStatus();
@@ -140,18 +143,13 @@ function App() {
     }
   }, [syncWithRevenueCat]);
 
-  if (!fontsLoaded) {
+  // Show animated splash screen until fonts are loaded
+  if (isSplashVisible) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: colors.background.primary,
-        }}
-      >
-        <ActivityIndicator size="large" color={colors.primary[500]} />
-      </View>
+      <AnimatedSplashScreen
+        isReady={fontsLoaded}
+        onFinish={() => setIsSplashVisible(false)}
+      />
     );
   }
 
