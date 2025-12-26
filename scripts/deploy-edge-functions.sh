@@ -49,6 +49,8 @@ FUNCTIONS=(
     "export-data"
     "elevenlabs-tts"
     "webhook"
+    "community-feed"
+    "mundo-nath-feed"
 )
 
 print_header "Deploy das Edge Functions - Nossa Maternidade"
@@ -67,11 +69,13 @@ if ! supabase projects list &> /dev/null 2>&1; then
     exit 1
 fi
 
-# Verificar se o projeto está linkado
+# Project ref do Nossa Maternidade
+PROJECT_REF="lqahkqfpynypbmhtffyi"
+
+# Verificar se o projeto está linkado ou usar project-ref direto
 if [ ! -f "supabase/.temp/project-ref" ] && [ -z "$SUPABASE_PROJECT_REF" ]; then
-    print_error "Projeto não está linkado!"
-    echo "Execute: supabase link --project-ref SEU_PROJECT_REF"
-    exit 1
+    print_info "Projeto não está linkado localmente, usando --project-ref $PROJECT_REF"
+    export SUPABASE_PROJECT_REF="$PROJECT_REF"
 fi
 
 print_info "Iniciando deploy de ${#FUNCTIONS[@]} Edge Functions..."
@@ -85,7 +89,7 @@ for func in "${FUNCTIONS[@]}"; do
     echo -n "Deployando $func... "
 
     if [ -d "supabase/functions/$func" ]; then
-        if supabase functions deploy "$func" --no-verify-jwt=false 2>/dev/null; then
+        if supabase functions deploy "$func" --project-ref "$PROJECT_REF" --no-verify-jwt=false 2>/dev/null; then
             print_success "OK"
             ((DEPLOYED++))
         else
