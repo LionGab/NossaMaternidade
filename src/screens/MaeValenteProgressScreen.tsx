@@ -12,12 +12,13 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useAppStore, useCheckInStore } from "../state/store";
 import {
+  Tokens,
+  streak,
   COLORS,
-  SPACING,
   RADIUS,
+  SPACING,
   SHADOWS,
   TYPOGRAPHY,
-  streak,
 } from "../theme/tokens";
 
 // Overlay compatibility mapping
@@ -55,14 +56,14 @@ export default function MaeValenteProgressScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.background.primary }}>
+    <View style={{ flex: 1, backgroundColor: Tokens.brand.primary[50] }}>
       {/* Header with Gradient */}
       <LinearGradient
-        colors={[COLORS.primary[500], COLORS.primary[600], COLORS.primary[700]]}
+        colors={[Tokens.brand.primary[500], Tokens.brand.primary[600], Tokens.brand.primary[700]]}
         style={{
-          paddingTop: insets.top + SPACING.lg,
-          paddingBottom: SPACING["2xl"],
-          paddingHorizontal: SPACING["2xl"],
+          paddingTop: insets.top + Tokens.spacing.lg,
+          paddingBottom: Tokens.spacing["2xl"],
+          paddingHorizontal: Tokens.spacing["2xl"],
         }}
       >
         <View
@@ -70,14 +71,14 @@ export default function MaeValenteProgressScreen() {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
-            marginBottom: SPACING["2xl"],
+            marginBottom: Tokens.spacing["2xl"],
           }}
         >
           <View>
             <Text
               style={{
                 color: OVERLAY.white.textStrong,
-                fontSize: TYPOGRAPHY.bodySmall.fontSize,
+                fontSize: Tokens.typography.bodySmall.fontSize,
                 fontWeight: "500",
               }}
             >
@@ -85,8 +86,8 @@ export default function MaeValenteProgressScreen() {
             </Text>
             <Text
               style={{
-                color: COLORS.neutral[0],
-                fontSize: TYPOGRAPHY.headlineSmall.fontSize,
+                color: Tokens.neutral[0],
+                fontSize: Tokens.typography.headlineSmall.fontSize,
                 fontWeight: "700",
                 marginTop: 4,
               }}
@@ -97,28 +98,28 @@ export default function MaeValenteProgressScreen() {
           <View
             style={{
               backgroundColor: OVERLAY.white.strong,
-              borderRadius: RADIUS.full,
-              padding: SPACING.md,
+              borderRadius: Tokens.radius.full,
+              padding: Tokens.spacing.md,
             }}
           >
-            <Ionicons name="trophy" size={28} color={COLORS.text.inverse} />
+            <Ionicons name="trophy" size={28} color={Tokens.text.light.inverse} />
           </View>
         </View>
 
         {/* Stats Cards */}
-        <View style={{ flexDirection: "row", gap: SPACING.md }}>
+        <View style={{ flexDirection: "row", gap: Tokens.spacing.md }}>
           <View
             style={{
               flex: 1,
               backgroundColor: OVERLAY.white.strong,
-              borderRadius: RADIUS["2xl"],
-              padding: SPACING.lg,
+              borderRadius: Tokens.radius["2xl"],
+              padding: Tokens.spacing.lg,
             }}
           >
             <Text
               style={{
                 color: OVERLAY.white.textStrong,
-                fontSize: TYPOGRAPHY.labelSmall.fontSize,
+                fontSize: Tokens.typography.labelSmall.fontSize,
                 fontWeight: "500",
                 marginBottom: 4,
               }}
@@ -127,8 +128,8 @@ export default function MaeValenteProgressScreen() {
             </Text>
             <Text
               style={{
-                color: COLORS.neutral[0],
-                fontSize: TYPOGRAPHY.displaySmall.fontSize,
+                color: Tokens.neutral[0],
+                fontSize: Tokens.typography.displaySmall.fontSize,
                 fontWeight: "700",
               }}
             >
@@ -137,7 +138,7 @@ export default function MaeValenteProgressScreen() {
             <Text
               style={{
                 color: OVERLAY.white.text,
-                fontSize: TYPOGRAPHY.labelSmall.fontSize,
+                fontSize: Tokens.typography.labelSmall.fontSize,
                 marginTop: 2,
               }}
             >
@@ -149,14 +150,14 @@ export default function MaeValenteProgressScreen() {
             style={{
               flex: 1,
               backgroundColor: OVERLAY.white.strong,
-              borderRadius: RADIUS["2xl"],
-              padding: SPACING.lg,
+              borderRadius: Tokens.radius["2xl"],
+              padding: Tokens.spacing.lg,
             }}
           >
             <Text
               style={{
                 color: OVERLAY.white.textStrong,
-                fontSize: TYPOGRAPHY.labelSmall.fontSize,
+                fontSize: Tokens.typography.labelSmall.fontSize,
                 fontWeight: "500",
                 marginBottom: 4,
               }}
@@ -165,8 +166,8 @@ export default function MaeValenteProgressScreen() {
             </Text>
             <Text
               style={{
-                color: COLORS.neutral[0],
-                fontSize: TYPOGRAPHY.displaySmall.fontSize,
+                color: Tokens.neutral[0],
+                fontSize: Tokens.typography.displaySmall.fontSize,
                 fontWeight: "700",
               }}
             >
@@ -175,7 +176,7 @@ export default function MaeValenteProgressScreen() {
             <Text
               style={{
                 color: OVERLAY.white.text,
-                fontSize: TYPOGRAPHY.labelSmall.fontSize,
+                fontSize: Tokens.typography.labelSmall.fontSize,
                 marginTop: 2,
               }}
             >
@@ -187,14 +188,14 @@ export default function MaeValenteProgressScreen() {
             style={{
               flex: 1,
               backgroundColor: OVERLAY.white.strong,
-              borderRadius: RADIUS["2xl"],
-              padding: SPACING.lg,
+              borderRadius: Tokens.radius["2xl"],
+              padding: Tokens.spacing.lg,
             }}
           >
             <Text
               style={{
                 color: OVERLAY.white.textStrong,
-                fontSize: TYPOGRAPHY.labelSmall.fontSize,
+                fontSize: Tokens.typography.labelSmall.fontSize,
                 fontWeight: "500",
                 marginBottom: 4,
               }}
@@ -203,8 +204,8 @@ export default function MaeValenteProgressScreen() {
             </Text>
             <Text
               style={{
-                color: COLORS.neutral[0],
-                fontSize: TYPOGRAPHY.displaySmall.fontSize,
+                color: Tokens.neutral[0],
+                fontSize: Tokens.typography.displaySmall.fontSize,
                 fontWeight: "700",
               }}
             >
@@ -213,7 +214,7 @@ export default function MaeValenteProgressScreen() {
             <Text
               style={{
                 color: OVERLAY.white.text,
-                fontSize: TYPOGRAPHY.labelSmall.fontSize,
+                fontSize: Tokens.typography.labelSmall.fontSize,
                 marginTop: 2,
               }}
             >
@@ -226,16 +227,16 @@ export default function MaeValenteProgressScreen() {
       <ScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: SPACING["3xl"] }}
+        contentContainerStyle={{ paddingBottom: Tokens.spacing["3xl"] }}
       >
         {/* View Mode Selector */}
-        <View style={{ paddingHorizontal: SPACING["2xl"], paddingVertical: SPACING.lg }}>
+        <View style={{ paddingHorizontal: Tokens.spacing["2xl"], paddingVertical: Tokens.spacing.lg }}>
           <View
             style={{
               flexDirection: "row",
-              backgroundColor: COLORS.neutral[100],
-              borderRadius: RADIUS.full,
-              padding: SPACING.xs,
+              backgroundColor: Tokens.neutral[100],
+              borderRadius: Tokens.radius.full,
+              padding: Tokens.spacing.xs,
             }}
           >
             {(["week", "month", "year"] as ViewMode[]).map((mode) => (
@@ -246,23 +247,23 @@ export default function MaeValenteProgressScreen() {
               >
                 <View
                   style={{
-                    paddingVertical: SPACING.sm,
-                    paddingHorizontal: SPACING.lg,
-                    borderRadius: RADIUS.full,
+                    paddingVertical: Tokens.spacing.sm,
+                    paddingHorizontal: Tokens.spacing.lg,
+                    borderRadius: Tokens.radius.full,
                     backgroundColor:
-                      viewMode === mode ? COLORS.neutral[0] : "transparent",
-                    ...SHADOWS.sm,
+                      viewMode === mode ? Tokens.neutral[0] : "transparent",
+                    ...Tokens.shadows.sm,
                   }}
                 >
                   <Text
                     style={{
                       textAlign: "center",
-                      fontSize: TYPOGRAPHY.bodySmall.fontSize,
+                      fontSize: Tokens.typography.bodySmall.fontSize,
                       fontWeight: "600",
                       color:
                         viewMode === mode
-                          ? COLORS.primary[600]
-                          : COLORS.neutral[600],
+                          ? Tokens.brand.primary[600]
+                          : Tokens.neutral[600],
                     }}
                   >
                     {mode === "week"
@@ -281,14 +282,14 @@ export default function MaeValenteProgressScreen() {
         {viewMode === "week" && (
           <Animated.View
             entering={FadeInDown.duration(400)}
-            style={{ paddingHorizontal: SPACING["2xl"], marginBottom: SPACING["2xl"] }}
+            style={{ paddingHorizontal: Tokens.spacing["2xl"], marginBottom: Tokens.spacing["2xl"] }}
           >
             <Text
               style={{
-                fontSize: TYPOGRAPHY.titleMedium.fontSize,
+                fontSize: Tokens.typography.titleMedium.fontSize,
                 fontWeight: "700",
-                color: COLORS.neutral[800],
-                marginBottom: SPACING.lg,
+                color: Tokens.neutral[800],
+                marginBottom: Tokens.spacing.lg,
               }}
             >
               Esta Semana
@@ -300,14 +301,14 @@ export default function MaeValenteProgressScreen() {
         {/* Mood Distribution */}
         <Animated.View
           entering={FadeInDown.duration(400).delay(100)}
-          style={{ paddingHorizontal: SPACING["2xl"], marginBottom: SPACING["2xl"] }}
+          style={{ paddingHorizontal: Tokens.spacing["2xl"], marginBottom: Tokens.spacing["2xl"] }}
         >
           <View
             style={{
-              backgroundColor: COLORS.neutral[0],
-              borderRadius: RADIUS["3xl"],
-              padding: SPACING["2xl"],
-              ...SHADOWS.sm,
+              backgroundColor: Tokens.neutral[0],
+              borderRadius: Tokens.radius["3xl"],
+              padding: Tokens.spacing["2xl"],
+              ...Tokens.shadows.sm,
             }}
           >
             <View
@@ -315,30 +316,30 @@ export default function MaeValenteProgressScreen() {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                marginBottom: SPACING.lg,
+                marginBottom: Tokens.spacing.lg,
               }}
             >
               <Text
                 style={{
-                  fontSize: TYPOGRAPHY.titleMedium.fontSize,
+                  fontSize: Tokens.typography.titleMedium.fontSize,
                   fontWeight: "700",
-                  color: COLORS.neutral[800],
+                  color: Tokens.neutral[800],
                 }}
               >
                 Como você tem se sentido
               </Text>
               <View
                 style={{
-                  backgroundColor: COLORS.primary[50],
-                  borderRadius: RADIUS.full,
-                  paddingHorizontal: SPACING.md,
-                  paddingVertical: SPACING.xs,
+                  backgroundColor: Tokens.brand.primary[50],
+                  borderRadius: Tokens.radius.full,
+                  paddingHorizontal: Tokens.spacing.md,
+                  paddingVertical: Tokens.spacing.xs,
                 }}
               >
                 <Text
                   style={{
-                    color: COLORS.primary[600],
-                    fontSize: TYPOGRAPHY.labelSmall.fontSize,
+                    color: Tokens.brand.primary[600],
+                    fontSize: Tokens.typography.labelSmall.fontSize,
                     fontWeight: "600",
                   }}
                 >
@@ -354,19 +355,19 @@ export default function MaeValenteProgressScreen() {
         {/* Achievements */}
         <Animated.View
           entering={FadeInDown.duration(400).delay(200)}
-          style={{ paddingHorizontal: SPACING["2xl"], marginBottom: SPACING["2xl"] }}
+          style={{ paddingHorizontal: Tokens.spacing["2xl"], marginBottom: Tokens.spacing["2xl"] }}
         >
           <Text
             style={{
-              fontSize: TYPOGRAPHY.titleMedium.fontSize,
+              fontSize: Tokens.typography.titleMedium.fontSize,
               fontWeight: "700",
-              color: COLORS.neutral[800],
-              marginBottom: SPACING.lg,
+              color: Tokens.neutral[800],
+              marginBottom: Tokens.spacing.lg,
             }}
           >
             Conquistas
           </Text>
-          <View style={{ gap: SPACING.md }}>
+          <View style={{ gap: Tokens.spacing.md }}>
             <AchievementCard
               icon="flame"
               title="Sequência de fogo"
@@ -382,7 +383,7 @@ export default function MaeValenteProgressScreen() {
               description="Complete sua primeira semana"
               progress={totalCheckIns}
               total={7}
-              color={COLORS.secondary[500]}
+              color={Tokens.brand.secondary[500]}
               unlocked={totalCheckIns >= 7}
             />
             <AchievementCard
@@ -391,7 +392,7 @@ export default function MaeValenteProgressScreen() {
               description="30 check-ins completados"
               progress={totalCheckIns}
               total={30}
-              color={COLORS.primary[500]}
+              color={Tokens.brand.primary[500]}
               unlocked={totalCheckIns >= 30}
             />
           </View>
@@ -400,58 +401,58 @@ export default function MaeValenteProgressScreen() {
         {/* Community Stats */}
         <Animated.View
           entering={FadeInDown.duration(400).delay(300)}
-          style={{ paddingHorizontal: SPACING["2xl"], marginBottom: SPACING["2xl"] }}
+          style={{ paddingHorizontal: Tokens.spacing["2xl"], marginBottom: Tokens.spacing["2xl"] }}
         >
           <Text
             style={{
-              fontSize: TYPOGRAPHY.titleMedium.fontSize,
+              fontSize: Tokens.typography.titleMedium.fontSize,
               fontWeight: "700",
-              color: COLORS.neutral[800],
-              marginBottom: SPACING.lg,
+              color: Tokens.neutral[800],
+              marginBottom: Tokens.spacing.lg,
             }}
           >
-            Comunidade Mãe Valente
+            Comunidade Mães Valente
           </Text>
           <LinearGradient
-            colors={[COLORS.secondary[50], COLORS.primary[50]]}
+            colors={[Tokens.brand.secondary[50], Tokens.brand.primary[50]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{
-              borderRadius: RADIUS["3xl"],
-              padding: SPACING["2xl"],
+              borderRadius: Tokens.radius["3xl"],
+              padding: Tokens.spacing["2xl"],
             }}
           >
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginBottom: SPACING.lg,
+                marginBottom: Tokens.spacing.lg,
               }}
             >
               <View
                 style={{
-                  backgroundColor: COLORS.neutral[0],
-                  borderRadius: RADIUS.full,
-                  padding: SPACING.md,
-                  marginRight: SPACING.md,
+                  backgroundColor: Tokens.neutral[0],
+                  borderRadius: Tokens.radius.full,
+                  padding: Tokens.spacing.md,
+                  marginRight: Tokens.spacing.md,
                 }}
               >
-                <Ionicons name="people" size={24} color={COLORS.primary[500]} />
+                <Ionicons name="people" size={24} color={Tokens.brand.primary[500]} />
               </View>
               <View>
                 <Text
                   style={{
-                    fontSize: TYPOGRAPHY.headlineSmall.fontSize,
+                    fontSize: Tokens.typography.headlineSmall.fontSize,
                     fontWeight: "700",
-                    color: COLORS.neutral[800],
+                    color: Tokens.neutral[800],
                   }}
                 >
                   1.248
                 </Text>
                 <Text
                   style={{
-                    fontSize: TYPOGRAPHY.bodySmall.fontSize,
-                    color: COLORS.neutral[600],
+                    fontSize: Tokens.typography.bodySmall.fontSize,
+                    color: Tokens.neutral[600],
                   }}
                 >
                   mães conectadas hoje
@@ -459,19 +460,19 @@ export default function MaeValenteProgressScreen() {
               </View>
             </View>
 
-            <View style={{ flexDirection: "row", gap: SPACING.md }}>
+            <View style={{ flexDirection: "row", gap: Tokens.spacing.md }}>
               <View
                 style={{
                   flex: 1,
                   backgroundColor: OVERLAY.white.prominent,
-                  borderRadius: RADIUS["2xl"],
-                  padding: SPACING.md,
+                  borderRadius: Tokens.radius["2xl"],
+                  padding: Tokens.spacing.md,
                 }}
               >
                 <Text
                   style={{
-                    fontSize: TYPOGRAPHY.labelSmall.fontSize,
-                    color: COLORS.neutral[600],
+                    fontSize: Tokens.typography.labelSmall.fontSize,
+                    color: Tokens.neutral[600],
                     marginBottom: 4,
                   }}
                 >
@@ -479,9 +480,9 @@ export default function MaeValenteProgressScreen() {
                 </Text>
                 <Text
                   style={{
-                    fontSize: TYPOGRAPHY.titleLarge.fontSize,
+                    fontSize: Tokens.typography.titleLarge.fontSize,
                     fontWeight: "700",
-                    color: COLORS.neutral[800],
+                    color: Tokens.neutral[800],
                   }}
                 >
                   127
@@ -491,14 +492,14 @@ export default function MaeValenteProgressScreen() {
                 style={{
                   flex: 1,
                   backgroundColor: OVERLAY.white.prominent,
-                  borderRadius: RADIUS["2xl"],
-                  padding: SPACING.md,
+                  borderRadius: Tokens.radius["2xl"],
+                  padding: Tokens.spacing.md,
                 }}
               >
                 <Text
                   style={{
-                    fontSize: TYPOGRAPHY.labelSmall.fontSize,
-                    color: COLORS.neutral[600],
+                    fontSize: Tokens.typography.labelSmall.fontSize,
+                    color: Tokens.neutral[600],
                     marginBottom: 4,
                   }}
                 >
@@ -506,9 +507,9 @@ export default function MaeValenteProgressScreen() {
                 </Text>
                 <Text
                   style={{
-                    fontSize: TYPOGRAPHY.titleLarge.fontSize,
+                    fontSize: Tokens.typography.titleLarge.fontSize,
                     fontWeight: "700",
-                    color: COLORS.neutral[800],
+                    color: Tokens.neutral[800],
                   }}
                 >
                   892

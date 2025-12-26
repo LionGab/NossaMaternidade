@@ -11,23 +11,11 @@ import * as Haptics from "expo-haptics";
 import { useTheme } from "../hooks/useTheme";
 import { IconName } from "../types/icons";
 import {
-  brand,
-  neutral,
   feeling,
   maternal,
   premium,
-  spacing as SPACING,
-  radius as RADIUS,
+  Tokens,
 } from "../theme/tokens";
-
-// Alias for backward compatibility during migration
-const DS_COLORS = {
-  primary: brand.primary,
-  secondary: brand.secondary,
-  accent: brand.accent,
-  teal: brand.teal,
-  neutral: neutral,
-} as const;
 
 // Foto da Nathalia com o bebê Thales
 const NATHALIA_AVATAR_URL = "https://i.imgur.com/37dbPJE.jpg";
@@ -41,24 +29,24 @@ const MAES_VALENTE_LOGO_URL = "https://i.imgur.com/U5ttbqK.jpg";
  */
 const getCareColors = (isDark: boolean) => ({
   // Lilac/Roxo suave - descanso e meditação
-  lilac: isDark ? brand.secondary[400] : brand.secondary[300],
+  lilac: isDark ? Tokens.brand.secondary[400] : Tokens.brand.secondary[300],
   lilacSoft: isDark ? "rgba(168, 85, 247, 0.12)" : maternal.calm.lavender,
   // Rose/Rosa clean - sentimentos e emoções
-  rose: isDark ? brand.accent[400] : brand.accent[400],
+  rose: isDark ? Tokens.brand.accent[400] : Tokens.brand.accent[400],
   roseSoft: isDark ? "rgba(251, 113, 144, 0.12)" : maternal.warmth.blush,
   // Blue/Azul pastel - conexão e comunidade
-  blueCalm: isDark ? brand.primary[400] : brand.primary[300],
+  blueCalm: isDark ? Tokens.brand.primary[400] : Tokens.brand.primary[300],
   blueSoft: isDark ? "rgba(125, 185, 213, 0.12)" : maternal.calm.mist,
   // Sage/Verde suave - respiração e bem-estar
-  sage: isDark ? brand.teal[400] : brand.teal[300],
+  sage: isDark ? Tokens.brand.teal[400] : Tokens.brand.teal[300],
   sageSoft: isDark ? "rgba(20, 184, 166, 0.12)" : maternal.selfCare.breathe,
   // Peach/Pêssego - afirmações e positividade
   peach: isDark ? feeling.ansiosa.color : feeling.ansiosa.color,
   peachSoft: isDark ? "rgba(254, 215, 170, 0.12)" : maternal.warmth.peach,
   // Bordas sutis - muito clean
-  borderLilac: isDark ? "rgba(168, 85, 247, 0.2)" : brand.secondary[200],
-  borderRose: isDark ? "rgba(251, 113, 144, 0.2)" : brand.accent[200],
-  borderBlue: isDark ? "rgba(125, 185, 213, 0.2)" : brand.primary[200],
+  borderLilac: isDark ? "rgba(168, 85, 247, 0.2)" : Tokens.brand.secondary[200],
+  borderRose: isDark ? "rgba(251, 113, 144, 0.2)" : Tokens.brand.accent[200],
+  borderBlue: isDark ? "rgba(125, 185, 213, 0.2)" : Tokens.brand.primary[200],
 });
 
 // Afirmações no estilo Nathalia - autênticas, jovens, sem julgamentos
@@ -215,7 +203,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
             colors={
               isDark
                 ? [colors.background.primary, colors.background.secondary, colors.background.tertiary]
-                : [colors.primary[50], colors.secondary[50], colors.background.secondary]
+                : [Tokens.brand.primary[50], Tokens.brand.secondary[50], colors.background.secondary]
             }
             locations={[0, 0.5, 1]}
             style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 20 }}
@@ -247,13 +235,13 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
         {/* Affirmation Card - Com foto da Nathalia */}
         <Animated.View
           entering={FadeIn.delay(150).duration(600)}
-          style={{ paddingHorizontal: SPACING.xl, marginBottom: SPACING.lg }}
+          style={{ paddingHorizontal: Tokens.spacing.xl, marginBottom: Tokens.spacing.lg }}
         >
           <View
             style={{
               backgroundColor: colors.background.card,
-              borderRadius: RADIUS.xl,
-              padding: SPACING.xl,
+              borderRadius: Tokens.radius.xl,
+              padding: Tokens.spacing.xl,
               shadowColor: colors.neutral[900],
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.04,
@@ -261,7 +249,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
               elevation: 2,
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: SPACING.md }}>
+            <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: Tokens.spacing.md }}>
               {/* Avatar da Nathalia com zoom */}
               <View
                 style={{
@@ -269,9 +257,9 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                   height: 48,
                   borderRadius: 24,
                   overflow: "hidden",
-                  marginRight: SPACING.md,
+                  marginRight: Tokens.spacing.md,
                   borderWidth: 2,
-                  borderColor: DS_COLORS.primary[200],
+                  borderColor: Tokens.brand.primary[200],
                 }}
               >
                 <Image
@@ -301,7 +289,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                   <Ionicons
                     name="checkmark-circle"
                     size={14}
-                    color={DS_COLORS.primary[500]}
+                    color={Tokens.brand.primary[500]}
                     style={{ marginLeft: 4 }}
                   />
                 </View>
@@ -333,8 +321,8 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
             {/* Ações */}
             <View
               style={{
-                marginTop: SPACING.lg,
-                paddingTop: SPACING.md,
+                marginTop: Tokens.spacing.lg,
+                paddingTop: Tokens.spacing.md,
                 borderTopWidth: 1,
                 borderTopColor: isDark ? colors.neutral[700] : colors.neutral[100],
                 flexDirection: "row",
@@ -347,11 +335,11 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  paddingVertical: SPACING.xs,
+                  paddingVertical: Tokens.spacing.xs,
                 }}
               >
-                <Ionicons name="heart-outline" size={18} color={DS_COLORS.accent[500]} />
-                <Text style={{ color: DS_COLORS.accent[500], fontSize: 13, fontWeight: "600", marginLeft: 6 }}>
+                <Ionicons name="heart-outline" size={18} color={Tokens.brand.accent[500]} />
+                <Text style={{ color: Tokens.brand.accent[500], fontSize: 13, fontWeight: "600", marginLeft: 6 }}>
                   Ver mais afirmações
                 </Text>
               </Pressable>
@@ -360,14 +348,14 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  backgroundColor: DS_COLORS.primary[50],
-                  paddingHorizontal: SPACING.md,
-                  paddingVertical: SPACING.sm,
-                  borderRadius: RADIUS.full,
+                  backgroundColor: Tokens.brand.primary[50],
+                  paddingHorizontal: Tokens.spacing.md,
+                  paddingVertical: Tokens.spacing.sm,
+                  borderRadius: Tokens.radius.full,
                 }}
               >
-                <Ionicons name="sparkles" size={14} color={DS_COLORS.primary[500]} />
-                <Text style={{ color: DS_COLORS.primary[600], fontSize: 12, fontWeight: "600", marginLeft: 4 }}>
+                <Ionicons name="sparkles" size={14} color={Tokens.brand.primary[500]} />
+                <Text style={{ color: Tokens.brand.primary[600], fontSize: 12, fontWeight: "600", marginLeft: 4 }}>
                   Falar com NathIA
                 </Text>
               </Pressable>
@@ -378,20 +366,20 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
         {/* Belonging Message - Tom Nathalia */}
         <Animated.View
           entering={FadeInUp.delay(200).duration(600).springify()}
-          style={{ paddingHorizontal: SPACING.xl, marginBottom: SPACING.lg }}
+          style={{ paddingHorizontal: Tokens.spacing.xl, marginBottom: Tokens.spacing.lg }}
         >
           <Pressable
             onPress={() => navigation.navigate("MundoDaNath")}
             style={{
-              backgroundColor: isDark ? DS_COLORS.primary[900] : DS_COLORS.primary[50],
-              borderRadius: RADIUS.xl,
-              padding: SPACING.lg,
+              backgroundColor: isDark ? Tokens.brand.primary[900] : Tokens.brand.primary[50],
+              borderRadius: Tokens.radius.xl,
+              padding: Tokens.spacing.lg,
               borderWidth: 1,
-              borderColor: isDark ? DS_COLORS.primary[700] : DS_COLORS.primary[100],
+              borderColor: isDark ? Tokens.brand.primary[700] : Tokens.brand.primary[100],
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={{ fontSize: 28, marginRight: SPACING.md }}>🤱</Text>
+              <Text style={{ fontSize: 28, marginRight: Tokens.spacing.md }}>🤱</Text>
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
@@ -414,7 +402,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                   Eu também passo por isso. Vem pro meu cantinho 💕
                 </Text>
               </View>
-              <Ionicons name="chevron-forward" size={20} color={DS_COLORS.primary[400]} />
+              <Ionicons name="chevron-forward" size={20} color={Tokens.brand.primary[400]} />
             </View>
           </Pressable>
         </Animated.View>
@@ -422,7 +410,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
         {/* Care Sections - 2x2 Grid - Calm FemTech */}
         <Animated.View
           entering={FadeInUp.delay(250).duration(600).springify()}
-          style={{ paddingHorizontal: SPACING.xl, marginBottom: SPACING.lg }}
+          style={{ paddingHorizontal: Tokens.spacing.xl, marginBottom: Tokens.spacing.lg }}
         >
           <Text
             style={{
@@ -430,7 +418,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
               fontSize: 18,
               fontWeight: "700",
               fontFamily: "Manrope_700Bold",
-              marginBottom: SPACING.md,
+              marginBottom: Tokens.spacing.md,
             }}
           >
             Cuidados pra você
@@ -447,8 +435,8 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                   onPress={() => handleCardPress(section.id)}
                   style={({ pressed }) => ({
                     backgroundColor: isDark ? colors.neutral[800] : colors.background.card,
-                    borderRadius: RADIUS.xl,
-                    padding: SPACING.lg,
+                    borderRadius: Tokens.radius.xl,
+                    padding: Tokens.spacing.lg,
                     minHeight: 130,
                     borderWidth: 1,
                     borderColor: isDark ? colors.neutral[700] : colors.neutral[200],
@@ -460,11 +448,11 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                     style={{
                       width: 44,
                       height: 44,
-                      borderRadius: RADIUS.lg,
+                      borderRadius: Tokens.radius.lg,
                       backgroundColor: section.bgColor,
                       alignItems: "center",
                       justifyContent: "center",
-                      marginBottom: SPACING.sm,
+                      marginBottom: Tokens.spacing.sm,
                     }}
                   >
                     <Ionicons
@@ -501,7 +489,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
         {/* Quick Support Section - Dicas da Nath */}
         <Animated.View
           entering={FadeInUp.delay(400).duration(600).springify()}
-          style={{ paddingHorizontal: SPACING.xl, marginBottom: SPACING.lg }}
+          style={{ paddingHorizontal: Tokens.spacing.xl, marginBottom: Tokens.spacing.lg }}
         >
           <Text
             style={{
@@ -509,7 +497,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
               fontSize: 18,
               fontWeight: "700",
               fontFamily: "Manrope_700Bold",
-              marginBottom: SPACING.md,
+              marginBottom: Tokens.spacing.md,
             }}
           >
             Dicas da Nath 💕
@@ -518,7 +506,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
           <View
             style={{
               backgroundColor: isDark ? colors.neutral[800] : colors.background.card,
-              borderRadius: RADIUS.xl,
+              borderRadius: Tokens.radius.xl,
               borderWidth: 1,
               borderColor: isDark ? colors.neutral[700] : colors.neutral[200],
               overflow: "hidden",
@@ -531,7 +519,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                 style={({ pressed }) => ({
                   flexDirection: "row",
                   alignItems: "center",
-                  padding: SPACING.md,
+                  padding: Tokens.spacing.md,
                   borderBottomWidth: index < QUICK_SUPPORT.length - 1 ? 1 : 0,
                   borderBottomColor: isDark ? colors.neutral[700] : colors.neutral[100],
                   backgroundColor: pressed ? (isDark ? colors.neutral[700] : colors.neutral[50]) : "transparent",
@@ -541,11 +529,11 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                   style={{
                     width: 44,
                     height: 44,
-                    borderRadius: RADIUS.lg,
-                    backgroundColor: isDark ? colors.neutral[700] : DS_COLORS.primary[50],
+                    borderRadius: Tokens.radius.lg,
+                    backgroundColor: isDark ? colors.neutral[700] : Tokens.brand.primary[50],
                     alignItems: "center",
                     justifyContent: "center",
-                    marginRight: SPACING.md,
+                    marginRight: Tokens.spacing.md,
                   }}
                 >
                   <Text style={{ fontSize: 20 }}>{item.emoji}</Text>
@@ -571,7 +559,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                     {item.subtitle}
                   </Text>
                 </View>
-                <Ionicons name="chevron-forward" size={18} color={DS_COLORS.primary[400]} />
+                <Ionicons name="chevron-forward" size={18} color={Tokens.brand.primary[400]} />
               </Pressable>
             ))}
           </View>
@@ -580,16 +568,16 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
         {/* NathIA CTA - Rosa como accent */}
         <Animated.View
           entering={FadeInUp.delay(500).duration(600).springify()}
-          style={{ paddingHorizontal: SPACING.xl, marginBottom: SPACING.lg }}
+          style={{ paddingHorizontal: Tokens.spacing.xl, marginBottom: Tokens.spacing.lg }}
         >
           <Pressable
             onPress={handleTalkPress}
             style={({ pressed }) => ({
-              backgroundColor: isDark ? DS_COLORS.accent[600] : DS_COLORS.accent[400],
-              borderRadius: RADIUS.xl,
-              padding: SPACING.lg,
+              backgroundColor: isDark ? Tokens.brand.accent[600] : Tokens.brand.accent[400],
+              borderRadius: Tokens.radius.xl,
+              padding: Tokens.spacing.lg,
               borderWidth: 1,
-              borderColor: isDark ? DS_COLORS.accent[500] : DS_COLORS.accent[500],
+              borderColor: isDark ? Tokens.brand.accent[500] : Tokens.brand.accent[500],
               opacity: pressed ? 0.9 : 1,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
@@ -599,14 +587,14 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                 style={{
                   width: 48,
                   height: 48,
-                  borderRadius: RADIUS.lg,
+                  borderRadius: Tokens.radius.lg,
                   backgroundColor: premium.glass.border,
                   alignItems: "center",
                   justifyContent: "center",
-                  marginRight: SPACING.md,
+                  marginRight: Tokens.spacing.md,
                 }}
               >
-                <Ionicons name="sparkles" size={24} color={DS_COLORS.neutral[0]} />
+                <Ionicons name="sparkles" size={24} color={Tokens.neutral[0]} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text
@@ -637,28 +625,28 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
         {/* Community Banner - Calm FemTech */}
         <Animated.View
           entering={FadeInUp.delay(550).duration(600).springify()}
-          style={{ paddingHorizontal: SPACING.xl, marginBottom: SPACING.lg }}
+          style={{ paddingHorizontal: Tokens.spacing.xl, marginBottom: Tokens.spacing.lg }}
         >
           <Pressable
             onPress={() => navigation.navigate("Community")}
             style={({ pressed }) => ({
               backgroundColor: isDark ? colors.neutral[800] : colors.background.card,
-              borderRadius: RADIUS.xl,
-              padding: SPACING.xl,
+              borderRadius: Tokens.radius.xl,
+              padding: Tokens.spacing.xl,
               borderWidth: 1,
               borderColor: isDark ? colors.neutral[700] : colors.neutral[200],
               opacity: pressed ? 0.9 : 1,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
           >
-            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: SPACING.sm }}>
+            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: Tokens.spacing.sm }}>
               <View
                 style={{
                   width: 44,
                   height: 44,
                   borderRadius: 22,
                   overflow: "hidden",
-                  marginRight: SPACING.sm,
+                  marginRight: Tokens.spacing.sm,
                 }}
               >
                 <Image
@@ -687,7 +675,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                 color: colors.neutral[500],
                 fontSize: 14,
                 lineHeight: 22,
-                marginBottom: SPACING.md,
+                marginBottom: Tokens.spacing.md,
               }}
             >
               Mãe que entende mãe. Vem trocar experiência com outras mães que tão passando pelo mesmo que você.
@@ -701,7 +689,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                       width: 28,
                       height: 28,
                       borderRadius: 14,
-                      backgroundColor: DS_COLORS.primary[50],
+                      backgroundColor: Tokens.brand.primary[50],
                       alignItems: "center",
                       justifyContent: "center",
                       marginLeft: i > 0 ? -6 : 0,
@@ -712,7 +700,7 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                     <Text style={{ fontSize: 12 }}>{emoji}</Text>
                   </View>
                 ))}
-                <Text style={{ color: colors.neutral[500], fontSize: 12, marginLeft: SPACING.sm }}>
+                <Text style={{ color: colors.neutral[500], fontSize: 12, marginLeft: Tokens.spacing.sm }}>
                   +50 mil mães
                 </Text>
               </View>
@@ -720,16 +708,16 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  backgroundColor: DS_COLORS.primary[50],
-                  paddingHorizontal: SPACING.md,
-                  paddingVertical: SPACING.xs,
-                  borderRadius: RADIUS.full,
+                  backgroundColor: Tokens.brand.primary[50],
+                  paddingHorizontal: Tokens.spacing.md,
+                  paddingVertical: Tokens.spacing.xs,
+                  borderRadius: Tokens.radius.full,
                 }}
               >
-                <Text style={{ color: DS_COLORS.primary[600], fontSize: 12, fontWeight: "600" }}>
+                <Text style={{ color: Tokens.brand.primary[600], fontSize: 12, fontWeight: "600" }}>
                   Entrar
                 </Text>
-                <Ionicons name="chevron-forward" size={14} color={DS_COLORS.primary[500]} style={{ marginLeft: 2 }} />
+                <Ionicons name="chevron-forward" size={14} color={Tokens.brand.primary[500]} style={{ marginLeft: 2 }} />
               </View>
             </View>
           </Pressable>
@@ -738,26 +726,26 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
         {/* Bottom Actions - Calm FemTech */}
         <Animated.View
           entering={FadeInUp.delay(600).duration(600).springify()}
-          style={{ paddingHorizontal: SPACING.xl }}
+          style={{ paddingHorizontal: Tokens.spacing.xl }}
         >
-          <View style={{ flexDirection: "row", gap: SPACING.sm }}>
+          <View style={{ flexDirection: "row", gap: Tokens.spacing.sm }}>
             <Pressable
               onPress={() => navigation.navigate("Affirmations")}
               style={({ pressed }) => ({
                 flex: 1,
-                backgroundColor: isDark ? colors.neutral[800] : DS_COLORS.primary[50],
-                borderRadius: RADIUS.xl,
-                padding: SPACING.lg,
+                backgroundColor: isDark ? colors.neutral[800] : Tokens.brand.primary[50],
+                borderRadius: Tokens.radius.xl,
+                padding: Tokens.spacing.lg,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
                 borderWidth: 1,
-                borderColor: isDark ? colors.neutral[700] : DS_COLORS.primary[100],
+                borderColor: isDark ? colors.neutral[700] : Tokens.brand.primary[100],
                 opacity: pressed ? 0.9 : 1,
                 transform: [{ scale: pressed ? 0.98 : 1 }],
               })}
             >
-              <Ionicons name="heart" size={18} color={DS_COLORS.accent[500]} />
+              <Ionicons name="heart" size={18} color={Tokens.brand.accent[500]} />
               <Text
                 style={{
                   color: isDark ? colors.neutral[100] : colors.neutral[700],
@@ -774,19 +762,19 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
               onPress={() => navigation.navigate("Habits")}
               style={({ pressed }) => ({
                 flex: 1,
-                backgroundColor: isDark ? colors.neutral[800] : DS_COLORS.primary[50],
-                borderRadius: RADIUS.xl,
-                padding: SPACING.lg,
+                backgroundColor: isDark ? colors.neutral[800] : Tokens.brand.primary[50],
+                borderRadius: Tokens.radius.xl,
+                padding: Tokens.spacing.lg,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
                 borderWidth: 1,
-                borderColor: isDark ? colors.neutral[700] : DS_COLORS.primary[100],
+                borderColor: isDark ? colors.neutral[700] : Tokens.brand.primary[100],
                 opacity: pressed ? 0.9 : 1,
                 transform: [{ scale: pressed ? 0.98 : 1 }],
               })}
             >
-              <Ionicons name="sunny" size={18} color={DS_COLORS.primary[500]} />
+              <Ionicons name="sunny" size={18} color={Tokens.brand.primary[500]} />
               <Text
                 style={{
                   color: isDark ? colors.neutral[100] : colors.neutral[700],
@@ -805,10 +793,10 @@ export default function MyCareScreen({ navigation }: MainTabScreenProps<"MyCare"
         {/* Footer Message - Tom Nathalia */}
         <Animated.View
           entering={FadeInUp.delay(650).duration(600).springify()}
-          style={{ paddingHorizontal: SPACING.xl, marginTop: SPACING["2xl"] }}
+          style={{ paddingHorizontal: Tokens.spacing.xl, marginTop: Tokens.spacing["2xl"] }}
         >
-          <View style={{ alignItems: "center", paddingVertical: SPACING.lg }}>
-            <Text style={{ fontSize: 24, marginBottom: SPACING.sm }}>💕</Text>
+          <View style={{ alignItems: "center", paddingVertical: Tokens.spacing.lg }}>
+            <Text style={{ fontSize: 24, marginBottom: Tokens.spacing.sm }}>💕</Text>
             <Text
               style={{
                 color: colors.neutral[400],

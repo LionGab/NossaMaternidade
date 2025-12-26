@@ -10,7 +10,7 @@ import { useTheme } from "../hooks/useTheme";
 import { useAppStore } from "../state/store";
 import { RootStackScreenProps } from "../types/navigation";
 import { logger } from "../utils/logger";
-import { typography } from "../theme/tokens";
+import { Tokens, typography } from "../theme/tokens";
 import { useAlertModal } from "../components/ui/AlertModal";
 
 interface MenuItem {
@@ -32,13 +32,13 @@ interface MenuItem {
  */
 export default function ProfileScreen({ navigation }: RootStackScreenProps<"EditProfile">) {
   const insets = useSafeAreaInsets();
-  const { colors, theme, setTheme, isDark } = useTheme();
+  const { colors, theme, setTheme, isDark, text } = useTheme();
   const user = useAppStore((s) => s.user);
 
   // Cores dinâmicas do tema
-  const textMain = isDark ? colors.neutral[100] : colors.neutral[900];
-  const textSecondary = isDark ? colors.neutral[400] : colors.neutral[500];
-  const borderColor = isDark ? colors.neutral[700] : colors.neutral[200];
+  const textMain = text.primary;
+  const textSecondary = text.secondary;
+  const borderColor = isDark ? Tokens.neutral[700] : Tokens.neutral[200];
   const setOnboardingComplete = useAppStore((s) => s.setOnboardingComplete);
 
   // Delete account state
@@ -52,25 +52,25 @@ export default function ProfileScreen({ navigation }: RootStackScreenProps<"Edit
   const alertModal = useAlertModal();
 
   const MENU_ITEMS: MenuItem[] = [
-    { id: "edit", label: "Editar perfil", icon: "person-outline", color: colors.neutral[500] },
+    { id: "edit", label: "Editar perfil", icon: "person-outline", color: Tokens.neutral[500] },
     {
       id: "notifications",
       label: "Notificações",
       icon: "notifications-outline",
-      color: colors.neutral[500],
+      color: Tokens.neutral[500],
     },
-    { id: "privacy", label: "Privacidade", icon: "shield-outline", color: colors.neutral[500] },
+    { id: "privacy", label: "Privacidade", icon: "shield-outline", color: Tokens.neutral[500] },
     {
       id: "help",
       label: "Ajuda e suporte",
       icon: "help-circle-outline",
-      color: colors.neutral[500],
+      color: Tokens.neutral[500],
     },
     {
       id: "about",
       label: "Sobre o app",
       icon: "information-circle-outline",
-      color: colors.neutral[500],
+      color: Tokens.neutral[500],
     },
   ];
 
