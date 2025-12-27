@@ -188,7 +188,7 @@ export const CommunityPostCard: React.FC<PostCardProps> = React.memo(
                 <View
                   style={[
                     styles.image,
-                    { backgroundColor: "black", alignItems: "center", justifyContent: "center" },
+                    { backgroundColor: Tokens.neutral[900], alignItems: "center", justifyContent: "center" },
                   ]}
                 >
                   <Ionicons name="play-circle-outline" size={48} color="white" />

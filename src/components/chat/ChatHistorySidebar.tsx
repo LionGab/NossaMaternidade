@@ -10,7 +10,7 @@ import Animated, { SlideInLeft, SlideOutLeft } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Conversation } from "../../state/store";
 import { Avatar } from "../ui";
-import { COLORS, COLORS_DARK } from "../../theme/tokens";
+import { Tokens, COLORS, COLORS_DARK } from "../../theme/tokens";
 import { useTheme } from "../../hooks/useTheme";
 
 interface ChatHistorySidebarProps {
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     flexDirection: "row",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: Tokens.overlay.medium,
   },
   sidebar: {
     width: "82%",

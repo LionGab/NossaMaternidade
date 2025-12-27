@@ -335,7 +335,7 @@ export default function CommunityComposer({ onPost, onExpand }: CommunityCompose
               position: "absolute",
               top: 8,
               right: 8,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              backgroundColor: Tokens.overlay.medium,
               borderRadius: 20,
               padding: 8,
             }}

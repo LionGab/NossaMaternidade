@@ -61,7 +61,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { signInWithMagicLink } from "../api/auth";
 import { signInWithApple, signInWithFacebook, signInWithGoogle } from "../api/social-auth";
-import { brand, premium, semantic, typography } from "../theme/tokens";
+import { Tokens, brand, premium, semantic, typography } from "../theme/tokens";
 import { RootStackScreenProps } from "../types/navigation";
 
 type Props = RootStackScreenProps<"Login">;
@@ -753,7 +753,7 @@ const styles = StyleSheet.create({
   },
   particle: {
     position: "absolute",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Tokens.neutral[0],
     borderRadius: 100,
   },
 

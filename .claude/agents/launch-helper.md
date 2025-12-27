@@ -1,3 +1,8 @@
+---
+name: "Launch Helper"
+description: "Specialized agent for App Store and Google Play launch preparation"
+---
+
 # Launch Helper Agent
 
 **Specialized agent for App Store and Google Play launch preparation**

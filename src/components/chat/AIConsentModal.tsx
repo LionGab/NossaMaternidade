@@ -7,7 +7,7 @@ import React from "react";
 import { View, Text, Modal, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInUp } from "react-native-reanimated";
-import { COLORS, COLORS_DARK } from "../../theme/tokens";
+import { Tokens, COLORS, COLORS_DARK } from "../../theme/tokens";
 import { useTheme } from "../../hooks/useTheme";
 
 interface AIConsentModalProps {
@@ -92,7 +92,7 @@ export const AIConsentModal: React.FC<AIConsentModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: Tokens.overlay.medium,
     justifyContent: "center",
     alignItems: "center",
     padding: 24,

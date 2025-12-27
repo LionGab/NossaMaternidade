@@ -1,5 +1,6 @@
 ---
 name: "Database Agent"
+description: "Agente especializado em operações de banco de dados Supabase"
 ---
 
 # Database Agent

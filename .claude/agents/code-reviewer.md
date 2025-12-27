@@ -1,3 +1,8 @@
+---
+name: "Code Reviewer"
+description: "Specialized agent for code quality, design system compliance, and best practices"
+---
+
 # Code Reviewer Agent
 
 **Specialized agent for code quality, design system compliance, and best practices**

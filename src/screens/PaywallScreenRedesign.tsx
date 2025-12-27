@@ -57,7 +57,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useToast } from "../context/ToastContext";
 import { usePremiumStore } from "../state/premium-store";
-import { brand, premium, typography } from "../theme/tokens";
+import { Tokens, brand, premium, typography } from "../theme/tokens";
 import { RootStackParamList } from "../types/navigation";
 import { DEFAULT_PRICING, type PricingConfig } from "../types/premium";
 import { logger } from "../utils/logger";
@@ -243,12 +243,12 @@ const PremiumBadge: React.FC = React.memo(() => {
     <Animated.View style={[styles.badgeContainer, glowStyle]}>
       <Animated.View style={animatedStyle}>
         <LinearGradient
-          colors={[COLORS.gold, "#F59E0B", "#D97706"]}
+          colors={[COLORS.gold, Tokens.semantic.light.warning, "#D97706"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.badge}
         >
-          <Ionicons name="diamond" size={40} color="#FFFBEB" />
+          <Ionicons name="diamond" size={40} color={Tokens.neutral[50]} />
         </LinearGradient>
       </Animated.View>
 

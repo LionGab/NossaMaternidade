@@ -2,53 +2,40 @@
   "$schema": "https://claude.ai/mcp/schema.json",
   "mcpServers": {
     "memory-keeper": {
-      "command": "npx",
-      "args": ["-y", "mcp-memory-keeper"],
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "mcp-memory-keeper"],
       "env": {
         "MCP_MEMORY_DB_PATH": ".claude/context.db"
       },
       "description": "Persistent context between sessions"
     },
     "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-sequential-thinking"],
       "description": "Step-by-step reasoning for complex tasks"
     },
     "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"],
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@upstash/context7-mcp"],
       "description": "Up-to-date documentation for React Navigation, Supabase, Reanimated, etc."
     },
     "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp"],
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@playwright/mcp"],
       "description": "Visual testing and browser automation"
     },
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/lion/Documents/Lion/NossaMaternidade"],
-      "description": "Enhanced file operations"
-    },
     "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-github"],
       "env": {
         "GITHUB_TOKEN": "${GITHUB_TOKEN}"
       },
       "description": "GitHub issues, PRs, and repository management"
     },
     "supabase": {
-      "command": "npx",
-      "args": ["supabase", "mcp", "serve"],
+      "command": "cmd",
+      "args": ["/c", "npx", "supabase", "mcp", "serve"],
       "description": "Supabase project management, migrations, and logs"
-    },
-    "expo-mcp": {
-      "transport": "http",
-      "url": "https://mcp.expo.dev/mcp",
-      "headers": {
-        "Authorization": "Bearer ${EXPO_TOKEN}"
-      },
-      "description": "Expo SDK documentation, EAS builds, project management"
     }
   }
 }

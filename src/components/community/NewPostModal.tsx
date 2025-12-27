@@ -22,7 +22,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useToast } from "../../context/ToastContext";
 import { useTheme } from "../../hooks/useTheme";
 import { useAppStore } from "../../state/store";
-import { brand, neutral, radius, spacing } from "../../theme/tokens";
+import { Tokens, brand, neutral, radius, spacing } from "../../theme/tokens";
 import { Avatar } from "../ui";
 
 interface NewPostModalProps {
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: spacing.sm,
     right: spacing.sm,
-    backgroundColor: "rgba(0,0,0,0.6)",
+    backgroundColor: Tokens.overlay.dark,
     borderRadius: radius.full,
     padding: spacing.sm,
   },

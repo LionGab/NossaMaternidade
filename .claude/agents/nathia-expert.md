@@ -1,3 +1,8 @@
+---
+name: "NathIA Expert"
+description: "Specialized agent for NathIA personality, AI integration, and maternal health content"
+---
+
 # NathIA Expert Agent
 
 **Specialized agent for NathIA personality, AI integration, and maternal health content**
