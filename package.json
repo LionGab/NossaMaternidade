@@ -24,6 +24,7 @@
     "check-build-ready": "bash scripts/check-build-ready.sh",
     "check-mcp": "bash scripts/check-mcp-config.sh",
     "check-env": "node scripts/check-env.js",
+    "get-supabase-token": "tsx scripts/get-supabase-token.ts",
     "test:oauth": "node scripts/test-oauth-providers.mjs",
     "test:gemini": "node scripts/test-gemini-key.mjs",
     "create:admin": "node scripts/create-admin-user.mjs",
